@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>JourneyTrack AI Agent — Kathleen Li</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Gloock&family=Figtree:wght@300;400;500;600&family=Caveat:wght@400;600;700&family=Fredoka+One&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../Frogslayer/kiosk.css" />
+</head>
+<body>
+
+<div class="back-bar">
+  <a href="../Home/index.html" class="back-link">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+      <path d="M9 2L4 7L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    Back to portfolio
+  </a>
+</div>
+
+<div class="page-wrap">
+
+  <nav class="side-nav">
+    <p class="side-nav-label">On this page</p>
+    <ul class="nav-items">
+      <li class="nav-item"><a href="#overview" class="active">Overview</a></li>
+      <li class="nav-item"><a href="#research">Research</a></li>
+      <li class="nav-item"><a href="#design">Design</a></li>
+      <li class="nav-item"><a href="#testing">Testing</a></li>
+      <li class="nav-item"><a href="#reflections">Reflections</a></li>
+    </ul>
+    <div class="nav-progress">
+      <p class="progress-label">Progress</p>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main-content">
+
+    <div class="proj-hero">
+      <p class="proj-tag">UX Design · AI · Research · Interaction Design</p>
+      <h1 class="proj-title">JourneyTrack<br/><em>AI Agent</em></h1>
+      <p class="proj-summary">An AI agent embedded into an existing journey map platform — flagging stale touchpoints and suggesting updates so living documents stay accurate without burdening the manager.</p>
+      <div class="meta-row">
+        <div class="meta-item">
+          <p class="meta-label">Context</p>
+          <p class="meta-value">JourneyTrack Platform</p>
+        </div>
+        <div class="meta-item">
+          <p class="meta-label">Role</p>
+          <p class="meta-value">UX Designer · Project Co-lead</p>
+        </div>
+        <div class="meta-item">
+          <p class="meta-label">Team</p>
+          <p class="meta-value">Interdisciplinary — Design + Dev</p>
+        </div>
+        <div class="meta-item">
+          <p class="meta-label">Timeline</p>
+          <p class="meta-value">2024</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-img-wrap" id="overview">
+      <div class="hero-img-placeholder caveat">Add hero image — img/journey-hero.jpg</div>
+    </div>
+
+    <!-- OVERVIEW -->
+    <section class="content-section">
+      <p class="section-eyebrow">Overview</p>
+      <h2 class="section-heading">Journey maps go stale. Nobody notices.</h2>
+      <p class="body-text">Journey maps are living documents — but as data grows and time passes, touchpoints become outdated without notifying the manager. The result: decisions made on maps that no longer reflect reality.</p>
+
+      <div class="callout">
+        <p>"How might we help journey map managers maintain accurate maps without adding to their workload?"</p>
+      </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- RESEARCH -->
+    <section class="content-section" id="research">
+      <p class="section-eyebrow">01 — Research</p>
+      <h2 class="section-heading">What managers actually need</h2>
+      <p class="body-text">Research ran in two tracks — competitive and interaction analysis to understand the domain, plus desk research and user interviews to understand the managers themselves.</p>
+
+      <div class="two-col-grid mt-40">
+        <div class="method-card">
+          <p class="method-title">Competitive Analysis<br/>Interaction Analysis</p>
+          <div class="method-img-block"></div>
+          <p class="method-credit">Kathleen Li</p>
+        </div>
+        <div class="method-card">
+          <p class="method-title">Desk Research<br/>User Interviews</p>
+          <div class="method-img-block"></div>
+          <p class="method-credit">Kathleen Li</p>
+        </div>
+      </div>
+
+      <h3 class="section-subheading mt-40">Key Findings</h3>
+      <ul class="deliverables-list">
+        <li>Managers spend significant time manually cross-checking data sources for relevance</li>
+        <li>Outdated content goes undetected until a major review cycle</li>
+        <li>Managers want <strong>flagging — not auto-editing</strong> — to keep control over map integrity</li>
+        <li>Integration must feel native, not bolted on</li>
+      </ul>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- DESIGN -->
+    <section class="content-section" id="design">
+      <p class="section-eyebrow">02 — Design</p>
+      <h2 class="section-heading">The agent surfaces staleness. The manager decides.</h2>
+
+      <div class="callout">
+        <p>"Control stays with the manager. The agent informs — it doesn't act."</p>
+      </div>
+
+      <div class="findings-grid mt-40">
+        <div class="finding-card">
+          <p class="finding-title">Data monitoring</p>
+          <p class="finding-desc">Continuously watches connected data sources for changes relevant to mapped touchpoints.</p>
+        </div>
+        <div class="finding-card">
+          <p class="finding-title">Staleness flagging</p>
+          <p class="finding-desc">Highlights journey map nodes where underlying data has shifted beyond a threshold.</p>
+        </div>
+        <div class="finding-card">
+          <p class="finding-title">Update suggestions</p>
+          <p class="finding-desc">Proposes wording or sentiment changes for manager review — never applying them automatically.</p>
+        </div>
+        <div class="finding-card">
+          <p class="finding-title">Audit trail</p>
+          <p class="finding-desc">Logs every flag and manager decision for accountability and future model training.</p>
+        </div>
+      </div>
+
+      <div class="img-full mt-40">
+        <div class="img-placeholder-full caveat">Add wireframes — img/jt-wireframes.jpg</div>
+      </div>
+
+      <h3 class="section-subheading mt-40">Sponsor Feedback</h3>
+      <ul class="deliverables-list">
+        <li>Notification placement moved from modal to inline badge — less interruptive</li>
+        <li>Confidence scoring added so managers can prioritize which flags to review first</li>
+        <li>Bulk-review mode added for high-volume map managers</li>
+      </ul>
+
+      <div class="img-full mt-40">
+        <div class="img-placeholder-full caveat">Add high-fidelity screens — img/jt-hifi.jpg</div>
+      </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- TESTING -->
+    <section class="content-section" id="testing">
+      <p class="section-eyebrow">03 — Testing</p>
+      <h2 class="section-heading">Two rounds. One key insight.</h2>
+      <p class="body-text">Usability testing with journey map managers — first on the flagging flow, then on bulk-review after sponsor feedback.</p>
+
+      <div class="stat-row mt-40">
+        <div class="stat-cell">
+          <p class="stat-num">6</p>
+          <p class="stat-label">Participants</p>
+        </div>
+        <div class="stat-cell">
+          <p class="stat-num">2</p>
+          <p class="stat-label">Test Rounds</p>
+        </div>
+        <div class="stat-cell">
+          <p class="stat-num">94%</p>
+          <p class="stat-label">Task Completion</p>
+        </div>
+      </div>
+
+      <ul class="deliverables-list mt-40">
+        <li>Inline badge notifications preferred — less cognitive interruption than sidebar panels</li>
+        <li>Confidence score needed a legend — "high / medium / low" labels added</li>
+        <li>Bulk-review reduced estimated flag-processing time by ~60% in simulated tasks</li>
+      </ul>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- REFLECTIONS -->
+    <section class="content-section" id="reflections">
+      <p class="section-eyebrow">04 — Reflections</p>
+      <h2 class="section-heading">Trust is built through transparency, not efficiency</h2>
+      <p class="body-text">Early concepts had the agent auto-applying low-confidence changes. Every user in testing rejected this. The most important design decision was keeping the manager in control — and making that control feel natural, not like a safety net.</p>
+      <p class="body-text">Co-leading across design and engineering also showed me how much clarity of spec matters when the two disciplines need to move fast together.</p>
+    </section>
+
+    <div class="next-project">
+      <div>
+        <p class="next-label">Next project</p>
+        <p class="next-title">Purdue Stack</p>
+      </div>
+      <a href="../PurdueStack/purdue-stack.html" class="next-arrow" aria-label="View Purdue Stack">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M4 8h8M9 5l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    </div>
+
+  </main>
+</div>
+
+<script src="../Frogslayer/kiosk.js"></script>
+</body>
+</html>

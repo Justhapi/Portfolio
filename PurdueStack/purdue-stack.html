@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Purdue Stack — Kathleen Li</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Gloock&family=Figtree:wght@300;400;500;600&family=Caveat:wght@400;600;700&family=Fredoka+One&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../Frogslayer/kiosk.css" />
+<style>
+  .purdue-accent { color: #C28E0E; }
+  .badge-purdue {
+    display: inline-block;
+    background: #F7F0D6; color: #7A5800;
+    font-size: 0.72rem; font-weight: 600; letter-spacing: 0.06em;
+    padding: 0.25em 0.75em; border-radius: 100px;
+    margin-bottom: 0.5rem;
+  }
+</style>
+</head>
+<body>
+
+<div class="back-bar">
+  <a href="../Home/index.html" class="back-link">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+      <path d="M9 2L4 7L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    Back to portfolio
+  </a>
+</div>
+
+<div class="page-wrap">
+
+  <nav class="side-nav">
+    <p class="side-nav-label">On this page</p>
+    <ul class="nav-items">
+      <li class="nav-item"><a href="#overview" class="active">Overview</a></li>
+      <li class="nav-item"><a href="#research">Research</a></li>
+      <li class="nav-item"><a href="#design">Design</a></li>
+      <li class="nav-item"><a href="#delivery">Delivery</a></li>
+      <li class="nav-item"><a href="#reflections">Reflections</a></li>
+    </ul>
+    <div class="nav-progress">
+      <p class="progress-label">Progress</p>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main-content">
+
+    <div class="proj-hero">
+      <p class="proj-tag">UI Design · Product Design · Research</p>
+      <h1 class="proj-title">Purdue Stack<br/><em>Research Platform</em></h1>
+      <p class="proj-summary">Redesigning the UI of Purdue's AI-assisted research collaboration platform — serving both student and professor workflows while leaving room for planned feature growth.</p>
+      <div class="meta-row">
+        <div class="meta-item">
+          <p class="meta-label">Client</p>
+          <p class="meta-value">Purdue University</p>
+        </div>
+        <div class="meta-item">
+          <p class="meta-label">Role</p>
+          <p class="meta-value">UI Designer · Frontend Contributor</p>
+        </div>
+        <div class="meta-item">
+          <p class="meta-label">Team</p>
+          <p class="meta-value">Interdisciplinary — Design + Engineering</p>
+        </div>
+        <div class="meta-item">
+          <p class="meta-label">Timeline</p>
+          <p class="meta-value">2024</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-img-wrap" id="overview">
+      <div class="hero-img-placeholder caveat">Add hero image — img/purdue-hero.jpg</div>
+    </div>
+
+    <!-- OVERVIEW -->
+    <section class="content-section">
+      <p class="section-eyebrow">Overview</p>
+      <h2 class="section-heading">A platform that works — but doesn't feel like it</h2>
+      <p class="body-text">The platform's backend features functioned. The UI didn't — it failed to serve either student or professor mental models, and had no room for the new features the engineering team was already planning.</p>
+
+      <div class="callout">
+        <p>"How might we design a UI that serves both student and professor workflows while leaving room for new feature growth?"</p>
+      </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- RESEARCH -->
+    <section class="content-section" id="research">
+      <p class="section-eyebrow">01 — Research</p>
+      <h2 class="section-heading">Evaluating both sides of the platform</h2>
+      <p class="body-text">I explored the platform from both a student and professor account, then followed up with user interviews to understand what each group actually needed.</p>
+
+      <div class="two-col-grid mt-40">
+        <div class="method-card">
+          <p class="method-title">Student Account Review</p>
+          <div class="method-img-block"></div>
+          <p class="method-credit">Kathleen Li</p>
+        </div>
+        <div class="method-card">
+          <p class="method-title">Professor Account Review</p>
+          <div class="method-img-block"></div>
+          <p class="method-credit">Kathleen Li</p>
+        </div>
+      </div>
+
+      <h3 class="section-subheading mt-40">Key Findings</h3>
+      <ul class="deliverables-list">
+        <li>Students needed clearer project status visibility — current state felt opaque</li>
+        <li>Professors needed faster ways to review and respond to student applications</li>
+        <li>Both groups wanted notifications that differentiated urgent vs. routine updates</li>
+        <li>Role-switching between accounts lacked clear visual distinction</li>
+      </ul>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- DESIGN -->
+    <section class="content-section" id="design">
+      <p class="section-eyebrow">02 — Design</p>
+      <h2 class="section-heading">Designing for today and leaving room for tomorrow</h2>
+      <p class="body-text">Mockups were designed to accommodate both current features and the planned implementations the engineering team would build — so the UI wouldn't need to be rethought when new features landed.</p>
+
+      <div class="one-col-grid mt-40">
+        <div class="method-card">
+          <p class="method-title">UI accommodating new features</p>
+          <div class="method-img-block tall"></div>
+          <p class="method-credit">Kathleen Li</p>
+        </div>
+        <div class="method-card">
+          <p class="method-title">Purdue color system</p>
+          <div class="method-img-block tall"></div>
+          <p class="method-credit">Kathleen Li</p>
+        </div>
+      </div>
+
+      <h3 class="section-subheading mt-40">Key Design Decisions</h3>
+      <ul class="deliverables-list">
+        <li>Purdue brand gold as the primary action color — reinforces institutional identity</li>
+        <li>Card-based project board for professors — scannable at a glance</li>
+        <li>Persistent role indicator in the nav header — reduces account-switching confusion</li>
+        <li>"Coming soon" treatment for unbuilt features — signals growth without breaking current layouts</li>
+      </ul>
+
+      <div class="img-full mt-40">
+        <div class="img-placeholder-full caveat">Add prototype screens — img/purdue-prototype.jpg</div>
+      </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- DELIVERY -->
+    <section class="content-section" id="delivery">
+      <p class="section-eyebrow">03 — Delivery</p>
+      <h2 class="section-heading">From design to frontend</h2>
+      <p class="body-text">High-fidelity mockups were shared with engineering in Figma. Weekly syncs ensured specs translated accurately. I then transitioned into frontend development support to help ship the redesigned interface.</p>
+
+      <div class="stat-row mt-40">
+        <div class="stat-cell">
+          <p class="stat-num">2</p>
+          <p class="stat-label">User Groups</p>
+        </div>
+        <div class="stat-cell">
+          <p class="stat-num">12+</p>
+          <p class="stat-label">Screen Designs</p>
+        </div>
+        <div class="stat-cell">
+          <p class="stat-num">1</p>
+          <p class="stat-label">Design System</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- REFLECTIONS -->
+    <section class="content-section" id="reflections">
+      <p class="section-eyebrow">04 — Reflections</p>
+      <h2 class="section-heading">Designing within constraints sharpens your instincts</h2>
+      <ul class="deliverables-list">
+        <li><strong>Brand color accessibility</strong> — working within Purdue's palette required careful contrast management; initial choices failed checks and needed revision</li>
+        <li><strong>Figma at scale</strong> — component naming and variant structure dramatically affect handoff quality</li>
+        <li><strong>Design → engineering</strong> — transitioning to frontend gave me a clearer mental model of implementation constraints that now shapes how I spec every design</li>
+      </ul>
+    </section>
+
+    <div class="next-project">
+      <div>
+        <p class="next-label">Next project</p>
+        <p class="next-title">Frogslayer</p>
+      </div>
+      <a href="../Frogslayer/kiosk.html" class="next-arrow" aria-label="View Frogslayer Kiosk project">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M4 8h8M9 5l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    </div>
+
+  </main>
+</div>
+
+<script src="../Frogslayer/kiosk.js"></script>
+</body>
+</html>
