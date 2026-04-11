@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kathleen Li — Designer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gloock&family=Figtree:wght@300;400;500;600&family=Caveat:wght@400;600;700&family=Fredoka+One&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Reusable sparkle shape -->
+<svg style="display:none" aria-hidden="true" focusable="false">
+  <defs>
+    <path id="sparkle" d="M50 4 C50 28 28 50 4 50 C28 50 50 72 50 96 C50 72 72 50 96 50 C72 50 50 28 50 4 Z"/>
+  </defs>
+</svg>
+
+<!-- Custom cursor -->
+<div class="cursor-dot"  id="cursor-dot"></div>
+<div class="cursor-ring" id="cursor-ring"></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#hero" class="nav-logo">KL</a>
+  <ul class="nav-links">
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#workspace">Space</a></li>
+    <li><a href="#footer">Connect</a></li>
+  </ul>
+</nav>
+
+<!-- Page-level scribble decorations (aria-hidden, purely decorative) -->
+<div class="scribbles" aria-hidden="true">
+
+  <!-- Hero: loose underline stroke near the name -->
+  <svg class="scrib scrib-hero-ul" viewBox="0 0 180 18" fill="none">
+    <path d="M4 10 Q28 4 56 11 Q90 18 120 9 Q148 2 176 10" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/>
+  </svg>
+
+  <!-- Hero: small asterisk burst top-left -->
+  <svg class="scrib scrib-hero-star" viewBox="0 0 40 40" fill="none">
+    <line x1="20" y1="2"  x2="20" y2="38" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+    <line x1="2"  y1="20" x2="38" y2="20" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+    <line x1="7"  y1="7"  x2="33" y2="33" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+    <line x1="33" y1="7"  x2="7"  y2="33" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+  </svg>
+
+  <!-- Projects: pencil drawing lines (left of section) -->
+  <svg class="scrib scrib-proj-pencil" viewBox="0 0 60 90" fill="none">
+    <path d="M30 6 L38 18 L22 18 Z" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
+    <rect x="22" y="18" width="16" height="52" rx="2" stroke="currentColor" stroke-width="2.5"/>
+    <path d="M22 64 Q30 74 38 64" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="26" y1="30" x2="34" y2="30" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    <line x1="26" y1="38" x2="34" y2="38" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  </svg>
+
+  <!-- Projects: wiggly underline (right of section) -->
+  <svg class="scrib scrib-proj-wave" viewBox="0 0 140 24" fill="none">
+    <path d="M4 12 Q20 2 36 12 Q52 22 68 12 Q84 2 100 12 Q116 22 136 12" stroke="currentColor" stroke-width="3" stroke-linecap="round" fill="none"/>
+  </svg>
+
+  <!-- Workspace: small dash cluster above section -->
+  <svg class="scrib scrib-ws-dashes" viewBox="0 0 80 50" fill="none">
+    <line x1="4"  y1="14" x2="28" y2="14" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/>
+    <line x1="10" y1="26" x2="44" y2="26" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/>
+    <circle cx="58" cy="40" r="4" stroke="currentColor" stroke-width="3"/>
+  </svg>
+
+  <!-- Footer: "with more in the works" squiggle cluster -->
+  <svg class="scrib scrib-footer-wm" viewBox="0 0 120 56" fill="none">
+    <path d="M8 28 Q22 8 36 28 Q50 48 64 28 Q78 8 92 28 Q106 48 116 36" stroke="currentColor" stroke-width="3" stroke-linecap="round" fill="none"/>
+    <line x1="4" y1="50" x2="30" y2="50" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+    <line x1="10" y1="44" x2="20" y2="44" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+  </svg>
+
+  <!-- Footer: asterisk burst right -->
+  <svg class="scrib scrib-footer-star" viewBox="0 0 40 40" fill="none">
+    <line x1="20" y1="2"  x2="20" y2="38" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="2"  y1="20" x2="38" y2="20" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="7"  y1="7"  x2="33" y2="33" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="33" y1="7"  x2="7"  y2="33" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+  </svg>
+
+</div>
+
+<section id="hero" class="hero">
+  <div class="hero-cursor-glow" id="hero-cursor-glow" aria-hidden="true"></div>
+
+  <div class="hero-left">
+    <div class="hero-content">
+      <span class="hero-index caveat">— designer · artist · maker</span>
+      <h1 class="hero-name">
+        <span class="hero-name-first">Kathleen</span>
+        <span class="hero-name-last"><em>Li.</em></span>
+      </h1>
+      <p class="hero-role mono">UX &nbsp;·&nbsp; Interaction &nbsp;·&nbsp; UI Design</p>
+      <div class="hero-chips">
+        <button class="hero-chip chip-artist" id="chip-artist" type="button">Digital Artist</button>
+        <span class="turned caveat">turned</span>
+        <button class="hero-chip chip-designer" id="chip-designer" type="button">UI Designer</button>
+      </div>
+    </div>
+    <div class="hero-char-col" aria-hidden="true">
+      <img class="hero-char-img" src="img/char.gif" alt="">
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <!-- Ambient sparkles floating in yellow panel -->
+    <span class="hs-spark hs-spark-a" aria-hidden="true"><svg viewBox="0 0 100 100" focusable="false"><use href="#sparkle"/></svg></span>
+    <span class="hs-spark hs-spark-b" aria-hidden="true"><svg viewBox="0 0 100 100" focusable="false"><use href="#sparkle"/></svg></span>
+    <span class="hs-spark hs-spark-c" aria-hidden="true"><svg viewBox="0 0 100 100" focusable="false"><use href="#sparkle"/></svg></span>
+    <div class="hero-statement">
+      <p class="hs-eyebrow caveat">Purdue University · Class of 2027</p>
+      <p class="hs-line hs-line1">From <em>one canvas</em></p>
+      <p class="hs-line hs-line2">to <em>every screen</em></p>
+      <p class="hs-line hs-line3">An artist who learned to design systems —<br>and a designer who never stopped making art.</p>
+      <div class="hs-scroll"><span class="scroll-line"></span><span class="caveat">Scroll to explore</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- Chip tooltips -->
+<div class="chip-tooltip" id="tooltip-artist">
+  <img src="img/artist.png" alt="Digital Artist illustration">
+</div>
+<div class="chip-tooltip" id="tooltip-designer">
+  <img src="img/designer.png" alt="UI Designer illustration" title="UI Designer illustration">
+</div>
+
+<!-- PROJECTS GLANCE -->
+<section class="projects" id="projects">
+  <div class="projects-sticky">
+  <p class="section-label">What I Made</p>
+  <p class="workspace-hint caveat reveal">Scroll through — each project is a different problem I solved.</p>
+
+  <div class="projects-glance-grid">
+
+    <!-- 01 -->
+    <div class="glance-row">
+      <div class="glance-text">
+        <div>
+          <p class="project-year mono">2024 – 2025 &nbsp;|&nbsp; UX Design, Systems, Accessibility</p>
+          <h2 class="project-name">I built a design system for touchscreen kiosk interfaces that teams could actually ship.</h2>
+        </div>
+        <a href="../Frogslayer/kiosk.html" class="project-link">View Project →</a>
+      </div>
+      <a class="glance-img-card" href="../Frogslayer/kiosk.html" aria-label="View Frogslayer">
+        <div class="img-placeholder p1-bg"></div>
+        <span class="spark spark-tl" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
+        <span class="spark spark-tr" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
+        <span class="spark spark-bl" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
+        <span class="spark spark-br" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
+        <span class="spark spark-ml" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
+        <span class="spark spark-mr" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
+        <span class="spark spark-tc" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
+        <span class="spark spark-bc" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
+        <div class="card-badge">View Case Study</div>
+      </a>
+    </div>
+
+    <!-- 02 -->
+    <div class="glance-row">
+      <div class="glance-text">
+        <div>
+          <p class="project-year mono">2024 &nbsp;|&nbsp; UX Design, AI, Research, Interaction Design</p>
+          <h2 class="project-name">I designed an AI agent that keeps living journey maps accurate — without burdening the map manager.</h2>
+        </div>
+        <a href="../JourneyTrack/journey-track.html" class="project-link">View Project →</a>
+      </div>
+      <a class="glance-img-card" href="../JourneyTrack/journey-track.html" aria-label="View JourneyTrack">
+        <div class="img-placeholder p2-bg"></div>
+        <span class="spark spark-tl" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
+        <span class="spark spark-tr" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
+        <span class="spark spark-bl" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
+        <span class="spark spark-br" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
+        <span class="spark spark-ml" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
+        <span class="spark spark-mr" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
+        <span class="spark spark-tc" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
+        <span class="spark spark-bc" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
+        <div class="card-badge">JourneyTrack</div>
+      </a>
+    </div>
+
+    <!-- 03 -->
+    <div class="glance-row">
+      <div class="glance-text">
+        <div>
+          <p class="project-year mono">2024 &nbsp;|&nbsp; UI Design, Product Design, Research</p>
+          <h2 class="project-name">I expanded the UI of a Purdue research collaboration platform — evaluating both student and professor needs.</h2>
+        </div>
+        <a href="../PurdueStack/purdue-stack.html" class="project-link">View Project →</a>
+      </div>
+      <a class="glance-img-card" href="../PurdueStack/purdue-stack.html" aria-label="View Purdue Stack">
+        <div class="img-placeholder p3-bg"></div>
+        <span class="spark spark-tl" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
+        <span class="spark spark-tr" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
+        <span class="spark spark-bl" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
+        <span class="spark spark-br" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
+        <span class="spark spark-ml" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
+        <span class="spark spark-mr" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
+        <span class="spark spark-tc" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
+        <span class="spark spark-bc" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
+        <div class="card-badge">Purdue Stack</div>
+      </a>
+    </div>
+
+    <!-- 04 -->
+    <div class="glance-row">
+      <div class="glance-text">
+        <div>
+          <p class="project-year mono">2024 &nbsp;|&nbsp; UI Design, Branding, Data</p>
+          <h2 class="project-name">I designed interaction flows for an AI-powered grading tool that handles complex linguistic datasets.</h2>
+        </div>
+        <span class="project-link coming">Coming Soon</span>
+      </div>
+      <div class="glance-img-card">
+        <div class="img-placeholder p4-bg"></div>
+        <span class="spark spark-tl" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
+        <span class="spark spark-tr" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
+        <span class="spark spark-bl" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
+        <span class="spark spark-br" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
+        <span class="spark spark-ml" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
+        <span class="spark spark-mr" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
+        <span class="spark spark-tc" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
+        <span class="spark spark-bc" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
+        <div class="card-badge">CorpusKey</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="carousel-dots" aria-label="Project navigation">
+    <button class="c-dot" data-index="0" type="button" aria-label="Project 1"></button>
+    <button class="c-dot" data-index="1" type="button" aria-label="Project 2"></button>
+    <button class="c-dot" data-index="2" type="button" aria-label="Project 3"></button>
+    <button class="c-dot" data-index="3" type="button" aria-label="Project 4"></button>
+  </div>
+  <p class="carousel-counter"><span id="carousel-num">01</span><span class="carousel-total">/04</span></p>
+
+  </div><!-- /.projects-sticky -->
+</section>
+
+<!-- ART GALLERY — scattered card spread -->
+<section class="art-gallery-section" id="art-gallery">
+  <div class="ag-intro">
+    <p class="section-label">Beyond Design</p>
+    <p class="ag-tagline caveat">I experiment a lot.</p>
+  </div>
+
+  <div class="ag-fan-wrap">
+    <!-- Swipe hint -->
+    <p class="ag-swipe-hint caveat">← swipe to explore →</p>
+
+    <div class="ag-fan" id="agFan">
+      <!-- 0: Pixel Art -->
+      <div class="ag-fan-card">
+        <div class="ag-fan-img" style="background: linear-gradient(145deg,#CCC0E8 0%,#b5a8d8 100%);">
+          <div class="ag-pixel-grid">
+            <div class="ag-px" style="--c:#9B8EC4;--r:1;--col:2"></div>
+            <div class="ag-px" style="--c:#7A6DB0;--r:1;--col:3"></div>
+            <div class="ag-px" style="--c:#9B8EC4;--r:2;--col:1"></div>
+            <div class="ag-px" style="--c:#F2C84A;--r:2;--col:2"></div>
+            <div class="ag-px" style="--c:#F2C84A;--r:2;--col:3"></div>
+            <div class="ag-px" style="--c:#9B8EC4;--r:2;--col:4"></div>
+            <div class="ag-px" style="--c:#7A6DB0;--r:3;--col:1"></div>
+            <div class="ag-px" style="--c:#F2C84A;--r:3;--col:2"></div>
+            <div class="ag-px" style="--c:#F2C84A;--r:3;--col:3"></div>
+            <div class="ag-px" style="--c:#7A6DB0;--r:3;--col:4"></div>
+            <div class="ag-px" style="--c:#9B8EC4;--r:4;--col:2"></div>
+            <div class="ag-px" style="--c:#CCC0E8;--r:4;--col:3"></div>
+            <div class="ag-px" style="--c:#9B8EC4;--r:5;--col:2"></div>
+            <div class="ag-px" style="--c:#9B8EC4;--r:5;--col:3"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1: Analog Sketchbook -->
+      <div class="ag-fan-card">
+        <div class="ag-fan-img" style="background: linear-gradient(145deg,#F5E8EE 0%,#ebd0dc 100%);">
+          <svg class="ag-sketch-svg" viewBox="0 0 160 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="30" y="30" width="100" height="140" rx="3" fill="white" stroke="#d8a0b8" stroke-width="1.5"/>
+            <line x1="45" y1="65" x2="115" y2="65" stroke="#e0b0c0" stroke-width="1.2"/>
+            <line x1="45" y1="80" x2="100" y2="80" stroke="#e0b0c0" stroke-width="1.2"/>
+            <line x1="45" y1="95" x2="110" y2="95" stroke="#e0b0c0" stroke-width="1.2"/>
+            <line x1="45" y1="110" x2="90" y2="110" stroke="#e0b0c0" stroke-width="1.2"/>
+            <circle cx="80" cy="47" r="10" fill="none" stroke="#d8a0b8" stroke-width="1.5"/>
+            <path d="M74 47 Q80 40 86 47 Q80 54 74 47Z" fill="#e8c0d0"/>
+            <path d="M55 130 Q65 120 75 128 Q85 118 95 127 Q105 119 110 130" stroke="#c890a8" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+            <line x1="30" y1="30" x2="30" y2="170" stroke="#d8a0b8" stroke-width="2.5"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- 2: Obsidian UX Notes (center) -->
+      <div class="ag-fan-card">
+        <div class="ag-fan-img ag-obsidian">
+          <svg class="ag-graph-svg" viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg">
+            <!-- edges -->
+            <line x1="100" y1="60"  x2="60"  y2="110" stroke="#5a4e7a" stroke-width="1"/>
+            <line x1="100" y1="60"  x2="148" y2="95"  stroke="#5a4e7a" stroke-width="1"/>
+            <line x1="60"  y1="110" x2="40"  y2="160" stroke="#5a4e7a" stroke-width="1"/>
+            <line x1="60"  y1="110" x2="100" y2="145" stroke="#5a4e7a" stroke-width="1"/>
+            <line x1="148" y1="95"  x2="162" y2="148" stroke="#5a4e7a" stroke-width="1"/>
+            <line x1="148" y1="95"  x2="100" y2="145" stroke="#5a4e7a" stroke-width="1"/>
+            <line x1="100" y1="145" x2="40"  y2="160" stroke="#4a3e6a" stroke-width="0.8"/>
+            <line x1="100" y1="145" x2="162" y2="148" stroke="#4a3e6a" stroke-width="0.8"/>
+            <line x1="100" y1="145" x2="100" y2="195" stroke="#5a4e7a" stroke-width="1"/>
+            <line x1="40"  y1="160" x2="72"  y2="195" stroke="#4a3e6a" stroke-width="0.8"/>
+            <line x1="162" y1="148" x2="130" y2="193" stroke="#4a3e6a" stroke-width="0.8"/>
+            <!-- nodes -->
+            <circle cx="100" cy="60"  r="5"  fill="#9B8EC4"/>
+            <circle cx="60"  cy="110" r="4"  fill="#7a6db0"/>
+            <circle cx="148" cy="95"  r="4"  fill="#7a6db0"/>
+            <circle cx="40"  cy="160" r="3.5"fill="#6a5e98"/>
+            <circle cx="100" cy="145" r="6"  fill="#9B8EC4"/>
+            <circle cx="162" cy="148" r="3.5"fill="#6a5e98"/>
+            <circle cx="72"  cy="195" r="3"  fill="#5a4e80"/>
+            <circle cx="100" cy="195" r="3"  fill="#5a4e80"/>
+            <circle cx="130" cy="193" r="3"  fill="#5a4e80"/>
+            <!-- labels -->
+            <text x="107" y="58"  fill="#c8b8f0" font-size="8" font-family="sans-serif">Affordance</text>
+            <text x="20"  y="109" fill="#a090d0" font-size="7" font-family="sans-serif">Gestalt</text>
+            <text x="152" y="93"  fill="#a090d0" font-size="7" font-family="sans-serif">Color</text>
+            <text x="8"   y="162" fill="#8878b8" font-size="6.5" font-family="sans-serif">Heuristics</text>
+            <text x="108" y="148" fill="#c8b8f0" font-size="7.5" font-family="sans-serif">Mental Models</text>
+            <text x="164" y="150" fill="#8878b8" font-size="6.5" font-family="sans-serif">Typography</text>
+            <text x="56"  y="198" fill="#7868a0" font-size="6" font-family="sans-serif">Research</text>
+            <text x="86"  y="210" fill="#7868a0" font-size="6" font-family="sans-serif">System</text>
+            <text x="116" y="198" fill="#7868a0" font-size="6" font-family="sans-serif">Flow</text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- 3: Photography -->
+      <div class="ag-fan-card">
+        <div class="ag-fan-img" style="background: linear-gradient(145deg,#D8EEE8 0%,#a8d4c8 100%);">
+          <svg class="ag-camera-svg" viewBox="0 0 160 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="30" y="75" width="100" height="70" rx="8" fill="white" fill-opacity="0.5" stroke="#6AADA0" stroke-width="1.5"/>
+            <path d="M60 75 L70 58 L90 58 L100 75Z" fill="white" fill-opacity="0.4" stroke="#6AADA0" stroke-width="1.2"/>
+            <circle cx="80" cy="112" r="22" fill="none" stroke="#6AADA0" stroke-width="1.5"/>
+            <circle cx="80" cy="112" r="14" fill="none" stroke="#88c0b4" stroke-width="1"/>
+            <circle cx="80" cy="112" r="6"  fill="#6AADA0" fill-opacity="0.6"/>
+            <circle cx="42" cy="88" r="4" fill="white" fill-opacity="0.7"/>
+            <!-- horizon lines suggesting landscape -->
+            <line x1="30" y1="165" x2="130" y2="165" stroke="#a0d0c4" stroke-width="0.8"/>
+            <line x1="30" y1="172" x2="90"  y2="172" stroke="#a0d0c4" stroke-width="0.6"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- 4: Reading / Book notes -->
+      <div class="ag-fan-card">
+        <div class="ag-fan-img" style="background: linear-gradient(145deg,#FDF0D5 0%,#f0d890 100%);">
+          <svg class="ag-book-svg" viewBox="0 0 160 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="40" y="40" width="80" height="110" rx="4" fill="white" fill-opacity="0.6" stroke="#c8a020" stroke-width="1.5"/>
+            <rect x="38" y="40" width="8"  height="110" rx="2" fill="#E8B820" fill-opacity="0.7"/>
+            <line x1="58" y1="65"  x2="108" y2="65"  stroke="#d4a018" stroke-width="1.2"/>
+            <line x1="58" y1="76"  x2="100" y2="76"  stroke="#d4a018" stroke-width="1"/>
+            <line x1="58" y1="87"  x2="108" y2="87"  stroke="#d4a018" stroke-width="1"/>
+            <line x1="58" y1="98"  x2="94"  y2="98"  stroke="#d4a018" stroke-width="1"/>
+            <rect x="58" y="107" width="50" height="8"  rx="2" fill="#F2C84A" fill-opacity="0.5"/>
+            <line x1="58" y1="122" x2="108" y2="122" stroke="#d4a018" stroke-width="1"/>
+            <line x1="58" y1="133" x2="90"  y2="133" stroke="#d4a018" stroke-width="1"/>
+            <!-- dog-ear -->
+            <path d="M108 40 L120 52 L108 52Z" fill="#F2C84A" fill-opacity="0.7"/>
+            <text x="48" y="175" fill="#b08010" font-size="8" font-family="sans-serif" font-style="italic">"The Design of Everyday Things"</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Label shown for center card -->
+    <div class="ag-fan-label">
+      <p class="ag-fan-title caveat">UX Knowledge Graph</p>
+      <p class="ag-fan-sub">Every time I learn something new UX related, I store it in my Obsidian notes</p>
+    </div>
+  </div>
+</section>
+
+<!-- WORKSPACE -->
+<section class="workspace" id="workspace">
+  <p class="section-label workspace-label reveal">How I Work</p>
+  <p class="workspace-hint caveat reveal">Peek inside — click the icons, drag the character!</p>
+
+  <div class="imac-scene reveal">
+    <div class="imac-body">
+      <div class="imac-screen">
+
+        <div class="meadow-bg"></div>
+
+        <!-- Desktop icons, positioned via CSS nth-child -->
+        <button class="desktop-icon" id="icon-about"  type="button" aria-label="About Kathleen">
+          <img class="d-icon-svg" src="img/nametag.png" alt="">
+          <span class="d-icon-label caveat">About</span>
+        </button>
+
+        <button class="desktop-icon" id="icon-tools"  type="button" aria-label="Design Tools">
+          <img class="d-icon-svg" src="img/toolbox.png" alt="">
+          <span class="d-icon-label caveat">Tools</span>
+        </button>
+
+        <button class="desktop-icon" id="icon-wip"    type="button" aria-label="Works in Progress">
+          <img class="d-icon-svg" src="img/folder.png" alt="">
+          <span class="d-icon-label caveat">WIPs</span>
+        </button>
+
+        <button class="desktop-icon" id="icon-camera" type="button" aria-label="Inspirations">
+          <img class="d-icon-svg" src="img/camera.png" alt="">
+          <span class="d-icon-label caveat">Inspo</span>
+        </button>
+
+        <!-- Draggable character -->
+        <div id="char">
+          <img id="charImg" src="img/stand.png" draggable="false" alt="Character">
+        </div>
+
+
+      </div><!-- /.imac-screen -->
+    </div><!-- /.imac-body -->
+
+    <div class="imac-stand">
+      <div class="imac-neck"></div>
+      <div class="imac-foot"></div>
+    </div>
+  </div>
+</section>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" aria-modal="true" role="dialog" aria-label="Artwork viewer">
+  <button class="lightbox-close" id="lightboxClose" type="button" aria-label="Close">✕</button>
+  <div class="lightbox-inner">
+    <img class="lightbox-img" id="lightboxImg" src="" alt="">
+    <p class="lightbox-title caveat" id="lightboxTitle"></p>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer id="footer">
+  <div class="footer-inner">
+
+    <div class="footer-left">
+      <p class="footer-cta caveat">Say hello.</p>
+      <p class="footer-sub">Open to internships, collaborations,<br>and good conversations.</p>
+    </div>
+
+    <nav class="footer-nav" aria-label="Links">
+      <a href="https://www.linkedin.com/in/kathleen-li-564a13328/" class="footer-nav-link" target="_blank" rel="noopener">
+        <svg class="footer-link-spark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg>
+        LinkedIn
+      </a>
+      <span class="footer-nav-dot" aria-hidden="true">·</span>
+      <a href="#" class="footer-nav-link">
+        <svg class="footer-link-spark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg>
+        Resume
+      </a>
+    </nav>
+
+    <div class="footer-right">
+      <div class="email-row">
+        <span class="email-hint caveat">click to copy ↓</span>
+        <button class="email-copy-btn magnetic" id="emailCopyBtn" type="button" aria-label="Copy email address">
+          <span class="email-sparkle-wrap" aria-hidden="true">
+            <svg class="email-spark" viewBox="0 0 100 100" focusable="false"><use href="#sparkle"/></svg>
+          </span>
+          <span class="email-text">likathleen094@gmail.com</span>
+        </button>
+      </div>
+    </div>
+
+  </div>
+  <p class="footer-credit">© 2025 Kathleen Li — designed with a lot of care</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
