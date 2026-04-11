@@ -137,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function resetAuto() {
     clearInterval(autoTimer);
-    autoTimer = setInterval(() => setActive(activeIdx + 1, 1), 4500);
+    autoTimer = setInterval(() => setActive(activeIdx + 1, 1), 7000);
   }
 
   // Boot
@@ -150,6 +150,13 @@ document.addEventListener('DOMContentLoaded', () => {
   cDots.forEach((dot, i) => {
     dot.addEventListener('click', () => { setActive(i, i > activeIdx ? 1 : -1); resetAuto(); });
   });
+
+  // Helper: fraction of viewport covered by a rect
+  function vpOverlap(rect) {
+    const top    = Math.max(rect.top, 0);
+    const bottom = Math.min(rect.bottom, window.innerHeight);
+    return bottom > top ? (bottom - top) / window.innerHeight : 0;
+  }
 
   // Horizontal swipe/trackpad drives carousel when sticky panel is in view
   let hWheelAcc = 0;
@@ -166,6 +173,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const dy = Math.abs(e.deltaY);
     // Only act on predominantly horizontal swipes
     if (dx <= dy * 0.5) return;
+
+    // Yield to the fan carousel if it is more visible
+    if (fanEl) {
+      const fanRect = fanEl.getBoundingClientRect();
+      if (vpOverlap(fanRect) > vpOverlap(rect)) return;
+    }
 
     e.preventDefault();
     hWheelAcc += e.deltaX;
@@ -309,6 +322,11 @@ document.addEventListener('DOMContentLoaded', () => {
       if (rect.top > window.innerHeight || rect.bottom < 0) return;
       const dx = Math.abs(e.deltaX), dy = Math.abs(e.deltaY);
       if (dx <= dy * 0.5) return;
+      // Yield to the projects carousel if it is more visible
+      if (projectsSection) {
+        const projRect = projectsSection.getBoundingClientRect();
+        if (vpOverlap(projRect) > vpOverlap(rect)) return;
+      }
       e.preventDefault();
       fanWheelAcc += e.deltaX;
       clearTimeout(fanWheelTimer);
