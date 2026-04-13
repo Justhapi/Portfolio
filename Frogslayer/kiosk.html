@@ -11,37 +11,25 @@
 </head>
 <body>
 
-<div class="back-bar">
+<header class="top-bar">
   <a href="../Home/index.html" class="back-link">
     <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
       <path d="M9 2L4 7L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
-    Back to portfolio
+    Back
   </a>
-</div>
-
-<div class="page-wrap">
-
-  <nav class="side-nav">
-    <p class="side-nav-label">On this page</p>
-    <ul class="nav-items">
-      <li class="nav-item"><a href="#overview" class="active">Overview</a></li>
-      <li class="nav-item"><a href="#research">Research</a></li>
-      <li class="nav-item"><a href="#design">Design</a></li>
-      <li class="nav-item"><a href="#testing">Testing</a></li>
-      <li class="nav-item"><a href="#reflections">Reflections</a></li>
-    </ul>
-    <div class="nav-progress">
-      <p class="progress-label">Progress</p>
-      <div class="progress-bar">
-        <div class="progress-fill" id="progress-fill"></div>
-      </div>
-    </div>
+  <nav class="page-nav">
+    <a href="#overview">Overview</a>
+    <a href="#research">Research</a>
+    <a href="#design">Design</a>
+    <a href="#testing">Testing</a>
+    <a href="#reflections">Reflections</a>
   </nav>
+</header>
 
-  <main class="main-content">
-
-    <div class="proj-hero">
+<div class="proj-hero" id="overview">
+  <div class="proj-hero-inner">
+    <div class="proj-hero-text">
       <p class="proj-tag">UX Design · Systems · Accessibility</p>
       <h1 class="proj-title">Kiosk Interface<br/><em>Guidelines</em></h1>
       <p class="proj-summary">A standardized framework for touchscreen kiosk interfaces in hospitality and entertainment — so future teams can ship consistent, usable experiences without starting from scratch.</p>
@@ -64,15 +52,21 @@
         </div>
       </div>
     </div>
-
-    <div class="hero-img-wrap" id="overview">
+    <div class="proj-hero-img">
       <div class="hero-img-placeholder caveat">Add hero image — img/kiosk-hero.jpg</div>
     </div>
+  </div>
+</div>
+
+<div class="page-body">
+  <div class="col">
 
     <!-- OVERVIEW -->
-    <section class="content-section">
-      <p class="section-eyebrow">Overview</p>
-      <h2 class="section-heading">The problem with kiosks today</h2>
+    <section class="cs-section">
+      <div class="section-header">
+        <p class="section-label">Overview</p>
+        <h2 class="section-heading">The problem with kiosks today</h2>
+      </div>
       <p class="body-text">Frogslayer's clients were increasingly adopting kiosks — but every deployment was a one-off. No shared patterns, no scalable foundation. The result: user frustration and a product team rebuilding the same components over and over.</p>
 
       <div class="callout">
@@ -95,12 +89,12 @@
       </div>
     </section>
 
-    <div class="section-divider"></div>
-
     <!-- RESEARCH -->
-    <section class="content-section" id="research">
-      <p class="section-eyebrow">01 — Research</p>
-      <h2 class="section-heading">Understanding kiosks from the ground up</h2>
+    <section class="cs-section" id="research">
+      <div class="section-header">
+        <p class="section-label">01 — Research</p>
+        <h2 class="section-heading">Understanding kiosks from the ground up</h2>
+      </div>
       <p class="body-text">Research ran in two parallel tracks: a sponsor content audit to align with Frogslayer's existing work, and secondary research across four areas.</p>
 
       <div class="chip-row">
@@ -110,12 +104,12 @@
         <span class="chip">Loyalty Programs</span>
       </div>
 
-      <div class="full-img-band">
-        <span class="img-placeholder-label caveat">Add research image — img/kiosk-research.jpg</span>
+      <div class="img-band mt-32">
+        <span class="img-band-label caveat">Add research image — img/kiosk-research.jpg</span>
       </div>
       <p class="img-caption">Sponsor content audit findings and mock-up analysis</p>
 
-      <h3 class="section-subheading mt-40">Key Insights</h3>
+      <h3 class="section-subheading">Key Insights</h3>
       <ul class="deliverables-list">
         <li><strong>Inconsistent element designs</strong> — critical for reducing cognitive load</li>
         <li><strong>Vague affordances</strong> — simplify to reduce user hesitation</li>
@@ -124,15 +118,15 @@
       </ul>
     </section>
 
-    <div class="section-divider"></div>
-
     <!-- DESIGN -->
-    <section class="content-section" id="design">
-      <p class="section-eyebrow">02 — Design</p>
-      <h2 class="section-heading">From findings to frameworks</h2>
+    <section class="cs-section" id="design">
+      <div class="section-header">
+        <p class="section-label">02 — Design</p>
+        <h2 class="section-heading">From findings to frameworks</h2>
+      </div>
       <p class="body-text">Research insights became four design principles, then guided the construction of a full arcade kiosk user flow (Litally) — chosen because its complexity was a strong stress test for the guidelines.</p>
 
-      <div class="findings-grid">
+      <div class="findings-grid mt-32">
         <div class="finding-card">
           <p class="finding-title">Clarity over cleverness</p>
           <p class="finding-desc">Every element communicates its function immediately. Affordances must be explicit, not implied.</p>
@@ -160,21 +154,21 @@
         </div>
       </div>
 
-      <div class="full-img-band mt-48">
-        <span class="img-placeholder-label caveat">Add high-fidelity prototype — img/kiosk-hifi.jpg</span>
+      <div class="img-band mt-48">
+        <span class="img-band-label caveat">Add high-fidelity prototype — img/kiosk-hifi.jpg</span>
       </div>
       <p class="img-caption">High-fidelity prototype — Litally arcade kiosk user flow</p>
     </section>
 
-    <div class="section-divider"></div>
-
     <!-- TESTING -->
-    <section class="content-section" id="testing">
-      <p class="section-eyebrow">03 — Testing</p>
-      <h2 class="section-heading">Verifying assumptions with real users</h2>
+    <section class="cs-section" id="testing">
+      <div class="section-header">
+        <p class="section-label">03 — Testing</p>
+        <h2 class="section-heading">Verifying assumptions with real users</h2>
+      </div>
       <p class="body-text">Moderated usability sessions with first-time and returning kiosk users. Think-aloud protocols surfaced reasoning alongside behavior.</p>
 
-      <div class="stat-row">
+      <div class="stat-row mt-40">
         <div class="stat-cell">
           <p class="stat-num">↓</p>
           <p class="stat-label">Error rate vs. baseline</p>
@@ -208,18 +202,18 @@
         </div>
       </div>
 
-      <div class="full-img-band mt-48">
-        <span class="img-placeholder-label caveat">Add journey map — img/kiosk-journeymap.jpg</span>
+      <div class="img-band mt-48">
+        <span class="img-band-label caveat">Add journey map — img/kiosk-journeymap.jpg</span>
       </div>
       <p class="img-caption">Final journey map — Litally arcade kiosk user flow</p>
     </section>
 
-    <div class="section-divider"></div>
-
     <!-- REFLECTIONS -->
-    <section class="content-section" id="reflections">
-      <p class="section-eyebrow">04 — Reflections</p>
-      <h2 class="section-heading">What I took away</h2>
+    <section class="cs-section" id="reflections">
+      <div class="section-header">
+        <p class="section-label">04 — Reflections</p>
+        <h2 class="section-heading">What I took away</h2>
+      </div>
 
       <div class="reflection-grid">
         <div class="reflection-card">
@@ -253,7 +247,7 @@
       </a>
     </div>
 
-  </main>
+  </div>
 </div>
 
 <script src="kiosk.js"></script>

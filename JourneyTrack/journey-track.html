@@ -11,37 +11,25 @@
 </head>
 <body>
 
-<div class="back-bar">
+<header class="top-bar">
   <a href="../Home/index.html" class="back-link">
     <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
       <path d="M9 2L4 7L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
-    Back to portfolio
+    Back
   </a>
-</div>
-
-<div class="page-wrap">
-
-  <nav class="side-nav">
-    <p class="side-nav-label">On this page</p>
-    <ul class="nav-items">
-      <li class="nav-item"><a href="#overview" class="active">Overview</a></li>
-      <li class="nav-item"><a href="#research">Research</a></li>
-      <li class="nav-item"><a href="#design">Design</a></li>
-      <li class="nav-item"><a href="#testing">Testing</a></li>
-      <li class="nav-item"><a href="#reflections">Reflections</a></li>
-    </ul>
-    <div class="nav-progress">
-      <p class="progress-label">Progress</p>
-      <div class="progress-bar">
-        <div class="progress-fill" id="progress-fill"></div>
-      </div>
-    </div>
+  <nav class="page-nav">
+    <a href="#overview">Overview</a>
+    <a href="#research">Research</a>
+    <a href="#design">Design</a>
+    <a href="#testing">Testing</a>
+    <a href="#reflections">Reflections</a>
   </nav>
+</header>
 
-  <main class="main-content">
-
-    <div class="proj-hero">
+<div class="proj-hero" id="overview">
+  <div class="proj-hero-inner">
+    <div class="proj-hero-text">
       <p class="proj-tag">UX Design · AI · Research · Interaction Design</p>
       <h1 class="proj-title">JourneyTrack<br/><em>AI Agent</em></h1>
       <p class="proj-summary">An AI agent embedded into an existing journey map platform — flagging stale touchpoints and suggesting updates so living documents stay accurate without burdening the manager.</p>
@@ -64,15 +52,21 @@
         </div>
       </div>
     </div>
-
-    <div class="hero-img-wrap" id="overview">
+    <div class="proj-hero-img">
       <div class="hero-img-placeholder caveat">Add hero image — img/journey-hero.jpg</div>
     </div>
+  </div>
+</div>
+
+<div class="page-body">
+  <div class="col">
 
     <!-- OVERVIEW -->
-    <section class="content-section">
-      <p class="section-eyebrow">Overview</p>
-      <h2 class="section-heading">Journey maps go stale. Nobody notices.</h2>
+    <section class="cs-section">
+      <div class="section-header">
+        <p class="section-label">Overview</p>
+        <h2 class="section-heading">Journey maps go stale. Nobody notices.</h2>
+      </div>
       <p class="body-text">Journey maps are living documents — but as data grows and time passes, touchpoints become outdated without notifying the manager. The result: decisions made on maps that no longer reflect reality.</p>
 
       <div class="callout">
@@ -80,15 +74,15 @@
       </div>
     </section>
 
-    <div class="section-divider"></div>
-
     <!-- RESEARCH -->
-    <section class="content-section" id="research">
-      <p class="section-eyebrow">01 — Research</p>
-      <h2 class="section-heading">What managers actually need</h2>
+    <section class="cs-section" id="research">
+      <div class="section-header">
+        <p class="section-label">01 — Research</p>
+        <h2 class="section-heading">What managers actually need</h2>
+      </div>
       <p class="body-text">Research ran in two tracks — competitive and interaction analysis to understand the domain, plus desk research and user interviews to understand the managers themselves.</p>
 
-      <div class="two-col-grid mt-40">
+      <div class="two-col-grid mt-32">
         <div class="method-card">
           <p class="method-title">Competitive Analysis<br/>Interaction Analysis</p>
           <div class="method-img-block"></div>
@@ -101,7 +95,7 @@
         </div>
       </div>
 
-      <h3 class="section-subheading mt-40">Key Findings</h3>
+      <h3 class="section-subheading">Key Findings</h3>
       <ul class="deliverables-list">
         <li>Managers spend significant time manually cross-checking data sources for relevance</li>
         <li>Outdated content goes undetected until a major review cycle</li>
@@ -110,12 +104,12 @@
       </ul>
     </section>
 
-    <div class="section-divider"></div>
-
     <!-- DESIGN -->
-    <section class="content-section" id="design">
-      <p class="section-eyebrow">02 — Design</p>
-      <h2 class="section-heading">The agent surfaces staleness. The manager decides.</h2>
+    <section class="cs-section" id="design">
+      <div class="section-header">
+        <p class="section-label">02 — Design</p>
+        <h2 class="section-heading">The agent surfaces staleness. The manager decides.</h2>
+      </div>
 
       <div class="callout">
         <p>"Control stays with the manager. The agent informs — it doesn't act."</p>
@@ -144,7 +138,7 @@
         <div class="img-placeholder-full caveat">Add wireframes — img/jt-wireframes.jpg</div>
       </div>
 
-      <h3 class="section-subheading mt-40">Sponsor Feedback</h3>
+      <h3 class="section-subheading">Sponsor Feedback</h3>
       <ul class="deliverables-list">
         <li>Notification placement moved from modal to inline badge — less interruptive</li>
         <li>Confidence scoring added so managers can prioritize which flags to review first</li>
@@ -156,12 +150,12 @@
       </div>
     </section>
 
-    <div class="section-divider"></div>
-
     <!-- TESTING -->
-    <section class="content-section" id="testing">
-      <p class="section-eyebrow">03 — Testing</p>
-      <h2 class="section-heading">Two rounds. One key insight.</h2>
+    <section class="cs-section" id="testing">
+      <div class="section-header">
+        <p class="section-label">03 — Testing</p>
+        <h2 class="section-heading">Two rounds. One key insight.</h2>
+      </div>
       <p class="body-text">Usability testing with journey map managers — first on the flagging flow, then on bulk-review after sponsor feedback.</p>
 
       <div class="stat-row mt-40">
@@ -186,12 +180,12 @@
       </ul>
     </section>
 
-    <div class="section-divider"></div>
-
     <!-- REFLECTIONS -->
-    <section class="content-section" id="reflections">
-      <p class="section-eyebrow">04 — Reflections</p>
-      <h2 class="section-heading">Trust is built through transparency, not efficiency</h2>
+    <section class="cs-section" id="reflections">
+      <div class="section-header">
+        <p class="section-label">04 — Reflections</p>
+        <h2 class="section-heading">Trust is built through transparency, not efficiency</h2>
+      </div>
       <p class="body-text">Early concepts had the agent auto-applying low-confidence changes. Every user in testing rejected this. The most important design decision was keeping the manager in control — and making that control feel natural, not like a safety net.</p>
       <p class="body-text">Co-leading across design and engineering also showed me how much clarity of spec matters when the two disciplines need to move fast together.</p>
     </section>
@@ -208,7 +202,7 @@
       </a>
     </div>
 
-  </main>
+  </div>
 </div>
 
 <script src="../Frogslayer/kiosk.js"></script>
