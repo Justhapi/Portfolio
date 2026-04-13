@@ -535,14 +535,14 @@ ul      { list-style: none; }
 
 /* ── PROJECTS GLANCE — sticky scroll carousel ── */
 .projects {
-  height: 550vh;
+  height: 150vh;
   position: relative;
   background: var(--bg);
   margin-top: 6rem; /* gap from hero */
 }
 .projects-sticky {
   position: sticky; top: 80px;
-  height: calc(100vh - 280px);
+  height: calc(75vh - 210px);
   overflow: visible; /* sides can bleed */
   border-radius: 28px;
   box-shadow: 0 0 0 1.5px oklch(62% 0.095 292 / 0.22), 0 0 60px oklch(62% 0.095 292 / 0.07);
@@ -1503,7 +1503,7 @@ footer::after {
 
 .glance-row {
   position: absolute; inset: 0;
-  display: grid; grid-template-columns: minmax(200px, 400px) minmax(260px, 520px); gap: 2rem;
+  display: grid; grid-template-columns: minmax(200px, 400px) minmax(260px, 520px); gap: 1rem;
   align-items: center; justify-content: center;
   width: 100%;
   opacity: 0;
@@ -1541,7 +1541,7 @@ footer::after {
     grid-template-rows: auto auto;
     align-items: start;
     align-content: center;
-    gap: 1.2rem;
+    gap: 1.3rem;
     overflow: visible;
   }
   .glance-text {
@@ -1644,15 +1644,16 @@ footer::after {
   .carousel-dots { right: 1.5rem; top: 2rem; }
   .glance-row {
     grid-template-columns: 1fr !important;
-    grid-template-rows: auto 1fr;
-    align-items: stretch;
+    grid-template-rows: auto auto;
+    align-items: start;
+    align-content: start;
     justify-content: start;
-    gap: 1rem;
+    gap: 0.75rem;
     padding: 1.5rem;
-    overflow: hidden;
+    overflow: visible;
   }
-  .glance-text { order: -1; min-width: 0; max-width: 100%; align-self: start; }
-  .glance-img-card { min-width: 0; max-width: 100%; width: 100%; height: 100%; aspect-ratio: auto; overflow: hidden; }
+  .glance-text { order: -1; min-width: 0; width: 75%; max-width: 75%; align-self: start; margin: 0 auto; padding-bottom: 0; }
+  .glance-img-card { min-width: 0; max-width: 75%; width: 75%; height: auto; aspect-ratio: 16/11.25; overflow: visible; margin: 0 auto; margin-top: 0; }
 
   /* Workspace */
   .workspace  { padding: 5rem 1.5rem 0; }
