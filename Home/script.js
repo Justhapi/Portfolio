@@ -352,7 +352,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const heroChar      = document.querySelector('.hero-char-col');
   const heroContent   = document.querySelector('.hero-content');
   const heroStatement = document.querySelector('.hero-statement');
-  const heroHalftone  = document.querySelector('.hero-halftone');
+
   const imacScene     = document.querySelector('.imac-scene');
 
   const scribLayers = [
@@ -375,7 +375,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (scrollY < vh * 1.4) {
       if (heroChar)       heroChar.style.translate      = `0 ${(scrollY * 0.38).toFixed(1)}px`;
       if (heroStatement)  heroStatement.style.translate = `0 ${(scrollY * 0.38).toFixed(1)}px`;
-      if (heroHalftone)   heroHalftone.style.translate  = `0 ${(scrollY * 0.38).toFixed(1)}px`;
       if (heroContent)    heroContent.style.translate   = `0 ${(scrollY * 0.07).toFixed(1)}px`;
     }
 

@@ -24,11 +24,35 @@
 
 <!-- NAV -->
 <nav id="nav">
-  <a href="#hero" class="nav-logo">KL</a>
+  <a href="#hero" class="nav-logo" aria-label="Kathleen Li — home">
+    <svg width="179" height="113" viewBox="0 0 179 113" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="paint0_linear_471_337" x1="176.609" y1="103.591" x2="7.60938" y2="65.5908" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#AE5E28"/>
+          <stop offset="0.479074" stop-color="#FFBE51"/>
+          <stop offset="1" stop-color="#AE5E28"/>
+        </linearGradient>
+        <!-- dilate the rendered stroke pixels outward, flood white, composite behind -->
+        <filter id="white-outline" x="-8%" y="-12%" width="116%" height="124%">
+          <feMorphology in="SourceAlpha" operator="dilate" radius="2.5" result="expanded"/>
+          <feFlood flood-color="white" result="white"/>
+          <feComposite in="white" in2="expanded" operator="in" result="outline"/>
+          <feMerge>
+            <feMergeNode in="outline"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+      <g filter="url(#white-outline)">
+        <path d="M14.6068 6.59015C33.6068 -17.4091 34.6071 59.0908 16.6099 88.5907C-1.38726 118.091 -1.1364 106.091 8.61004 84.0908C18.3565 62.0908 63.6088 13.0922 89.6078 2.59093" stroke="#FFBE51" stroke-width="4" stroke-linecap="round"/>
+        <path d="M33.6094 63.1076C33.6094 63.1076 53.8002 132.351 85.8994 97.7293C117.999 63.1076 151.758 -8.14874 132.941 5.90129C93.0077 35.7188 61.5483 184.533 176.109 63.1076" stroke="url(#paint0_linear_471_337)" stroke-width="4" stroke-linecap="round"/>
+      </g>
+    </svg>
+  </a>
   <ul class="nav-links">
-    <li><a href="#projects">Projects</a></li>
-    <li><a href="#workspace">Space</a></li>
-    <li><a href="#footer">Connect</a></li>
+    <li><a href="#projects" class="footer-nav-link"><svg class="footer-link-spark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg>Projects</a></li>
+    <li><a href="#workspace" class="footer-nav-link"><svg class="footer-link-spark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg>Space</a></li>
+    <li><a href="#footer" class="footer-nav-link"><svg class="footer-link-spark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg>Connect</a></li>
   </ul>
 </nav>
 
@@ -103,23 +127,25 @@
         <button class="hero-chip chip-designer" id="chip-designer" type="button">UI Designer</button>
       </div>
     </div>
-    <div class="hero-char-col" aria-hidden="true">
-      <img class="hero-char-img" src="img/char.gif" alt="">
-    </div>
-  </div>
 
-  <div class="hero-right">
-    <div class="hero-halftone" aria-hidden="true"></div>
-    <!-- Ambient sparkles floating in yellow panel -->
-    <span class="hs-spark hs-spark-a" aria-hidden="true"><svg viewBox="0 0 100 100" focusable="false"><use href="#sparkle"/></svg></span>
-    <span class="hs-spark hs-spark-b" aria-hidden="true"><svg viewBox="0 0 100 100" focusable="false"><use href="#sparkle"/></svg></span>
-    <span class="hs-spark hs-spark-c" aria-hidden="true"><svg viewBox="0 0 100 100" focusable="false"><use href="#sparkle"/></svg></span>
-    <div class="hero-statement">
-      <p class="hs-eyebrow caveat">Purdue University · Class of 2027</p>
-      <p class="hs-line hs-line1">From <em>one canvas</em></p>
-      <p class="hs-line hs-line2">to <em>every screen</em></p>
-      <p class="hs-line hs-line3">An artist who learned to design systems —<br>and a designer who never stopped making art.</p>
-      <div class="hs-scroll"><span class="scroll-line"></span><span class="caveat">Scroll to explore</span></div>
+    <div class="hero-slide-in">
+      <div class="hero-char-col" aria-hidden="true">
+        <img class="hero-char-img" src="img/char.gif" alt="">
+      </div>
+      <div class="hero-right">
+        <div class="hero-halftone" aria-hidden="true"></div>
+        <!-- Ambient sparkles floating in yellow panel -->
+        <span class="hs-spark hs-spark-a" aria-hidden="true"><svg viewBox="0 0 100 100" focusable="false"><use href="#sparkle"/></svg></span>
+        <span class="hs-spark hs-spark-b" aria-hidden="true"><svg viewBox="0 0 100 100" focusable="false"><use href="#sparkle"/></svg></span>
+        <span class="hs-spark hs-spark-c" aria-hidden="true"><svg viewBox="0 0 100 100" focusable="false"><use href="#sparkle"/></svg></span>
+        <div class="hero-statement">
+          <p class="hs-eyebrow caveat">Purdue University · Class of 2028</p>
+          <p class="hs-line hs-line1">From <em>one canvas</em></p>
+          <p class="hs-line hs-line2">to <em>every screen</em></p>
+          <p class="hs-line hs-line3">An artist who learned to design systems —<br>and a designer who never stopped making art.</p>
+          <div class="hs-scroll"><span class="scroll-line"></span><span class="caveat">Scroll to explore</span></div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
