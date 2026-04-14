@@ -31,6 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+
   // ── 2. CUSTOM CURSOR ──
   const dot  = document.getElementById('cursor-dot');
   const ring = document.getElementById('cursor-ring');
@@ -353,7 +354,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const heroContent   = document.querySelector('.hero-content');
   const heroStatement = document.querySelector('.hero-statement');
 
-  const imacScene     = document.querySelector('.imac-scene');
+  const imacScene     = document.querySelector('.workspace');
 
   const scribLayers = [
     { sel: '.scrib-hero-ul',     rate:  0.045 },
@@ -490,7 +491,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // ── 9. ICON BROWSER WINDOWS (multiple, draggable, no overlay) ──
-  const imacScreen       = document.querySelector('.imac-screen');
+  const imacScreen       = document.querySelector('.workspace');
   const workspaceSection = document.querySelector('.workspace');
   let   winZTop          = 30; // stacking counter
   let   lastWinSection   = -1; // 0=left, 1=middle, 2=right — tracks last spawn zone
@@ -825,7 +826,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ── 7. CHARACTER SPRITE ──
 (function () {
-  const scene = document.querySelector('.imac-screen');
+  const scene = document.querySelector('.workspace');
   const char  = document.getElementById('char');
   const img   = document.getElementById('charImg');
   if (!scene || !char || !img) return;

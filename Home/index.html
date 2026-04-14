@@ -14,7 +14,7 @@
 <!-- Reusable sparkle shape -->
 <svg style="display:none" aria-hidden="true" focusable="false">
   <defs>
-    <path id="sparkle" d="M50 4 C50 28 28 50 4 50 C28 50 50 72 50 96 C50 72 72 50 96 50 C72 50 50 28 50 4 Z"/>
+    <path id="sparkle" d="M48 6 C48 26 26 48 6 48 Q2 50 6 52 C26 52 48 74 48 94 Q50 98 52 94 C52 74 74 52 94 52 Q98 50 94 48 C74 48 52 26 52 6 Q50 2 48 6 Z"/>
   </defs>
 </svg>
 
@@ -32,18 +32,8 @@
           <stop offset="0.479074" stop-color="#FFBE51"/>
           <stop offset="1" stop-color="#AE5E28"/>
         </linearGradient>
-        <!-- dilate the rendered stroke pixels outward, flood white, composite behind -->
-        <filter id="white-outline" x="-8%" y="-12%" width="116%" height="124%">
-          <feMorphology in="SourceAlpha" operator="dilate" radius="2.5" result="expanded"/>
-          <feFlood flood-color="white" result="white"/>
-          <feComposite in="white" in2="expanded" operator="in" result="outline"/>
-          <feMerge>
-            <feMergeNode in="outline"/>
-            <feMergeNode in="SourceGraphic"/>
-          </feMerge>
-        </filter>
       </defs>
-      <g filter="url(#white-outline)">
+      <g>
         <path d="M14.6068 6.59015C33.6068 -17.4091 34.6071 59.0908 16.6099 88.5907C-1.38726 118.091 -1.1364 106.091 8.61004 84.0908C18.3565 62.0908 63.6088 13.0922 89.6078 2.59093" stroke="#FFBE51" stroke-width="4" stroke-linecap="round"/>
         <path d="M33.6094 63.1076C33.6094 63.1076 53.8002 132.351 85.8994 97.7293C117.999 63.1076 151.758 -8.14874 132.941 5.90129C93.0077 35.7188 61.5483 184.533 176.109 63.1076" stroke="url(#paint0_linear_471_337)" stroke-width="4" stroke-linecap="round"/>
       </g>
@@ -162,7 +152,7 @@
 <section class="projects" id="projects">
   <div class="projects-sticky">
   <p class="section-label">What I Made</p>
-  <p class="workspace-hint caveat reveal">Scroll through — each project is a different problem I solved.</p>
+  <p class="workspace-hint caveat reveal">Scroll through projects I have contributed to</p>
 
   <div class="projects-glance-grid">
 
@@ -171,21 +161,24 @@
       <div class="glance-text">
         <div>
           <p class="project-year mono">2024 – 2025 &nbsp;|&nbsp; UX Design, Systems, Accessibility</p>
-          <h2 class="project-name">I built a design system for touchscreen kiosk interfaces that teams could actually ship.</h2>
+          <h2 class="project-name">I constructed guidelines for touchscreen kiosk interface designs focused on user usability and comfort.</h2>
         </div>
         <a href="../Frogslayer/kiosk.html" class="project-link">View Project →</a>
       </div>
       <a class="glance-img-card" href="../Frogslayer/kiosk.html" aria-label="View Frogslayer">
-        <div class="img-placeholder p1-bg"></div>
-        <span class="spark spark-tl" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
-        <span class="spark spark-tr" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
-        <span class="spark spark-bl" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
-        <span class="spark spark-br" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
-        <span class="spark spark-ml" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
-        <span class="spark spark-mr" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
-        <span class="spark spark-tc" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
-        <span class="spark spark-bc" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
-        <div class="card-badge">View Case Study</div>
+        <div class="gf-scene">
+          <div class="folder-back" style="--fcol:#a86cc8"></div>
+          <div class="gf-peek">
+            <div class="gf-img p1-bg"></div>
+            <div class="gf-img p3-bg"></div>
+          </div>
+          <div class="gf-sparks" aria-hidden="true">
+            <span class="gf-spark gf-s1"><svg viewBox="0 0 100 100" focusable="false"><use href="#sparkle"/></svg></span>
+            <span class="gf-spark gf-s2"><svg viewBox="0 0 100 100" focusable="false"><use href="#sparkle"/></svg></span>
+            <span class="gf-spark gf-s3"><svg viewBox="0 0 100 100" focusable="false"><use href="#sparkle"/></svg></span>
+          </div>
+          <div class="folder-flap" style="--fcol:#a86cc8"></div>
+        </div>
       </a>
     </div>
 
@@ -194,21 +187,24 @@
       <div class="glance-text">
         <div>
           <p class="project-year mono">2024 &nbsp;|&nbsp; UX Design, AI, Research, Interaction Design</p>
-          <h2 class="project-name">I designed an AI agent that keeps living journey maps accurate — without burdening the map manager.</h2>
+          <h2 class="project-name">I designed an AI agent that keeps living journey maps accurate without burdening the manager.</h2>
         </div>
         <a href="../JourneyTrack/journey-track.html" class="project-link">View Project →</a>
       </div>
       <a class="glance-img-card" href="../JourneyTrack/journey-track.html" aria-label="View JourneyTrack">
-        <div class="img-placeholder p2-bg"></div>
-        <span class="spark spark-tl" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
-        <span class="spark spark-tr" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
-        <span class="spark spark-bl" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
-        <span class="spark spark-br" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
-        <span class="spark spark-ml" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
-        <span class="spark spark-mr" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
-        <span class="spark spark-tc" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
-        <span class="spark spark-bc" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
-        <div class="card-badge">JourneyTrack</div>
+        <div class="gf-scene">
+          <div class="folder-back" style="--fcol:#c8900a"></div>
+          <div class="gf-peek">
+            <div class="gf-img p2-bg"></div>
+            <div class="gf-img p1-bg"></div>
+          </div>
+          <div class="gf-sparks" aria-hidden="true">
+            <span class="gf-spark gf-s1"><svg viewBox="0 0 100 100" focusable="false"><use href="#sparkle"/></svg></span>
+            <span class="gf-spark gf-s2"><svg viewBox="0 0 100 100" focusable="false"><use href="#sparkle"/></svg></span>
+            <span class="gf-spark gf-s3"><svg viewBox="0 0 100 100" focusable="false"><use href="#sparkle"/></svg></span>
+          </div>
+          <div class="folder-flap" style="--fcol:#c8900a"></div>
+        </div>
       </a>
     </div>
 
@@ -217,21 +213,24 @@
       <div class="glance-text">
         <div>
           <p class="project-year mono">2024 &nbsp;|&nbsp; UI Design, Product Design, Research</p>
-          <h2 class="project-name">I expanded the UI of a Purdue research collaboration platform — evaluating both student and professor needs.</h2>
+          <h2 class="project-name">I designed and constructed the user interface design of a Purdue research collaboration platform.</h2>
         </div>
         <a href="../PurdueStack/purdue-stack.html" class="project-link">View Project →</a>
       </div>
       <a class="glance-img-card" href="../PurdueStack/purdue-stack.html" aria-label="View Purdue Stack">
-        <div class="img-placeholder p3-bg"></div>
-        <span class="spark spark-tl" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
-        <span class="spark spark-tr" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
-        <span class="spark spark-bl" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
-        <span class="spark spark-br" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
-        <span class="spark spark-ml" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
-        <span class="spark spark-mr" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
-        <span class="spark spark-tc" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
-        <span class="spark spark-bc" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
-        <div class="card-badge">Purdue Stack</div>
+        <div class="gf-scene">
+          <div class="folder-back" style="--fcol:#3aaa9c"></div>
+          <div class="gf-peek">
+            <div class="gf-img p3-bg"></div>
+            <div class="gf-img p2-bg"></div>
+          </div>
+          <div class="gf-sparks" aria-hidden="true">
+            <span class="gf-spark gf-s1"><svg viewBox="0 0 100 100" focusable="false"><use href="#sparkle"/></svg></span>
+            <span class="gf-spark gf-s2"><svg viewBox="0 0 100 100" focusable="false"><use href="#sparkle"/></svg></span>
+            <span class="gf-spark gf-s3"><svg viewBox="0 0 100 100" focusable="false"><use href="#sparkle"/></svg></span>
+          </div>
+          <div class="folder-flap" style="--fcol:#3aaa9c"></div>
+        </div>
       </a>
     </div>
 
@@ -240,21 +239,24 @@
       <div class="glance-text">
         <div>
           <p class="project-year mono">2024 &nbsp;|&nbsp; UI Design, Branding, Data</p>
-          <h2 class="project-name">I designed interaction flows for an AI-powered grading tool that handles complex linguistic datasets.</h2>
+          <h2 class="project-name">I implemented an AI-powered assignment tool into an existing user flow that constructs and grades various types of assignments.</h2>
         </div>
         <span class="project-link coming">Coming Soon</span>
       </div>
       <div class="glance-img-card">
-        <div class="img-placeholder p4-bg"></div>
-        <span class="spark spark-tl" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
-        <span class="spark spark-tr" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
-        <span class="spark spark-bl" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
-        <span class="spark spark-br" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
-        <span class="spark spark-ml" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
-        <span class="spark spark-mr" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
-        <span class="spark spark-tc" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
-        <span class="spark spark-bc" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#sparkle"/></svg></span>
-        <div class="card-badge">CorpusKey</div>
+        <div class="gf-scene">
+          <div class="folder-back" style="--fcol:#c8607a"></div>
+          <div class="gf-peek">
+            <div class="gf-img p4-bg"></div>
+            <div class="gf-img p1-bg"></div>
+          </div>
+          <div class="gf-sparks" aria-hidden="true">
+            <span class="gf-spark gf-s1"><svg viewBox="0 0 100 100" focusable="false"><use href="#sparkle"/></svg></span>
+            <span class="gf-spark gf-s2"><svg viewBox="0 0 100 100" focusable="false"><use href="#sparkle"/></svg></span>
+            <span class="gf-spark gf-s3"><svg viewBox="0 0 100 100" focusable="false"><use href="#sparkle"/></svg></span>
+          </div>
+          <div class="folder-flap" style="--fcol:#c8607a"></div>
+        </div>
       </div>
     </div>
 
@@ -270,11 +272,12 @@
   </div><!-- /.projects-sticky -->
 </section>
 
+
 <!-- ART GALLERY — scattered card spread -->
 <section class="art-gallery-section" id="art-gallery">
   <div class="ag-intro">
     <p class="section-label">Beyond Design</p>
-    <p class="ag-tagline caveat">I experiment a lot.</p>
+    <p class="workspace-hint caveat reveal">I have a love-hate relationship with learning</p>
   </div>
 
   <div class="ag-fan-wrap">
@@ -412,46 +415,32 @@
   <p class="section-label workspace-label reveal">How I Work</p>
   <p class="workspace-hint caveat reveal">Peek inside — click the icons, drag the character!</p>
 
-  <div class="imac-scene reveal">
-    <div class="imac-body">
-      <div class="imac-screen">
+  <div class="meadow-bg"></div>
 
-        <div class="meadow-bg"></div>
+  <!-- Desktop icons, positioned via CSS nth-child -->
+  <button class="desktop-icon" id="icon-about"  type="button" aria-label="About Kathleen">
+    <img class="d-icon-svg" src="img/nametag.png" alt="">
+    <span class="d-icon-label caveat">About</span>
+  </button>
 
-        <!-- Desktop icons, positioned via CSS nth-child -->
-        <button class="desktop-icon" id="icon-about"  type="button" aria-label="About Kathleen">
-          <img class="d-icon-svg" src="img/nametag.png" alt="">
-          <span class="d-icon-label caveat">About</span>
-        </button>
+  <button class="desktop-icon" id="icon-tools"  type="button" aria-label="Design Tools">
+    <img class="d-icon-svg" src="img/toolbox.png" alt="">
+    <span class="d-icon-label caveat">Tools</span>
+  </button>
 
-        <button class="desktop-icon" id="icon-tools"  type="button" aria-label="Design Tools">
-          <img class="d-icon-svg" src="img/toolbox.png" alt="">
-          <span class="d-icon-label caveat">Tools</span>
-        </button>
+  <button class="desktop-icon" id="icon-wip"    type="button" aria-label="Works in Progress">
+    <img class="d-icon-svg" src="img/folder.png" alt="">
+    <span class="d-icon-label caveat">WIPs</span>
+  </button>
 
-        <button class="desktop-icon" id="icon-wip"    type="button" aria-label="Works in Progress">
-          <img class="d-icon-svg" src="img/folder.png" alt="">
-          <span class="d-icon-label caveat">WIPs</span>
-        </button>
+  <button class="desktop-icon" id="icon-camera" type="button" aria-label="Inspirations">
+    <img class="d-icon-svg" src="img/camera.png" alt="">
+    <span class="d-icon-label caveat">Inspo</span>
+  </button>
 
-        <button class="desktop-icon" id="icon-camera" type="button" aria-label="Inspirations">
-          <img class="d-icon-svg" src="img/camera.png" alt="">
-          <span class="d-icon-label caveat">Inspo</span>
-        </button>
-
-        <!-- Draggable character -->
-        <div id="char">
-          <img id="charImg" src="img/stand.png" draggable="false" alt="Character">
-        </div>
-
-
-      </div><!-- /.imac-screen -->
-    </div><!-- /.imac-body -->
-
-    <div class="imac-stand">
-      <div class="imac-neck"></div>
-      <div class="imac-foot"></div>
-    </div>
+  <!-- Draggable character -->
+  <div id="char">
+    <img id="charImg" src="img/stand.png" draggable="false" alt="Character">
   </div>
 </section>
 

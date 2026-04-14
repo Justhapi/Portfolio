@@ -661,16 +661,15 @@ ul      { list-style: none; }
   cursor: default; pointer-events: none;
 }
 
-/* Right: image card with dotted border + sparkles */
+/* Right: image card — transparent shell; folder provides the visual */
 .glance-img-card {
-  background: var(--white); border: 2px dashed var(--lilac-light);
+  background: transparent; border: none;
   border-radius: 20px; aspect-ratio: 16/10;
   position: relative; overflow: visible;
   display: block; text-decoration: none; color: inherit;
   min-width: 260px; max-width: 520px;
-  box-shadow: 0 6px 32px oklch(62% 0.095 292 / 0.14);
   --parallax-y: 0px;
-  transition: transform .45s var(--ease-spring), box-shadow .4s;
+  transition: transform .45s var(--ease-spring);
 }
 /* Sparkle radial inner glow — not a rectangle border, a soft center bloom */
 .glance-img-card::after {
@@ -687,22 +686,17 @@ ul      { list-style: none; }
   z-index: 1;
 }
 .glance-img-card:hover::after { opacity: 1; }
-/* Subtle lift — no rectangle border flash */
-.glance-img-card:hover { box-shadow: 0 8px 40px oklch(62% 0.095 292 / 0.18); }
+/* Subtle lift on hover — card-level only (folder shadow unchanged) */
+.glance-img-card:hover { box-shadow: none; }
 .glance-row:nth-child(odd)  .glance-img-card:hover { transform: translateY(var(--parallax-y)) rotate(1.5deg)  scale(1.02); }
 .glance-row:nth-child(even) .glance-img-card:hover { transform: translateY(var(--parallax-y)) rotate(-1.5deg) scale(1.02); }
 /* At rest, parallax shift applies cleanly */
 .glance-img-card:not(:hover) { transform: translateY(var(--parallax-y)); }
 
-/* Inner image — 10px inset from dotted border */
-.glance-img-card .img-placeholder {
-  position: absolute; inset: 10px;
-  border-radius: 14px;
-}
-.p1-bg { background: linear-gradient(135deg, var(--lilac-pale) 0%, #CCC0E8 100%); }
-.p2-bg { background: linear-gradient(135deg, var(--yellow-pale) 0%, #EDD080 100%); }
-.p3-bg { background: linear-gradient(135deg, #D8EEE8 0%, #A0CCC0 100%); }
-.p4-bg { background: linear-gradient(135deg, #F5E8EE 0%, #E8B4C4 100%); }
+.p1-bg { background: #CCC0E8; }
+.p2-bg { background: #EDD080; }
+.p3-bg { background: #A0CCC0; }
+.p4-bg { background: #E8B4C4; }
 
 /* Badge pill — bottom-left of image */
 .card-badge {
@@ -813,9 +807,7 @@ ul      { list-style: none; }
 }
 .meadow-bg {
   position: absolute; inset: 0; pointer-events: none;
-  background: linear-gradient(to bottom,
-    #D8EED4 0%, #D8EED4 54%,
-    #A8C890 54%, #A8C890 100%);
+  background: var(--bg);
 }
 
 /* Desktop icon positioning via nth-child — no inline styles */
@@ -837,11 +829,11 @@ ul      { list-style: none; }
   transition: none; /* no transition while dragging */
 }
 
-/* Scatter positions */
-.desktop-icon:nth-of-type(1) { bottom: 45px; left:  55px;  } /* About  */
-.desktop-icon:nth-of-type(2) { bottom: 45px; right: 60px;  } /* Tools  */
-.desktop-icon:nth-of-type(3) { top:    45px; left:  80px;  } /* WIPs   */
-.desktop-icon:nth-of-type(4) { top:    45px; right: 90px;  } /* Camera */
+/* Scatter positions — spread across the full workspace */
+.desktop-icon:nth-of-type(1) { bottom: 80px;  left:  8%;   } /* About  */
+.desktop-icon:nth-of-type(2) { bottom: 80px;  right: 9%;   } /* Tools  */
+.desktop-icon:nth-of-type(3) { top:    140px; left:  18%;  } /* WIPs   */
+.desktop-icon:nth-of-type(4) { top:    140px; right: 20%;  } /* Camera */
 
 .d-icon-svg   { width: 50px; height: 50px; object-fit: contain; display: block; }
 .d-icon-label {
@@ -1167,7 +1159,18 @@ ul      { list-style: none; }
 /* ── ART GALLERY — background behind iMac ── */
 .workspace {
   position: relative;
-  padding: 6rem 3rem 0;
+  padding: 5rem 3rem 0;
+  min-height: 70vh;
+  overflow: hidden;
+}
+.workspace::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 180px;
+  background: linear-gradient(to bottom, var(--bg) 0%, transparent 100%);
+  z-index: 5;
+  pointer-events: none;
 }
 /* Contrast separator removed */
 
@@ -1654,13 +1657,17 @@ footer::after {
   }
   .glance-text { order: -1; min-width: 0; width: 75%; max-width: 75%; align-self: start; margin: 0 auto; padding-bottom: 0; }
   .glance-img-card { min-width: 0; max-width: 75%; width: 75%; height: auto; aspect-ratio: 16/11.25; overflow: visible; margin: 0 auto; margin-top: 0; }
+  /* Mobile folder: images always peek above the closed folder */
+  .gf-img { opacity: 1; }
+  .gf-img:nth-child(1) { transform: translate(calc(-50% - 18px), -32%) rotate(-9deg); }
+  .gf-img:nth-child(2) { transform: translate(calc(-50% + 18px), -26%) rotate(6deg); }
 
   /* Workspace */
   .workspace  { padding: 5rem 1.5rem 0; }
-  .desktop-icon:nth-of-type(1) { bottom: 28px; left:  30px; }
-  .desktop-icon:nth-of-type(2) { bottom: 28px; right: 30px; }
-  .desktop-icon:nth-of-type(3) { top:    28px; left:  40px; }
-  .desktop-icon:nth-of-type(4) { top:    28px; right: 40px; }
+  .desktop-icon:nth-of-type(1) { bottom: 60px; left:  5%;  }
+  .desktop-icon:nth-of-type(2) { bottom: 60px; right: 5%;  }
+  .desktop-icon:nth-of-type(3) { top:    120px; left: 10%; }
+  .desktop-icon:nth-of-type(4) { top:    120px; right: 10%; }
   #pop-about  { bottom: 100px; left: 15px; }
   #pop-tools  { bottom: 100px; right: 15px; }
   #pop-wip    { top: 100px; left: 15px; }
@@ -1687,6 +1694,162 @@ footer::after {
   .footer-inner { gap: 1.5rem; }
   .email-text { font-size: clamp(1.1rem, 5vw, 1.6rem); }
   .email-row { align-items: center; }
+}
+
+/* ── Glance-card folder — flat 2D box, lid flips open from top ── */
+
+/* Scene: flat, forward-facing — inset so folder is smaller within card */
+.gf-scene {
+  position: absolute;
+  inset: 10% 14%;
+}
+
+/* Folder body/back */
+.folder-back {
+  position: absolute;
+  inset: 0;
+  background: var(--fcol, #c9a4e0);
+  border-radius: 4px 14px 14px 14px;
+  box-shadow:
+    0 6px 28px rgba(0,0,0,0.14),
+    inset 0 0 0 2px color-mix(in oklch, var(--fcol, #c9a4e0) 40%, white);
+  z-index: 0;
+}
+/* Tab */
+.folder-back::before {
+  content: '';
+  position: absolute;
+  top: -18px; left: 0;
+  width: 58px; height: 20px;
+  background: var(--fcol, #c9a4e0);
+  filter: saturate(2.2) brightness(0.84);
+  border-radius: 5px 8px 0 0;
+  box-shadow: inset 0 0 0 2px color-mix(in oklch, var(--fcol, #c9a4e0) 40%, white);
+}
+/* Top highlight stripe */
+.folder-back::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 38%;
+  border-radius: 4px 14px 0 0;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.15) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+/* Peek layer — behind the flap; images slide above the folder top on hover */
+.gf-peek {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: visible;
+}
+
+/* Paper/image thumbnails — start below + small, slide up + expand on hover */
+.gf-img {
+  position: absolute;
+  width: 240px; height: 190px;
+  border-radius: 6px;
+  border: 3px solid rgba(255,255,255,0.95);
+  box-shadow: 0 4px 18px rgba(0,0,0,0.22);
+  left: 50%; top: 8%;
+  opacity: 0;
+  transition: opacity 0.2s var(--ease-out), transform 0.5s var(--ease-spring);
+}
+.gf-img:nth-child(1) {
+  transform: translate(-50%, 14%) scale(0.88) rotate(-6deg);
+  transition-delay: 0.06s;
+}
+.gf-img:nth-child(2) {
+  transform: translate(-50%, 14%) scale(0.88) rotate(5deg);
+  transition-delay: 0.13s;
+}
+
+/* Sparkles — behind flap, same Y as images when peeking */
+.gf-sparks {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: visible;
+}
+.gf-spark {
+  position: absolute;
+  display: block;
+  opacity: 0;
+  pointer-events: none;
+}
+.gf-spark svg {
+  display: block; width: 100%; height: 100%;
+  fill: currentColor;
+  overflow: visible; /* allow stroke to render outside viewBox */
+}
+/* White outline that follows the star shape */
+.gf-spark use {
+  stroke: rgba(255,255,255,0.92);
+  stroke-width: 10;
+  paint-order: stroke fill;
+}
+/* Spread across: top-left corner, top-center, top-right corner — each with its own tilt */
+.gf-s1 { top: 8%; left:  -8%; width: 100px; height: 100px; color: var(--lilac);
+          --rs: -30deg; --rp: -42deg; --re: -33deg; }
+.gf-s2 { top: 8%; left:  38%; width:  80px; height:  80px; color: var(--yellow);
+          --rs:   8deg; --rp:  18deg; --re:  11deg; }
+.gf-s3 { top: 8%; right: -8%; width:  70px; height:  70px; color: var(--lilac-mid);
+          --rs:  35deg; --rp:  50deg; --re:  40deg; }
+
+/* Folder lid — hinges from TOP edge and flips backward on hover */
+.folder-flap {
+  position: absolute;
+  inset: 0;
+  background: var(--fcol, #c9a4e0);
+  filter: saturate(1.5) brightness(1.06);
+  border-radius: 4px 14px 14px 14px;
+  box-shadow:
+    0 6px 28px rgba(0,0,0,0.14),
+    inset 0 0 0 2px color-mix(in oklch, var(--fcol, #c9a4e0) 40%, white);
+  z-index: 2;
+  transform-origin: bottom center; /* hinge from the bottom edge — top sweeps back */
+  transform: rotateX(0deg);
+  transition: transform 0.5s var(--ease-spring);
+  backface-visibility: visible;   /* show the back face as it flips */
+}
+/* Sheen on lid */
+.folder-flap::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 38%;
+  border-radius: 4px 14px 0 0;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.22) 0%, transparent 100%);
+  pointer-events: none;
+}
+.folder-flap::after { display: none; }
+
+/* ── Hover: flap stays closed — images + sparkles rise above the folder top ── */
+.glance-img-card:hover .gf-img       { opacity: 1; }
+.glance-img-card:hover .gf-img:nth-child(1) {
+  transform: translate(calc(-50% - 20px), -35%) scale(1) rotate(-10deg);
+}
+.glance-img-card:hover .gf-img:nth-child(2) {
+  transform: translate(calc(-50% + 20px), -28%) scale(1) rotate(7deg);
+}
+.glance-img-card:hover .gf-s1 {
+  animation: gf-peek-burst .5s  .06s var(--ease-spring) forwards;
+  filter: saturate(2.2) brightness(1.35) drop-shadow(0 0 10px rgba(155,142,196,0.9));
+}
+.glance-img-card:hover .gf-s2 {
+  animation: gf-peek-burst .48s .14s var(--ease-spring) forwards;
+  filter: saturate(2.2) brightness(1.35) drop-shadow(0 0 10px rgba(242,200,74,0.95));
+}
+.glance-img-card:hover .gf-s3 {
+  animation: gf-peek-burst .44s .21s var(--ease-spring) forwards;
+  filter: saturate(2.2) brightness(1.35) drop-shadow(0 0 8px rgba(184,168,216,0.9));
+}
+
+/* Sparkles slide up from below + expand — per-spark tilt via --rs/--rp/--re vars */
+@keyframes gf-peek-burst {
+  0%   { opacity: 0;   transform: translateY(10px)  scale(0.3)  rotate(var(--rs, 0deg)); }
+  58%  { opacity: 1;   transform: translateY(-58px) scale(1.15) rotate(var(--rp, 22deg)); }
+  100% { opacity: 0.9; transform: translateY(-46px) scale(1.0)  rotate(var(--re, 15deg)); }
 }
 
 @media (prefers-reduced-motion: reduce) {
