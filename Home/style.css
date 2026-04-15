@@ -409,9 +409,18 @@ ul      { list-style: none; }
   opacity: 0; animation: rise .45s .3s var(--ease-out) forwards;
 }
 
+.hero-tagline {
+  font-size: 0.92rem; line-height: 1.55;
+  color: rgba(235, 230, 220, 0.72);
+  font-family: var(--ff-body, 'Figtree', sans-serif);
+  font-weight: 400;
+  max-width: 32ch;
+  opacity: 0; animation: rise .45s .38s var(--ease-out) forwards;
+}
+
 .hero-chips {
   display: flex; align-items: center; gap: 0.65rem; flex-wrap: wrap;
-  opacity: 0; animation: rise .45s .42s var(--ease-out) forwards;
+  opacity: 0; animation: rise .45s .46s var(--ease-out) forwards;
 }
 .hero-chip {
   font-family: var(--ff-round); font-size: 0.8rem;
@@ -671,6 +680,23 @@ ul      { list-style: none; }
   --parallax-y: 0px;
   transition: transform .45s var(--ease-spring);
 }
+/* Hover-to-peek hint — fades out when the interaction fires */
+.glance-img-card::before {
+  content: 'hover to peek ↑';
+  font-family: 'Caveat', cursive;
+  font-size: 0.88rem;
+  color: rgba(120, 100, 160, 0.5);
+  position: absolute;
+  bottom: 3%;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 4;
+  transition: opacity 0.2s;
+}
+.glance-img-card:hover::before { opacity: 0; }
+
 /* Sparkle radial inner glow — not a rectangle border, a soft center bloom */
 .glance-img-card::after {
   content: '';
@@ -1088,6 +1114,38 @@ ul      { list-style: none; }
 /* Obsidian dark card */
 .ag-obsidian {
   background: #1a1526;
+}
+
+/* Photo / real-image card */
+.ag-fan-photo {
+  background-size: cover;
+  background-position: center;
+}
+
+/* Per-card label overlay */
+.ag-card-label {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 48px 14px 16px;
+  background: linear-gradient(to top, rgba(14,10,22,0.78) 0%, transparent 100%);
+  border-radius: 0 0 18px 18px;
+  pointer-events: none;
+  text-align: center;
+}
+.ag-card-title {
+  font-family: 'Caveat', cursive;
+  font-size: 1rem;
+  color: rgba(255,255,255,0.9);
+  line-height: 1.25;
+  letter-spacing: 0.01em;
+  margin-bottom: 4px;
+}
+.ag-card-sub {
+  font-family: 'Figtree', sans-serif;
+  font-size: 0.62rem;
+  color: rgba(255,255,255,0.55);
+  line-height: 1.45;
+  letter-spacing: 0.02em;
 }
 .ag-graph-svg { width: 90%; height: 90%; }
 .ag-sketch-svg,
@@ -1657,10 +1715,10 @@ footer::after {
   }
   .glance-text { order: -1; min-width: 0; width: 75%; max-width: 75%; align-self: start; margin: 0 auto; padding-bottom: 0; }
   .glance-img-card { min-width: 0; max-width: 75%; width: 75%; height: auto; aspect-ratio: 16/11.25; overflow: visible; margin: 0 auto; margin-top: 0; }
-  /* Mobile folder: images always peek above the closed folder */
+  /* Mobile folder: images always peek above the folder */
   .gf-img { opacity: 1; }
-  .gf-img:nth-child(1) { transform: translate(calc(-50% - 18px), -32%) rotate(-9deg); }
-  .gf-img:nth-child(2) { transform: translate(calc(-50% + 18px), -26%) rotate(6deg); }
+  .gf-img:nth-child(1) { transform: translate(calc(-50% - 38px), -60%) scale(1.05) rotate(-11deg); }
+  .gf-img:nth-child(2) { transform: translate(calc(-50% + 32px), -34%) scale(0.88) rotate(9deg); }
 
   /* Workspace */
   .workspace  { padding: 5rem 1.5rem 0; }
@@ -1696,47 +1754,27 @@ footer::after {
   .email-row { align-items: center; }
 }
 
-/* ── Glance-card folder — flat 2D box, lid flips open from top ── */
+/* ── Glance-card folder — flat 2D, folder PNG image on top ── */
 
 /* Scene: flat, forward-facing — inset so folder is smaller within card */
 .gf-scene {
   position: absolute;
-  inset: 10% 14%;
+  inset: 20% 14% 5%;
 }
 
-/* Folder body/back */
-.folder-back {
+/* Folder PNG image — sits at the front, images/sparks peek above it */
+.folder-img {
   position: absolute;
   inset: 0;
-  background: var(--fcol, #c9a4e0);
-  border-radius: 4px 14px 14px 14px;
-  box-shadow:
-    0 6px 28px rgba(0,0,0,0.14),
-    inset 0 0 0 2px color-mix(in oklch, var(--fcol, #c9a4e0) 40%, white);
-  z-index: 0;
-}
-/* Tab */
-.folder-back::before {
-  content: '';
-  position: absolute;
-  top: -18px; left: 0;
-  width: 58px; height: 20px;
-  background: var(--fcol, #c9a4e0);
-  filter: saturate(2.2) brightness(0.84);
-  border-radius: 5px 8px 0 0;
-  box-shadow: inset 0 0 0 2px color-mix(in oklch, var(--fcol, #c9a4e0) 40%, white);
-}
-/* Top highlight stripe */
-.folder-back::after {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0; height: 38%;
-  border-radius: 4px 14px 0 0;
-  background: linear-gradient(to bottom, rgba(255,255,255,0.15) 0%, transparent 100%);
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  z-index: 2;
   pointer-events: none;
+  display: block;
 }
 
-/* Peek layer — behind the flap; images slide above the folder top on hover */
+/* Peek layer — behind the folder image; contents slide above on hover */
 .gf-peek {
   position: absolute;
   inset: 0;
@@ -1744,27 +1782,29 @@ footer::after {
   overflow: visible;
 }
 
-/* Paper/image thumbnails — start below + small, slide up + expand on hover */
+/* Paper/image thumbnails — start tucked inside, slide up + fan out on hover */
 .gf-img {
   position: absolute;
-  width: 240px; height: 190px;
+  width: 180px; height: 142px;
   border-radius: 6px;
   border: 3px solid rgba(255,255,255,0.95);
   box-shadow: 0 4px 18px rgba(0,0,0,0.22);
   left: 50%; top: 8%;
   opacity: 0;
-  transition: opacity 0.2s var(--ease-out), transform 0.5s var(--ease-spring);
+  transition: opacity 0.25s var(--ease-out), transform 0.55s var(--ease-spring);
 }
+/* img 1: starts tucked, slides high-left on hover */
 .gf-img:nth-child(1) {
-  transform: translate(-50%, 14%) scale(0.88) rotate(-6deg);
+  transform: translate(-50%, 18%) scale(0.8) rotate(-6deg);
   transition-delay: 0.06s;
 }
+/* img 2: starts a bit lower, slides to mid-right — less high than img 1 */
 .gf-img:nth-child(2) {
-  transform: translate(-50%, 14%) scale(0.88) rotate(5deg);
-  transition-delay: 0.13s;
+  transform: translate(-50%, 28%) scale(0.72) rotate(5deg);
+  transition-delay: 0.14s;
 }
 
-/* Sparkles — behind flap, same Y as images when peeking */
+/* Sparkles — behind folder image, same layer as peek */
 .gf-sparks {
   position: absolute;
   inset: 0;
@@ -1781,75 +1821,53 @@ footer::after {
 .gf-spark svg {
   display: block; width: 100%; height: 100%;
   fill: currentColor;
-  overflow: visible; /* allow stroke to render outside viewBox */
+  overflow: visible;
 }
-/* White outline that follows the star shape */
+/* White outline following the star path */
 .gf-spark use {
   stroke: rgba(255,255,255,0.92);
   stroke-width: 10;
   paint-order: stroke fill;
 }
-/* Spread across: top-left corner, top-center, top-right corner — each with its own tilt */
-.gf-s1 { top: 8%; left:  -8%; width: 100px; height: 100px; color: var(--lilac);
-          --rs: -30deg; --rp: -42deg; --re: -33deg; }
-.gf-s2 { top: 8%; left:  38%; width:  80px; height:  80px; color: var(--yellow);
-          --rs:   8deg; --rp:  18deg; --re:  11deg; }
-.gf-s3 { top: 8%; right: -8%; width:  70px; height:  70px; color: var(--lilac-mid);
-          --rs:  35deg; --rp:  50deg; --re:  40deg; }
+/* Three sparkles: large left, small center, mid right — varied sizes and tilt */
+.gf-s1 { top: 10%; left:  -12%; width: 96px;  height: 96px;  color: var(--lilac);
+          --rs: -30deg; --rp: -42deg; --re: -33deg;
+          --peak-y: -88px; --peek-y: -72px; --sp: 1.28; --se: 1.1; }
+.gf-s2 { top: 16%;  left:   36%; width:  52px;  height:  52px;  color: var(--yellow);
+          --rs:   8deg; --rp:  18deg; --re:  11deg;
+          --peak-y: -42px; --peek-y: -32px; --sp: 1.1;  --se: 0.92; }
+.gf-s3 { top:  6%; right: -10%; width:  76px;  height:  76px;  color: var(--lilac-mid);
+          --rs:  35deg; --rp:  50deg; --re:  40deg;
+          --peak-y: -68px; --peek-y: -54px; --sp: 1.2;  --se: 1.02; }
 
-/* Folder lid — hinges from TOP edge and flips backward on hover */
-.folder-flap {
-  position: absolute;
-  inset: 0;
-  background: var(--fcol, #c9a4e0);
-  filter: saturate(1.5) brightness(1.06);
-  border-radius: 4px 14px 14px 14px;
-  box-shadow:
-    0 6px 28px rgba(0,0,0,0.14),
-    inset 0 0 0 2px color-mix(in oklch, var(--fcol, #c9a4e0) 40%, white);
-  z-index: 2;
-  transform-origin: bottom center; /* hinge from the bottom edge — top sweeps back */
-  transform: rotateX(0deg);
-  transition: transform 0.5s var(--ease-spring);
-  backface-visibility: visible;   /* show the back face as it flips */
-}
-/* Sheen on lid */
-.folder-flap::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0; height: 38%;
-  border-radius: 4px 14px 0 0;
-  background: linear-gradient(to bottom, rgba(255,255,255,0.22) 0%, transparent 100%);
-  pointer-events: none;
-}
-.folder-flap::after { display: none; }
-
-/* ── Hover: flap stays closed — images + sparkles rise above the folder top ── */
-.glance-img-card:hover .gf-img       { opacity: 1; }
+/* ── Hover: images + sparkles rise above the folder top ── */
+.glance-img-card:hover .gf-img { opacity: 1; }
+/* img 1: slides high + left, larger */
 .glance-img-card:hover .gf-img:nth-child(1) {
-  transform: translate(calc(-50% - 20px), -35%) scale(1) rotate(-10deg);
+  transform: translate(calc(-50% - 45px), -68%) scale(1.08) rotate(-13deg);
 }
+/* img 2: slides up but less — peeking lower-right, slightly smaller */
 .glance-img-card:hover .gf-img:nth-child(2) {
-  transform: translate(calc(-50% + 20px), -28%) scale(1) rotate(7deg);
+  transform: translate(calc(-50% + 38px), -38%) scale(0.9) rotate(10deg);
 }
 .glance-img-card:hover .gf-s1 {
   animation: gf-peek-burst .5s  .06s var(--ease-spring) forwards;
   filter: saturate(2.2) brightness(1.35) drop-shadow(0 0 10px rgba(155,142,196,0.9));
 }
 .glance-img-card:hover .gf-s2 {
-  animation: gf-peek-burst .48s .14s var(--ease-spring) forwards;
+  animation: gf-peek-burst .48s .16s var(--ease-spring) forwards;
   filter: saturate(2.2) brightness(1.35) drop-shadow(0 0 10px rgba(242,200,74,0.95));
 }
 .glance-img-card:hover .gf-s3 {
-  animation: gf-peek-burst .44s .21s var(--ease-spring) forwards;
+  animation: gf-peek-burst .44s .24s var(--ease-spring) forwards;
   filter: saturate(2.2) brightness(1.35) drop-shadow(0 0 8px rgba(184,168,216,0.9));
 }
 
-/* Sparkles slide up from below + expand — per-spark tilt via --rs/--rp/--re vars */
+/* Each spark has its own --peak-y / --peek-y / --sp / --se for varied heights */
 @keyframes gf-peek-burst {
   0%   { opacity: 0;   transform: translateY(10px)  scale(0.3)  rotate(var(--rs, 0deg)); }
-  58%  { opacity: 1;   transform: translateY(-58px) scale(1.15) rotate(var(--rp, 22deg)); }
-  100% { opacity: 0.9; transform: translateY(-46px) scale(1.0)  rotate(var(--re, 15deg)); }
+  58%  { opacity: 1;   transform: translateY(var(--peak-y, -58px)) scale(var(--sp, 1.15)) rotate(var(--rp, 22deg)); }
+  100% { opacity: 0.9; transform: translateY(var(--peek-y, -46px)) scale(var(--se, 1.0))  rotate(var(--re, 15deg)); }
 }
 
 @media (prefers-reduced-motion: reduce) {

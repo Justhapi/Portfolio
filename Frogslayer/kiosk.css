@@ -71,6 +71,18 @@ ul   { list-style: none; }
 .back-link svg   { transition: transform 0.2s; }
 .back-link:hover svg { transform: translateX(-3px); }
 
+.top-bar-name {
+  font-family: var(--ff-hand);
+  font-size: 1.05rem;
+  color: rgba(237,229,216,0.55);
+  letter-spacing: 0.01em;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
 .page-nav {
   display: flex;
   gap: 32px;
@@ -105,7 +117,7 @@ ul   { list-style: none; }
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 clamp(24px, 5vw, 60px);
-  min-height: 270px;
+  min-height: 400px;
   align-items: stretch;
 }
 .proj-hero-text {
@@ -464,7 +476,7 @@ ul   { list-style: none; }
   line-height: 1.45;
 }
 .method-img-block {
-  background: #F9C0D8;
+  background: var(--lilac-pale);
   border-radius: 8px;
   aspect-ratio: 4/3;
 }

@@ -205,11 +205,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const fanSubEl    = document.querySelector('.ag-fan-sub');
   const FAN_COUNT   = fanCards.length;
   const FAN_DATA    = [
-    { title: 'Pixel Illustration',      sub: 'Drawing since before I could spell "design" — character sprites are my comfort zone' },
-    { title: 'Analog Sketchbook',        sub: 'Every project starts on paper. Messy, honest, and surprisingly effective' },
-    { title: 'UX Knowledge Graph',       sub: 'Every time I learn something new UX related, I store it in my Obsidian notes' },
-    { title: 'Street Photography',       sub: 'A camera is just another way to compose — light, framing, negative space' },
-    { title: 'Annotated Reading',        sub: 'I dog-ear, highlight, and argue with every design book I pick up' },
+    { title: 'Digital Illustration',    sub: 'Character design was my first language — it taught me color, proportion, and how people read emotion into shapes' },
+    { title: 'Analog Sketchbook',       sub: 'Every project starts on paper. Rough sketches surface problems faster than any prototype tool' },
+    { title: 'UX Knowledge Graph',      sub: 'I map everything I learn in Obsidian — mental models, heuristics, and frameworks, all cross-linked' },
+    { title: 'Photography',             sub: 'A camera teaches the same lessons as UI: light, framing, and knowing what to leave out' },
+    { title: 'Annotated Reading',       sub: 'I argue with every design book I read — the margin notes are where the real thinking happens' },
   ];
 
   let fanActive = 2; // start centered on Obsidian card
