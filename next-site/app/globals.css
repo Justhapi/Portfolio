@@ -1,0 +1,148 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* =====================================================
+   KATHLEEN LI — Portfolio
+   Single dark-teal → light-teal gradient page
+   Glasslike parallax shapes (alternate-universe entry)
+   ===================================================== */
+
+@import url("https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Sora:wght@300;400;500;600;700&family=Anton&family=Gloock&family=Figtree:wght@300;400;500;600;700&family=Fredoka+One&display=swap");
+
+:root {
+  /* ── Brand palette (matches Project_Carousel + Menu_Nav vocabulary) ── */
+  --cream:          #ffda85;
+  --cream-light:    #ffe6ac;
+  --cream-white:    #fcf6e8;
+  --cream-paper:    #fff6e4;
+  --peach:          #e19f7e;
+  --peach-shade:    #d59b6e;
+  --terracotta:     #b5675b;
+  --teal:           #96c5c6;
+  --teal-light:     #c4e0e1;
+  --teal-shade:     #6fa0a1;
+  --cornflower:     #5d8ef4;
+  --cornflower-shade:#4872c8;
+  --cocoa:          #3a2a1f;
+  --plum:           #6b5d70;
+
+  /* ── Gradient stops for the single page background ── */
+  /* WHITE-cream at top → light teal → mid teal → footer slate-blue.
+     The bottom stop matches the FooterConnect anchor color (#3d5d82)
+     EXACTLY, so the body fades into the footer with no visible seam:
+     the footer's own gradient starts as transparent #3d5d82 then deepens
+     to #253c5e, so anchoring the body at the same hue lets the two
+     stack as one continuous wash. */
+  --grad-top:       #fbf6ec;   /* warm paper white */
+  --grad-upper:     #d6e4e0;   /* very pale teal */
+  --grad-mid:       #8fb6b6;   /* soft teal */
+  --grad-lower:     #4a8a96;   /* mid teal */
+  --grad-dusk:      #406481;   /* dusk transition into footer */
+  --grad-bottom:    #3d5d82;   /* matches footer anchor — seamless seam */
+
+  --shadow-warm:    0 6px 18px rgba(58, 35, 28, 0.28);
+  --focus-ring:     rgba(255, 218, 133, 0.9);
+
+  --ff-display:     "Caveat", cursive;
+  --ff-sans:        "Sora", -apple-system, BlinkMacSystemFont, system-ui, "Segoe UI", sans-serif;
+
+  --ease-out-expo:  cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-quart: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--grad-top);
+  /* Default text now ink-warm (dark) so it stays readable on the
+     paper-white top of the page gradient. Sections that sit lower
+     (where the gradient is dark teal/navy) re-declare their own
+     text color in component CSS. */
+  color: var(--cocoa);
+  font-family: var(--ff-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  /* Single continuous gradient. Stops are tuned so the hero sits in
+     deep-teal territory, projects ride the lighter mid-band, and the
+     footer fades into slate navy that matches the FooterConnect
+     horizon (no visible seam). */
+  min-height: 100vh;
+  background:
+    linear-gradient(
+      180deg,
+      var(--grad-top)    0%,
+      var(--grad-upper) 18%,
+      var(--grad-mid)   42%,
+      var(--grad-lower) 65%,
+      var(--grad-dusk)  85%,
+      var(--grad-bottom) 100%
+    );
+  background-attachment: fixed;
+  overflow-x: hidden;
+}
+
+/* Page wrapper — keeps content on top of the parallax shape layer */
+.page-shell {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+}
+
+/* ── Glass parallax layer (placeholders) ───────────────────── */
+.glass-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.glass-shape {
+  position: absolute;
+  border-radius: 14px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.18) 0%,
+    rgba(255, 255, 255, 0.06) 45%,
+    rgba(255, 255, 255, 0.12) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.35),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.10),
+    0 18px 40px rgba(0, 0, 0, 0.14);
+  will-change: transform;
+}
+
+/* Foreground glass shapes get a stronger frosted edge */
+.glass-shape.fg {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.28) 0%,
+    rgba(255, 255, 255, 0.10) 45%,
+    rgba(255, 255, 255, 0.20) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Section spacing rhythm */
+section {
+  position: relative;
+  z-index: 2;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glass-shape {
+    transform: none !important;
+  }
+}

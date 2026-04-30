@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="342" height="310" viewBox="0 0 342 310" fill="none">
+  <defs>
+    <clipPath id="cs">
+      <rect width="342" height="310" rx="155" fill="#fff"/>
+    </clipPath>
+  </defs>
+  <g clip-path="url(#cs)">
+    <line y1="-6.5" x2="346.986" y2="-6.5" transform="matrix(0.809898 0.58657 -0.547987 0.836487 -5.70703 114.463)" stroke="#fff" stroke-width="13"/>
+    <line y1="-6.5" x2="346.986" y2="-6.5" transform="matrix(0.809898 0.58657 -0.547987 0.836487 17.5 73.9238)" stroke="#fff" stroke-width="13"/>
+    <line y1="-6.5" x2="346.986" y2="-6.5" transform="matrix(0.809898 0.58657 -0.547987 0.836487 44.9297 31.3047)" stroke="#fff" stroke-width="13"/>
+    <line y1="-6.5" x2="346.986" y2="-6.5" transform="matrix(0.809898 0.58657 -0.547987 0.836487 68.1367 -9.23633)" stroke="#fff" stroke-width="13"/>
+    <line y1="-6.5" x2="346.986" y2="-6.5" transform="matrix(0.809898 0.58657 -0.547987 0.836487 107.168 -41.459)" stroke="#fff" stroke-width="13"/>
+    <line y1="-6.5" x2="346.986" y2="-6.5" transform="matrix(0.809898 0.58657 -0.547987 0.836487 130.375 -82)" stroke="#fff" stroke-width="13"/>
+    <line y1="-6.5" x2="346.986" y2="-6.5" transform="matrix(0.809898 0.58657 -0.547987 0.836487 -69 188.268)" stroke="#fff" stroke-width="13"/>
+    <line y1="-6.5" x2="346.986" y2="-6.5" transform="matrix(0.809898 0.58657 -0.547987 0.836487 -45.793 147.727)" stroke="#fff" stroke-width="13"/>
+  </g>
+</svg>
