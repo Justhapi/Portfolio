@@ -42,16 +42,45 @@
   --grad-bottom:    #3d5d82;   /* matches footer anchor — seamless seam */
 
   --shadow-warm:    0 6px 18px rgba(58, 35, 28, 0.28);
+  --shadow-sm:      0 1px 2px rgba(58, 35, 28, 0.12);
+  --shadow-md:      0 4px 12px rgba(58, 35, 28, 0.18);
+  --shadow-lg:      0 12px 28px rgba(58, 35, 28, 0.24);
+  --shadow-xl:      0 24px 48px -12px rgba(0, 0, 0, 0.40);
   --focus-ring:     rgba(255, 218, 133, 0.9);
+
+  /* ── Semantic spacing scale (4pt base) ──
+     Use these in component CSS instead of magic numbers so the
+     rhythm is consistent across sections. clamp() variants give
+     fluid sizing on larger screens. */
+  --space-2xs: 4px;
+  --space-xs:  8px;
+  --space-sm:  12px;
+  --space-md:  16px;
+  --space-lg:  24px;
+  --space-xl:  32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+  --space-4xl: 96px;
+  /* Section vertical rhythm — between distinct sections. */
+  --section-pad-y: clamp(64px, 9vw, 140px);
 
   --ff-display:     "Caveat", cursive;
   --ff-sans:        "Sora", -apple-system, BlinkMacSystemFont, system-ui, "Segoe UI", sans-serif;
 
   --ease-out-expo:  cubic-bezier(0.16, 1, 0.3, 1);
   --ease-out-quart: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 * { box-sizing: border-box; }
+
+html {
+  /* Smooth anchor-link scrolling for the few in-page jumps on the
+     site (e.g., a footer link back to #hero). Reduced-motion users
+     skip the smoothing via the @media override at the bottom. */
+  scroll-behavior: smooth;
+  scroll-padding-top: 32px;
+}
 
 html, body {
   margin: 0;
@@ -64,14 +93,41 @@ html, body {
   color: var(--cocoa);
   font-family: var(--ff-sans);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+}
+
+/* Selection highlight — warm cream so it reads as part of the brand
+   instead of the browser's harsh default blue. */
+::selection {
+  background: rgba(255, 218, 133, 0.45);
+  color: var(--cocoa);
+}
+
+/* Site-wide focus ring — applies to anything keyboard-focused that
+   doesn't already define its own focus-visible rule. Uses
+   :focus-visible (not :focus) so mouse clicks don't show the ring. */
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Anchored link defaults — components override as needed. */
+a {
+  color: inherit;
+  text-decoration: none;
 }
 
 body {
   /* Single continuous gradient. Stops are tuned so the hero sits in
      deep-teal territory, projects ride the lighter mid-band, and the
      footer fades into slate navy that matches the FooterConnect
-     horizon (no visible seam). */
+     horizon (no visible seam).
+     No background-attachment: fixed — the gradient should scroll
+     WITH the page so it never reads as parallax. The GlassShapes
+     layer is the only element that intentionally moves at a
+     different rate from the content. */
   min-height: 100vh;
   background:
     linear-gradient(
@@ -83,7 +139,6 @@ body {
       var(--grad-dusk)  85%,
       var(--grad-bottom) 100%
     );
-  background-attachment: fixed;
   overflow-x: hidden;
 }
 
@@ -142,7 +197,20 @@ section {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  /* Site-wide guardrail — even if a component forgets its own
+     reduced-motion override, the browser drops every transition
+     and animation to near-zero. Component-level overrides still
+     take precedence and can re-enable specific motion if needed. */
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
   .glass-shape {
     transform: none !important;
   }
+  html { scroll-behavior: auto; }
 }

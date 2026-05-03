@@ -1,5 +1,7 @@
 "use client";
 
+import { useInView } from "@/lib/useInView";
+
 /**
  * AboutMe — direct port of the user's hand-drawn "About me" sketch.
  *
@@ -59,8 +61,14 @@ export default function AboutMe({
   photoSrc,
   doodleSrc,
 }: AboutMeProps = {}) {
+  const [sectionRef, inView] = useInView<HTMLElement>();
   return (
-    <section className="about-me" id="about-me" aria-label="About me">
+    <section
+      ref={sectionRef}
+      className={`about-me${inView ? " in-view" : ""}`}
+      id="about-me"
+      aria-label="About me"
+    >
       <style>{`
         .about-me {
           position: relative;
@@ -130,25 +138,30 @@ export default function AboutMe({
         }
         /* Clip layer for the photo only — keeps the photo inside the
            rounded corners, while leaving the doodle free to overhang
-           outside the frame as a sibling element. */
+           outside the frame as a sibling element. Uses flex centering
+           so the placeholder text reliably renders centered inside
+           the clip box across browsers. */
         .am-frame-clip {
           position: absolute; inset: 0;
           overflow: hidden;
           border-radius: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 18px;
+          background: ${SKETCH.white};
         }
         .am-frame-clip img {
           width: 100%; height: 100%;
           object-fit: cover; display: block;
         }
         .am-frame-placeholder {
-          position: absolute; inset: 0;
-          display: grid; place-items: center;
           color: ${SKETCH.ink};
           font-family: 'Caveat', cursive;
           font-size: clamp(1.4rem, 2vw, 1.8rem);
-          opacity: 0.5;
-          padding: 24px;
+          opacity: 0.55;
           text-align: center;
+          line-height: 1.2;
         }
 
         /* The smaller "self doodle" frame — anchored at the bottom-right
@@ -168,14 +181,20 @@ export default function AboutMe({
             4px 4px 0 rgba(0,0,0,0.10);
           overflow: hidden;
         }
+        .am-doodle {
+          /* Flex-center the placeholder text reliably */
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 8px;
+        }
         .am-doodle img { width: 100%; height: 100%; object-fit: cover; }
         .am-doodle-placeholder {
-          position: absolute; inset: 0;
-          display: grid; place-items: center;
           font-family: 'Caveat', cursive;
           font-size: clamp(0.95rem, 1.4vw, 1.1rem);
           color: ${SKETCH.ink};
-          text-align: center; padding: 8px;
+          text-align: center;
+          line-height: 1.15;
         }
 
         /* ── Copy column ── */
@@ -224,25 +243,73 @@ export default function AboutMe({
         }
         .am-list .sparkle svg { width: 100%; height: 100%; fill: currentColor; }
 
+        /* ── Scroll-reveal cascade ──
+           Children with .am-reveal start at opacity 0 + slight
+           translateY, then ease into place when the section enters
+           the viewport (parent gets .in-view). data-r="1..5" stagger
+           the delay so the title leads, then the frame and copy
+           cascade in like the hero's emmiwu-style entrance. */
+        .about-me .am-reveal {
+          opacity: 0;
+          transform: translateY(28px);
+          transition:
+            opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+            transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .about-me.in-view .am-reveal {
+          opacity: 1;
+          transform: translateY(0);
+        }
+        .about-me.in-view .am-reveal[data-r="1"] { transition-delay: 0.05s; }
+        .about-me.in-view .am-reveal[data-r="2"] { transition-delay: 0.18s; }
+        .about-me.in-view .am-reveal[data-r="3"] { transition-delay: 0.30s; }
+        .about-me.in-view .am-reveal[data-r="4"] { transition-delay: 0.42s; }
+        .about-me.in-view .am-reveal[data-r="5"] { transition-delay: 0.54s; }
+
         @media (max-width: 860px) {
+          /* Stacked layout — center every column so the section
+             reads as a single, balanced vertical stack on narrow
+             viewports instead of left-aligned with empty right gutter. */
           .about-me-grid {
             grid-template-columns: 1fr;
             gap: 64px;
+            justify-items: center;
+            text-align: center;
           }
+          .about-me-title { text-align: center; }
           .am-frame { max-width: 280px; margin: 0 auto; }
+          .am-photo-col { align-items: center; }
           .am-doodle { right: -20px; bottom: -40px; }
+          .am-copy {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+          }
+          .am-copy .lead,
+          .am-copy .body,
+          .am-copy .subhead {
+            max-width: 36ch;
+            margin-left: auto;
+            margin-right: auto;
+          }
+          .am-list { text-align: left; }
         }
 
         @media (prefers-reduced-motion: reduce) {
           .am-frame, .am-doodle { transform: none; }
+          .about-me .am-reveal {
+            opacity: 1 !important;
+            transform: none !important;
+            transition: none !important;
+          }
         }
       `}</style>
 
       <div className="about-me-grid">
-        <h2 className="about-me-title">About me</h2>
+        <h2 className="about-me-title am-reveal" data-r="1">About me</h2>
 
         {/* ── Left: photo + doodle frames + arrow captions ── */}
-        <div className="am-photo-col">
+        <div className="am-photo-col am-reveal" data-r="3">
           <div className="am-frame">
             {/* Inner clip — only the photo content is clipped to
                 the rounded corners. The doodle below is OUTSIDE
@@ -268,15 +335,15 @@ export default function AboutMe({
 
         {/* ── Right: copy ── */}
         <div className="am-copy">
-          <p className="lead">
+          <p className="lead am-reveal" data-r="2">
             An artist that likes to explore the &ldquo;why&rdquo; behind design
           </p>
-          <p className="body">
+          <p className="body am-reveal" data-r="3">
             Once I realized I could continue designing but also problem solve
             for others, I immediately joined the UX field
           </p>
-          <p className="subhead">Outside of academics, I am:</p>
-          <ul className="am-list">
+          <p className="subhead am-reveal" data-r="4">Outside of academics, I am:</p>
+          <ul className="am-list am-reveal" data-r="5">
             <li>
               <span className="sparkle" aria-hidden>
                 <Sparkle />

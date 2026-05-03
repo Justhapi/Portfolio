@@ -55,23 +55,43 @@ const SPARKLE_PATH =
 
 export default function Hero() {
   const heroRef = useRef<HTMLElement | null>(null);
-  const glowRef = useRef<HTMLDivElement | null>(null);
-  const charWrapRef = useRef<HTMLDivElement | null>(null);
   const [artistVisible, setArtistVisible] = useState(false);
   const [designerVisible, setDesignerVisible] = useState(false);
   const [tipPos, setTipPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
 
   useEffect(() => {
     const hero = heroRef.current;
-    const glow = glowRef.current;
-    if (!hero || !glow) return;
+    if (!hero) return;
+    /* Cursor coords drive THREE masks:
+        --cx / --cy        → hero-relative; used by .hero-dim and
+                             the warm cursor glow
+        --bc-cx / --bc-cy  → CARD-relative; used by .bc-card-shade
+                             so the card paper brightens only in
+                             the local pocket near the cursor,
+                             not uniformly. */
     const onMove = (e: MouseEvent) => {
       const r = hero.getBoundingClientRect();
-      glow.style.left = `${e.clientX - r.left}px`;
-      glow.style.top = `${e.clientY - r.top}px`;
+      hero.style.setProperty("--cx", `${e.clientX - r.left}px`);
+      hero.style.setProperty("--cy", `${e.clientY - r.top}px`);
+      const card = hero.querySelector<HTMLElement>(".business-card");
+      if (card) {
+        const cr = card.getBoundingClientRect();
+        hero.style.setProperty("--bc-cx", `${e.clientX - cr.left}px`);
+        hero.style.setProperty("--bc-cy", `${e.clientY - cr.top}px`);
+      }
       hero.classList.add("glow-active");
     };
-    const onLeave = () => hero.classList.remove("glow-active");
+    const onLeave = () => {
+      hero.classList.remove("glow-active");
+      /* Push every spotlight hole far off-screen so the dim/shade
+         layers re-cover everything when the cursor leaves. CSS
+         vars don't transition, so this jump is instant — fine
+         because the cursor is already off the section. */
+      hero.style.setProperty("--cx", "-9999px");
+      hero.style.setProperty("--cy", "-9999px");
+      hero.style.setProperty("--bc-cx", "-9999px");
+      hero.style.setProperty("--bc-cy", "-9999px");
+    };
     hero.addEventListener("mousemove", onMove);
     hero.addEventListener("mouseleave", onLeave);
     return () => {
@@ -80,45 +100,6 @@ export default function Hero() {
     };
   }, []);
 
-  /* Parallax — char.gif lags behind the page as it scrolls, so in
-     narrow viewports where the character overlaps the card copy, a
-     few pixels of scroll lifts the text out from under it (because
-     the text scrolls at full speed while the gif scrolls at ~55%).
-     rAF-throttled, transform-only — never touches layout. Disabled
-     when the user prefers reduced motion. */
-  useEffect(() => {
-    const wrap = charWrapRef.current;
-    if (!wrap) return;
-    if (
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    ) {
-      return;
-    }
-
-    const SPEED = 0.45; // 0 = locked to page, 1 = no parallax
-    let raf = 0;
-
-    const update = () => {
-      raf = 0;
-      // scrollY is positive going down. We want the gif to move
-      // DOWN in document flow as the page scrolls up, so it lags.
-      const y = window.scrollY * SPEED;
-      wrap.style.setProperty("--parallax-y", `${y}px`);
-    };
-
-    const onScroll = () => {
-      if (raf) return;
-      raf = requestAnimationFrame(update);
-    };
-
-    update();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      if (raf) cancelAnimationFrame(raf);
-    };
-  }, []);
 
   const trackTip = (e: React.MouseEvent) => {
     setTipPos({ x: e.clientX + 18, y: e.clientY + 18 });
@@ -162,41 +143,175 @@ export default function Hero() {
           }
           .hero {
             position: relative;
-            min-height: 100vh;
-            background:
-              radial-gradient(ellipse at 70% 30%, rgba(247,199,90,0.05) 0%, transparent 60%),
-              radial-gradient(ellipse at 30% 90%, rgba(154,134,194,0.06) 0%, transparent 55%),
-              var(--bg-dark);
+            /* Hero shares the first viewport with SiteNav.
+               --nav-h is bumped to 110px to comfortably account
+               for the nav's actual rendered height (padding +
+               text + bottom border) plus a small visual buffer,
+               so the nav is FULLY visible on first load without
+               any scroll. */
+            --nav-h: 110px;
+            min-height: calc(100vh - var(--nav-h));
+            /* Also cap the height so the hero never grows past
+               the available viewport-minus-nav space — keeps the
+               nav guaranteed-visible even when content might
+               otherwise stretch. */
+            max-height: calc(100vh - var(--nav-h));
+            /* Deeper base + a strong dark vignette so the cursor
+               spotlight has somewhere to cut through. The ambient
+               warm corner glows were lifting the whole scene; they
+               are gone now so the room reads as genuinely dark. */
+            background: var(--bg-deep);
             color: var(--paper);
             font-family: var(--ff-sans);
             overflow: hidden;
-            padding: clamp(64px, 7vw, 120px) clamp(28px, 5vw, 96px);
+            padding: clamp(48px, 6vw, 96px) clamp(28px, 5vw, 96px);
             display: flex;
             align-items: center;
             justify-content: center;
             animation: heroFade 0.65s var(--ease-out) both;
           }
           @keyframes heroFade {
-            from { background-color: #2a221c; }
-            to   { background-color: var(--bg-dark); }
+            from { background-color: #1f1612; }
+            to   { background-color: var(--bg-deep); }
+          }
+          /* Dark vignette overlay — sits above content surfaces but
+             BELOW the cursor glow (which uses mix-blend-mode: screen
+             to brighten through this layer). The radial gradient is
+             effectively transparent in the center and deepens to
+             solid near-black at the corners, so the eye perceives
+             the room as much darker than the bg color alone. */
+          .hero::after {
+            content: "";
+            position: absolute; inset: 0;
+            pointer-events: none;
+            z-index: 1;
+            background:
+              radial-gradient(
+                ellipse 80% 80% at 50% 50%,
+                rgba(0,0,0,0) 0%,
+                rgba(0,0,0,0.35) 55%,
+                rgba(0,0,0,0.65) 100%
+              );
           }
 
-          /* ── Cursor glow — quietened, warm ── */
+          /* ── Cursor warm-glow — sits BELOW the business card
+             (z:2 vs card stage z:2 — see .bc-stage which is also
+             z:2; this glow paints first since it's earlier in the
+             stacking context with no positioning quirks). Putting
+             the glow below the card prevents mix-blend-mode:screen
+             from brightening the already-white card paper, which
+             was making the spotlight feel blinding.
+             Now the glow only illuminates the dark area AROUND
+             the card; the card stays at its natural cream tone. ── */
           .hero-cursor-glow {
-            position: absolute; z-index: 0; pointer-events: none;
-            width: 640px; height: 640px;
+            position: absolute;
+            z-index: 1;
+            pointer-events: none;
+            width: 760px; height: 760px;
             border-radius: 50%;
             background: radial-gradient(circle,
-              rgba(247,199,90,0.10) 0%,
-              rgba(247,199,90,0.04) 38%,
-              transparent 70%);
+              rgba(255, 222, 158, 0.32) 0%,
+              rgba(247, 199, 90, 0.18) 30%,
+              rgba(247, 199, 90, 0.07) 58%,
+              transparent 82%);
             transform: translate(-50%, -50%);
-            left: -9999px; top: -9999px;
-            transition: opacity .4s;
+            left: var(--cx, -9999px);
+            top: var(--cy, -9999px);
+            transition: opacity .35s var(--ease-out);
             opacity: 0;
             mix-blend-mode: screen;
           }
           .hero.glow-active .hero-cursor-glow { opacity: 1; }
+
+          /* ── Dim mask — the heart of the spotlight reveal. ──
+             A near-black layer paints OVER all content. A radial
+             mask centered at the cursor cuts a transparent hole, so
+             content is visible only inside that spotlight pocket.
+             Without the cursor (--cx/--cy default to -9999px), the
+             hole is far off-screen and the entire layer covers,
+             leaving the hero very dark by default.
+
+             Two-stop falloff in the mask:
+               0% (black, mask opaque) → fully transparent dim. inside
+               25% (still black) → still no dim
+               75-100% (transparent in mask) → dim fully visible
+             so the spotlight has a soft edge but a solid bright core.
+
+             z-index: 7 puts this above the card AND the char gif so
+             the dim genuinely covers them; the mask hole reveals
+             both at once when the cursor crosses them. */
+          .hero-dim {
+            position: absolute; inset: 0;
+            pointer-events: none;
+            z-index: 7;
+            /* Lower opacity so the contrast between the dim and
+               the spotlight pocket isn't extreme — the previous
+               0.82 was too dark, making the spotlight feel like
+               a flashbulb. 0.62 keeps the room clearly darker
+               than the spotlight without blinding the eye when
+               the spotlight reveals the bright card. */
+            background: rgba(8, 6, 5, 0.62);
+            /* 520px spotlight hole with a softer ramp — the
+               transparent center extends further (45%) and the
+               falloff is more gradual (45→100%) so the edge of
+               the spotlight feels diffuse rather than a hard line. */
+            -webkit-mask-image: radial-gradient(
+              circle 520px at var(--cx, -9999px) var(--cy, -9999px),
+              transparent 0%,
+              transparent 45%,
+              rgba(0, 0, 0, 0.55) 75%,
+              black 100%
+            );
+            mask-image: radial-gradient(
+              circle 520px at var(--cx, -9999px) var(--cy, -9999px),
+              transparent 0%,
+              transparent 45%,
+              rgba(0, 0, 0, 0.55) 75%,
+              black 100%
+            );
+          }
+
+          /* ── Halftone edge band ──
+             Lichtenstein-style dot pattern painted in a RING
+             around the spotlight, matching the halftone in the
+             card's bottom-right corner. Two stacked radial-dot
+             grids at 7px / 12px cells give the print a real-paper
+             density gradient. The mask is a ring (transparent in
+             the bright center, opaque in the edge band, transparent
+             again outside) so the dots appear ONLY at the spotlight
+             rim — the dark outside stays solid, the bright center
+             stays clean, and the transition between them is a
+             halftone fade instead of a smooth gradient. */
+          .hero-halftone-edge {
+            position: absolute; inset: 0;
+            pointer-events: none;
+            z-index: 7;
+            background-image:
+              radial-gradient(circle, rgba(8, 6, 5, 0.95) 1.4px, transparent 1.7px),
+              radial-gradient(circle, rgba(8, 6, 5, 0.65) 0.9px, transparent 1.2px);
+            background-size: 7px 7px, 12px 12px;
+            background-position: 0 0, 3.5px 3.5px;
+            -webkit-mask-image: radial-gradient(
+              circle 580px at var(--cx, -9999px) var(--cy, -9999px),
+              transparent 0%,
+              transparent 38%,
+              rgba(0, 0, 0, 0.4) 50%,
+              black 65%,
+              black 78%,
+              rgba(0, 0, 0, 0.45) 90%,
+              transparent 100%
+            );
+            mask-image: radial-gradient(
+              circle 580px at var(--cx, -9999px) var(--cy, -9999px),
+              transparent 0%,
+              transparent 38%,
+              rgba(0, 0, 0, 0.4) 50%,
+              black 65%,
+              black 78%,
+              rgba(0, 0, 0, 0.45) 90%,
+              transparent 100%
+            );
+          }
 
           /* Faint paper-grain noise so the dark doesn't look CSS-flat */
           .hero::before {
@@ -209,10 +324,17 @@ export default function Hero() {
             background-position: 0 0, 1px 1px;
           }
 
-          /* ── The business card itself ── */
+          /* ── The business card itself ──
+             z-index 8 puts the card stage ABOVE the dim mask
+             (z:7), so the text is always readable regardless of
+             whether the cursor spotlight is on it or not. The dim
+             continues to cover the dark BG + cursor glow, creating
+             the spotlight illumination behind/around the card,
+             but the card content is no longer affected by the
+             reveal/dim cycle. ── */
           .bc-stage {
             position: relative;
-            z-index: 2;
+            z-index: 8;
             width: min(1080px, 92vw);
           }
 
@@ -309,6 +431,29 @@ export default function Hero() {
             0%   { opacity: 0; transform: rotate(-3deg) scale(0.6) translateY(-12px); }
             65%  { opacity: 1; transform: rotate(7deg)  scale(1.05); }
             100% { opacity: 1; transform: rotate(5deg)  scale(1); }
+          }
+
+          /* ── Card shade overlay ──
+             A dark layer painted INSIDE the business card,
+             between the paper background and the text grid. By
+             default it dims the paper (so the card reads as a
+             card sitting in a dark room), and fades to transparent
+             when the cursor enters the hero (.glow-active). The
+             text grid sits on top at z-index 2, so it's never
+             affected by this shade — text stays at its declared
+             color regardless of spotlight state. ── */
+          .bc-card-shade {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+            background: rgba(15, 18, 22, 0.42);
+            border-radius: inherit;
+            transition: opacity 0.45s var(--ease-out-quint);
+            opacity: 1;
+          }
+          .hero.glow-active .bc-card-shade {
+            opacity: 0;
           }
 
           /* ── Card grid: identity left, statement right ── */
@@ -602,21 +747,19 @@ export default function Hero() {
                 spare, so the viewer always sees a clean character
                 silhouette with the cut-off edge hidden under the
                 viewport's right boundary.
-                The wrapper holds positioning + parallax; the inner
-                img runs the entrance + idle wobble independently so
-                the two transforms compose without fighting. ── */
+                The wrapper just anchors the gif; the inner img
+                runs the entrance + idle wobble. No parallax — the
+                gif scrolls naturally with the hero section. ── */
           .bc-char-parallax {
             position: absolute;
             right: clamp(-16px, -1vw, -10px);
             bottom: clamp(-28px, -2vw, -8px);
-            z-index: 5;
+            /* Above the .hero-dim (z:7) so the character face
+               stays clearly visible even outside the spotlight —
+               it's the personality anchor of the page, never
+               buried under the dim. */
+            z-index: 8;
             pointer-events: none;
-            /* Parallax: JS sets --parallax-y from scroll. We translate
-               the wrapper, NOT the img, so charPeek + charIdle still
-               work on the inner element. */
-            --parallax-y: 0px;
-            transform: translate3d(0, var(--parallax-y), 0);
-            will-change: transform;
           }
           .bc-char-peek {
             display: block;
@@ -709,10 +852,25 @@ export default function Hero() {
           }
         `}</style>
 
-        <div className="hero-cursor-glow" ref={glowRef} aria-hidden />
+        <div className="hero-cursor-glow" aria-hidden />
+        {/* Spotlight dim — covers everything; the mask cuts a
+            transparent hole at the cursor so content is only
+            visible inside the spotlight. */}
+        <div className="hero-dim" aria-hidden />
+        {/* Halftone edge — Lichtenstein dot pattern painted in
+            a ring around the spotlight rim. Sits at the same
+            z-index as .hero-dim and adds a printed-paper fade
+            between the bright center and the dark outside. */}
+        <div className="hero-halftone-edge" aria-hidden />
 
         <div className="bc-stage">
           <article className="business-card" aria-label="Kathleen Li — designer business card">
+            {/* Card shade — darkens the paper by default; fades
+                to transparent when the cursor enters the hero so
+                the card paper is "responsive" to the spotlight.
+                Sits below .bc-grid (z:2) so text on top is never
+                affected by this overlay. */}
+            <span className="bc-card-shade" aria-hidden />
             {/* Halftone print bloom anchored to bottom-right corner */}
             <span className="bc-halftone" aria-hidden />
 
@@ -804,7 +962,6 @@ export default function Hero() {
             positions against the .hero, not against the card. */}
         <div
           className="bc-char-parallax"
-          ref={charWrapRef}
           aria-hidden
         >
           <img

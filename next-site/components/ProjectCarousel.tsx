@@ -7,6 +7,7 @@ import {
   useMotionValue,
   useReducedMotion,
 } from "framer-motion";
+import { useInView } from "@/lib/useInView";
 
 /**
  * ProjectCarousel — Framer port (exact).
@@ -199,6 +200,28 @@ export default function ProjectCarousel({
      the DOM transform, keeping the pill at 60fps and freeing the rest
      of the section from layout work on every move. */
   const sectionRef = useRef<HTMLElement | null>(null);
+  /* In-view flag for the section's scroll-reveal cascade. Reuses
+     the existing sectionRef (which the cursor pill also reads from).
+     Once visible, the observer disconnects so the reveal plays once. */
+  const [sectionInView, setSectionInView] = useState(false);
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") {
+      setSectionInView(true);
+      return;
+    }
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setSectionInView(true);
+          obs.disconnect();
+        }
+      },
+      { threshold: 0.18, rootMargin: "0px 0px -10% 0px" }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
   const cursorX = useMotionValue(0);
   const cursorY = useMotionValue(0);
   const onSectionMove = (e: React.MouseEvent<HTMLElement>) => {
@@ -335,41 +358,51 @@ export default function ProjectCarousel({
     return () => window.removeEventListener("resize", update);
   }, []);
 
-  /* Copy slide variants — pure horizontal translate, NO opacity fade.
-     Distance is the FULL viewport width plus a buffer so the outgoing
-     slide truly clears the screen edge on any monitor before the
-     incoming slide enters from the opposite side. */
+  /* Copy slide variants — horizontal translate + a CSS filter blur
+     while the content is OUTSIDE the bounded card. The blur lifts
+     while the slide is in flight (enter/exit), then sharpens to 0
+     as the slide lands at center; on the way out it blurs again.
+     Net effect: anything that isn't centered in the container reads
+     as out-of-focus — the bounded card holds the only sharp frame. */
   const slideDistance = prefersReducedMotion ? 0 : viewportW + 200;
+  const SLIDE_BLUR = prefersReducedMotion ? 0 : 10;
   const slideVariants = {
     enter: (dir: number) => ({
       x: dir > 0 ? slideDistance : -slideDistance,
+      filter: `blur(${SLIDE_BLUR}px)`,
     }),
-    center: { x: 0 },
+    center: { x: 0, filter: "blur(0px)" },
     exit: (dir: number) => ({
       x: dir > 0 ? -slideDistance : slideDistance,
+      filter: `blur(${SLIDE_BLUR}px)`,
     }),
   };
   const slideTransition = prefersReducedMotion
     ? { duration: 0 }
     : {
         x: { duration: 0.7, ease: EASE_EXPO },
+        filter: { duration: 0.55, ease: EASE_EXPO },
       };
 
   /* Folder-stage slide variants — same full-viewport travel + a
      small rotate so the folder feels physical when the carousel
-     pages. The folder leaves the OPPOSITE side from the description
-     so the two halves feel like one gesture (going next: description
+     pages, plus the same blur-while-out-of-center treatment. The
+     folder leaves the OPPOSITE side from the description so the
+     two halves feel like one gesture (going next: description
      slides off left, folder slides off right; going prev: mirrored). */
   const folderSlideDistance = prefersReducedMotion ? 0 : viewportW + 200;
+  const FOLDER_BLUR = prefersReducedMotion ? 0 : 12;
   const folderSlideVariants = {
     enter: (dir: number) => ({
       x: dir > 0 ? folderSlideDistance : -folderSlideDistance,
       rotate: dir > 0 ? 6 : -6,
+      filter: `blur(${FOLDER_BLUR}px)`,
     }),
-    center: { x: 0, rotate: 0 },
+    center: { x: 0, rotate: 0, filter: "blur(0px)" },
     exit: (dir: number) => ({
       x: dir > 0 ? -folderSlideDistance : folderSlideDistance,
       rotate: dir > 0 ? -6 : 6,
+      filter: `blur(${FOLDER_BLUR}px)`,
     }),
   };
   const folderSlideTransition = prefersReducedMotion
@@ -377,11 +410,12 @@ export default function ProjectCarousel({
     : {
         x: { duration: 0.75, ease: EASE_EXPO },
         rotate: { duration: 0.75, ease: EASE_EXPO },
+        filter: { duration: 0.6, ease: EASE_EXPO },
       };
 
   return (
     <section
-      className="projects-section"
+      className={`projects-section${sectionInView ? " in-view" : ""}`}
       id="projects"
       aria-label="Projects"
       onKeyDown={onKeyDown}
@@ -468,6 +502,12 @@ export default function ProjectCarousel({
           z-index: 1;
           display: flex;
           flex-direction: column;
+          /* Clip slide content to the bounded card. Combined with
+             the slideVariants' filter:blur on enter/exit, content
+             OUTSIDE the container reads as blurred + cropped at the
+             card's rounded edges, while only the centered (in-frame)
+             content is sharp and visible. */
+          overflow: hidden;
         }
 
         /* ── Section title: "Project Inventory" with squiggle underline ── */
@@ -553,10 +593,14 @@ export default function ProjectCarousel({
           border-radius: 4px;
         }
 
-        /* ── Main grid: copy left, folder stage right ── */
+        /* ── Main grid: copy left, folder stage right ──
+           Column minimums are kept modest so the two-column layout
+           still fits inside the bounded card after horizontal
+           padding. Below the responsive breakpoint the grid stacks
+           to a single centered column. */
         .pi-grid {
           display: grid;
-          grid-template-columns: minmax(280px, 0.9fr) minmax(360px, 1fr);
+          grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr);
           gap: clamp(20px, 3vw, 48px);
           align-items: center;
         }
@@ -815,16 +859,105 @@ export default function ProjectCarousel({
           will-change: transform, opacity;
         }
 
-        @media (max-width: 900px) {
+        /* ── Scroll-reveal cascade ──
+           Title, subtitle, tracker, and the bounded card frame fade
+           in with staggered delays once the section enters the
+           viewport. The internal carousel content (description,
+           folder, etc.) keeps its own framer-motion animations and
+           is exempted via .pi-grid > * (no .pi-reveal class). */
+        .projects-section .pi-reveal {
+          opacity: 0;
+          transform: translateY(30px);
+          transition:
+            opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+            transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .projects-section.in-view .pi-reveal {
+          opacity: 1;
+          transform: translateY(0);
+        }
+        .projects-section.in-view .pi-reveal[data-r="1"] { transition-delay: 0.05s; }
+        .projects-section.in-view .pi-reveal[data-r="2"] { transition-delay: 0.18s; }
+        .projects-section.in-view .pi-reveal[data-r="3"] { transition-delay: 0.30s; }
+
+        @media (prefers-reduced-motion: reduce) {
+          .projects-section .pi-reveal {
+            opacity: 1 !important;
+            transform: none !important;
+            transition: none !important;
+          }
+        }
+
+        /* Trigger the stack BEFORE the two-column grid crashes —
+           the bounded card has clamp(84px, 11%, 130px) horizontal
+           padding plus the side nav buttons, so once the viewport
+           is below ~1100px the inner content area becomes too narrow
+           for both columns to fit comfortably. Stacking earlier keeps
+           the layout readable instead of forcing word-per-line wraps. */
+        @media (max-width: 1100px) {
           .projects-section { padding: 64px 24px 96px; }
+          .projects-inner {
+            min-height: 0;
+            /* Side nav buttons get narrower at this breakpoint so
+               the inner content has room to breathe. */
+            padding: clamp(28px, 5vw, 48px) clamp(56px, 9vw, 96px) clamp(36px, 5vw, 56px);
+          }
+          /* Stacked layout — center each row so the carousel reads
+             as a single vertical column on narrow viewports.
+             NOTE: no justify-items:center here — that would shrink
+             grid items to their intrinsic width, which forces the
+             description to wrap word-per-line. Stretch is the default
+             and keeps each row at full column width; centering
+             happens via text-align + auto margins on inner elements. */
           .pi-grid {
             grid-template-columns: 1fr;
-            gap: 40px;
+            gap: 32px;
+            text-align: center;
+          }
+          .projects-copy {
+            width: 100%;
+            align-items: center;
+          }
+          .pi-title-wrap { text-align: center; }
+          .pi-title { font-size: clamp(2.4rem, 7vw, 3.4rem); }
+          .pi-subtitle { margin-left: auto; margin-right: auto; }
+          .project-name-row { justify-content: center; flex-wrap: wrap; }
+          .project-name { font-size: clamp(2rem, 6vw, 2.8rem); }
+          .project-description {
+            margin-left: auto;
+            margin-right: auto;
+            max-width: 36ch;
+          }
+          /* In stacked mode, drop the absolute-positioned slide
+             container — let the project name + description flow
+             naturally in document order so the description has full
+             column width to wrap and never overlaps the title above
+             or the folder below. The slide animations still run via
+             transform on whichever motion.div is mounted. */
+          .copy-stage {
+            position: static;
+            min-height: 0;
+            width: 100%;
+          }
+          .copy-stage > * {
+            position: relative !important;
+            inset: auto !important;
+            justify-content: flex-start !important;
           }
           .tracker-label { display: none; }
-          .tracker-mini { position: relative; top: 0; right: auto; margin-bottom: 8px; }
-          .folder-stage { height: 320px; }
-          .folder-button { width: clamp(220px, 60vw, 300px); }
+          .tracker-mini {
+            position: relative;
+            top: 0;
+            right: auto;
+            margin: 0 auto 8px;
+          }
+          .folder-stage { height: 320px; justify-content: center; }
+          .folder-button { width: clamp(200px, 50vw, 280px); }
+          /* Narrower side nav strips on small screens — but never
+             below 44px so the touch target meets the accessibility
+             minimum. */
+          .pi-nav { width: clamp(44px, 7%, 64px); }
+          .pi-nav-chev { width: clamp(18px, 1.6vw, 22px); height: clamp(32px, 3vw, 40px); }
         }
       `}</style>
 
@@ -881,14 +1014,14 @@ export default function ProjectCarousel({
         {/* ── Section title + subtitle that elaborates on what
             the section is about. ── */}
         <div className="pi-title-wrap">
-          <h2 className="pi-title">Project Inventory</h2>
-          <p className="pi-subtitle">
+          <h2 className="pi-title pi-reveal" data-r="1">Project Inventory</h2>
+          <p className="pi-subtitle pi-reveal" data-r="2">
             Projects I&apos;ve worked on — what problems I solved and how
           </p>
         </div>
 
         {/* ── Mini-folder tracker (top-right corner) ── */}
-        <div className="tracker-mini" role="tablist" aria-label="Project tracker">
+        <div className="tracker-mini pi-reveal" data-r="3" role="tablist" aria-label="Project tracker">
           {projects.map((p, i) => {
             const paint = FOLDER_PALETTE[i % FOLDER_PALETTE.length];
             const active = i === currentIndex;

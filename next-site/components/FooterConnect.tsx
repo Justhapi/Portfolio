@@ -46,9 +46,9 @@ export default function FooterConnect({
   resumeUrl = "",
   mindSpaceUrl = "",
   headline = "Connect With Me",
-  subtitle = "Always down to learn more from others",
+  subtitle = "Always down to chat, swap notes, or build something weird together.",
   mindSpaceLabel = "Mind Space",
-  copyright = "© 2026 Kathleen Li",
+  copyright = "Designed & built by Kathleen · West Lafayette, IN · 2026",
   sparkleCount = 16,
   animate = true,
 }: FooterConnectProps) {
@@ -330,6 +330,31 @@ export default function FooterConnect({
           margin: 0 0 8px 0;
           text-shadow: 0 2px 28px rgba(242,199,91,0.28);
         }
+        .${cls("kicker")} {
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          font-family: 'Caveat', cursive;
+          font-size: 22px;
+          font-weight: 500;
+          color: rgba(252, 246, 232, 0.72);
+          letter-spacing: 0.01em;
+          line-height: 1;
+          margin: 0 0 14px 0;
+          font-style: italic;
+        }
+        /* Tiny horizontal mark before the kicker — reads as a
+           hand-drawn dash, the kind of mark you'd scribble before
+           a margin note. Sized to feel light but intentional. */
+        .${cls("kicker")}::before {
+          content: "";
+          display: inline-block;
+          width: 22px;
+          height: 1.5px;
+          background: currentColor;
+          opacity: 0.55;
+          border-radius: 2px;
+        }
         .${cls("subtitle")} {
           font-family: 'Caveat', cursive;
           font-size: 22px;
@@ -337,7 +362,8 @@ export default function FooterConnect({
           color: white;
           opacity: 0.8;
           letter-spacing: 0.01em;
-          line-height: 1.1;
+          line-height: 1.25;
+          max-width: 38ch;
           margin: 0 0 72px 0;
         }
         .${cls("links")} {
@@ -589,6 +615,12 @@ export default function FooterConnect({
       </div>
       <div className={cls("grain")} aria-hidden="true" />
       <div className={cls("content")}>
+        {/* Hand-lettered kicker — one beat of personality before the
+            big heading. Reads like a sticky note Kathleen left
+            taped to the bottom of the page, not a section label. */}
+        <span className={cls("kicker")} aria-hidden>
+          <span>psst. you made it to the bottom.</span>
+        </span>
         <h2 id={headingId} className={cls("heading")}>
           {headline}
         </h2>
