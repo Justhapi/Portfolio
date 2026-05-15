@@ -1,42 +1,23 @@
-import GlassShapes from "@/components/GlassShapes";
-import Hero from "@/components/Hero";
-import SiteNav from "@/components/SiteNav";
-import ProjectCarousel from "@/components/ProjectCarousel";
-import FooterConnect from "@/components/FooterConnect";
-import AboutMe from "@/components/AboutMe";
-import StatusCheck from "@/components/StatusCheck";
+import HeroV2 from "@/components/HeroV2";
+import ProjectsV2 from "@/components/ProjectsV2";
+import AboutV2 from "@/components/AboutV2";
+import LearningsV2 from "@/components/LearningsV2";
+import ConnectV2 from "@/components/ConnectV2";
+import SiteNavV2 from "@/components/SiteNavV2";
+import RevealOnScroll from "@/components/RevealOnScroll";
 
 export default function Home() {
   return (
     <>
-      {/* Glasslike parallax shapes — placeholders until SVGs land. */}
-      <GlassShapes />
-
-      <main className="page-shell">
-        {/* Hero — sticky-note business card on a dark spotlight stage.
-            Sized so it shares the first viewport with SiteNav (height
-            is calc(100vh - var(--nav-h)) on .hero, see Hero.tsx). */}
-        <Hero />
-
-        {/* Sticky navigation — sits between hero and projects in
-            document flow, then sticks to the top of the viewport
-            once the user scrolls past it. */}
-        <SiteNav />
-
-        {/* Project Inventory — bounded card with folder carousel. */}
-        <ProjectCarousel />
-
-        {/* Status Check — current-tasks progress sketch. */}
-        <StatusCheck />
-
-        {/* About me — hand-lettered teal sketchbook section. */}
-        <AboutMe />
-
-        {/* Slate-blue ready-check footer */}
-        <div id="footer">
-          <FooterConnect />
-        </div>
+      <SiteNavV2 />
+      <main className="portfolio-v2">
+        <HeroV2 />
+        <ProjectsV2 />
+        <AboutV2 />
+        <LearningsV2 />
+        <ConnectV2 />
       </main>
+      <RevealOnScroll />
     </>
   );
 }

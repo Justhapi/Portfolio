@@ -170,26 +170,42 @@ export default function SpotlightOverlay(props) {
                 }}
             />
 
-            {/* ── HALFTONE EDGE ──
-                Two stacked radial-dot grids painted in a RING
-                around the spotlight (mask is transparent in the
-                bright center, opaque in the edge band, transparent
-                again outside). Adds a printed-paper transition
-                between the bright pocket and the dim outside. */}
+            {/* ── HALFTONE EDGE — DIM-WITH-HOLES ──
+                Instead of painting dark dots ON TOP of the dim,
+                this layer is the dim color with DOT-SHAPED HOLES
+                punched through it. A composite mask combines a
+                dot pattern (dots are transparent) with the ring
+                mask (only opaque in the spotlight edge band) via
+                `mask-composite: intersect`, so the holes appear
+                ONLY in the edge zone.
+                Layered on top of the smooth dim, the result is a
+                Lichtenstein-style halftone fade: the dim
+                "dissolves" through dot-shaped windows as it
+                approaches the bright spotlight pocket, instead of
+                fading via a smooth gradient. */}
             {halftoneEnabled && (
                 <div
                     style={{
                         position: "absolute",
                         inset: 0,
-                        backgroundImage: `
-              radial-gradient(circle, ${halftoneDotColor} ${halftoneDotSize * 0.2}px, transparent ${halftoneDotSize * 0.24}px),
-              radial-gradient(circle, ${halftoneDotColor} ${halftoneDotSize * 0.13}px, transparent ${halftoneDotSize * 0.17}px)
+                        background: dimColor,
+                        opacity: dimOpacity,
+                        WebkitMaskImage: `
+              radial-gradient(circle, transparent ${halftoneDotSize * 0.3}px, black ${halftoneDotSize * 0.42}px),
+              ${halftoneMask}
             `,
-                        backgroundSize: `${halftoneDotSize}px ${halftoneDotSize}px, ${halftoneDotSize * 1.7}px ${halftoneDotSize * 1.7}px`,
-                        backgroundPosition: `0 0, ${halftoneDotSize * 0.5}px ${halftoneDotSize * 0.5}px`,
-                        WebkitMaskImage: halftoneMask,
-                        maskImage: halftoneMask,
-                        opacity: pos.active ? 1 : 0,
+                        WebkitMaskSize: `${halftoneDotSize}px ${halftoneDotSize}px, 100% 100%`,
+                        WebkitMaskRepeat: "repeat, no-repeat",
+                        WebkitMaskComposite: "source-in",
+                        maskImage: `
+              radial-gradient(circle, transparent ${halftoneDotSize * 0.3}px, black ${halftoneDotSize * 0.42}px),
+              ${halftoneMask}
+            `,
+                        maskSize: `${halftoneDotSize}px ${halftoneDotSize}px, 100% 100%`,
+                        maskRepeat: "repeat, no-repeat",
+                        maskComposite: "intersect",
+                        WebkitBackdropFilter: dimBlur > 0 ? `blur(${dimBlur}px)` : undefined,
+                        backdropFilter: dimBlur > 0 ? `blur(${dimBlur}px)` : undefined,
                         transition: `opacity ${transitionMs}ms cubic-bezier(0.16, 1, 0.3, 1)`,
                     }}
                 />
