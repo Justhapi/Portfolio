@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Artist · Designer — handwriting animation</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<style>
+  :root {
+    --hero-bg: #1b1a17;
+    --hero-fg: #f4ecd6;
+    --hero-fg-soft: rgba(244, 236, 214, 0.6);
+    --f-mono: "JetBrains Mono", ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 40%, #221f1b 0%, #161310 100%);
+    color: var(--hero-fg);
+    font-family: var(--f-mono);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .stage {
+    position: relative;
+    width: min(1100px, 92vw);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+  }
+  .wordmark { width: 100%; display: block; overflow: visible; }
+  .sub {
+    font-family: var(--f-mono);
+    font-size: 10px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--hero-fg-soft);
+    opacity: 0;
+    animation: fadeIn 600ms ease forwards;
+    animation-delay: var(--sub-delay, 3400ms);
+  }
+  @keyframes fadeIn { to { opacity: 1; } }
+
+  .replay-btn {
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    z-index: 10;
+    background: rgba(244, 236, 214, 0.08);
+    border: 1px solid rgba(244, 236, 214, 0.2);
+    color: var(--hero-fg);
+    font-family: var(--f-mono);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 10px 16px;
+    border-radius: 999px;
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+    transition: background 180ms ease, transform 180ms ease;
+  }
+  .replay-btn:hover { background: rgba(244, 236, 214, 0.14); transform: translateY(-1px); }
+
+  .scene-note {
+    position: fixed;
+    top: 24px;
+    left: 24px;
+    font-family: var(--f-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--hero-fg-soft);
+    max-width: 320px;
+    line-height: 1.6;
+  }
+  .scene-note strong { color: var(--hero-fg); font-weight: 500; }
+</style>
+</head>
+<body style="background-color: rgb(255, 255, 255)">
+  <div class="scene-note">
+    <strong>Hero wordmark</strong> · letter drop reveal<br/>
+    the i bounces, knocking its dot into the star
+  </div>
+
+  <div id="root"></div>
+
+  <script type="text/babel" src="tweaks-panel.jsx"></script>
+  <script type="text/babel" src="wordmark.jsx"></script>
+  <script type="text/babel" src="main.jsx"></script>
+</body>
+</html>

@@ -6,42 +6,73 @@
    KATHLEEN LI — Portfolio (v3 — ported from Claude Design Portoflio)
    ===================================================== */
 
-@import url("https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Caveat:wght@400;600&family=Long+Cang&display=swap");
+/* Type stack — designer-coder hybrid.
+   Fraunces (variable, opsz/wght/SOFT/WONK) for headings — its SOFT axis
+   rounds the corners and WONK toggles in the quirky alternate letterforms
+   (the "drawn by hand, not a CAD file" feel a designer's portfolio wants).
+   Space Grotesk for body — geometric construction with idiosyncratic
+   terminals reads as designer-coder, not the generic Vercel/Inter sans
+   that's become AI-generation shorthand.
+   JetBrains Mono stays for code-flavored labels; Caveat stays for
+   genuine handwriting accents; Long Cang for 李曦. */
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..700,0..100,0..1;1,9..144,300..700,0..100,0..1&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Caveat:wght@400;600&family=Long+Cang&display=swap");
 
 :root {
-  /* palette tokens (driven by Tweaks) */
+  /* palette tokens — "Film of the Sea" stack.
+     Four cinematic hues from the source swatches:
+       Deep Ink   #0F1217 — near-black with a navy cast (hero stage)
+       Ocean Blue #276866 — dark teal              (chip-blue role)
+       Fog Aqua   #87BAAB — muted sage             (chip-green role)
+       Soft Shell #C68D5F — warm peachy tan        (accent role)
+     Each new hue is mapped onto whichever existing role it most
+     closely resembles by lightness + temperature, so the palette
+     swap is recoloring rather than relayout. */
   --bg: #F4EFE6;
   --bg-2: #EBE5DA;
   --paper: #FBF7EE;
   --fg: #1A1714;
   --fg-soft: #3D3530;
   --muted: #7A6F66;
-  --accent: #B5532E;
-  --accent-soft: #D49075;
+  /* Accent: was burnt-terracotta #B5532E, now the warm tan Soft Shell.
+     accent-soft tracks one step lighter so highlight states still
+     have a hierarchy. */
+  --accent: #C68D5F;
+  --accent-soft: #D9A983;
   --line: rgba(26, 23, 20, 0.12);
   --line-soft: rgba(26, 23, 20, 0.06);
   --ink-soft: #6B5D54;
 
-  /* dark hero stage */
-  --hero-bg: #1A1F22;
-  --hero-bg-2: #20262A;
+  /* Dark hero stage — Deep Ink as the new ground, with a slightly
+     lighter sibling for hero-bg-2 (where surfaces sit one step above
+     the stage). hero-bg-deep keeps its semi-transparent role — the
+     RGB triplet shifts to match the new Deep Ink so the nav/glass
+     surfaces darken with the same family rather than a stray near-black. */
+  --hero-bg: #0F1217;
+  --hero-bg-2: #161B21;
   --hero-fg: #F6EFDC;
-  --hero-bg-deep: rgba(10, 12, 14, 0.8);  /* nav + active-highlight darkening */
-  --hero-bg-deep-scrolled: rgba(6, 8, 10, 0.92);
+  --hero-bg-deep: rgba(15, 18, 23, 0.85);
+  --hero-bg-deep-scrolled: rgba(8, 10, 14, 0.94);
 
-  /* sticker palette (muted to match latest sketches) */
-  --chip-blue: #3F5872;
+  /* Sticker palette.
+     chip-blue → Ocean Blue (dark teal swap for the slate blue).
+     chip-green → Fog Aqua, which is much lighter than the old muted
+       green; flip its ink to the dark --fg so the label stays
+       readable on the lighter background.
+     chip-yellow and chip-red have no close match in the new four,
+     so they stay as-is — they remain the warm yellow and deep red
+     accents from the existing sticker collage. */
+  --chip-blue: #276866;
   --chip-blue-ink: #F4ECD8;
   --chip-yellow: #C7A24A;
   --chip-yellow-ink: #1A1714;
-  --chip-green: #6F8F5A;
-  --chip-green-ink: #F4ECD8;
+  --chip-green: #87BAAB;
+  --chip-green-ink: #1A1714;
   --chip-red: #8E3A3A;
   --chip-red-ink: #F4ECD8;
 
   /* fonts */
-  --f-serif: "Spectral", Georgia, serif;
-  --f-sans: "Geist", ui-sans-serif, system-ui, sans-serif;
+  --f-serif: "Fraunces", Georgia, serif;
+  --f-sans: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
   --f-mono: "JetBrains Mono", ui-monospace, monospace;
   --f-hand: "Caveat", cursive;
   --f-hand-zh: "Long Cang", cursive;
@@ -64,6 +95,38 @@ html, body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  /* Slashed zero everywhere — a small code-aesthetic tell that
+     numbers in copy ("4 min read", "2025—", "05/07/26") read as
+     typed-out values, not generic body text. Space Grotesk and
+     JetBrains Mono both ship the `zero` feature; on fonts that
+     don't have it the setting is silently ignored. */
+  font-feature-settings: "zero" 1;
+  font-optical-sizing: auto;
+}
+
+/* Headings using --f-serif resolve to Fraunces (variable). Set its
+   character axes once globally so every serif heading inherits the
+   personality without per-class overrides:
+     opsz 144  → display-optical glyph forms (sharper terminals on
+                 the large titles, fewer awkward joins on small ones)
+     SOFT 50   → soft-corner alternates (the rounded, drawn-by-marker
+                 feel, halfway between Fraunces' crisp and pillowy ends)
+     WONK 1    → quirky alternates ON (the wonky 'g', flared 'r', etc.)
+   The variation settings are inherited by any element that picks up
+   --f-serif via font-family — they're ignored on non-variable fonts. */
+h1, h2, h3, h4, h5, h6,
+.h,
+.title,
+.case-title,
+.section-head .h,
+.connect-pitch,
+.folder .blurb,
+.about-copy .lead,
+.case-section h2,
+.mindspace-blurb,
+.sticker.name-yellow .name-en,
+.sticker.designing-green .d-text {
+  font-variation-settings: "opsz" 144, "SOFT" 50, "WONK" 1;
 }
 
 body {
@@ -94,7 +157,10 @@ h1.ribbon-artist, h2.h { margin: 0; font-weight: inherit; }
   outline-offset: 4px;
   border-radius: 999px;
 }
-.folder:focus-visible {
+/* Focus ring sits on the .folder-art Link now (the only clickable
+   element in each project row) so keyboard users land on the
+   artwork — not on a wrapping div that does nothing. */
+.folder-art:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 8px;
   border-radius: 4px;
@@ -221,16 +287,37 @@ h1.ribbon-artist, h2.h { margin: 0; font-weight: inherit; }
   position: fixed;
   top: 0; left: 0; right: 0;
   z-index: 50;
-  padding: 18px 0;
-  background: var(--hero-bg-deep);
-  backdrop-filter: saturate(140%) blur(10px);
-  -webkit-backdrop-filter: saturate(140%) blur(10px);
-  border-bottom: 1px solid rgba(246, 239, 220, 0.06);
+  padding: 14px 0;
+  background: transparent;
+  border-bottom: none;
   color: var(--hero-fg);
-  transition: padding 280ms var(--ease-out-quart);
-  /* first-load entrance: nav is the last beat, all inside the first second */
-  animation: navSlideIn 240ms cubic-bezier(0.22, 1, 0.36, 1) 760ms backwards;
+  /* Hidden while the viewer is in the hero — the nav-mark and the
+     individual nav links each carry their own dark pill-backdrops,
+     so once revealed the bar itself can stay transparent and ride
+     over whichever section the viewer is on. body.on-paper is
+     toggled in HeroV2.tsx at scrollY > 70% of the viewport height,
+     so the nav reveals as the hero is on its way off-screen. */
+  opacity: 0;
+  transform: translateY(-100%);
+  pointer-events: none;
+  transition:
+    opacity 320ms ease,
+    transform 520ms var(--ease-out-quart);
 }
+/* Past the hero: slide the nav in from the top + fade up to full
+   opacity. The pointer-events flip is what actually re-enables
+   clicking — without it the bar would be invisibly intercepting
+   nothing, which is the goal. */
+body.on-paper .nav {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* Kept here for .case-nav (case-study pages) which still uses a
+   first-load drop-in entrance. The portfolio-index nav doesn't
+   reference this keyframe anymore — its reveal is driven by the
+   .nav / body.on-paper .nav transition above. */
 @keyframes navSlideIn {
   from {
     opacity: 0;
@@ -240,10 +327,6 @@ h1.ribbon-artist, h2.h { margin: 0; font-weight: inherit; }
     opacity: 1;
     transform: translateY(0);
   }
-}
-body.scrolled .nav {
-  padding: 10px 0;
-  background: rgba(10, 12, 14, 0.85);
 }
 
 .nav-inner {
@@ -269,6 +352,12 @@ body.scrolled .nav {
   font-family: var(--f-serif);
   font-size: 22px;
   letter-spacing: -0.01em;
+  /* The .nav-inner grid uses `1fr auto 1fr`, and grid items default
+     to `justify-self: stretch`, which was stretching this pill to
+     fill its entire 1fr cell — producing a wide dark strip extending
+     to the right of "Kathleen Li". Anchoring to `start` sizes the
+     pill to its content (text + padding) only. */
+  justify-self: start;
   /* hidden in hero — slides in once viewer is past the hero section */
   opacity: 0;
   transform: translateX(-12px);
@@ -631,24 +720,19 @@ body.on-paper .nav-pill {
 .string svg { display: block; overflow: visible; }
 .string path { stroke: rgba(246, 239, 220, 0.35); stroke-width: 1; fill: none; }
 
-/* artist x designer connected ligature ribbon */
+/* Artist · Designer wordmark — single SVG with custom star/dot ligature */
 .ribbon-artist {
   position: absolute;
   top: 92px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  align-items: baseline;
-  gap: 0;
-  font-family: var(--f-serif);
-  font-size: clamp(56px, 8vw, 96px);
-  font-style: italic;
-  letter-spacing: -0.02em;
-  color: var(--hero-fg);
+  flex-direction: column;
+  align-items: center;
   z-index: 9;
-  white-space: nowrap;
-  /* Title is written out left → right via a clip-path reveal.
-     `-2%` on either side prevents the strokes from clipping at the very edges. */
+  width: min(78vw, 880px);
+  color: var(--hero-fg);
+  /* Title is written out left → right via a clip-path reveal. */
   animation: ribbonWriteIn 900ms cubic-bezier(0.7, 0, 0.25, 1) 80ms backwards;
 }
 @keyframes ribbonWriteIn {
@@ -663,43 +747,25 @@ body.on-paper .nav-pill {
     -webkit-clip-path: inset(-4% -2% -4% -2%);
   }
 }
-.ribbon-artist .word {
-  position: relative;
-  display: inline-block;
-}
-.ribbon-artist .ligature {
-  position: relative;
-  display: inline-block;
-  width: 1.18em;
-  height: 1em;
-  margin: 0 -0.06em;
-  vertical-align: -0.05em;
-}
-.ribbon-artist .ligature svg {
-  position: absolute;
-  inset: 0;
+/* The wordmark SVG is now rendered by <ArtistDesignerWordmark />, which
+   handles its own paths, fills (var(--hero-fg)), and animation timeline. */
+.wordmark {
+  display: block;
   width: 100%;
-  height: 100%;
-  overflow: visible;
+  height: auto;
 }
-/* Star = "t" crossbar. D-bowl = "D". Inner dot = "·" (to). */
-.ribbon-artist .ligature .lig-star {
-  fill: var(--hero-fg);
-}
-.ribbon-artist .ligature .lig-d {
-  fill: none;
-  stroke: var(--hero-fg);
-  stroke-width: 4;
-  stroke-linejoin: round;
-}
-.ribbon-artist .ligature .lig-dot {
-  fill: var(--hero-fg);
+/* visually-hidden text for screen readers — the SVG is aria-hidden */
+.visually-hidden {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 .ribbon-artist .sub {
-  position: absolute;
-  top: calc(100% + 12px);
-  left: 0; right: 0;
-  text-align: center;
+  margin-top: 14px;
   font-family: var(--f-mono);
   font-style: normal;
   font-size: 10px;
@@ -966,11 +1032,14 @@ body.on-paper .nav-pill {
   display: block;
 }
 
+/* Projects stack vertically — one project per row. Big breathing
+   room between rows so each project gets its own moment of attention
+   (Arjun-R style: scroll through, each one fills the viewport). */
 .folder-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 48px 32px;
-  margin-top: 24px;
+  grid-template-columns: 1fr;
+  gap: clamp(72px, 12vw, 144px);
+  margin-top: 40px;
 }
 
 /* Project folders — ONLY the folder SVG jumps in with a bounce. The text
@@ -995,12 +1064,49 @@ body.on-paper .nav-pill {
   60%  { opacity: 1; }
   100% { opacity: 1; transform: translateY(0)    scale(1);    }
 }
+/* Each project: text-left / artwork-right, side by side.
+   The ratio leans toward the art so the folder reads at a comfortable
+   size; the copy column stays tight (~5fr) so a 50–60ch headline wraps
+   naturally without filling half the page. .folder is now a plain
+   <div> — only the .folder-art Link inside is clickable, so clicks
+   on the copy column do nothing. */
 .folder {
   position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  column-gap: clamp(40px, 6vw, 96px);
+  align-items: center;
+  color: inherit;
+}
+/* The Link now lives on .folder-art; reset its default <a> styling
+   so it visually behaves like the div it replaced, and place it in
+   the right-hand grid column. */
+.folder > .folder-art {
   display: block;
   color: inherit;
   text-decoration: none;
   cursor: pointer;
+  grid-column: 2;
+  grid-row: 1;
+}
+.folder > .folder-copy { grid-column: 1; grid-row: 1; }
+.folder-copy {
+  display: flex;
+  flex-direction: column;
+  /* min-width: 0 lets long titles wrap inside the grid track instead
+     of forcing the column to expand and squeezing the art. */
+  min-width: 0;
+}
+/* On narrow viewports, fall back to a single-column stack — text on
+   top, art beneath. The .folder-art keeps its 280px height, so it
+   stays readable without dominating the screen on mobile. */
+@media (max-width: 820px) {
+  .folder {
+    grid-template-columns: 1fr;
+    row-gap: 24px;
+  }
+  .folder > .folder-art { grid-column: 1; grid-row: 2; }
+  .folder > .folder-copy { grid-column: 1; grid-row: 1; }
 }
 /* cursor-following read-time pill */
 .read-pill {
@@ -1040,8 +1146,12 @@ body.on-paper .nav-pill {
 }
 .folder-art {
   position: relative;
-  height: 280px;
-  margin-bottom: 24px;
+  /* Bigger than the old 280px now that the artwork has its own column.
+     The clamp lets the folder breathe on wide screens without taking
+     over on smaller ones; min-height keeps the hit area generous
+     during the morph's translate-up. */
+  height: clamp(320px, 32vw, 460px);
+  margin-bottom: 0;
 }
 .folder-svg {
   position: absolute;
@@ -1049,34 +1159,187 @@ body.on-paper .nav-pill {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 600ms var(--ease-out-expo);
+  /* Wrapper-level idle float — runs continuously regardless of hover
+     state, so the artwork feels "alive" in both the closed AND open
+     resting poses. The float composes with each child SVG's own
+     transform (the closed's `-4deg` tilt, the open's hover-pose, or
+     the morph keyframes mid-transition), so motion stacks rather
+     than fighting. This base rule is only a fallback — the per-folder
+     :nth-child rules below give each folder its own period, keyframe
+     variant, and negative phase offset so the row never floats in
+     unison (unison reads as the whole row sliding, not as individual
+     folders floating). */
+  animation: folderFloat 5400ms ease-in-out infinite;
 }
-/* hover scope is .folder-art — only when the cursor is over the artwork, not the text below */
-.folder-art:hover .folder-svg { transform: translateY(-6px) rotate(-1.5deg); }
 .folder-svg svg {
   position: absolute;
   width: 92%;
   height: auto;
+  /* SVGs default to `overflow: hidden` which clips the X-stars and
+     sparkle decorations that extend right up against (and slightly
+     past) the viewBox edge. Bleeding past the viewBox is intentional
+     on this artwork — let it through. */
+  overflow: visible;
   transition: transform 600ms var(--ease-out-expo), opacity 320ms ease;
 }
-/* default: only the closed folder is visible */
-.folder-svg svg.closed {
-  transform: rotate(-4deg);
-  opacity: 1;
+/* Four float variants — different amplitude, drift direction, rotation
+   sign, and peak position so no two folders trace the same arc. */
+@keyframes folderFloat {
+  0%, 100% { transform: translate(0, 0)      rotate(0deg); }
+  50%      { transform: translate(0, -8px)   rotate(-1deg); }
 }
+@keyframes folderFloatB {
+  0%, 100% { transform: translate(0, 0)      rotate(0deg); }
+  50%      { transform: translate(3px, -12px) rotate(1.3deg); }
+}
+@keyframes folderFloatC {
+  0%, 100% { transform: translate(0, 0)       rotate(0deg); }
+  45%      { transform: translate(-3px, -6px) rotate(-1.7deg); }
+}
+@keyframes folderFloatD {
+  0%, 100% { transform: translate(0, 0)       rotate(0deg); }
+  55%      { transform: translate(2px, -10px) rotate(0.8deg); }
+}
+/* Per-folder float: each gets a distinct keyframe variant, a distinct
+   period (4.9s–6.8s — no shared divisor, so they never resync), and a
+   negative delay so each one is already mid-cycle on first paint. The
+   delay is the 2nd time value in the shorthand. */
+.folder-row > .folder:nth-child(1) .folder-svg {
+  animation: folderFloatC 4900ms ease-in-out -1100ms infinite;
+}
+.folder-row > .folder:nth-child(2) .folder-svg {
+  animation: folderFloatB 6300ms ease-in-out -3700ms infinite;
+}
+.folder-row > .folder:nth-child(3) .folder-svg {
+  animation: folderFloatD 5500ms ease-in-out -900ms infinite;
+}
+.folder-row > .folder:nth-child(4) .folder-svg {
+  animation: folderFloat 6800ms ease-in-out -4200ms infinite;
+}
+.folder-row > .folder:nth-child(5) .folder-svg {
+  animation: folderFloatB 5100ms ease-in-out -2300ms infinite;
+}
+/* Closed (resting) state.
+   The wrapper-level `folderFloat` on `.folder-svg` handles the idle
+   motion for both states, so the closed silhouette itself stays
+   static at rest — its hover/un-hover morph keyframes set their own
+   transforms, which compose with the wrapper float. transform-origin
+   at the bottom makes the squeeze grow UPWARD during the morph,
+   anchoring the folder to its baseline. */
+/* The closed silhouette sits at 0.93× scale so its visual mass matches
+   the open folder once the open's contents (stickies + X-stars) extend
+   its perceived size. The outline path inside the closed SVG carries
+   `vector-effect="non-scaling-stroke"` (set in ProjectsV2.tsx) so the
+   white border keeps its original 6px width regardless of this scale. */
+.folder-svg svg.closed {
+  transform: rotate(-4deg) scale(0.93);
+  opacity: 1;
+  transform-origin: 50% 100%;
+}
+/* Open is HIDDEN at rest — parked at the squeezed-sliver-at-top pose so
+   that `openEnter` starts from a state continuous with the rest. The
+   matching `openExit` keyframe also ends here, so when a leave-animation
+   finishes the element settles back into this rule without a jump. */
 .folder-svg svg.open {
-  transform: rotate(-4deg) scale(0.96);
+  transform: translateY(-110px) scaleX(0.28) scaleY(1.18) rotate(-3deg);
   opacity: 0;
   pointer-events: none;
+  transform-origin: 50% 100%;
 }
-/* hover over the artwork only — swap closed → open */
-.folder-art:hover .folder-svg svg.closed {
-  opacity: 0;
+
+/* Morph: closed JUMPS UP + THINS to a sliver at the top, then the open
+   WIDENS and DESCENDS out of that same sliver into the rest pose. Both
+   layers reach an identical (y:-110, sx:0.28, sy:1.18) sliver at the
+   50% mark, where opacity instantaneously hands off from closed to
+   open. Because the two layers are geometrically identical at the swap
+   moment, there is no readable crossfade — it reads as one folder
+   morphing. Symmetric on un-hover. */
+.folder-art.folder-art--hovered .folder-svg svg.closed {
+  animation: closedExit 460ms var(--ease-out-quart) forwards;
 }
-.folder-art:hover .folder-svg svg.open {
-  transform: rotate(2deg) translateY(-4px) scale(1.02);
-  opacity: 1;
+.folder-art.folder-art--hovered .folder-svg svg.open {
+  animation: openEnter 460ms var(--ease-out-quart) forwards;
 }
+.folder-art.folder-art--leaving .folder-svg svg.closed {
+  animation: closedReturn 460ms var(--ease-out-quart) forwards;
+}
+.folder-art.folder-art--leaving .folder-svg svg.open {
+  animation: openExit 460ms var(--ease-out-quart) forwards;
+}
+
+/* closed leaves: lifts off the baseline FAST, thins to a sliver at the
+   top by the 45% mark. Opacity flips off at the swap point so the
+   incoming open layer (which flips on at the identical sliver pose)
+   takes over invisibly. The faster squeeze gives the morph snap.
+   0% matches the closed rest pose (scale 0.93). */
+@keyframes closedExit {
+  0%   { transform: rotate(-4deg) translateY(0)     scaleX(0.93) scaleY(0.93); opacity: 1; }
+  45%  { transform: rotate(-3deg) translateY(-110px) scaleX(0.28) scaleY(1.18); opacity: 1; }
+  46%  { transform: rotate(-3deg) translateY(-110px) scaleX(0.28) scaleY(1.18); opacity: 0; }
+  100% { transform: rotate(-3deg) translateY(-110px) scaleX(0.28) scaleY(1.18); opacity: 0; }
+}
+/* open enters: held invisible at the sliver pose through the lift,
+   snaps to opacity 1 at the swap, then descends with a squash on
+   landing and rebounds before settling — the bounce is in the
+   keyframe shape (translate + scale overshoot), not in the easing
+   curve, so the curve stays var(--ease-out-quart). */
+@keyframes openEnter {
+  0%   { transform: rotate(-3deg) translateY(-110px) scaleX(0.28) scaleY(1.18); opacity: 0; }
+  45%  { transform: rotate(-3deg) translateY(-110px) scaleX(0.28) scaleY(1.18); opacity: 0; }
+  46%  { transform: rotate(-3deg) translateY(-110px) scaleX(0.28) scaleY(1.18); opacity: 1; }
+  76%  { transform: rotate(2deg)  translateY(3px)    scaleX(1.08) scaleY(0.93); opacity: 1; }
+  90%  { transform: rotate(-1deg) translateY(-7px)   scaleX(0.99) scaleY(1.04); opacity: 1; }
+  100% { transform: rotate(0deg)  translateY(-4px)   scaleX(1.02) scaleY(1.02); opacity: 1; }
+}
+/* mirror of openEnter — closed RE-ENTERS from the sliver on un-hover,
+   with the same squash-and-rebound landing. Bounce magnitudes are
+   the original 6%/1%/3% deltas multiplied through the new 0.93 rest
+   scale so the rebound character feels the same at a smaller size. */
+@keyframes closedReturn {
+  0%   { transform: rotate(-3deg) translateY(-110px) scaleX(0.28) scaleY(1.18); opacity: 0; }
+  45%  { transform: rotate(-3deg) translateY(-110px) scaleX(0.28) scaleY(1.18); opacity: 0; }
+  46%  { transform: rotate(-3deg) translateY(-110px) scaleX(0.28) scaleY(1.18); opacity: 1; }
+  76%  { transform: rotate(-5deg) translateY(4px)    scaleX(0.986) scaleY(0.874); opacity: 1; }
+  90%  { transform: rotate(-3deg) translateY(-3px)   scaleX(0.921) scaleY(0.958); opacity: 1; }
+  100% { transform: rotate(-4deg) translateY(0)      scaleX(0.93)  scaleY(0.93);  opacity: 1; }
+}
+/* mirror of closedExit — open LEAVES upward into the sliver on un-hover. */
+@keyframes openExit {
+  0%   { transform: rotate(0deg)  translateY(-4px)   scaleX(1.02) scaleY(1.02); opacity: 1; }
+  45%  { transform: rotate(-3deg) translateY(-110px) scaleX(0.28) scaleY(1.18); opacity: 1; }
+  46%  { transform: rotate(-3deg) translateY(-110px) scaleX(0.28) scaleY(1.18); opacity: 0; }
+  100% { transform: rotate(-3deg) translateY(-110px) scaleX(0.28) scaleY(1.18); opacity: 0; }
+}
+
+/* X-stars and stickies INSIDE the open folder twinkle/drift while
+   the folder is shown. fill-box origins so each element scales around
+   its own bbox center (the rotated rects keep their rotation because
+   the inner <rect transform="rotate(...)"> composes with this <g>'s
+   transform). Staggered durations + delays so no two pulses sync. */
+.fo-xstar,
+.fo-sticky {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  will-change: transform, opacity;
+}
+.fo-xstar {
+  animation: foXstarTwinkle 2700ms var(--ease-out-quart) infinite;
+}
+.fo-xstar[data-fx-i="1"] { animation-duration: 3100ms; animation-delay: 0.45s; }
+.fo-xstar[data-fx-i="2"] { animation-duration: 2900ms; animation-delay: 0.95s; }
+.fo-sticky {
+  animation: foStickyDrift 4400ms var(--ease-out-quart) infinite;
+}
+.fo-sticky[data-fx-i="1"] { animation-duration: 5100ms; animation-delay: 0.6s; }
+@keyframes foXstarTwinkle {
+  0%, 100% { transform: scale(1)    rotate(0deg);   opacity: 1; }
+  50%      { transform: scale(1.08) rotate(6deg);   opacity: 0.85; }
+}
+@keyframes foStickyDrift {
+  0%, 100% { transform: translate(0, 0)     rotate(0deg); }
+  50%      { transform: translate(0, -3px)  rotate(0.7deg); }
+}
+
 .sparkles {
   position: absolute;
   inset: 0;
@@ -1095,6 +1358,35 @@ body.on-paper .nav-pill {
   0%, 100% { opacity: 0; transform: scale(0.6); }
   50%      { opacity: 0.9; transform: scale(1); }
 }
+
+/* Honor prefers-reduced-motion — fall back to the static rest state.
+   The closed folder loses its breath; the open folder's decorations
+   stop twinkling/drifting; the closed-state sparkles stop pulsing;
+   the morph collapses to an instant opacity-only swap. */
+@media (prefers-reduced-motion: reduce) {
+  .folder-svg,
+  .folder-svg svg.closed,
+  .fo-xstar,
+  .fo-sticky,
+  .spark {
+    animation: none !important;
+  }
+  /* morph: collapse the four-keyframe arc into an instant swap so
+     reduced-motion users still get the hover/un-hover state change
+     without any travel. */
+  .folder-art.folder-art--hovered .folder-svg svg.closed,
+  .folder-art.folder-art--hovered .folder-svg svg.open,
+  .folder-art.folder-art--leaving .folder-svg svg.closed,
+  .folder-art.folder-art--leaving .folder-svg svg.open {
+    animation: none !important;
+    transition: opacity 120ms ease !important;
+  }
+  .folder-art.folder-art--hovered .folder-svg svg.closed { opacity: 0; }
+  .folder-art.folder-art--hovered .folder-svg svg.open {
+    opacity: 1;
+    transform: rotate(0deg) translateY(-4px) scaleX(1.02) scaleY(1.02);
+  }
+}
 .folder .tag {
   font-family: var(--f-mono);
   font-size: 10px;
@@ -1103,19 +1395,25 @@ body.on-paper .nav-pill {
   color: var(--accent);
   margin-bottom: 8px;
 }
-.folder .title {
-  font-family: var(--f-serif);
-  font-size: 28px;
-  line-height: 1.05;
-  letter-spacing: -0.01em;
-  margin: 0 0 12px;
-}
 .folder .blurb {
-  font-size: 14.5px;
-  line-height: 1.55;
+  /* Fraunces (the display serif) instead of the body sans — with the
+     project title removed, the impact statement IS the card's headline,
+     so it carries the editorial serif. The SOFT/WONK variation axes are
+     inherited from the global font-variation-settings rule below, giving
+     it the hand-drawn personality rather than a flat, default look. */
+  font-family: var(--f-serif);
+  font-size: 19px;
+  line-height: 1.5;
+  letter-spacing: -0.005em;
   color: var(--fg-soft);
-  margin: 0 0 16px;
-  max-width: 38ch;
+  margin: 0 0 20px;
+  max-width: 46ch;
+}
+/* Bold the key phrases — what I did + why it mattered — and lift them
+   to full foreground so they read a notch darker than the soft body. */
+.folder .blurb strong {
+  font-weight: 700;
+  color: var(--fg);
 }
 .folder .meta {
   display: flex;
@@ -1126,6 +1424,9 @@ body.on-paper .nav-pill {
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--muted);
+  /* Meta now sits between the tag and the title, so it needs its own
+     bottom gap to separate the topic row from the headline. */
+  margin-bottom: 18px;
 }
 .folder .meta span::after {
   content: "·";
@@ -1285,33 +1586,6 @@ body.on-paper .nav-pill {
   position: relative;
   overflow: hidden;
 }
-/* Terracotta glow — anchored to section center, follows the cursor with a
-   soft 700ms lag via --blob-tx / --blob-ty set in JS. */
-.connect .blob-bg {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 880px;
-  height: 880px;
-  pointer-events: none;
-  background: radial-gradient(
-    closest-side,
-    rgba(181, 83, 46, 0.42),
-    rgba(181, 83, 46, 0.08) 55%,
-    transparent 75%
-  );
-  border-radius: 50%;
-  filter: blur(20px);
-  transform:
-    translate(-50%, -50%)
-    translate(var(--blob-tx, 0px), var(--blob-ty, 0px));
-  transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: transform;
-  z-index: 0;
-}
-@media (prefers-reduced-motion: reduce) {
-  .connect .blob-bg { transition: none; }
-}
 .connect .head { color: var(--hero-fg); }
 .connect-row {
   display: grid;
@@ -1387,7 +1661,11 @@ body.on-paper .nav-pill {
   color: rgba(246, 239, 220, 0.35);
   letter-spacing: 0.12em;
 }
-.c-link.is-pending:hover { padding-left: 0; }
+/* is-pending rows (LinkedIn, Resume) DO get the hover slide now too —
+   matches the email row's "bullet shifts on hover" feel. Since these
+   rows don't have a separate right-side element like the copy button,
+   shifting the whole row is functionally identical to shifting only
+   the bullet + label group. */
 
 /* ===== Mindspace badge in the Connect section header ===== */
 .mindspace-badge {
@@ -1440,9 +1718,20 @@ body.on-paper .nav-pill {
   text-decoration: none;
   transition: color 200ms ease, padding 280ms var(--ease-out-quart);
 }
+/* Hover slides the email's bullet + label right by 12px. Because
+   this padding lives on .c-email-main (the inner <a>) rather than
+   on the outer row, the COPY EMAIL button stays anchored to the
+   right — only the bullet point itself moves. */
 .c-email-main:hover {
   color: var(--hero-fg);
   padding-left: 12px;
+}
+/* Suppress the parent .c-link:hover padding shift on the email row
+   so the bullet's slide isn't compounded with a row-level shift
+   that would push the copy button off-axis too. LinkedIn and Resume
+   rows are unaffected — they still slide as a whole. */
+.c-link.c-email:hover {
+  padding-left: 0;
 }
 .c-email .c-spark {
   /* sparkle inside the email row still spins on email hover */
@@ -2120,7 +2409,7 @@ body.on-paper .nav-pill {
 
   .hero-stage { min-height: 720px; }
   .hero-polaroid { width: 280px; }
-  .ribbon-artist { font-size: 56px; top: 64px; }
+  .ribbon-artist { top: 64px; width: min(86vw, 640px); }
   .sticker.name-yellow { right: 4%; top: 32%; }
   .sticker.designing-green { left: 4%; bottom: 10%; width: 220px; }
   .hero-anno { display: none; }
@@ -2132,8 +2421,7 @@ body.on-paper .nav-pill {
 
 @media (max-width: 640px) {
   .hero-polaroid { width: 230px; padding: 12px 12px 50px; }
-  .ribbon-artist { font-size: 44px; top: 48px; }
-  .ribbon-artist .ligature { width: 36px; }
+  .ribbon-artist { top: 48px; width: min(92vw, 480px); }
   .nav-mark { font-size: 18px; }
   .nav-inner { grid-template-columns: 1fr; justify-items: center; }
   .star { display: none; }

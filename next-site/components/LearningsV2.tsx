@@ -28,13 +28,31 @@ type Card = {
   caption: string;
 };
 
+// Arjun-R-style parallax field: cards sit nearly flat (no 3D tilts,
+// minimal in-plane rotation) so the vertical-drift parallax becomes
+// the dominant motion when scrolling. Each card has a different
+// `rate` so adjacent cards never drift in lockstep, producing the
+// "river of layers flowing at different speeds" feel from
+// arjun-r.com's "I experiment a lot" section.
+//
+// rates: <1 lags behind the scroll, >1 races ahead. Spread across
+// 0.45–1.55 so the strongest cards visibly travel ~220px apart at
+// the section's scroll endpoints, while the calmest pair drift just
+// enough to read as alive.
+//
+//   l1: 0.45  — strongest lag (deepest)
+//   l2: 1.55  — strongest race (closest)
+//   l3: 0.70  — medium lag
+//   l4: 1.40  — medium race
+//   l5: 0.90  — soft lag (calmest)
+//   l6: 1.20  — soft race
 const CARDS: Card[] = [
-  { id: "l1", w: 270, h: 350, x: 11, y:  6, rot: -14, tilt:  8, lift: -3, z:  20, rate: 0.62, label: "drawing",        caption: "Sketchbook — life drawing" },
-  { id: "l2", w: 200, h: 240, x: 36, y:  0, rot:  12, tilt: -10, lift:  4, z: -30, rate: 1.24, label: "code",           caption: "CS minor — coding" },
-  { id: "l3", w: 290, h: 380, x: 70, y:  4, rot:  -6, tilt:  6, lift: -2, z:  40, rate: 0.84, label: "obsidian graph", caption: "Obsidian — design notes" },
-  { id: "l4", w: 230, h: 290, x:  9, y: 54, rot:   8, tilt:-12, lift:  6, z: -20, rate: 1.32, label: "travels",        caption: "Travels — Kyoto, 2025" },
-  { id: "l5", w: 250, h: 320, x: 44, y: 48, rot:  -3, tilt:  9, lift: -4, z:  10, rate: 0.92, label: "food",           caption: "Food maps — Lisbon" },
-  { id: "l6", w: 220, h: 300, x: 79, y: 58, rot:  14, tilt: -7, lift:  3, z: -10, rate: 1.12, label: "side art",       caption: "Field notes — observation" },
+  { id: "l1", w: 270, h: 350, x: 11, y:  6, rot: -3, tilt: 0, lift: 0, z: 0, rate: 0.45, label: "drawing",        caption: "Sketchbook — life drawing" },
+  { id: "l2", w: 200, h: 240, x: 36, y:  0, rot:  2, tilt: 0, lift: 0, z: 0, rate: 1.55, label: "code",           caption: "CS minor — coding" },
+  { id: "l3", w: 290, h: 380, x: 70, y:  4, rot: -1, tilt: 0, lift: 0, z: 0, rate: 0.70, label: "obsidian graph", caption: "Obsidian — design notes" },
+  { id: "l4", w: 230, h: 290, x:  9, y: 54, rot:  2, tilt: 0, lift: 0, z: 0, rate: 1.40, label: "travels",        caption: "Travels — Kyoto, 2025" },
+  { id: "l5", w: 250, h: 320, x: 44, y: 48, rot: -1, tilt: 0, lift: 0, z: 0, rate: 0.90, label: "food",           caption: "Food maps — Lisbon" },
+  { id: "l6", w: 220, h: 300, x: 79, y: 58, rot:  3, tilt: 0, lift: 0, z: 0, rate: 1.20, label: "side art",       caption: "Field notes — observation" },
 ];
 
 function buildTransform(c: Card, parallaxY: number) {
@@ -77,7 +95,13 @@ export default function LearningsV2() {
 
       els.forEach((el, i) => {
         const c = cards[i];
-        const offset = (clamped - 0.5) * 240 * (c.rate - 1);
+        // Amplitude 520 — strong enough that the layered river of
+        // cards visibly flows past each other during a scroll-through,
+        // matching the parallax intensity on arjun-r.com's "I
+        // experiment a lot" grid. With rates spread 0.45–1.55, the
+        // strongest cards travel ±229px between section entry and
+        // exit; the calmest pair (0.90 / 1.20) travel ±42–83px.
+        const offset = (clamped - 0.5) * 520 * (c.rate - 1);
         el.style.transform = buildTransform(c, offset);
       });
       raf = 0;

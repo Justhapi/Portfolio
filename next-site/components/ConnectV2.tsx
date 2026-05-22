@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import SparkleField from "@/components/SparkleField";
 
 /**
@@ -27,39 +27,6 @@ const SparkleBullet = () => (
 export default function ConnectV2() {
   const [copied, setCopied] = useState(false);
   const sectionRef = useRef<HTMLElement | null>(null);
-  const blobRef = useRef<HTMLDivElement | null>(null);
-
-  // Terracotta blob follows the cursor with a soft 700ms ease.
-  useEffect(() => {
-    const section = sectionRef.current;
-    const blob = blobRef.current;
-    if (!section || !blob) return;
-    if (window.matchMedia("(hover: none)").matches) return; // touch: skip
-
-    let raf = 0;
-    let nx = 0;
-    let ny = 0;
-
-    const apply = () => {
-      blob.style.setProperty("--blob-tx", `${nx.toFixed(1)}px`);
-      blob.style.setProperty("--blob-ty", `${ny.toFixed(1)}px`);
-      raf = 0;
-    };
-
-    const onMove = (e: MouseEvent) => {
-      const r = section.getBoundingClientRect();
-      // offset from section center
-      nx = e.clientX - (r.left + r.width / 2);
-      ny = e.clientY - (r.top + r.height / 2);
-      if (!raf) raf = requestAnimationFrame(apply);
-    };
-
-    section.addEventListener("mousemove", onMove);
-    return () => {
-      section.removeEventListener("mousemove", onMove);
-      if (raf) cancelAnimationFrame(raf);
-    };
-  }, []);
 
   const handleCopy = async () => {
     try {
@@ -90,7 +57,6 @@ export default function ConnectV2() {
       data-screen-label="05 Connect"
       ref={sectionRef}
     >
-      <div className="blob-bg" aria-hidden="true" ref={blobRef} />
       <div className="section-sparkles connect-sparkles" aria-hidden="true">
         <SparkleField count={10} />
       </div>
