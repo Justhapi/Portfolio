@@ -87,14 +87,15 @@ const FolderOpen = ({
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      {/* back folder cover — themed per project (the layer that peeks
-          out behind the front when the folder is open) */}
-      <path
-        d="M107.138 74.9883C109.281 65.3887 118.799 59.3439 128.399 61.4863L391.84 120.282C401.44 122.425 407.485 131.943 405.342 141.543L370.065 299.607C367.922 309.207 358.404 315.253 348.804 313.11L85.3628 254.314C75.7633 252.172 69.7186 242.653 71.8608 233.054L107.138 74.9883Z"
-        fill={back}
-        stroke="#FBF7EE"
-        strokeWidth="6.6785"
-      />
+      {/* back folder cover — animates in sync with front so both bottoms stay joined */}
+      <g className="fo-flap-back">
+        <path
+          d="M107.138 74.9883C109.281 65.3887 118.799 59.3439 128.399 61.4863L391.84 120.282C401.44 122.425 407.485 131.943 405.342 141.543L370.065 299.607C367.922 309.207 358.404 315.253 348.804 313.11L85.3628 254.314C75.7633 252.172 69.7186 242.653 71.8608 233.054L107.138 74.9883Z"
+          fill={back}
+          stroke="#FBF7EE"
+          strokeWidth="6.6785"
+        />
+      </g>
       {/* X-star (right side) — wrapped so it can twinkle on idle */}
       <g className="fo-xstar" data-fx-i="0">
       <path
@@ -150,22 +151,23 @@ const FolderOpen = ({
         strokeWidth="9.4612"
       />
       </g>
-      {/* front folder cover — themed per project (the main visible
-          face of the folder when open) */}
-      <path
-        d="M74.3975 77.3926L74.7295 77.4268L74.8184 77.4395L74.9053 77.4561L175.14 96.6309C177.546 97.0187 179.333 98.7419 180.421 100.582C181.546 102.484 182.186 104.895 182.218 107.543L183.015 115.071L326.721 141.54L326.761 141.547L326.801 141.556C331.518 142.544 335.292 145.06 337.819 148.936C340.252 152.667 341.378 157.42 341.417 162.808L363.455 298.693L363.562 299.352L363.407 300.001C361.209 309.245 351.604 314.758 342.21 312.79L78.9277 257.625L78.8584 257.61L78.79 257.593C73.8675 256.342 69.5145 254.918 66.1172 251.907C62.644 248.829 60.5773 244.481 59.2158 238.3L23.7461 104.127L23.7236 104.042L23.7061 103.955C23.0214 100.672 22.4543 98.0073 22.1533 95.9756C22.0014 94.9502 21.8991 93.9714 21.8984 93.0771C21.8978 92.2038 21.991 91.1979 22.3828 90.2295C22.8136 89.1647 23.5605 88.2621 24.623 87.667C25.5928 87.1239 26.6135 86.9569 27.4502 86.9092C28.6362 86.8416 30.0529 86.9957 31.5518 87.2168L33.0732 87.4551L33.1094 87.4609L33.1465 87.4678L70.7285 94.3896L69.0938 87.958L69.0352 87.7266L69.0098 87.4893C68.8611 86.0936 68.7472 84.0296 69.0801 82.2334C69.2407 81.3668 69.5742 80.1582 70.3984 79.1396C71.3329 77.9848 72.752 77.2759 74.3975 77.3926Z"
-        fill={front}
-      />
-      <path
-        d="M74.3975 77.3926L74.7295 77.4268L74.8184 77.4395L74.9053 77.4561L175.14 96.6309C177.546 97.0187 179.333 98.7419 180.421 100.582C181.546 102.484 182.186 104.895 182.218 107.543L183.015 115.071L326.721 141.54L326.761 141.547L326.801 141.556C331.518 142.544 335.292 145.06 337.819 148.936C340.252 152.667 341.378 157.42 341.417 162.808L363.455 298.693L363.562 299.352L363.407 300.001C361.209 309.245 351.604 314.758 342.21 312.79L78.9277 257.625L78.8584 257.61L78.79 257.593C73.8675 256.342 69.5145 254.918 66.1172 251.907C62.644 248.829 60.5773 244.481 59.2158 238.3L23.7461 104.127L23.7236 104.042L23.7061 103.955C23.0214 100.672 22.4543 98.0073 22.1533 95.9756C22.0014 94.9502 21.8991 93.9714 21.8984 93.0771C21.8978 92.2038 21.991 91.1979 22.3828 90.2295C22.8136 89.1647 23.5605 88.2621 24.623 87.667C25.5928 87.1239 26.6135 86.9569 27.4502 86.9092C28.6362 86.8416 30.0529 86.9957 31.5518 87.2168L33.0732 87.4551L33.1094 87.4609L33.1465 87.4678L70.7285 94.3896L69.0938 87.958L69.0352 87.7266L69.0098 87.4893C68.8611 86.0936 68.7472 84.0296 69.0801 82.2334C69.2407 81.3668 69.5742 80.1582 70.3984 79.1396C71.3329 77.9848 72.752 77.2759 74.3975 77.3926Z"
-        fill={`url(#${gradId})`}
-        style={{ mixBlendMode: "multiply" }}
-      />
-      <path
-        d="M74.3975 77.3926L74.7295 77.4268L74.8184 77.4395L74.9053 77.4561L175.14 96.6309C177.546 97.0187 179.333 98.7419 180.421 100.582C181.546 102.484 182.186 104.895 182.218 107.543L183.015 115.071L326.721 141.54L326.761 141.547L326.801 141.556C331.518 142.544 335.292 145.06 337.819 148.936C340.252 152.667 341.378 157.42 341.417 162.808L363.455 298.693L363.562 299.352L363.407 300.001C361.209 309.245 351.604 314.758 342.21 312.79L78.9277 257.625L78.8584 257.61L78.79 257.593C73.8675 256.342 69.5145 254.918 66.1172 251.907C62.644 248.829 60.5773 244.481 59.2158 238.3L23.7461 104.127L23.7236 104.042L23.7061 103.955C23.0214 100.672 22.4543 98.0073 22.1533 95.9756C22.0014 94.9502 21.8991 93.9714 21.8984 93.0771C21.8978 92.2038 21.991 91.1979 22.3828 90.2295C22.8136 89.1647 23.5605 88.2621 24.623 87.667C25.5928 87.1239 26.6135 86.9569 27.4502 86.9092C28.6362 86.8416 30.0529 86.9957 31.5518 87.2168L33.0732 87.4551L33.1094 87.4609L33.1465 87.4678L70.7285 94.3896L69.0938 87.958L69.0352 87.7266L69.0098 87.4893C68.8611 86.0936 68.7472 84.0296 69.0801 82.2334C69.2407 81.3668 69.5742 80.1582 70.3984 79.1396C71.3329 77.9848 72.752 77.2759 74.3975 77.3926Z"
-        stroke="#FBF7EE"
-        strokeWidth="6.6785"
-      />
+      {/* front folder cover — same float as back cover so both bottoms stay joined */}
+      <g className="fo-flap-front">
+        <path
+          d="M74.3975 77.3926L74.7295 77.4268L74.8184 77.4395L74.9053 77.4561L175.14 96.6309C177.546 97.0187 179.333 98.7419 180.421 100.582C181.546 102.484 182.186 104.895 182.218 107.543L183.015 115.071L326.721 141.54L326.761 141.547L326.801 141.556C331.518 142.544 335.292 145.06 337.819 148.936C340.252 152.667 341.378 157.42 341.417 162.808L363.455 298.693L363.562 299.352L363.407 300.001C361.209 309.245 351.604 314.758 342.21 312.79L78.9277 257.625L78.8584 257.61L78.79 257.593C73.8675 256.342 69.5145 254.918 66.1172 251.907C62.644 248.829 60.5773 244.481 59.2158 238.3L23.7461 104.127L23.7236 104.042L23.7061 103.955C23.0214 100.672 22.4543 98.0073 22.1533 95.9756C22.0014 94.9502 21.8991 93.9714 21.8984 93.0771C21.8978 92.2038 21.991 91.1979 22.3828 90.2295C22.8136 89.1647 23.5605 88.2621 24.623 87.667C25.5928 87.1239 26.6135 86.9569 27.4502 86.9092C28.6362 86.8416 30.0529 86.9957 31.5518 87.2168L33.0732 87.4551L33.1094 87.4609L33.1465 87.4678L70.7285 94.3896L69.0938 87.958L69.0352 87.7266L69.0098 87.4893C68.8611 86.0936 68.7472 84.0296 69.0801 82.2334C69.2407 81.3668 69.5742 80.1582 70.3984 79.1396C71.3329 77.9848 72.752 77.2759 74.3975 77.3926Z"
+          fill={front}
+        />
+        <path
+          d="M74.3975 77.3926L74.7295 77.4268L74.8184 77.4395L74.9053 77.4561L175.14 96.6309C177.546 97.0187 179.333 98.7419 180.421 100.582C181.546 102.484 182.186 104.895 182.218 107.543L183.015 115.071L326.721 141.54L326.761 141.547L326.801 141.556C331.518 142.544 335.292 145.06 337.819 148.936C340.252 152.667 341.378 157.42 341.417 162.808L363.455 298.693L363.562 299.352L363.407 300.001C361.209 309.245 351.604 314.758 342.21 312.79L78.9277 257.625L78.8584 257.61L78.79 257.593C73.8675 256.342 69.5145 254.918 66.1172 251.907C62.644 248.829 60.5773 244.481 59.2158 238.3L23.7461 104.127L23.7236 104.042L23.7061 103.955C23.0214 100.672 22.4543 98.0073 22.1533 95.9756C22.0014 94.9502 21.8991 93.9714 21.8984 93.0771C21.8978 92.2038 21.991 91.1979 22.3828 90.2295C22.8136 89.1647 23.5605 88.2621 24.623 87.667C25.5928 87.1239 26.6135 86.9569 27.4502 86.9092C28.6362 86.8416 30.0529 86.9957 31.5518 87.2168L33.0732 87.4551L33.1094 87.4609L33.1465 87.4678L70.7285 94.3896L69.0938 87.958L69.0352 87.7266L69.0098 87.4893C68.8611 86.0936 68.7472 84.0296 69.0801 82.2334C69.2407 81.3668 69.5742 80.1582 70.3984 79.1396C71.3329 77.9848 72.752 77.2759 74.3975 77.3926Z"
+          fill={`url(#${gradId})`}
+          style={{ mixBlendMode: "multiply" }}
+        />
+        <path
+          d="M74.3975 77.3926L74.7295 77.4268L74.8184 77.4395L74.9053 77.4561L175.14 96.6309C177.546 97.0187 179.333 98.7419 180.421 100.582C181.546 102.484 182.186 104.895 182.218 107.543L183.015 115.071L326.721 141.54L326.761 141.547L326.801 141.556C331.518 142.544 335.292 145.06 337.819 148.936C340.252 152.667 341.378 157.42 341.417 162.808L363.455 298.693L363.562 299.352L363.407 300.001C361.209 309.245 351.604 314.758 342.21 312.79L78.9277 257.625L78.8584 257.61L78.79 257.593C73.8675 256.342 69.5145 254.918 66.1172 251.907C62.644 248.829 60.5773 244.481 59.2158 238.3L23.7461 104.127L23.7236 104.042L23.7061 103.955C23.0214 100.672 22.4543 98.0073 22.1533 95.9756C22.0014 94.9502 21.8991 93.9714 21.8984 93.0771C21.8978 92.2038 21.991 91.1979 22.3828 90.2295C22.8136 89.1647 23.5605 88.2621 24.623 87.667C25.5928 87.1239 26.6135 86.9569 27.4502 86.9092C28.6362 86.8416 30.0529 86.9957 31.5518 87.2168L33.0732 87.4551L33.1094 87.4609L33.1465 87.4678L70.7285 94.3896L69.0938 87.958L69.0352 87.7266L69.0098 87.4893C68.8611 86.0936 68.7472 84.0296 69.0801 82.2334C69.2407 81.3668 69.5742 80.1582 70.3984 79.1396C71.3329 77.9848 72.752 77.2759 74.3975 77.3926Z"
+          stroke="#FBF7EE"
+          strokeWidth="6.6785"
+        />
+      </g>
       <defs>
         <linearGradient
           id={gradId}
@@ -227,10 +229,10 @@ const PROJECTS: Project[] = [
     readTime: "3 min read",
   },
   {
-    tag: "JourneyTrack · Designer", //need to update name to support NDA
+    tag: "AI Customer Journey Management Platform · Designer", //need to update name to support NDA
     blurb: (
       <>
-        I <strong>led concept ideation and exploration of an Ai Journey Map Maintenance Agent</strong>,{" "}
+        I <strong>led concept ideation and exploration of an AI Journey Map Maintenance Agent</strong>,{" "}
         to ensure its{" "}
         <strong> user trust and usage</strong>
       </>
@@ -299,6 +301,11 @@ export default function ProjectsV2() {
   // Pending "leaving → rest" timers, keyed by folder id, so a fast
   // re-enter mid-leave cancels the pending reset.
   const leavingTimers = useRef<Record<string, number>>({});
+  // The single folder currently holding the open/hovered pose. Only one
+  // folder may be open at a time — entering a new folder force-closes
+  // whatever this points at, covering cases where onMouseLeave never
+  // fired (e.g. a scroll sliding a new folder under a still cursor).
+  const hoveredId = useRef<string | null>(null);
   useEffect(() => {
     return () => {
       Object.values(leavingTimers.current).forEach((t) =>
@@ -307,15 +314,39 @@ export default function ProjectsV2() {
     };
   }, []);
 
-  const enterFolder = (id: string) => {
-    const pending = leavingTimers.current[id];
-    if (pending) {
-      window.clearTimeout(pending);
-      delete leavingTimers.current[id];
+  // Per-folder scroll reveal. Each folder card runs its entrance bounce
+  // only once IT scrolls into view — observed individually so a card
+  // further down the page doesn't fire its animation while still
+  // off-screen (the old approach staggered every folder at once the
+  // moment the top of the row appeared).
+  const [revealed, setRevealed] = useState<Record<string, boolean>>({});
+  const folderEls = useRef<Record<string, HTMLDivElement | null>>({});
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const reduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+    if (reduced) {
+      setRevealed(Object.fromEntries(PROJECTS.map((p) => [p.tag, true])));
+      return;
     }
-    setPhases((p) => ({ ...p, [id]: "hovered" }));
-  };
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (!e.isIntersecting) return;
+          const tag = (e.target as HTMLElement).dataset.folderTag;
+          if (tag) setRevealed((r) => (r[tag] ? r : { ...r, [tag]: true }));
+          io.unobserve(e.target);
+        });
+      },
+      { rootMargin: "-12% 0px", threshold: 0.12 }
+    );
+    Object.values(folderEls.current).forEach((el) => el && io.observe(el));
+    return () => io.disconnect();
+  }, []);
+
   const leaveFolder = (id: string) => {
+    if (hoveredId.current === id) hoveredId.current = null;
     setPhases((p) => ({ ...p, [id]: "leaving" }));
     const pending = leavingTimers.current[id];
     if (pending) window.clearTimeout(pending);
@@ -323,6 +354,21 @@ export default function ProjectsV2() {
       setPhases((p) => ({ ...p, [id]: "rest" }));
       delete leavingTimers.current[id];
     }, MORPH_MS);
+  };
+  const enterFolder = (id: string) => {
+    const pending = leavingTimers.current[id];
+    if (pending) {
+      window.clearTimeout(pending);
+      delete leavingTimers.current[id];
+    }
+    // Enforce one-at-a-time: if another folder is still holding the open
+    // pose, send it into its closing morph before this one opens — so two
+    // folders are never in the hovered state simultaneously.
+    if (hoveredId.current && hoveredId.current !== id) {
+      leaveFolder(hoveredId.current);
+    }
+    hoveredId.current = id;
+    setPhases((p) => ({ ...p, [id]: "hovered" }));
   };
 
   // track mouse globally only while a pill is showing
@@ -354,7 +400,7 @@ export default function ProjectsV2() {
           </div>
         </div>
 
-        <div className="folder-row reveal-stagger">
+        <div className="folder-row">
           {PROJECTS.map((p) => {
             const phase = phases[p.tag] ?? "rest";
             const folderArtClass =
@@ -367,7 +413,14 @@ export default function ProjectsV2() {
               // artwork is hit-testable. The grid layout still works
               // because `display: grid` is on .folder regardless of
               // element type.
-              <div className="folder" key={p.tag}>
+              <div
+                className={`folder${revealed[p.tag] ? " in" : ""}`}
+                key={p.tag}
+                ref={(el) => {
+                  folderEls.current[p.tag] = el;
+                }}
+                data-folder-tag={p.tag}
+              >
                 {/* Morph triggers, read-time pill, AND the actual
                     navigation hit-area all live on the .folder-art
                     Link — so the folder is the only thing that
@@ -376,7 +429,7 @@ export default function ProjectsV2() {
                 <Link
                   href={p.href}
                   className={folderArtClass}
-                  aria-label={`${p.title} — ${p.readTime}`}
+                  aria-label={`${p.tag} — ${p.readTime}`}
                   onMouseEnter={(e) => {
                     setPos({ x: e.clientX, y: e.clientY });
                     setHoverPill(p.readTime);
@@ -429,7 +482,6 @@ export default function ProjectsV2() {
           style={{ left: pos.x + 10, top: pos.y + 15 }}
           aria-hidden="true"
         >
-          <span className="read-pill-dot" />
           {hoverPill}
         </div>
       )}

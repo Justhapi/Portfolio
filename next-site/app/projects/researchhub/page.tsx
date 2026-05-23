@@ -29,9 +29,16 @@ export default function ResearchHubCaseStudy() {
 
           <h3>Problem Scope</h3>
           <p>
-            Undergrads at Purdue knew faculty did research but had <mark className="hl">no shared way to find which
-            labs were hiring</mark>, scoping, or about to wrap up. Faculty had the inverse problem — no consistent
-            surface to recruit student researchers from. Stack wanted a hub that <strong>closed the loop</strong>.
+            Purdue University's multitiude of research collaboration opportunities between students and faculty are
+            <mark className="hl"> spread throughout various websites </mark> without <mark className="hl"> a consistent method
+            of maintain research progression. </mark> Purdue Stack wanted to develop a platform that <strong>resolves both
+            issues with a streamlined platform.</strong>
+            <br></br>
+            <br></br>
+            Currently, the platform <mark className="hl"> functions in regards to initial usage </mark>
+            through research searching and creating along with account creating and profiling. 
+            This continuation project focuses primarily on <mark className="hl"> maintaining usage </mark> 
+            through assistance in <strong>tracking research progression and communication</strong>
           </p>
 
           <h3>Project Results</h3>

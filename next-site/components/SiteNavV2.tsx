@@ -2,14 +2,13 @@
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
-const SECTIONS = ["hero", "work", "about", "learnings", "connect"] as const;
+const SECTIONS = ["hero", "work", "about", "connect"] as const;
 type SectionId = (typeof SECTIONS)[number];
 
 const LABELS: Record<SectionId, string> = {
   hero: "Index",
   work: "Work",
   about: "About",
-  learnings: "Learnings",
   connect: "Connect",
 };
 
@@ -58,14 +57,66 @@ const NavSpark = () => (
   </svg>
 );
 
+/** Hamburger / close icon for the mobile menu toggle. */
+const MenuIcon = ({ open }: { open: boolean }) => (
+  <svg
+    className={`nav-menu-icon${open ? " is-open" : ""}`}
+    viewBox="0 0 20 20"
+    fill="none"
+    aria-hidden="true"
+    focusable="false"
+  >
+    {/* Top bar → becomes top arm of X */}
+    <line
+      className="bar bar-1"
+      x1="3" y1="5.5" x2="17" y2="5.5"
+      stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"
+    />
+    {/* Middle bar → fades out when open */}
+    <line
+      className="bar bar-2"
+      x1="3" y1="10" x2="17" y2="10"
+      stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"
+    />
+    {/* Bottom bar → becomes bottom arm of X */}
+    <line
+      className="bar bar-3"
+      x1="3" y1="14.5" x2="17" y2="14.5"
+      stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"
+    />
+  </svg>
+);
+
 export default function SiteNavV2() {
   const active = useActiveSection();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const navRef = useRef<HTMLElement | null>(null);
 
   // sliding highlight — measure the active link and translate to it.
-  // Uses ResizeObserver so the pill re-measures when its layout changes
-  // (e.g., the gap shrinks when transitioning from hero → out-of-hero).
   const pillRef = useRef<HTMLDivElement | null>(null);
   const [hl, setHl] = useState({ x: 0, y: 0, w: 0, h: 0, visible: false });
+
+  // Close on Escape, scroll, or outside click
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMenuOpen(false);
+    };
+    const onScroll = () => setMenuOpen(false);
+    const onOutside = (e: MouseEvent) => {
+      if (navRef.current && !navRef.current.contains(e.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    document.addEventListener("mousedown", onOutside);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("scroll", onScroll);
+      document.removeEventListener("mousedown", onOutside);
+    };
+  }, [menuOpen]);
 
   useLayoutEffect(() => {
     const pill = pillRef.current;
@@ -86,7 +137,6 @@ export default function SiteNavV2() {
     };
     measure();
 
-    // re-measure on pill resize (catches body.on-paper layout flip)
     const ro = new ResizeObserver(measure);
     ro.observe(pill);
     pill.querySelectorAll<HTMLElement>(".nav-link").forEach((el) => ro.observe(el));
@@ -99,7 +149,11 @@ export default function SiteNavV2() {
   }, [active]);
 
   return (
-    <nav className="nav" aria-label="Section navigation">
+    <nav
+      className={`nav${menuOpen ? " is-menu-open" : ""}`}
+      aria-label="Section navigation"
+      ref={navRef}
+    >
       <div className="nav-inner">
         <a
           className="nav-mark"
@@ -107,12 +161,15 @@ export default function SiteNavV2() {
           onClick={(e) => {
             e.preventDefault();
             smoothScrollTo("hero");
+            setMenuOpen(false);
           }}
         >
           <span>
             <em style={{ fontStyle: "italic" }}>Kathleen</em>&nbsp;Li
           </span>
         </a>
+
+        {/* Desktop pill — hidden on mobile unless menu is open */}
         <div className="nav-pill" ref={pillRef}>
           <span
             className="nav-pill-highlight"
@@ -132,6 +189,7 @@ export default function SiteNavV2() {
               onClick={(e) => {
                 e.preventDefault();
                 smoothScrollTo(id);
+                setMenuOpen(false);
               }}
             >
               <NavSpark />
@@ -139,7 +197,17 @@ export default function SiteNavV2() {
             </a>
           ))}
         </div>
-        {/* nav-status (CT clock) removed */}
+
+        {/* Mobile menu toggle — only shown on narrow viewports */}
+        <button
+          type="button"
+          className={`nav-menu-toggle${menuOpen ? " is-open" : ""}`}
+          aria-label={menuOpen ? "Close navigation" : "Open navigation"}
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen((v) => !v)}
+        >
+          <MenuIcon open={menuOpen} />
+        </button>
       </div>
     </nav>
   );

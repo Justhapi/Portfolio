@@ -149,11 +149,7 @@ export default function HeroV2() {
             >
               <div className="image-slot">{labelFor(otherMode)}</div>
             </div>
-            {/* tiny "click to swap" hint (shows brighter while peeking) */}
-            <span className={`photo-hint ${peekOn ? "is-on" : ""}`}>
-              <span className="photo-hint-dot" aria-hidden="true" />
-              click to swap
-            </span>
+
           </div>
           <div className="caption-block">
             <div className="caption-meta">Last Updated · 05/07/26</div>
@@ -266,7 +262,7 @@ export default function HeroV2() {
             />
           </svg>
           <div className="d-text">
-            Currently designing as a Product Design intern for inline while cafe hoping!
+            Currently designing as a Product Design intern while cafe hopping!
           </div>
           <ul>
             <li>·</li>

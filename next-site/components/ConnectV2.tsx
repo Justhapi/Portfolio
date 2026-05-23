@@ -54,11 +54,12 @@ export default function ConnectV2() {
     <section
       id="connect"
       className="section connect"
-      data-screen-label="05 Connect"
+      data-screen-label="04 Connect"
       ref={sectionRef}
     >
       <div className="section-sparkles connect-sparkles" aria-hidden="true">
-        <SparkleField count={10} />
+        {/* Fewer, larger, slower sparkles — wind-down feel vs hero's energetic scatter */}
+        <SparkleField count={7} scale={1.5} slowdown={2.2} lifeScale={1.5} />
       </div>
       <div className="container">
         <div className="section-head head reveal">
@@ -69,7 +70,7 @@ export default function ConnectV2() {
                 fontFamily: "var(--f-mono)",
                 fontSize: 11,
                 letterSpacing: "0.18em",
-                color: "rgba(246,239,220,0.5)",
+                color: "var(--muted)",
                 textTransform: "uppercase",
                 marginTop: 6,
               }}
