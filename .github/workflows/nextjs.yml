@@ -1,4 +1,5 @@
-# Deploy Next.js site (in next-site/) to GitHub Pages
+# Deploy Next.js site (next-site/) to GitHub Pages
+# Site deploys to https://justhapi.github.io/Portfolio
 name: Deploy Next.js site to Pages
 
 on:
@@ -22,50 +23,28 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Detect package manager
-        id: detect-package-manager
-        working-directory: next-site
-        run: |
-          if [ -f "yarn.lock" ]; then
-            echo "manager=yarn" >> $GITHUB_OUTPUT
-            echo "command=install" >> $GITHUB_OUTPUT
-            echo "runner=yarn" >> $GITHUB_OUTPUT
-          elif [ -f "package.json" ]; then
-            echo "manager=npm" >> $GITHUB_OUTPUT
-            echo "command=ci" >> $GITHUB_OUTPUT
-            echo "runner=npx --no-install" >> $GITHUB_OUTPUT
-          else
-            echo "Unable to determine package manager"
-            exit 1
-          fi
-
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: ${{ steps.detect-package-manager.outputs.manager }}
+          cache: "npm"
           cache-dependency-path: next-site/package-lock.json
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-        with:
-          static_site_generator: next
-
-      - name: Restore cache
+      - name: Restore Next.js build cache
         uses: actions/cache@v4
         with:
           path: next-site/.next/cache
-          key: ${{ runner.os }}-nextjs-${{ hashFiles('next-site/package-lock.json', 'next-site/yarn.lock') }}-${{ hashFiles('next-site/**.[jt]s', 'next-site/**.[jt]sx') }}
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('next-site/package-lock.json') }}-${{ hashFiles('next-site/**.[jt]s', 'next-site/**.[jt]sx') }}
           restore-keys: |
-            ${{ runner.os }}-nextjs-${{ hashFiles('next-site/package-lock.json', 'next-site/yarn.lock') }}-
+            ${{ runner.os }}-nextjs-${{ hashFiles('next-site/package-lock.json') }}-
 
       - name: Install dependencies
         working-directory: next-site
-        run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
+        run: npm ci
 
-      - name: Build with Next.js
+      - name: Build
         working-directory: next-site
-        run: ${{ steps.detect-package-manager.outputs.runner }} next build
+        run: npm run build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
@@ -73,12 +52,12 @@ jobs:
           path: next-site/out
 
   deploy:
+    needs: build
+    runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v5
+        uses: actions/deploy-pages@v4

@@ -1,9 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  // Static export for GitHub Pages deployment
+  // Static export — writes to out/ on `next build`
   output: "export",
-  // Next.js image optimisation requires a server; disable for static export
+  // GitHub Pages serves from /Portfolio (repo name); prefix all asset paths
+  basePath: "/Portfolio",
+  // Image optimisation requires a server, disable for static export
   images: {
     unoptimized: true,
   },
