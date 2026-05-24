@@ -1530,22 +1530,59 @@ body.on-paper .nav-pill {
   will-change: transform, opacity;
 }
 .fo-xstar {
-  animation: foXstarTwinkle 2200ms ease-in-out infinite;
+  animation: foXstarTwinkle  2200ms ease-in-out infinite,
+             foXstarFloat    1600ms ease-in-out infinite alternate;
+  animation-composition: replace, add;
 }
-.fo-xstar[data-fx-i="1"] { animation-duration: 2900ms; animation-delay: 0.55s; }
-.fo-xstar[data-fx-i="2"] { animation-duration: 2500ms; animation-delay: 1.2s; }
+.fo-xstar[data-fx-i="1"] {
+  animation-name: foXstarTwinkle1, foXstarFloat1;
+  animation-duration: 2900ms, 2100ms;
+  animation-delay: 0.55s, 0.4s;
+}
+.fo-xstar[data-fx-i="2"] {
+  animation-name: foXstarTwinkle2, foXstarFloat2;
+  animation-duration: 2500ms, 1900ms;
+  animation-delay: 1.2s, 0.7s;
+}
 .fo-sticky {
   animation: foStickyDrift 3800ms ease-in-out infinite;
 }
 .fo-sticky[data-fx-i="1"] { animation-duration: 4600ms; animation-delay: 0.85s; }
-/* X-stars: base scale 0.68 (smaller), wide rotation for an energetic
-   twinkle. Opacity held at 1 throughout. 3-stop path for organic motion. */
+/* X-stars: scale+rotate live in foXstarTwinkle* (no Y here).
+   Vertical movement is a separate `alternate` animation (foXstarFloat*)
+   composed on top via animation-composition: add.
+   `alternate` bounces from→to→from forever with no same-value loop point,
+   so the motion is continuous with no interval/pause feel.
+   Each sparkle gets a different float duration + delay so they never sync. */
+/* Twinkle handles scale only — rotation is owned by the float so it
+   tilts in the direction of travel (like the sticky cards do). */
 @keyframes foXstarTwinkle {
-  0%   { transform: scale(0.68) rotate(-14deg); }
-  35%  { transform: scale(0.84) rotate(8deg);   }
-  70%  { transform: scale(0.72) rotate(20deg);  }
-  100% { transform: scale(0.68) rotate(-14deg); }
+  0%   { transform: scale(0.68); }
+  35%  { transform: scale(0.84); }
+  70%  { transform: scale(0.72); }
+  100% { transform: scale(0.68); }
 }
+@keyframes foXstarTwinkle1 {
+  0%   { transform: scale(0.68); }
+  22%  { transform: scale(0.84); }
+  80%  { transform: scale(0.72); }
+  100% { transform: scale(0.68); }
+}
+@keyframes foXstarTwinkle2 {
+  0%   { transform: scale(0.68); }
+  40%  { transform: scale(0.84); }
+  72%  { transform: scale(0.72); }
+  100% { transform: scale(0.68); }
+}
+/* Float carries both translate AND rotation so the sparkle leans into its
+   path — same principle as foStickyDrift but with a much wider angle.
+   alternate bounces from→to→from seamlessly for continuous motion.
+   i=0 (right):       drifts right-down, tilts clockwise
+   i=1 (top):         drifts left-down,  tilts counter-clockwise
+   i=2 (bottom-left): drifts right-up,   tilts clockwise (no downward exit) */
+@keyframes foXstarFloat  { from { transform: translate(-4px, -12px) rotate(-28deg); } to { transform: translate(5px,  20px) rotate(22deg);  } }
+@keyframes foXstarFloat1 { from { transform: translate(5px,  -10px) rotate(24deg);  } to { transform: translate(-4px, 20px) rotate(-26deg); } }
+@keyframes foXstarFloat2 { from { transform: translate(-5px, -14px) rotate(-24deg); } to { transform: translate(4px,   0px) rotate(20deg);  } }
 /* Stickies: translate in both axes + gentle rotation so they feel loose
    and floating rather than just bobbing up and down. */
 @keyframes foStickyDrift {
@@ -1574,16 +1611,19 @@ body.on-paper .nav-pill {
 }
 .folder-art--hovered .fo-xstar {
   animation: foXstarTwinkle 2200ms ease-in-out infinite,
+             foXstarFloat   1600ms ease-in-out infinite alternate,
              foXstarStash   440ms var(--ease-out-quart) both;
-  animation-composition: replace, add;
+  animation-composition: replace, add, add;
 }
 .folder-art--hovered .fo-xstar[data-fx-i="1"] {
-  animation-duration: 2900ms, 440ms;
-  animation-delay: 0.55s, 40ms;
+  animation-name: foXstarTwinkle1, foXstarFloat1, foXstarStash;
+  animation-duration: 2900ms, 2100ms, 440ms;
+  animation-delay: 0.55s, 0.4s, 40ms;
 }
 .folder-art--hovered .fo-xstar[data-fx-i="2"] {
-  animation-duration: 2500ms, 440ms;
-  animation-delay: 1.2s, 80ms;
+  animation-name: foXstarTwinkle2, foXstarFloat2, foXstarStash;
+  animation-duration: 2500ms, 1900ms, 440ms;
+  animation-delay: 1.2s, 0.7s, 80ms;
 }
 
 /* LEAVE — contents rise as folder lifts shut */
@@ -1598,16 +1638,19 @@ body.on-paper .nav-pill {
 }
 .folder-art--leaving .fo-xstar {
   animation: foXstarTwinkle 2200ms ease-in-out infinite,
+             foXstarFloat   1600ms ease-in-out infinite alternate,
              foXstarStash   420ms var(--ease-out-quart) both;
-  animation-composition: replace, add;
+  animation-composition: replace, add, add;
 }
 .folder-art--leaving .fo-xstar[data-fx-i="1"] {
-  animation-duration: 2900ms, 420ms;
-  animation-delay: 0.55s, 35ms;
+  animation-name: foXstarTwinkle1, foXstarFloat1, foXstarStash;
+  animation-duration: 2900ms, 2100ms, 420ms;
+  animation-delay: 0.55s, 0.4s, 35ms;
 }
 .folder-art--leaving .fo-xstar[data-fx-i="2"] {
-  animation-duration: 2500ms, 420ms;
-  animation-delay: 1.2s, 70ms;
+  animation-name: foXstarTwinkle2, foXstarFloat2, foXstarStash;
+  animation-duration: 2500ms, 1900ms, 420ms;
+  animation-delay: 1.2s, 0.7s, 70ms;
 }
 
 /* Pure Y-offset keyframes — compose on top of idle animations */

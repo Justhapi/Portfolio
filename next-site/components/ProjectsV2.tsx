@@ -125,7 +125,7 @@ const FolderOpen = ({
         transform="rotate(112.879 373.685 98.1076)"
         fill={tint}
         stroke="#FBF7EE"
-        strokeWidth="9.4612"
+        strokeWidth="3.83596"
       />
       </g>
       {/* X-star (left) — wrapped so it can twinkle on idle */}
@@ -148,7 +148,7 @@ const FolderOpen = ({
         transform="rotate(87.5606 241.092 30.3229)"
         fill={tint2}
         stroke="#FBF7EE"
-        strokeWidth="9.4612"
+        strokeWidth="3.83596"
       />
       </g>
       {/* front folder cover — same float as back cover so both bottoms stay joined */}
