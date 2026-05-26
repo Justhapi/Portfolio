@@ -7,15 +7,17 @@
    ===================================================== */
 
 /* Type stack — designer-coder hybrid.
-   K2D (display, --f-display / --f-serif) for all headings and sticker names —
+   K2D (--f-display / --f-serif / --f-sans) for all headings AND body text —
    Thai-Latin geometric with a structured, grid-aligned construction that reads
    as design-tool / type-forward. Italic variant used for editorial subtitles.
-   Space Grotesk (--f-sans) for body and h3 subheadings.
+   Replaces Space Grotesk as the body font; K2D's 300–800 range covers all
+   the same weight steps while keeping the stack to a single superfamily.
    JetBrains Mono (--f-mono) for code-flavored labels and metadata.
    Caveat (--f-hand) for genuine handwriting accents only (hero sub, design notes).
    CookieRun (--f-cookie) for project-card impact copy.
-   Long Cang (--f-hand-zh) for 李曦. */
-@import url("https://fonts.googleapis.com/css2?family=K2D:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600;1,700&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Caveat:wght@400;600&family=Long+Cang&display=swap");
+   Long Cang (--f-hand-zh) for 李曦.
+   All Google Fonts are loaded via next/font/google in layout.tsx (self-hosted
+   at build time, no render-blocking @import). */
 
 /* CookieRun — self-hosted (Devsisters, free license), converted from
    the supplied OTFs to woff2. Used for the project-card impact copy:
@@ -97,19 +99,16 @@
   --chip-red: #8E3A3A;
   --chip-red-ink: #F4ECD8;
 
-  /* fonts */
-  --f-serif: "K2D", "Space Grotesk", ui-sans-serif, sans-serif;
-  --f-sans: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
-  --f-mono: "JetBrains Mono", ui-monospace, monospace;
-  --f-hand: "Caveat", cursive;
-  --f-hand-zh: "Long Cang", cursive;
-  /* CookieRun — rounded display face for the project-card impact copy. */
-  --f-cookie: "CookieRun", "Space Grotesk", ui-rounded, sans-serif;
-  /* K2D — Thai-Latin geometric display. Combines the chunky rounded
-     personality of CookieRun with a more structured, grid-aligned
-     construction that reads as design-tool / type-forward rather than
-     purely kawaii. Used for all section and page headings. */
-  --f-display: "K2D", "Space Grotesk", ui-sans-serif, sans-serif;
+  /* fonts — loaded via next/font/google (layout.tsx); variables injected on <html> */
+  --f-serif:   var(--font-k2d, "K2D"), ui-sans-serif, sans-serif;
+  --f-sans:    var(--font-k2d, "K2D"), ui-sans-serif, system-ui, sans-serif;
+  --f-mono:    var(--font-mono, "JetBrains Mono"), ui-monospace, monospace;
+  --f-hand:    var(--font-caveat, "Caveat"), cursive;
+  --f-hand-zh: "Long Cang", cursive; /* loaded by name via targeted <link> in layout.tsx */
+  /* CookieRun — self-hosted; no next/font variable, fall back to K2D. */
+  --f-cookie:  "CookieRun", var(--font-k2d, "K2D"), ui-rounded, sans-serif;
+  /* K2D doubles as display + body — single superfamily keeps the palette tight. */
+  --f-display: var(--font-k2d, "K2D"), ui-sans-serif, sans-serif;
 
   /* easing */
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
@@ -682,7 +681,8 @@ body.on-paper .nav-pill {
     0 30px 60px -20px rgba(0,0,0,0.55),
     0 8px 18px -8px rgba(0,0,0,0.4);
   z-index: 10;
-  animation: polaroidPlaceIn 380ms var(--ease-out-quart) 200ms backwards;
+  /* 980ms = all letters landed (720ms) + star burst well underway, before it closes */
+  animation: polaroidPlaceIn 380ms var(--ease-out-quart) 980ms backwards;
 }
 @keyframes polaroidPlaceIn {
   from {
@@ -910,6 +910,12 @@ body.on-paper .nav-pill {
   letter-spacing: 0.32em;
   text-transform: uppercase;
   color: rgba(246, 239, 220, 0.6);
+  /* fades in just after the last letter settles */
+  animation: subFadeIn 480ms var(--ease-out-quart) 760ms backwards;
+}
+@keyframes subFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
 }
 @keyframes draw {
   to { stroke-dashoffset: 0; }
@@ -949,7 +955,7 @@ body.on-paper .nav-pill {
   background: var(--chip-yellow);
   color: var(--chip-yellow-ink);
   padding: 18px 24px 16px;
-  animation: stickerNameIn 280ms var(--ease-out-quart) 380ms backwards;
+  animation: stickerNameIn 280ms var(--ease-out-quart) 1160ms backwards;
 }
 @keyframes stickerNameIn {
   from { opacity: 0; transform: translate(48px, -18px) rotate(22deg); }
@@ -999,7 +1005,7 @@ body.on-paper .nav-pill {
   box-shadow:
     0 10px 20px -8px rgba(0,0,0,0.5),
     0 2px 4px -1px rgba(0,0,0,0.3);
-  animation: chipZhIn 260ms var(--ease-out-quart) 480ms backwards;
+  animation: chipZhIn 260ms var(--ease-out-quart) 1280ms backwards;
 }
 .chip-zh .chip-zh-text {
   position: relative;
@@ -1025,7 +1031,7 @@ body.on-paper .nav-pill {
   color: var(--chip-green-ink);
   width: 248px;
   padding: 16px 18px;
-  animation: stickerGreenIn 320ms var(--ease-out-quart) 580ms backwards;
+  animation: stickerGreenIn 320ms var(--ease-out-quart) 1420ms backwards;
 }
 @keyframes stickerGreenIn {
   from { opacity: 0; transform: translate(-40px, 24px) rotate(-22deg); }
@@ -1147,7 +1153,7 @@ body.on-paper .nav-pill {
   text-transform: uppercase;
   color: rgba(246, 239, 220, 0.55);
   z-index: 8;
-  animation: scrollCueIn 280ms var(--ease-out-quart) 720ms backwards;
+  animation: scrollCueIn 280ms var(--ease-out-quart) 1600ms backwards;
 }
 @keyframes scrollCueIn {
   from { opacity: 0; transform: translateX(-50%) translateY(14px); }
@@ -1189,50 +1195,90 @@ body.on-paper .nav-pill {
 /* Project folders — both layers enter as a card scrolls into view: the
    folder SVG bounces up, and the copy column (tag, meta, blurb) trails it
    with a gentle fade-up so the whole project lands as one piece. */
+/* Project entrance — horizontal slide-in on desktop:
+   copy column slides from the left, folder art bounces in from the right.
+   On mobile (≤820px) the layout stacks vertically, so both revert to
+   a simple translateY so the direction still makes sense. */
 .folder-row > .folder .folder-art {
   opacity: 0;
-  transform: translateY(80px) scale(0.94);
+  transform: translateX(100px) rotate(10deg) scale(0.94);
   will-change: transform, opacity;
 }
-/* Each folder fires its own bounce the moment IT scrolls into view —
-   triggered per-card by ProjectsV2's IntersectionObserver, not as one
-   batched stagger off the whole row. */
 .folder-row > .folder.in .folder-art {
-  animation: folderArtBounceIn 900ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  /* 650ms delay, 1200ms duration = slower cartoonish rotation with more hang time */
+  animation: folderArtBounceIn 1200ms var(--ease-out-quart) 650ms both;
 }
-/* Copy column — tag, meta pills, and blurb each slide up separately
-   so the description reads as distinct pieces arriving one after another,
-   rather than a single block fading in. */
+
 .folder-row > .folder .tag,
 .folder-row > .folder .meta,
 .folder-row > .folder .blurb {
   opacity: 0;
-  transform: translateY(24px);
+  transform: translateX(-60px);
   transition:
-    opacity 560ms var(--ease-out-quart),
+    opacity   560ms var(--ease-out-quart),
     transform 560ms var(--ease-out-quart);
   will-change: transform, opacity;
 }
 .folder-row > .folder.in .tag {
   opacity: 1;
   transform: none;
-  transition-delay: 120ms;
+  transition-delay: 60ms;
 }
 .folder-row > .folder.in .meta {
   opacity: 1;
   transform: none;
-  transition-delay: 210ms;
+  transition-delay: 160ms;
 }
 .folder-row > .folder.in .blurb {
   opacity: 1;
   transform: none;
-  transition-delay: 320ms;
+  transition-delay: 270ms;
 }
 
+/* Folder flies in from the right with a cartoonish stop-animation feel:
+   0→38%  steps(3) = 3 discrete "frames" as it crosses the stage
+   38→100% smooth spring overshoot then settles flat */
 @keyframes folderArtBounceIn {
-  0%   { opacity: 0; transform: translateY(80px) scale(0.94); }
-  60%  { opacity: 1; }
-  100% { opacity: 1; transform: translateY(0)    scale(1);    }
+  0% {
+    opacity: 0;
+    transform: translateX(100px) rotate(10deg) scale(0.94);
+    animation-timing-function: steps(3, end);
+  }
+  38% {
+    opacity: 1;
+    transform: translateX(6px) rotate(5deg) scale(0.97);
+    animation-timing-function: cubic-bezier(0.34, 1.6, 0.64, 1);
+  }
+  62%  { transform: translateX(-16px) rotate(-6deg) scale(1.04); }
+  80%  { transform: translateX(5px)   rotate(2deg)  scale(0.98); }
+  100% { opacity: 1; transform: translateX(0) rotate(0deg) scale(1); }
+}
+
+/* Mobile — stacked layout, revert to vertical + gentler rotation */
+@media (max-width: 820px) {
+  .folder-row > .folder .folder-art {
+    transform: translateY(100px) rotate(22deg) scale(0.94);
+  }
+  .folder-row > .folder .tag,
+  .folder-row > .folder .meta,
+  .folder-row > .folder .blurb {
+    transform: translateY(20px);
+  }
+  @keyframes folderArtBounceIn {
+    0% {
+      opacity: 0;
+      transform: translateY(100px) rotate(10deg) scale(0.94);
+      animation-timing-function: steps(2, end);
+    }
+    38% {
+      opacity: 1;
+      transform: translateY(6px) rotate(4deg) scale(0.98);
+      animation-timing-function: cubic-bezier(0.34, 1.6, 0.64, 1);
+    }
+    62%  { transform: translateY(-10px) rotate(-5deg) scale(1.03); }
+    82%  { transform: translateY(3px)   rotate(2deg)  scale(0.98); }
+    100% { opacity: 1; transform: translateY(0) rotate(0deg) scale(1); }
+  }
 }
 /* Each project: text-left / artwork-right, side by side.
    The ratio leans toward the art so the folder reads at a comfortable
@@ -1782,335 +1828,171 @@ body.on-paper .nav-pill {
    ABOUT
    ===================================================== */
 .about { background: var(--bg-2); }
-.about-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 360px) 1fr;
-  gap: 72px;
-  align-items: center;
-}
-.polaroid-single {
-  display: flex;
-  justify-content: center;
-}
-/* shrunk ~35% from prior iteration */
-.polaroid {
-  background: var(--paper);
-  padding: 14px 14px 42px;
-  transform: rotate(-2.5deg);
-  box-shadow:
-    0 20px 40px -16px rgba(26, 23, 20, 0.28),
-    0 4px 8px -4px rgba(26, 23, 20, 0.16);
-  width: 100%;
-  max-width: 340px;
-}
-.polaroid .photo {
-  width: 100%;
-  aspect-ratio: 4 / 5;
-  background: var(--bg-2);
-  overflow: hidden;
-}
-.polaroid .caption {
-  margin-top: 12px;
+
+/* Single-column prose block — no polaroid, centered in section */
+.about-prose {
+  max-width: 680px;
+  margin-inline: auto;
   text-align: center;
-  font-family: var(--f-hand);
-  font-size: 20px;
-  color: var(--ink-soft);
-  line-height: 1;
 }
 
-/* ── About polaroid restyled as an iPad device ──
-   Overrides the cream-card defaults with a dark aluminium body,
-   even bezels, iPad-radius corners, and a home-bar indicator.
-   Scoped to .polaroid-single so the hero polaroid is unaffected. */
-.polaroid-single .polaroid {
-  background: #1C1C1E;
-  padding: 16px 12px 40px;
-  border-radius: 28px;
-  position: relative;
-  box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.07),   /* subtle rim light */
-    0 32px 64px -18px rgba(0, 0, 0, 0.65),
-    0 10px 24px -6px rgba(0, 0, 0, 0.4);
+/* Entrance: two-stage stagger — heading first, body text follows.
+   .about-prose itself is the IntersectionObserver trigger: it snaps
+   visible in 0 ms so its children can animate independently.
+   .lead slides up first; .about-body follows 300 ms later. */
+.about-prose.reveal {
+  opacity: 0;
+  transform: none;       /* container doesn't move — children do */
+  transition: opacity 0ms; /* snap, no self-fade */
 }
-/* screen glass — iPad-radius corners, portrait 3:4 ratio */
-.polaroid-single .polaroid .photo {
-  border-radius: 10px;
-  aspect-ratio: 3 / 4;
-}
-/* caption on dark bezel */
-.polaroid-single .polaroid .caption {
-  color: rgba(246, 239, 220, 0.4);
-  font-size: 13px;
-  margin-top: 10px;
-}
-/* home bar indicator */
-.polaroid-single .polaroid::after {
-  content: "";
-  position: absolute;
-  bottom: 12px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 72px;
-  height: 4px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.2);
+.about-prose.reveal.in {
+  opacity: 1;
 }
 
-/* ── About entrance animations ──
-   iPad slides in from the left; copy block pops up 240 ms later.
-   Both use the existing .reveal/.in system — these rules override the
-   generic translateY(24px) start with per-element motion. */
-
-/* iPad: drift in from the left, slight upward component */
-.about-grid .polaroid-single.reveal {
-  transform: translateX(-40px) translateY(20px);
+/* Heading — arrives first */
+.about-prose .lead {
+  opacity: 0;
+  transform: translateY(22px);
   transition:
-    opacity 800ms var(--ease-out-expo),
-    transform 800ms var(--ease-out-expo);
+    opacity   580ms var(--ease-out-quart)  80ms,
+    transform 580ms var(--ease-out-quart)  80ms;
 }
-.about-grid .polaroid-single.reveal.in {
-  transform: none;          /* .polaroid inside keeps its own rotate(-2.5deg) */
-}
-
-/* Copy block: pops up from slightly below + tiny scale, delayed */
-.about-grid .about-copy.reveal {
-  transform: translateY(32px) scale(0.97);
-  transform-origin: left center;
-  transition:
-    opacity  680ms var(--ease-out-quart) 240ms,
-    transform 680ms var(--ease-out-quart) 240ms;
-}
-.about-grid .about-copy.reveal.in {
+.about-prose.in .lead {
+  opacity: 1;
   transform: none;
 }
 
-.about-copy .lead {
+/* Body paragraphs — each <p> slides up one by one after the heading.
+   The .about-body container itself is invisible (no transition) so it
+   doesn't mask the children; the children drive their own opacity. */
+.about-prose .about-body {
+  /* no self-animation — children handle their own entrance */
+}
+.about-prose .about-body > p {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity   500ms var(--ease-out-quart),
+    transform 500ms var(--ease-out-quart);
+}
+.about-prose.in .about-body > p:nth-child(1) { opacity: 1; transform: none; transition-delay: 380ms; }
+.about-prose.in .about-body > p:nth-child(2) { opacity: 1; transform: none; transition-delay: 470ms; }
+.about-prose.in .about-body > p:nth-child(3) { opacity: 1; transform: none; transition-delay: 560ms; }
+
+/* Reduced-motion: skip all child transitions too */
+@media (prefers-reduced-motion: reduce) {
+  .about-prose .lead,
+  .about-prose .about-body > p {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+.about-prose .lead {
   font-family: var(--f-display);
   font-weight: 700;
   font-size: clamp(26px, 3.4vw, 42px);
   line-height: 1.15;
   letter-spacing: -0.01em;
-  margin: 0 0 24px;
+  margin: 0 auto 24px;
   max-width: 22ch;
 }
-.about-copy p {
+.about-prose p {
   font-family: var(--f-cookie);
   font-size: 16px;
   line-height: 1.65;
   color: var(--fg-soft);
-  margin: 0 0 18px;
+  margin: 0 auto 18px;
   max-width: 56ch;
 }
-.about-copy ul {
-  list-style: none;
-  margin: 28px 0 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  border-top: 1px solid var(--line);
-}
-/* Connect-style divider row — full width, slides right on hover,
-   sparkle bullet spins. Adapted for the light --bg-2 background. */
-.about-copy .about-link {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 15px 4px;
-  border-bottom: 1px solid var(--line);
-  font-family: var(--f-cookie);
-  font-size: 15px;
-  color: var(--fg-soft);
-  cursor: pointer;
-  transition: color 200ms ease, padding-left 280ms var(--ease-out-quart);
-}
-.about-copy .about-link:hover,
-.about-copy .about-link:focus-visible {
+.about-prose p strong {
   color: var(--fg);
-  padding-left: 12px;
-  outline: none;
-}
-.about-copy .about-link:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-  border-radius: 2px;
-}
-.about-link-inner {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-}
-/* Sparkle bullet — accent color on light bg, spins 90° on row hover */
-.about-copy .c-spark {
-  display: block;
-  width: 18px;
-  height: 18px;
-  fill: var(--accent);
-  flex-shrink: 0;
-  transition: transform 320ms cubic-bezier(0.34, 1.4, 0.64, 1), fill 200ms ease;
-  filter: drop-shadow(0 0 4px rgba(198, 141, 95, 0.4));
-}
-.about-copy .about-link:hover .c-spark,
-.about-copy .about-link:focus-visible .c-spark {
-  transform: rotate(90deg);
-  fill: var(--fg);
-}
-/* Locked row — keeps the hovered look permanently until clicked again */
-.about-copy .about-link.is-locked {
-  color: var(--fg);
-  padding-left: 12px;
-  border-bottom-color: var(--accent);
-}
-.about-copy .about-link.is-locked .c-spark {
-  transform: rotate(90deg);
-  fill: var(--accent);
-  filter: drop-shadow(0 0 6px rgba(198, 141, 95, 0.55));
+  font-weight: 700;
 }
 
-/* =====================================================
-   Interactive bio bullets → polaroid "iPad" preview
-   ===================================================== */
 
-/* .about-trigger is now just an inline text wrapper inside the
-   .about-link row. All hover states (slide, sparkle spin, color)
-   live on the parent li — mirroring the Connect link-row pattern.
-   The iPad screen swap is still driven by the row's mouse/focus events
-   (logic in AboutV2.tsx). */
-.about-trigger {
-  color: inherit;
-  font-weight: 500;
-}
-.about-trigger strong { color: inherit; font-weight: 700; }
-
-/* Polaroid screen — the swappable "iPad". Reuses .polaroid .photo's box
-   (aspect-ratio + clipping); these rules reset the <a>/<button> chrome
-   and give it a dark device-screen background. */
-.polaroid .ipad-screen {
-  display: block;
-  appearance: none;
-  -webkit-appearance: none;
-  border: 0;
-  margin: 0;
-  padding: 0;
-  font: inherit;
-  color: inherit;
-  text-align: inherit;
-  text-decoration: none;
+/* ── HoverWord — inline keyword → floating image pill ──
+   .hw wraps a bold accent keyword (.hw-label) and an absolutely
+   positioned pill (.hw-pill) that appears above it on hover.
+   Both opacity and translateY are toggled via .hw--on so the
+   pill fades+rises in smoothly with no remount flash. */
+.hw {
   position: relative;
-  background: var(--hero-bg);
+  display: inline;
 }
-.ipad-stack,
-.ipad-food,
-.ipad-mentor,
-.ipad-illos {
+.hw-label {
+  font-weight: 700;
+  color: var(--accent);
+  text-decoration-line: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--accent-soft);
+  cursor: default;
+  transition: color 150ms ease, text-decoration-color 150ms ease;
+}
+.hw--on .hw-label {
+  color: var(--fg);
+  text-decoration-color: var(--fg);
+}
+.hw-label--link {
   cursor: pointer;
-}
-.polaroid .ipad-screen:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 3px;
+  text-decoration-style: solid; /* solid underline signals it's a real link */
 }
 
-/* one preview layer; remounts (via React key) on view change → fades */
-.ipad-content {
+/* The pill — fixed to viewport so it can follow the cursor freely.
+   Position (top/left) is set via inline style in HoverWord on every
+   mousemove, so no React re-renders are needed for tracking. */
+.hw-pill {
+  position: fixed;
+  top: 0;
+  left: 0;
+  transform: scale(0.88);
+  transform-origin: top left;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 200;
+
+  width: 196px;
+  height: 136px;
+  border-radius: 18px;
+  overflow: hidden;
+
+  background: var(--hero-bg);
+  box-shadow:
+    0 0 0 1.5px rgba(26, 23, 20, 0.12),
+    0 20px 48px -10px rgba(26, 23, 20, 0.32),
+    0 4px 12px -2px rgba(26, 23, 20, 0.14);
+
+  transition:
+    opacity 180ms var(--ease-out-quart),
+    transform 200ms var(--ease-out-quart);
+}
+.hw--on .hw-pill {
+  opacity: 1;
+  transform: scale(1);
+}
+.hw-pill-img {
   position: absolute;
   inset: 0;
-  animation: ipadFade 380ms var(--ease-out-quart);
 }
-@keyframes ipadFade {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-.polaroid .caption {
-  animation: ipadFade 380ms var(--ease-out-quart);
-}
-
-/* small "opens externally" cue on the Stack / Beli views */
-.ipad-hint {
+/* sparkle corner marker — sits in top-right of the pill */
+.hw-pill svg {
   position: absolute;
-  left: 9px;
-  bottom: 9px;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 5px 9px;
-  border-radius: 999px;
-  background: var(--hero-fg);
-  color: var(--hero-bg);
-  font-family: var(--f-mono);
-  font-size: 8px;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
-}
-
-/* carousel views — a horizontal track of full-frame cells */
-.ipad-carousel {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
-.ipad-track {
-  display: flex;
-  width: 100%;
-  height: 100%;
-}
-/* Continuous stream — images doubled in JSX for a seamless loop.
-   --scroll-by is set via inline style to -(N × 100%) of track width,
-   which equals exactly one copy's worth of distance. */
-.ipad-stream {
-  animation: ipad-stream-scroll linear infinite;
-  will-change: transform;
-}
-@keyframes ipad-stream-scroll {
-  from { transform: translateX(0); }
-  to   { transform: translateX(var(--scroll-by, -300%)); }
-}
-/* Pause on carousel hover */
-.ipad-stream.is-paused { animation-play-state: paused; }
-@media (prefers-reduced-motion: reduce) {
-  .ipad-stream { animation-play-state: paused; }
-}
-
-/* Caption pill — fades in over the paused carousel frame */
-.ipad-caption-pill {
-  position: absolute;
-  bottom: 14px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(15, 18, 23, 0.78);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  color: var(--hero-fg);
-  font-family: var(--f-cookie);
-  font-size: 12px;
-  line-height: 1.3;
-  padding: 6px 14px;
-  border-radius: 999px;
-  white-space: nowrap;
+  top: 10px;
+  right: 10px;
+  width: 13px;
+  height: 13px;
+  fill: rgba(246, 239, 220, 0.65);
+  z-index: 2;
   pointer-events: none;
-  z-index: 10;
-  animation: ipadFade 180ms var(--ease-out-quart);
 }
-.ipad-cell { flex: 0 0 100%; height: 100%; }
-.ipad-dots {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 9px;
-  display: flex;
-  justify-content: center;
-  gap: 6px;
-}
-.ipad-dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 999px;
-  background: rgba(246, 239, 220, 0.34);
-  transition: background 220ms, transform 220ms var(--ease-out-quart);
-}
-.ipad-dot.is-on {
-  background: var(--accent-soft);
-  transform: scale(1.4);
+
+@media (prefers-reduced-motion: reduce) {
+  .hw-pill {
+    transition: opacity 150ms linear;
+    transform: scale(1) !important;
+  }
 }
 
 /* =====================================================
@@ -2194,6 +2076,60 @@ body.on-paper .nav-pill {
   gap: 80px;
   align-items: center;
 }
+/* ── Connect entrance — two-stage stagger ──────────────────────────────
+   .connect-row is the IntersectionObserver trigger: it snaps visible in
+   0 ms so its two children animate independently.
+   Stage 1: pitch text slides up first (80 ms delay).
+   Stage 2: each link row appears one by one (380 / 470 / 560 ms). */
+.connect-row.reveal {
+  opacity: 0;
+  transform: none;
+  transition: opacity 0ms;
+}
+.connect-row.reveal.in { opacity: 1; }
+
+.connect-pitch {
+  opacity: 0;
+  transform: translateY(22px);
+  transition:
+    opacity   580ms var(--ease-out-quart)  80ms,
+    transform 580ms var(--ease-out-quart)  80ms;
+}
+.connect-row.in .connect-pitch {
+  opacity: 1;
+  transform: none;
+}
+
+.connect-links > * {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity   500ms var(--ease-out-quart),
+    transform 500ms var(--ease-out-quart);
+}
+/* .c-link's own `transition` shorthand (color, padding) would silently
+   drop opacity + transform from the rule above — override with a more
+   specific selector that includes ALL four properties. */
+.connect-links > .c-link {
+  transition:
+    color     200ms,
+    padding   280ms var(--ease-out-quart),
+    opacity   500ms var(--ease-out-quart),
+    transform 500ms var(--ease-out-quart);
+}
+.connect-row.in .connect-links > *:nth-child(1) { opacity: 1; transform: none; transition-delay: 380ms; }
+.connect-row.in .connect-links > *:nth-child(2) { opacity: 1; transform: none; transition-delay: 470ms; }
+.connect-row.in .connect-links > *:nth-child(3) { opacity: 1; transform: none; transition-delay: 560ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .connect-pitch,
+  .connect-links > * {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
 .connect-pitch {
   font-family: var(--f-cookie);
   font-size: clamp(28px, 3.4vw, 40px);

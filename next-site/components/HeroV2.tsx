@@ -57,11 +57,9 @@ export default function HeroV2() {
       layer.style.setProperty("--peek-y", "50%");
     }
 
-    // polaroid entrance: 350ms delay + 900ms duration → lands at 1250ms.
-    // Trigger the hint 10ms after it settles.
-    // All hero beats settle inside the first second. Fire the hint just after
-    // everything has landed so it doesn't compete with the entrance.
-    const HINT_START = 1000;
+    // polaroid entrance: 980ms delay + 380ms duration → settles at 1360ms.
+    // Fire the hint after the full collage has landed (stickers settle ~1700ms).
+    const HINT_START = 1900;
     const HINT_HOLD = 850;
 
     timers.push(window.setTimeout(() => setHinting(true), HINT_START));
