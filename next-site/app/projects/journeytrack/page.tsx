@@ -33,28 +33,38 @@ export default function AIJourneyAgentCaseStudy() {
         <section id="overview" className="case-section">
           <h2>Overview</h2>
           <p>
-            This project was for a customer journey management platform — a tool teams use to map and understand
-            their customers. Those maps are meant to be living documents, but they quietly go stale as products and
-            customers change, and nothing tells users when. Our team researched and designed an agentic AI{" "}
-            <mark className="hl">&ldquo;maintenance agent&rdquo;</mark> that monitors journey data, flags outdated
-            content, and recommends fixes — keeping maps accurate and trustworthy over time.
+            This <mark className="hl">conceptualization</mark> ideated and tested during this project was for a <mark className="hl">customer journey management platform</mark> — a tool teams utilize to close the gap of understanding their customers' experience utilizing their products.
+            <br></br><br></br>
+            Our team researched and designed an <mark className="hl"> AI{" "}
+            &ldquo;maintenance intelligence agent&rdquo;</mark> that 
+            <br></br>
+            <br></br>
+            <li>continuously monitors journey data, personas, and insights relevance</li>
+            <li>informs users of data flagged as outdated</li>
+            <li>recommends actions for updates</li>
+            <br></br>
+            to consistently keep maps accurate and trustworthy over time.
           </p>
 
           <h3>The Problem</h3>
           <p>
-            A journey map loses its value the moment it falls out of date. The platform&rsquo;s users — CX
-            strategists, designers, product teams — rely on manual review and gut feel to catch stale content. The
-            result: <mark className="hl">outdated maps, disconnected data, and eroding trust</mark> in a tool meant
-            to be a source of truth. The brief: design an AI agent that monitors journeys, detects inaccurate
-            content, and surfaces actionable recommendations.
+            A <mark className="hl">journey map's value degrades</mark> everytime an <mark className="hl">older and outdated content is not flagged</mark> as such upon the <mark className="hl">addition of newer and more accurate data.</mark>
+            <br></br><br></br>
+            The journey map platform&rsquo;s users — CX strategists, designers, product teams — are tasked with managing and analyzing the customer journey maps.
+            <br></br><br></br>
+            However, <mark className="hl">maintenance becomes increasingly difficult</mark> as the volume of data to assess increases, resulting in journey map content becoming outdated without any alerts to address the staleness.
           </p>
 
           <h3>My Role</h3>
           <p>
-            I worked on a nine-person UX studio team across three phases. I{" "}
-            <mark className="hl">led concept ideation and exploration</mark> — generating and pressure-testing the
-            agent concepts — and contributed to research synthesis, wireframing, high-fidelity prototyping, and
+            During the project, I worked in UX studio team of nine people. I{" "}
+            <mark className="hl">led concept ideation and exploration</mark> and contributed to research synthesis, wireframing, high-fidelity prototyping, and
             usability testing.
+
+            <br></br><br></br>
+            In addition to leading ideation, I also managed communication between <mark className="hl">the team, the
+            company leads, and platform users</mark> to ensure alignment in regards to project progression, company 
+            goals, and user needs through update meetings, update emails, and inteview organization.
           </p>
         </section>
 
@@ -62,13 +72,19 @@ export default function AIJourneyAgentCaseStudy() {
         <section id="process" className="case-section">
           <h2>Process</h2>
 
-          <h3>Research — understanding staleness and trust</h3>
+          <h3>Research — Understand what would make a journey maintenance agent effective</h3>
           <p>
-            We compared traditional, agentic, and maintenance AI; ran a competitive analysis of journey-management
+            To gain a strong foundation of our oppurtunity space, we researched the components that make up a journey maintenance agent.
+            <br></br><br></br>
+            <ul>
+              <li>Traditional AI approaches</li>
+              <li>Agentic AI models</li>
+              <li>Maintenance AI capabilities</li>
+            </ul>
+            <br></br>
+            We also compared these approaches and conducted a competitive analysis of journey-management
             and analogous SaaS tools; studied how knowledge tools handle content verification; and interviewed six
-            current users of the platform. The throughline: maintenance today is{" "}
-            <mark className="hl">reactive, manual, and tied to project milestones</mark> — and users only trust AI
-            suggestions when they can see the reasoning behind them.
+            current users of the platform.
           </p>
           <figure>
             <div className="image-slot">research synthesis</div>
@@ -77,6 +93,11 @@ export default function AIJourneyAgentCaseStudy() {
               design.
             </figcaption>
           </figure>
+          <br></br>
+          <p>The throughline: maintenance today is{" "}
+            <mark className="hl">reactive, manual, and tied to project milestones</mark> — and users only trust AI
+            suggestions when they can see the reasoning behind them.
+          </p>
 
           <h3>Ideation — from six concepts to one</h3>
           <p>

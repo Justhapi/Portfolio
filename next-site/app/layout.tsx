@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { K2D, JetBrains_Mono, Caveat } from "next/font/google";
 import "./globals.css";
 import CursorFollower from "@/components/CursorFollower";
+import SmoothScroll from "@/components/SmoothScroll";
 
 /* ── Google Fonts via next/font ────────────────────────────────────────────
    Self-hosted at build time — no render-blocking @import, no Google DNS
@@ -90,6 +91,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <div className="grain" aria-hidden="true" />
         {children}
+        <SmoothScroll />
         <CursorFollower />
       </body>
     </html>

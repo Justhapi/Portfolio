@@ -117,6 +117,15 @@
 
 * { box-sizing: border-box; }
 
+/* Hide native scrollbar — Lenis smooth-scroll makes the browser thumb
+   redundant and it looks jarring against the interpolated movement. */
+html {
+  scrollbar-width: none; /* Firefox */
+}
+html::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
+}
+
 html, body {
   margin: 0;
   padding: 0;
@@ -653,7 +662,13 @@ body.on-paper .nav-pill {
    HERO — sticker-collage on dark stage
    ===================================================== */
 .hero {
-  position: relative;
+  /* Sticky so it pins to the top of the viewport while sections below
+     physically scroll over it — creates the "project section emerging
+     from behind the hero" depth illusion. z-index:0 keeps it beneath
+     the work section (z-index:1) and the fixed nav (z-index:50). */
+  position: sticky;
+  top: 0;
+  z-index: 0;
   min-height: 100vh;
   background: radial-gradient(120% 80% at 50% 30%, var(--hero-bg-2) 0%, var(--hero-bg) 70%);
   color: var(--hero-fg);
@@ -1175,7 +1190,14 @@ body.on-paper .nav-pill {
 /* =====================================================
    WORK — folder cards
    ===================================================== */
-.work { background: var(--bg); }
+.work {
+  position: relative;
+  z-index: 1;
+  background: var(--bg);
+  /* Lifted shadow on the top edge so .work visually "floats" above
+     the sticky hero as it scrolls over it. */
+  box-shadow: 0 -12px 48px -4px rgba(0, 0, 0, 0.28), 0 -2px 8px rgba(0, 0, 0, 0.12);
+}
 .work .scribble {
   width: 220px; height: 14px;
   margin-top: 14px;
@@ -1827,7 +1849,16 @@ body.on-paper .nav-pill {
 /* =====================================================
    ABOUT
    ===================================================== */
-.about { background: var(--bg-2); }
+.about {
+  background: var(--bg-2);
+  position: relative;
+  /* z-index:2 keeps About visually above Connect so the shadow reads
+     correctly — About is the "card on top", Connect is the dark layer
+     peeking out beneath it as About scrolls away. */
+  z-index: 2;
+  /* Bottom shadow sells the depth: About floats above the Connect layer */
+  box-shadow: 0 12px 48px -4px rgba(0, 0, 0, 0.22), 0 2px 8px rgba(0, 0, 0, 0.1);
+}
 
 /* Single-column prose block — no polaroid, centered in section */
 .about-prose {
@@ -2066,8 +2097,16 @@ body.on-paper .nav-pill {
 .connect {
   background: var(--hero-bg);
   color: var(--hero-fg);
-  position: relative;
+  /* Mirror of the hero: sticky at top-0, low z-index, so About (z-index:2)
+     physically scrolls OVER the pinned Connect layer — exact reverse of
+     how Work scrolls over the pinned Hero.
+     margin-top: -90vh pulls Connect up to overlap with About in the document
+     flow, so Connect starts sticking while About is still on screen. */
+  position: sticky;
+  top: 0;
+  z-index: 0;
   overflow: hidden;
+  margin-top: -90vh;
 }
 .connect .head { color: var(--hero-fg); }
 .connect-row {
@@ -2382,8 +2421,8 @@ body.on-paper .nav-pill {
   transition: padding 280ms var(--ease-out-quart), background 280ms ease;
   border-bottom: 1px solid rgba(246, 239, 220, 0.06);
   color: var(--hero-fg);
-  /* first-load entrance */
-  animation: navSlideIn 700ms cubic-bezier(0.22, 1, 0.36, 1) 80ms backwards;
+  /* container drops in quickly — children animate separately after */
+  animation: navSlideIn 320ms cubic-bezier(0.22, 1, 0.36, 1) 0ms backwards;
 }
 .case-nav.scrolled {
   background: rgba(6, 8, 10, 0.94);
@@ -2469,6 +2508,61 @@ body.on-paper .nav-pill {
     opacity 160ms ease;
 }
 
+/* ── Case page entrance — staggered waterfall ──────────────────────────────
+   Each piece has its own delay so nothing enters simultaneously:
+   nav drops (0ms) → back button slides left→right (150ms)
+   → pill links slide right→left (260ms)
+   → title (460ms) → meta (600ms) → subtitle (700ms) → hero image (820ms)  */
+
+.case-nav .case-back {
+  animation: caseBackIn 400ms var(--ease-out-quart) 150ms backwards;
+}
+@keyframes caseBackIn {
+  from { opacity: 0; transform: translateX(-24px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.case-nav-pill {
+  animation: casePillIn 400ms var(--ease-out-quart) 260ms backwards;
+}
+@keyframes casePillIn {
+  from { opacity: 0; transform: translateX(24px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.case-title {
+  animation: caseFadeUp 560ms var(--ease-out-quart) 660ms backwards;
+}
+.case-meta {
+  animation: caseFadeUp 500ms var(--ease-out-quart) 800ms backwards;
+}
+.case-subtitle {
+  animation: caseFadeUp 500ms var(--ease-out-quart) 900ms backwards;
+}
+.case-hero-image {
+  animation: caseImageIn 600ms var(--ease-out-quart) 1020ms backwards;
+}
+
+@keyframes caseFadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes caseImageIn {
+  from { opacity: 0; transform: translateY(32px) scale(0.97); }
+  to   { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .case-nav .case-back,
+  .case-nav-pill,
+  .case-title,
+  .case-meta,
+  .case-subtitle,
+  .case-hero-image {
+    animation: none !important;
+  }
+}
+
 .case-cover {
   background: var(--hero-bg);
   color: var(--hero-fg);
@@ -2528,6 +2622,41 @@ body.on-paper .nav-pill {
   margin: 0 auto;
   padding: 96px 56px 160px;
 }
+
+/* ── Case disclaimer (NDA / anonymization notice) ──────────────────────── */
+.case-disclaimer {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(26, 23, 20, 0.45);
+  border: 1px solid rgba(26, 23, 20, 0.12);
+  border-radius: 6px;
+  padding: 14px 20px;
+  margin-bottom: 72px;
+  line-height: 1.6;
+}
+
+/* ── Case body scroll-reveal ───────────────────────────────────────────────
+   CaseReveal.tsx sets data-case-animate="ready" on mount, activating the
+   hidden state below. Each .case-section > * and .case-disclaimer get
+   .case-in when they enter the viewport. Without JS the attribute is never
+   set so content is always visible. */
+.case-body[data-case-animate="ready"] .case-section > *,
+.case-body[data-case-animate="ready"] .case-disclaimer {
+  opacity: 0;
+  transform: translateY(22px);
+  transition:
+    opacity   560ms var(--ease-out-quart),
+    transform 560ms var(--ease-out-quart);
+  will-change: transform, opacity;
+}
+.case-body .case-section > *.case-in,
+.case-body .case-disclaimer.case-in {
+  opacity: 1;
+  transform: none;
+}
+
 .case-section {
   margin-bottom: 96px;
   scroll-margin-top: 100px;
