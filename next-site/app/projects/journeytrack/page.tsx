@@ -7,107 +7,144 @@ export const metadata = {
 
 const SECTIONS = [
   { id: "overview", label: "Overview" },
-  { id: "researching", label: "Researching" },
-  { id: "ideating", label: "Ideating" },
-  { id: "verifying", label: "Verifying" },
-  { id: "reflections", label: "Reflections" },
+  { id: "process", label: "Process" },
+  { id: "decisions", label: "Key Decisions" },
+  { id: "outcome", label: "Outcome" },
+  { id: "takeaways", label: "Takeaways" },
 ];
 
-export default function JourneyTrackCaseStudy() {
+export default function AIJourneyAgentCaseStudy() {
   return (
     <div className="case">
       <CaseSectionNav sections={SECTIONS} />
       <CaseCover
-        title="AI Journey Map Maintenance Agent"
-        meta="Capstone · AI/UX · Concept · 2026"
-        subtitle="NDA-restricted — abstract previews and process only"
-        imageLabel="JourneyTrack · cover concept"
+        title="Designing an AI Maintenance Agent for Customer Journey Maps"
+        meta="14 weeks · 9 designers · UI & Interaction · Designer"
+        subtitle="An agentic AI concept that keeps customer journey maps accurate and trustworthy over time"
+        imageLabel="AI maintenance agent · cover image"
       />
 
       <main className="case-body">
+        <p className="case-disclaimer">
+          Confidential and proprietary details have been removed or anonymized to protect client information.
+        </p>
+
+        {/* ───── Overview ───── */}
         <section id="overview" className="case-section">
           <h2>Overview</h2>
-
-          <h3>Problem Scope</h3>
           <p>
-            <mark className="hl">Customer journey maps go stale the moment they ship.</mark> Teams revisit them on a
-            six-month cadence — long after the experience has drifted — and the cost of re-doing the research keeps
-            the document frozen between updates. The capstone explored whether an
-            <mark className="hl"> AI agent could keep the map breathing on its own</mark>.
+            This project was for a customer journey management platform — a tool teams use to map and understand
+            their customers. Those maps are meant to be living documents, but they quietly go stale as products and
+            customers change, and nothing tells users when. Our team researched and designed an agentic AI{" "}
+            <mark className="hl">&ldquo;maintenance agent&rdquo;</mark> that monitors journey data, flags outdated
+            content, and recommends fixes — keeping maps accurate and trustworthy over time.
           </p>
 
-          <h3>Project Results</h3>
-          <div className="case-image-row">
-            <figure>
-              <div className="image-slot">agent concept</div>
-              <figcaption>An abstract preview of the agent&rsquo;s drift-detection surface (NDA-friendly).</figcaption>
-            </figure>
-            <figure>
-              <div className="image-slot">flow concept</div>
-              <figcaption>The proposed loop between agent suggestions and human review.</figcaption>
-            </figure>
-          </div>
-
-          <h3>Project Contributions</h3>
+          <h3>The Problem</h3>
           <p>
-            I <mark className="hl">led concept ideation</mark> and ran the agent-vs-spec usability sessions: pitching
-            <strong> three agent personalities</strong>, mapping where humans should still own decisions, and shaping
-            the <mark className="hl">review-and-accept pattern</mark> that became the handoff between agent and team.
+            A journey map loses its value the moment it falls out of date. The platform&rsquo;s users — CX
+            strategists, designers, product teams — rely on manual review and gut feel to catch stale content. The
+            result: <mark className="hl">outdated maps, disconnected data, and eroding trust</mark> in a tool meant
+            to be a source of truth. The brief: design an AI agent that monitors journeys, detects inaccurate
+            content, and surfaces actionable recommendations.
+          </p>
+
+          <h3>My Role</h3>
+          <p>
+            I worked on a nine-person UX studio team across three phases. I{" "}
+            <mark className="hl">led concept ideation and exploration</mark> — generating and pressure-testing the
+            agent concepts — and contributed to research synthesis, wireframing, high-fidelity prototyping, and
+            usability testing.
           </p>
         </section>
 
-        <section id="researching" className="case-section">
-          <h2>Researching</h2>
-          <p>
-            We started by interviewing three teams who keep journey maps. The recurring complaint wasn&rsquo;t the
-            mapping itself — it was the maintenance. Maps were trusted as references but distrusted as living artifacts,
-            and people had stopped looking at them altogether.
-          </p>
-          <p>
-            That gave us a sharper question than &ldquo;can AI build a journey map?&rdquo; — namely,
-            <mark className="hl"> &ldquo;what would have to be true for a team to trust an AI&rsquo;s update?&rdquo;</mark>
-          </p>
-          <div className="case-image-grid">
-            <figure>
-              <div className="image-slot">interview synthesis</div>
-              <figcaption>Interview synthesis</figcaption>
-            </figure>
-            <figure>
-              <div className="image-slot">competitive scan</div>
-              <figcaption>Competitive scan</figcaption>
-            </figure>
-          </div>
-        </section>
+        {/* ───── Process ───── */}
+        <section id="process" className="case-section">
+          <h2>Process</h2>
 
-        <section id="ideating" className="case-section">
-          <h2>Ideating</h2>
+          <h3>Research — understanding staleness and trust</h3>
           <p>
-            We sketched three agent &ldquo;personalities&rdquo; — a librarian (asks first), a maintainer (acts and
-            reports), and a partner (negotiates). Each implied a different power balance with the design team, and that
-            balance became the design&rsquo;s real argument.
+            We compared traditional, agentic, and maintenance AI; ran a competitive analysis of journey-management
+            and analogous SaaS tools; studied how knowledge tools handle content verification; and interviewed six
+            current users of the platform. The throughline: maintenance today is{" "}
+            <mark className="hl">reactive, manual, and tied to project milestones</mark> — and users only trust AI
+            suggestions when they can see the reasoning behind them.
           </p>
           <figure>
-            <div className="image-slot">three personalities</div>
-            <figcaption>Three agent personalities sketched in parallel</figcaption>
+            <div className="image-slot">research synthesis</div>
+            <figcaption>
+              Affinity diagramming user interviews and interaction-pattern research into the themes that shaped the
+              design.
+            </figcaption>
+          </figure>
+
+          <h3>Ideation — from six concepts to one</h3>
+          <p>
+            Through Crazy 8&rsquo;s and group whiteboarding we developed six concept directions and presented them to
+            the client&rsquo;s sponsors. They selected two — a <em>proactive</em> suggestion model and a{" "}
+            <em>reactive</em> guided-walkthrough model — which we combined into a single, cohesive agent after
+            recognizing how much the two overlapped.
+          </p>
+
+          <h3>Design &amp; testing</h3>
+          <p>
+            We built a high-fidelity, interactive Figma prototype: evidence-backed suggestion cards, approve / deny /
+            snooze controls, a guided walkthrough, and an in-context AI chat. Usability testing with six participants
+            showed strong, positive reception and low task difficulty; iterations focused on making evidence
+            interactions more obvious and reducing on-screen text density.
+          </p>
+          <figure>
+            <div className="image-slot">final hi-fi design</div>
+            <figcaption>
+              The final agent: proactive suggestions and a reactive assistant, unified in one panel.
+            </figcaption>
           </figure>
         </section>
 
-        <section id="verifying" className="case-section">
-          <h2>Verifying</h2>
-          <p>
-            We tested the partner concept across two sessions. Participants were given a stale journey map and the
-            agent&rsquo;s suggested patch, then asked to decide together.
-          </p>
-          <p className="case-placeholder">— detailed findings under NDA</p>
+        {/* ───── Key Decisions ───── */}
+        <section id="decisions" className="case-section">
+          <h2>Key Decisions</h2>
+          <ul>
+            <li>
+              <mark className="hl">Made every AI suggestion evidence-backed</mark> — each recommendation includes its
+              reasoning and a supporting quote pulled from the user&rsquo;s own uploaded documents — because research
+              showed transparency is the foundation of AI trust.
+            </li>
+            <li>
+              <strong>Kept the human in control</strong> with approve, deny, and snooze actions, plus an
+              Approved/Denied history so users can revisit and undo decisions.
+            </li>
+            <li>
+              <strong>Combined the proactive and reactive concepts into one agent</strong> to avoid redundancy and
+              the confusion of a second, competing AI surface.
+            </li>
+            <li>
+              <strong>Moved agent customization into general settings</strong> to match the mental model users
+              already had for that kind of control.
+            </li>
+          </ul>
         </section>
 
-        <section id="reflections" className="case-section">
-          <h2>Reflections</h2>
+        {/* ───── Outcome ───── */}
+        <section id="outcome" className="case-section">
+          <h2>Outcome</h2>
           <p>
-            <mark className="hl">The most useful AI behavior turned out to be the most boring one</mark> — surfacing
-            what had changed in the source data and asking a human to interpret it. The interesting parts — drafting
-            new map nodes, suggesting interventions — only earned trust <em>after</em> the boring part was bulletproof.
-            That ordering reshaped how I think about agent UX in general.
+            We delivered a high-fidelity interactive prototype, design-principle documentation, and a final
+            presentation to the client&rsquo;s leadership. The final design gives users a{" "}
+            <mark className="hl">trustworthy way to keep journey maps current</mark>: proactive alerts when content
+            drifts, transparent evidence for every recommendation, and controls that keep people in the loop rather
+            than handing decisions to automation.
+          </p>
+        </section>
+
+        {/* ───── Takeaways ───── */}
+        <section id="takeaways" className="case-section">
+          <h2>What I Took Away</h2>
+          <p>
+            Designing for AI is mostly designing for <em>trust</em>. The hardest problems weren&rsquo;t visual — they
+            were about transparency, control, and helping users decide when to rely on the system. I also learned to
+            design within an existing product: every decision had to fit the platform&rsquo;s established patterns
+            and its users&rsquo; mental models.
           </p>
         </section>
       </main>

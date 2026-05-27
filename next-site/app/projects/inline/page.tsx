@@ -2,170 +2,125 @@ import CaseCover from "@/components/CaseCover";
 import CaseSectionNav from "@/components/CaseSectionNav";
 
 export const metadata = {
-  title: "Pop — Product Design & Competitive Research — Kathleen Li",
+  title: "Competitive Research Case Study — Kathleen Li",
 };
 
 const SECTIONS = [
   { id: "overview", label: "Overview" },
-  { id: "researching", label: "Researching" },
-  { id: "designing", label: "Designing" },
-  { id: "credential", label: "Credential" },
-  { id: "reflections", label: "Reflections" },
+  { id: "process", label: "Process" },
+  { id: "approach", label: "How I Worked" },
+  { id: "takeaways", label: "Takeaways" },
 ];
 
-export default function InlineCaseStudy() {
+export default function CompetitorResearchCaseStudy() {
   return (
     <div className="case">
       <CaseSectionNav sections={SECTIONS} />
       <CaseCover
-        title="Pop — Product Design & Competitive Research"
-        meta="Internship · Inline · Product Design & Research · 2026"
-        subtitle="NDA-restricted — role and process only, no product detail"
-        imageLabel="Pop · Inline internship"
+        title="Competitive Research for an Early-Stage Consumer Product"
+        meta="Summer 2026 · Remote · Product Design · Product Design Intern"
+        subtitle="An outside-in competitive read shaping where a new consumer product could stand out"
+        imageLabel="Competitive research · cover image"
       />
 
       <main className="case-body">
+        <p className="case-disclaimer">
+          This is an anonymized overview. The client, product, and proprietary details have been withheld or
+          generalized to respect a confidentiality agreement. It focuses on my research process and methods rather
+          than the product itself.
+        </p>
+
         {/* ───── Overview ───── */}
         <section id="overview" className="case-section">
           <h2>Overview</h2>
-
-          <h3>Problem Scope</h3>
           <p>
-            Pop is an early-stage product at Inline. I joined for an internship
-            that ran across two tracks — <mark className="hl">competitive research</mark> and{" "}
-            <mark className="hl">product design</mark> — feeding what the market was
-            doing back into the product as it took shape. The work is covered by an
-            NDA, so this page describes the <strong>shape of the engagement and my role</strong>{" "}
-            rather than the product itself.
+            I joined an early-stage product team as a <mark className="hl">Product Design Intern</mark>, working
+            remotely across a roughly 12-hour time-zone gap. Because the product direction itself was still being
+            explored, my role was explicitly <em>outside-in</em>: research how comparable products solve the same
+            problem, then pressure-test the team&rsquo;s proposed direction for gaps.
           </p>
 
-          <h3>What I Owned</h3>
-          <div className="case-image-row">
-            <figure>
-              <div className="image-slot">research track</div>
-              <figcaption>
-                The competitive research track — an abstract preview, NDA-friendly.
-              </figcaption>
-            </figure>
-            <figure>
-              <div className="image-slot">design track</div>
-              <figcaption>
-                The product design track, fed directly by the research signal.
-              </figcaption>
-            </figure>
-          </div>
+          <h3>Context</h3>
           <p>
-            Across the internship I <mark className="hl">audited the competitive
-            landscape</mark> and <mark className="hl">translated those findings into
-            design work</mark> — moving between the research and the screens so the
-            two stayed in conversation rather than running as separate exercises.
+            The product addresses an everyday coordination problem — planning casual group gatherings, where the key
+            details are rarely all settled at the same time. With the direction still being shaped, the team needed
+            someone to bring an external benchmark and an honest read on where the plan had holes. The internship was
+            framed around clarity of thinking and quality of ideas rather than production output.
           </p>
-          <p className="case-placeholder">— product specifics, metrics, and screens withheld under NDA</p>
+
+          <h3>My Role</h3>
+          <p>
+            My work to date has been research-led. I own the{" "}
+            <mark className="hl">competitive research and gap analysis</mark>, and contribute an outside-in
+            perspective on opportunities and risks in the proposed direction.
+          </p>
         </section>
 
-        {/* ───── Researching ───── */}
-        <section id="researching" className="case-section">
-          <h2>Mapping the competitive landscape</h2>
-          <p>
-            My research track centered on competitive analysis. I built a working
-            picture of the products adjacent to Pop — what they did well, where they
-            left users wanting, and which patterns had quietly become table stakes.
-          </p>
-          <p>
-            Rather than a one-off scan, I set the audit up as something the team
-            could keep returning to: a <mark className="hl">structured comparison
-            framework</mark> that made it easy to slot in a new competitor and read
-            where Pop stood at a glance.
-          </p>
-          <p>
-            The output that mattered most wasn&rsquo;t the list of competitors — it
-            was the <mark className="hl">gaps between them</mark>, the spots where no
-            one had a strong answer yet and the design had room to do something new.
-          </p>
-          <div className="case-image-grid">
-            <figure>
-              <div className="image-slot">competitive matrix</div>
-              <figcaption>Competitive matrix</figcaption>
-            </figure>
-            <figure>
-              <div className="image-slot">feature comparison</div>
-              <figcaption>Feature comparison</figcaption>
-            </figure>
-            <figure>
-              <div className="image-slot">opportunity gaps</div>
-              <figcaption>Opportunity gaps</figcaption>
-            </figure>
-            <figure>
-              <div className="image-slot">market notes</div>
-              <figcaption>Market notes</figcaption>
-            </figure>
-          </div>
-          <p className="case-placeholder">— competitor names and findings withheld under NDA</p>
-        </section>
+        {/* ───── Process ───── */}
+        <section id="process" className="case-section">
+          <h2>Process</h2>
 
-        {/* ───── Designing ───── */}
-        <section id="designing" className="case-section">
-          <h2>Turning research into design</h2>
+          <h3>A reusable competitive-analysis framework</h3>
           <p>
-            On the design track I took the research signal and pushed it toward the
-            product — sketching directions, exploring UI options, and iterating with
-            the team on what felt right for Pop&rsquo;s stage.
-          </p>
-          <p>
-            Holding both tracks meant the design decisions stayed{" "}
-            <mark className="hl">anchored to evidence</mark>: where a competitor had
-            already set a user expectation, the design either met it deliberately or
-            broke from it deliberately — never by accident.
+            Rather than auditing each product ad hoc, I built{" "}
+            <mark className="hl">one consistent framework</mark> — covering positioning, key features, strengths and
+            weaknesses, business model, and end-to-end host and guest flows — and applied it identically to every
+            product so they were directly comparable. I audited six consumer event-coordination and invitation apps,
+            testing them hands-on (walking both the host and guest journeys, probing edge cases like reminder
+            customization and paywall behavior) rather than reviewing them at surface level.
           </p>
           <figure>
-            <div className="image-slot">design exploration</div>
+            <div className="image-slot">competitive analysis framework</div>
             <figcaption>
-              An abstract preview of the design exploration (NDA-friendly).
+              Anonymized example of the competitive-analysis framework applied consistently across products.
             </figcaption>
           </figure>
-          <p className="case-placeholder">— screens and product detail withheld under NDA</p>
+
+          <h3>Cross-app synthesis</h3>
+          <p>
+            Comparing across the audits revealed how each product made a different bet on the same underlying problem
+            — and where the market left whitespace. I presented this research to the team and it became the
+            foundation for the next phase.
+          </p>
+
+          <h3>Gap analysis with category discipline</h3>
+          <p>
+            I cross-referenced each competitor&rsquo;s documented weaknesses against the team&rsquo;s proposed
+            feature set in a structured table. The key analytical catch: one of the products was a fundamentally
+            different <em>category</em> of product, so mechanically applying the table would have{" "}
+            <mark className="hl">manufactured false gaps</mark>. Filtering for that left only the genuine,
+            category-independent gaps — a more honest and more useful result than a longer, noisier list.
+          </p>
         </section>
 
-        {/* ───── Credential ─────
-            The image-slot below is a placeholder. To show the real
-            certificate, replace the <div className="image-slot"> line
-            with an <img> — e.g. drop the scan into next-site/public/ and
-            use <img src="/inline-certificate.jpg" alt="Inline internship
-            certificate" />. Confirm the scan carries no NDA-covered
-            detail before publishing. */}
-        <section id="credential" className="case-section">
-          <h2>Credential</h2>
-          <p>
-            Inline issued an <mark className="hl">internship certificate</mark> on
-            completion of the engagement. It&rsquo;s included here as independent
-            verification of the role and dates — no confidential product
-            information involved.
-          </p>
-          <figure>
-            <div className="image-slot">internship certificate</div>
-            <figcaption>
-              Internship certificate issued by Inline — verification of the role
-              and dates.
-            </figcaption>
-          </figure>
+        {/* ───── How I Worked ───── */}
+        <section id="approach" className="case-section">
+          <h2>How I Worked</h2>
+          <ul>
+            <li>
+              <strong>Tested products hands-on</strong> instead of reviewing them superficially, so findings
+              reflected real user flows, not marketing pages.
+            </li>
+            <li>
+              <strong>Raised blockers early and clearly.</strong> I hit access blockers three times (region-locked
+              sign-ups and a paywall) and escalated each by email rather than stalling on them.
+            </li>
+            <li>
+              <strong>Matched effort to scope</strong> in an ambiguous, still-forming project — asking before
+              expanding the work rather than assuming.
+            </li>
+          </ul>
         </section>
 
-        {/* ───── Reflections ───── */}
-        <section id="reflections" className="case-section">
-          <h2>Reflections</h2>
+        {/* ───── Takeaways ───── */}
+        <section id="takeaways" className="case-section">
+          <h2>What I Took Away</h2>
           <p>
-            The internship&rsquo;s real lesson was about <mark className="hl">sequence</mark>:
-            research is most useful when it lands <em>before</em> the design
-            questions get asked, not after. Holding both tracks myself made that
-            obvious — every time the competitive picture sharpened, the design got
-            faster and less precious.
-          </p>
-          <p>
-            It also reset how I think about competitive work. A competitor audit
-            isn&rsquo;t a verdict on who&rsquo;s winning; it&rsquo;s a{" "}
-            <mark className="hl">map of where the open questions are</mark> — and
-            those open questions are exactly where the design gets to contribute
-            something of its own.
+            The value of a research role isn&rsquo;t collecting observations — it&rsquo;s{" "}
+            <mark className="hl">synthesis</mark>: moving from &ldquo;here&rsquo;s what I saw&rdquo; to
+            &ldquo;here&rsquo;s what&rsquo;s missing and what I&rsquo;d recommend.&rdquo; I also learned{" "}
+            <em>category discipline</em>: applying an analysis method blindly can produce false findings, and
+            judgment about when a method applies matters more than the method itself.
           </p>
         </section>
       </main>
