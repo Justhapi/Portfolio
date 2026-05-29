@@ -420,11 +420,12 @@ export default function ProjectsV2() {
             <div
               style={{
                 fontFamily: "var(--f-mono)",
-                fontSize: 11,
-                letterSpacing: "0.18em",
+                fontSize: 12,
+                fontWeight: 600,
+                letterSpacing: "0.22em",
                 color: "var(--muted)",
                 textTransform: "uppercase",
-                marginTop: 6,
+                marginTop: 10,
               }}
             >
               projects I&rsquo;ve worked on
