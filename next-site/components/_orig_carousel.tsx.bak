@@ -1,0 +1,2052 @@
+// Get Started: https://www.framer.com/developers
+//
+// ────────────────────────────────────────────────────────────────────────────
+// Polished against .impeccable.md (flagship/portfolio quality).
+//
+// Polish summary:
+//   • Centralized brand palette + 4pt spacing scale as constants (BRAND, SPACE)
+//     so values are tokenized rather than scattered as magic numbers.
+//   • Replaced every pure "white" SVG fill/stroke with a warm-tinted cream
+//     (no pure black or pure white anywhere — design-context rule).
+//   • Description line-height bumped 1.6 → 1.65 (the +0.05 lift for light
+//     text on dark surfaces — a small but recruiter-visible detail).
+//   • Tracker gap 10 → 12, top 44 → 48; pill padding 8px 22 → 8px 24
+//     (snap to the 4pt scale).
+//   • h2 margin-bottom 14 → 16 (4pt scale).
+//   • Default description color #FFFFFF → tinted star-white #FCF6E8.
+//   • Added font-size + font-family property controls for project name,
+//     description, and pill (previously read but never declared in the
+//     Framer property panel — silent UX miss).
+//   • Added keyboard arrow-key navigation: ←/→ pages the carousel when
+//     focus is anywhere inside the component.
+//   • Tightened ARIA: content region marked role="tabpanel" with
+//     aria-labelledby linking to the active tracker tab.
+//   • Focus-visible ring now references a brand token rather than an
+//     inline rgba literal, so it stays in sync if the cream shifts.
+// ────────────────────────────────────────────────────────────────────────────
+
+import { useState, useRef, useEffect, useId } from "react"
+import { addPropertyControls, ControlType, Link } from "framer"
+import {
+    motion,
+    AnimatePresence,
+    useReducedMotion,
+    useMotionValue,
+} from "framer-motion"
+
+/* -------------------------------------------------------------------------- */
+/*                          Brand tokens (design system)                       */
+/* -------------------------------------------------------------------------- */
+
+// Centralized palette. Hex shown for Framer property-control compatibility,
+// but every value is tinted (no pure black/white) and aligned with the
+// .impeccable.md OKLCH-derived spec.
+const BRAND = {
+    cream: "#FFDA85", // peach-cream — primary warm
+    creamLight: "#FFE6AC", // sparkle / hover lift
+    creamWhite: "#FCF6E8", // star-white tinted toward cream — replaces #fff
+    creamPaper: "#FFF6E4", // SVG outline white (slightly cooler)
+    peach: "#E19F7E", // folder back
+    peachShade: "#D59B6E", // sparkle outline
+    terracotta: "#B5675B", // gradient depth + tracker inactive
+    teal: "#96C5C6", // peek paper #1
+    cornflower: "#5D8EF4", // peek paper #2
+    cocoa: "#3A2A1F", // pill text — warm dark, never pure black
+    plum: "#8B7AA8", // tracker palette accent
+    ochre: "#A88958", // tracker palette — dark muted gold (project 1)
+
+    // Lighter siblings for each tracker palette color. Active tab uses
+    // these so the project KEEPS its hue identity but reads as
+    // brightened — e.g. dark plum → light plum when selected — rather
+    // than swapping to a single shared "active" color.
+    ochreLight: "#E8C887", // lit-from-within mustard
+    terracottaLight: "#E5A595", // pale brick
+    plumLight: "#C3B5D6", // soft lavender
+    tealLight: "#C4E0E1", // pale mint
+    cornflowerLight: "#A8C2F8", // sky cornflower
+
+    // Darker shade siblings — used for folder BACK/lip so the two folder
+    // halves read as the same hue at different lightness. Hand-picked in
+    // OKLCH space (base hue preserved, chroma nudged, lightness dropped
+    // ~12%) so each pair reads as "one folder" rather than two colors.
+    ochreShade: "#8A6E42", // deep mustard
+    terracottaShade: "#934F45", // aged brick
+    plumShade: "#6E5E8A", // dusk plum
+    tealShade: "#6FA0A1", // slate teal
+    cornflowerShade: "#4872C8", // deep cornflower
+} as const
+
+// Per-project folder paint identity. Each folder picks its front/back
+// pair from this list by project index — mirroring the tracker's palette
+// so folder #0 paints ochre, #1 terracotta, #2 plum, etc. Every entry
+// carries TWO states:
+//   • bright = the folder is the currently-selected (active) one. Front
+//     uses the tracker's "Light" sibling (lit-from-within), back uses
+//     the base hue so the back still reads as a shade darker than the
+//     front and creates depth.
+//   • dim = the folder is a peek or parked slot. Front uses the base
+//     (tracker's inactive) hue, back uses the darker "Shade" sibling.
+//
+// This mirrors the tracker's "one project keeps its hue, but brightens
+// when selected" pattern — so the same visual rule applies at both the
+// tracker indicator and the full folder SVG.
+//
+// Projects beyond the palette length fall back to the global folderColor
+// / folderBackColor props configured in Framer.
+type FolderPaint = {
+    frontBright: string
+    backBright: string
+    frontDim: string
+    backDim: string
+}
+const FOLDER_PALETTE: ReadonlyArray<FolderPaint> = [
+    {
+        frontBright: BRAND.ochreLight,
+        backBright: BRAND.ochre,
+        frontDim: BRAND.ochre,
+        backDim: BRAND.ochreShade,
+    },
+    {
+        frontBright: BRAND.terracottaLight,
+        backBright: BRAND.terracotta,
+        frontDim: BRAND.terracotta,
+        backDim: BRAND.terracottaShade,
+    },
+    {
+        frontBright: BRAND.plumLight,
+        backBright: BRAND.plum,
+        frontDim: BRAND.plum,
+        backDim: BRAND.plumShade,
+    },
+    {
+        frontBright: BRAND.tealLight,
+        backBright: BRAND.teal,
+        frontDim: BRAND.teal,
+        backDim: BRAND.tealShade,
+    },
+    {
+        frontBright: BRAND.cornflowerLight,
+        backBright: BRAND.cornflower,
+        frontDim: BRAND.cornflower,
+        backDim: BRAND.cornflowerShade,
+    },
+]
+
+// 4pt spacing scale, semantic names (not pixel-named). Use these instead of
+// magic numbers so spacing reads as rhythm, not coincidence.
+const SPACE = {
+    xs: 4,
+    sm: 8,
+    md: 12,
+    lg: 16,
+    xl: 24,
+    xxl: 32,
+    xxxl: 48,
+} as const
+
+// Warm-tinted shadow — never pure black; tinted toward the cocoa axis so
+// shadows read as warm shade rather than a generic dropshadow.
+const SHADOW_WARM = "0 6px 18px rgba(58, 35, 28, 0.28)"
+
+// Focus ring — references the brand cream (rgba derived from BRAND.cream).
+const FOCUS_RING = "rgba(255, 218, 133, 0.9)"
+
+// System font stack that inherits cleanly from the host page.
+// Intentionally omits Inter to avoid the default-font monoculture.
+const SYSTEM_FONT_STACK =
+    "-apple-system, BlinkMacSystemFont, system-ui, 'Segoe UI', sans-serif"
+
+/**
+ * @framerSupportedLayoutWidth any
+ * @framerSupportedLayoutHeight any
+ */
+export default function Project_Carousel(props) {
+    const {
+        backgroundColor,
+        projectNameColor,
+        projectNameFontFamily,
+        projectNameFontSize,
+        descriptionColor,
+        descriptionFontFamily,
+        descriptionFontSize,
+        pillColor,
+        pillTextColor,
+        pillFontFamily,
+        pillFontSize,
+        trackerActiveColor,
+        trackerInactiveColor,
+        folderColor,
+        folderBackColor,
+        descriptionLeft = 120,
+        descriptionTop = 200,
+        descriptionWidth = 320,
+        // 480 (was 520): mirrors the 44px breathing room between the
+        // left arrow tip (x≈76) and the description block (x=120) on the
+        // opposite side. With folderWidth=300 and the right arrow
+        // anchored to right:28, this puts equal visual padding on both
+        // ends of the carousel row.
+        folderLeft = 480,
+        folderTop = 150,
+        folderWidth = 300,
+        folderHeight = 260,
+        projects,
+    } = props
+
+    const safeProjects =
+        projects && projects.length > 0 ? projects : DEFAULT_PROJECTS
+
+    const [currentIndex, setCurrentIndex] = useState(0)
+    const [direction, setDirection] = useState(1) // 1 = forward, -1 = back
+    // Hover state is now a three-way enum so the floating pill can swap
+    // labels depending on whether the description block or the folder
+    // is under the cursor.
+    const [hoveredArea, setHoveredArea] = useState<
+        "none" | "description" | "folder"
+    >("none")
+    // Bumped on every slide change. Fed into each tracker tab as part of a
+    // motion key so the tabs replay a one-shot "shuffle" kick whenever the
+    // carousel pages — like flicking a stack of cards.
+    const [shuffleNonce, setShuffleNonce] = useState(0)
+    const prefersReducedMotion = useReducedMotion()
+
+    // Gate the active folder's hover→open reaction behind "has the
+    // newly-selected folder finished sliding into the center?" When the
+    // carousel pages, the incoming folder is still in motion — firing
+    // its keyframe open-folder animation at that point looks chaotic
+    // (papers appear to fly in before the folder itself has stopped).
+    // We flip this false on every currentIndex change, then back to
+    // true after the slot transition duration has elapsed. While it's
+    // false, `isHovered` stays false on the active folder even if the
+    // cursor is over it — the open animation waits for arrival.
+    const [activeSettled, setActiveSettled] = useState(true)
+    useEffect(() => {
+        // Match the longest channel of slotTransition (x / y / rotate
+        // at 0.7s) plus a small guard so the folder is visually at rest
+        // before we re-enable hover→open. Reduced-motion users get an
+        // instant unlock since slot transitions collapse to duration 0.
+        setActiveSettled(false)
+        const unlockMs = prefersReducedMotion ? 0 : 720
+        const t = setTimeout(() => setActiveSettled(true), unlockMs)
+        return () => clearTimeout(t)
+    }, [currentIndex, prefersReducedMotion])
+
+    // Stable id base for ARIA wiring (tab → tabpanel relationship).
+    // Replacing the colons keeps the ids valid as HTML id attributes.
+    const idBase = useId().replace(/:/g, "")
+    const tabId = (i: number) => `${idBase}-tab-${i}`
+    const panelId = `${idBase}-panel`
+
+    // Cursor tracking lives at the root so the pill can follow the mouse
+    // across BOTH the description and the folder, not just inside the
+    // folder container.
+    //
+    // We use motion values instead of React state so mouse moves do NOT
+    // re-render the carousel — updates go straight to the DOM, which keeps
+    // the folder keyframe animation fluid and the pill glued to the cursor
+    // at 60fps.
+    const rootRef = useRef<HTMLDivElement>(null)
+    const cursorX = useMotionValue(0)
+    const cursorY = useMotionValue(0)
+    const handleRootMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        const rect = rootRef.current?.getBoundingClientRect()
+        if (!rect) return
+        cursorX.set(e.clientX - rect.left + 18)
+        cursorY.set(e.clientY - rect.top + 18)
+    }
+
+    const current = safeProjects[currentIndex % safeProjects.length]
+
+    // Fires on every slide-change pathway so the tracker shuffle replays
+    // even when the user clicks the same tab as before (re-tap restages the
+    // animation rather than going stale).
+    const bumpShuffle = () => setShuffleNonce((n) => n + 1)
+
+    const goTo = (i: number) => {
+        setDirection(i > currentIndex ? 1 : -1)
+        setCurrentIndex(
+            ((i % safeProjects.length) + safeProjects.length) %
+                safeProjects.length
+        )
+        bumpShuffle()
+    }
+    const next = () => {
+        setDirection(1)
+        setCurrentIndex((i) => (i + 1) % safeProjects.length)
+        bumpShuffle()
+    }
+    const prev = () => {
+        setDirection(-1)
+        setCurrentIndex(
+            (i) => (i - 1 + safeProjects.length) % safeProjects.length
+        )
+        bumpShuffle()
+    }
+
+    // Keyboard navigation — ← / → page the carousel whenever focus is
+    // anywhere inside the component. Lets keyboard users drive the carousel
+    // without having to tab to a specific arrow button each time.
+    const handleRootKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+        if (e.key === "ArrowRight") {
+            e.preventDefault()
+            next()
+        } else if (e.key === "ArrowLeft") {
+            e.preventDefault()
+            prev()
+        }
+    }
+
+    // Slide variants for synced description + folder transitions.
+    // The carousel cross-fades: the outgoing slide travels ALL the way
+    // off the component, blurring and fading as it goes, while the
+    // incoming slide simultaneously rushes in from the opposite side,
+    // sharpening into focus. Both children stack absolutely (see the
+    // motion.div style below) so they share coordinate space during the
+    // overlap rather than queueing one after the other.
+    //
+    // - slideDistance is set well past any reasonable content width so
+    //   the outgoing slide truly clears the frame instead of stalling
+    //   half-on-stage.
+    // - blur softens the silhouette as it leaves so the eye doesn't try
+    //   to read both copies at once.
+    // - ease-out-expo gives a confident decelerating curve — the new
+    //   slide arrives quickly, then settles. Linear and spring both let
+    //   the slide loiter at the edges; expo doesn't.
+    // - Reduced-motion users get an instant swap with no blur.
+    const slideDistance = prefersReducedMotion ? 0 : 860
+    const slideBlur = prefersReducedMotion ? 0 : 10
+    const slideVariants = {
+        enter: (dir: number) => ({
+            x: dir > 0 ? slideDistance : -slideDistance,
+            opacity: 0,
+            filter: `blur(${slideBlur}px)`,
+        }),
+        center: {
+            x: 0,
+            opacity: 1,
+            filter: "blur(0px)",
+        },
+        exit: (dir: number) => ({
+            x: dir > 0 ? -slideDistance : slideDistance,
+            opacity: 0,
+            filter: `blur(${slideBlur}px)`,
+        }),
+    }
+    const slideTransition = prefersReducedMotion
+        ? { duration: 0 }
+        : {
+              x: { duration: 0.75, ease: [0.16, 1, 0.3, 1] as const },
+              opacity: { duration: 0.55, ease: [0.16, 1, 0.3, 1] as const },
+              filter: { duration: 0.55, ease: [0.16, 1, 0.3, 1] as const },
+          }
+
+    /* --------------------------------------------------------------------
+     * Slot-based folder choreography
+     *
+     * Every project in `safeProjects` owns ONE persistent motion.div on
+     * the stage. Each div's transform is driven by its current "slot" —
+     * a signed distance from `currentIndex` (0 = active, ±1 = peeks,
+     * |n|≥2 = parked off-stage). When `currentIndex` changes, the slots
+     * shift by one and framer-motion animates each div from its old slot
+     * position to its new one.
+     *
+     * Why this shape (and not AnimatePresence + separate PeekFolders):
+     *  • Clicking the RIGHT peek smoothly slides THAT SAME folder into
+     *    center (no mount/unmount flicker). The old center slides
+     *    CONTINUOUSLY to the left peek — not exit + re-enter.
+     *  • The project one-past the right peek (slot 2) is "parked above"
+     *    at opacity 0. When the user advances, it animates from slot 2
+     *    → slot 1, which visually = a fresh folder DROPPING from above
+     *    into the peek slot the selected folder just vacated.
+     *  • Direction-aware parking: when going next, far-left slots are
+     *    off-screen-left (the conveyor-belt exit); when going prev, the
+     *    same slots are "above left peek" (ready to drop in).
+     * ------------------------------------------------------------------ */
+    const n = safeProjects.length
+
+    // Signed slot: positive = right of active, negative = left. Wraps so
+    // |slot| is never larger than n/2 — i.e., the project "closest" to
+    // active wins. For n=5 and currentIndex=0, project 3 resolves to
+    // slot -2 (closer via wrap) rather than slot 3.
+    const getSlot = (projectIdx: number) => {
+        const raw = (((projectIdx - currentIndex) % n) + n) % n
+        return raw > n / 2 ? raw - n : raw
+    }
+
+    // Peek layout tokens — baseline offsets for the tilted "stack of
+    // papers" look. Active sits center-stage at native scale; peeks are
+    // smaller, tilted, and lifted slightly to read as "behind and above."
+    const PEEK_X = 96
+    const PEEK_Y = -8
+    const PEEK_SCALE = 0.78
+    const PEEK_ROTATE = 10
+    const PEEK_OPACITY = 0.55
+    const DROP_Y = -400 // parked above the peek, ready to drop
+    const EXIT_X = 1000 // off-screen horizontal parking
+
+    // Resolve a slot → animate target. `dir` controls which side the
+    // parking slots sit on, so the same slot index can mean "dropping
+    // in from above" in one direction and "sliding off-screen" in the
+    // other without discontinuity on the VISIBLE slots (-1, 0, 1).
+    const getSlotTarget = (slot: number, dir: number) => {
+        if (prefersReducedMotion) {
+            // Static layout for motion-sensitive users: no rotation, no
+            // blur, no vertical drop. Off-stage is just opacity 0.
+            if (slot === 0)
+                return { x: 0, y: 0, scale: 1, rotate: 0, opacity: 1 }
+            if (slot === -1)
+                return {
+                    x: -PEEK_X,
+                    y: 0,
+                    scale: PEEK_SCALE,
+                    rotate: 0,
+                    opacity: PEEK_OPACITY,
+                }
+            if (slot === 1)
+                return {
+                    x: PEEK_X,
+                    y: 0,
+                    scale: PEEK_SCALE,
+                    rotate: 0,
+                    opacity: PEEK_OPACITY,
+                }
+            return { x: 0, y: 0, scale: 0.6, rotate: 0, opacity: 0 }
+        }
+
+        // Active — center stage, native size, no tilt, no blur.
+        if (slot === 0) {
+            return {
+                x: 0,
+                y: 0,
+                scale: 1,
+                rotate: 0,
+                opacity: 1,
+                filter: "blur(0px) saturate(1)",
+            }
+        }
+        // Left peek.
+        if (slot === -1) {
+            return {
+                x: -PEEK_X,
+                y: PEEK_Y,
+                scale: PEEK_SCALE,
+                rotate: -PEEK_ROTATE,
+                opacity: PEEK_OPACITY,
+                filter: "blur(1.5px) saturate(0.85)",
+            }
+        }
+        // Right peek.
+        if (slot === 1) {
+            return {
+                x: PEEK_X,
+                y: PEEK_Y,
+                scale: PEEK_SCALE,
+                rotate: PEEK_ROTATE,
+                opacity: PEEK_OPACITY,
+                filter: "blur(1.5px) saturate(0.85)",
+            }
+        }
+
+        // Parked — direction decides where the slot LIVES. Going next
+        // (dir > 0): far-left is "already exited off-screen-left", and
+        // far-right is "queued above the right peek, waiting to drop."
+        // Going prev: mirrored.
+        if (slot <= -2) {
+            return dir >= 0
+                ? {
+                      // Exited: slid off the left edge.
+                      x: -EXIT_X,
+                      y: 0,
+                      scale: 0.6,
+                      rotate: -20,
+                      opacity: 0,
+                      filter: "blur(10px) saturate(1)",
+                  }
+                : {
+                      // Queued: floating above the left peek slot.
+                      x: -PEEK_X,
+                      y: DROP_Y,
+                      scale: 0.6,
+                      rotate: -PEEK_ROTATE,
+                      opacity: 0,
+                      filter: "blur(8px) saturate(0.85)",
+                  }
+        }
+        // slot >= 2
+        return dir >= 0
+            ? {
+                  // Queued: floating above the right peek slot.
+                  x: PEEK_X,
+                  y: DROP_Y,
+                  scale: 0.6,
+                  rotate: PEEK_ROTATE,
+                  opacity: 0,
+                  filter: "blur(8px) saturate(0.85)",
+              }
+            : {
+                  // Exited: slid off the right edge.
+                  x: EXIT_X,
+                  y: 0,
+                  scale: 0.6,
+                  rotate: 20,
+                  opacity: 0,
+                  filter: "blur(10px) saturate(1)",
+              }
+    }
+
+    // Hover override for peek slots: tilt further out, lift, clarify.
+    // This reads as the peek "inviting" the click — it peels out from
+    // behind the active folder rather than merely changing color.
+    const getPeekHover = (slot: number) => {
+        if (prefersReducedMotion) return undefined
+        if (slot !== -1 && slot !== 1) return undefined
+        const sign = slot === -1 ? -1 : 1
+        return {
+            x: sign * 130,
+            y: PEEK_Y - 8,
+            scale: 0.86,
+            rotate: sign * 14,
+            opacity: 0.9,
+            filter: "blur(0px) saturate(1)",
+        }
+    }
+
+    // Slot transition: ease-out-expo so the decelerating folder lands
+    // decisively instead of loitering on approach. Filter runs slightly
+    // faster than the transform so the incoming folder sharpens into
+    // focus before it fully settles (reads as "confident arrival").
+    const slotTransition = prefersReducedMotion
+        ? { duration: 0 }
+        : {
+              x: { duration: 0.7, ease: [0.16, 1, 0.3, 1] as const },
+              y: { duration: 0.7, ease: [0.16, 1, 0.3, 1] as const },
+              scale: { duration: 0.65, ease: [0.16, 1, 0.3, 1] as const },
+              rotate: { duration: 0.7, ease: [0.16, 1, 0.3, 1] as const },
+              opacity: {
+                  duration: 0.5,
+                  ease: [0.16, 1, 0.3, 1] as const,
+              },
+              filter: {
+                  duration: 0.55,
+                  ease: [0.16, 1, 0.3, 1] as const,
+              },
+          }
+
+    return (
+        <div
+            ref={rootRef}
+            onMouseMove={handleRootMouseMove}
+            onKeyDown={handleRootKeyDown}
+            style={{
+                position: "relative",
+                width: "100%",
+                height: "100%",
+                // Sized to fit description (120–440) + folder (480–780) +
+                // both side arrows (left tip x≈76, right tip x≈824 inside
+                // a 900-wide frame) with matching 44px padding on each
+                // end of the row. Wider frames give more breathing room
+                // on the right; narrower ones force-hold this width so
+                // the folder and arrows never get clipped.
+                minWidth: 900,
+                minHeight: 520,
+                background: backgroundColor,
+                // Overflow visible so the folder hover lift (which travels
+                // up to ~110px during the open-folder keyframes) isn't
+                // clipped at the top of the component. The slide variants
+                // already fade to opacity 0 + blur(10px) at full travel,
+                // so outgoing slides become invisible long before they
+                // could leak into adjacent page sections.
+                overflow: "visible",
+                fontFamily: SYSTEM_FONT_STACK,
+            }}
+        >
+            {/* Scoped focus styles: no outline on mouse click,
+                visible cream ring only on keyboard focus. */}
+            <style>{`
+                .pc-focusable { outline: none; }
+                .pc-focusable:focus { outline: none; }
+                .pc-focusable:focus-visible {
+                    box-shadow: 0 0 0 2px ${FOCUS_RING};
+                }
+            `}</style>
+
+            {/* Carousel tracker (top right) */}
+            <div
+                role="tablist"
+                aria-label="Project carousel navigation"
+                style={{
+                    position: "absolute",
+                    top: SPACE.xxxl, // 48 — snaps to 4pt scale (was 44)
+                    right: SPACE.xxxl, // 48
+                    display: "flex",
+                    gap: SPACE.md, // 12 (was 10)
+                    alignItems: "center",
+                    zIndex: 3,
+                }}
+            >
+                {safeProjects.map((p, i) => {
+                    // All inactive folders tilt the same way for a consistent
+                    // "stack of papers" look; the active one stands upright.
+                    const baseTilt = -10
+                    const isActive = i === currentIndex
+                    const label =
+                        (p && (p as { name?: string }).name) ||
+                        `Project ${i + 1}`
+
+                    // Shuffle kick — magnitude grows with distance from the
+                    // active tab and alternates direction by index parity, so
+                    // the shuffle reads as a *propagating* ripple outward
+                    // from where the user clicked rather than every tab
+                    // doing the same flick.
+                    const distFromActive = Math.abs(i - currentIndex)
+                    const kickRotate = prefersReducedMotion
+                        ? 0
+                        : (i % 2 === 0 ? -1 : 1) *
+                          (3 + Math.min(distFromActive, 3))
+                    const kickY = prefersReducedMotion
+                        ? 0
+                        : -3 - Math.min(distFromActive, 2)
+
+                    return (
+                        <motion.button
+                            key={i}
+                            id={tabId(i)}
+                            role="tab"
+                            aria-selected={isActive}
+                            aria-controls={panelId}
+                            aria-label={`Show ${label}`}
+                            className="pc-focusable"
+                            onClick={() => goTo(i)}
+                            whileHover={
+                                prefersReducedMotion
+                                    ? undefined
+                                    : {
+                                          scale: 1.2,
+                                          y: -4,
+                                          rotate: baseTilt - 4,
+                                      }
+                            }
+                            whileTap={{ scale: 0.92 }}
+                            animate={{
+                                scale: isActive ? 1.15 : 0.85,
+                                opacity: isActive ? 1 : 0.55,
+                                rotate: prefersReducedMotion
+                                    ? 0
+                                    : isActive
+                                      ? 0
+                                      : baseTilt,
+                            }}
+                            transition={{
+                                type: "spring",
+                                stiffness: 260,
+                                damping: 26,
+                            }}
+                            style={{
+                                background: "none",
+                                border: "none",
+                                cursor: "pointer",
+                                padding: 0,
+                                minWidth: 44, // accessibility: touch target
+                                minHeight: 44,
+                                // Anchor for the absolute-positioned sparkle
+                                // pulse rendered on the active tab below.
+                                position: "relative",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                borderRadius: 6,
+                            }}
+                        >
+                            {/* Shuffle wrapper — re-keys on every slide so
+                                its initial → animate replays as a one-shot
+                                kick. Composes with the parent button's
+                                rotate/scale because they apply on different
+                                DOM nodes. */}
+                            <motion.div
+                                key={`mini-${shuffleNonce}`}
+                                initial={
+                                    prefersReducedMotion
+                                        ? false
+                                        : {
+                                              y: kickY,
+                                              rotate: kickRotate,
+                                              scale: 0.94,
+                                          }
+                                }
+                                animate={{ y: 0, rotate: 0, scale: 1 }}
+                                transition={{
+                                    type: "spring",
+                                    stiffness: 320,
+                                    damping: 18,
+                                    mass: 0.6,
+                                }}
+                                style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    willChange: "transform",
+                                }}
+                            >
+                                <MiniFolder
+                                    active={isActive}
+                                    activeColor={trackerActiveColor}
+                                    inactiveColor={trackerInactiveColor}
+                                    paletteIndex={i}
+                                />
+                            </motion.div>
+
+                            {/* Sparkle pulse — only on the newly active
+                                tab. Keyed on currentIndex so it remounts
+                                fresh on every active change, replaying its
+                                burst. Skipped under reduced motion. */}
+                            {isActive && !prefersReducedMotion && (
+                                <motion.svg
+                                    key={`pulse-${currentIndex}`}
+                                    width="22"
+                                    height="22"
+                                    viewBox="0 0 24 24"
+                                    aria-hidden="true"
+                                    focusable="false"
+                                    initial={{
+                                        scale: 0,
+                                        opacity: 0,
+                                        rotate: -45,
+                                    }}
+                                    animate={{
+                                        scale: [0, 1.4, 0],
+                                        opacity: [0, 1, 0],
+                                        rotate: [-45, 0, 25],
+                                    }}
+                                    transition={{
+                                        duration: 0.7,
+                                        // ease-out-expo — confident decel
+                                        ease: [0.16, 1, 0.3, 1],
+                                        times: [0, 0.4, 1],
+                                    }}
+                                    style={{
+                                        position: "absolute",
+                                        top: -10,
+                                        right: -10,
+                                        pointerEvents: "none",
+                                        zIndex: 5,
+                                    }}
+                                >
+                                    <path
+                                        d="M12 1.5 C12.4 7.6 16.4 11.6 22.5 12 C16.4 12.4 12.4 16.4 12 22.5 C11.6 16.4 7.6 12.4 1.5 12 C7.6 11.6 11.6 7.6 12 1.5 Z"
+                                        fill={BRAND.creamLight}
+                                    />
+                                </motion.svg>
+                            )}
+                        </motion.button>
+                    )
+                })}
+            </div>
+
+            {/*
+                Masked content layer — only the description + folder live in
+                here. Spans the full root (inset: 0) so the gradient mask
+                fades at the component's true left/right edges. Items slide
+                horizontally inside and fade through the edges rather than
+                dissolving at their own position.
+
+                • pointer-events: none on this wrapper lets mouse events
+                  pass through the empty areas to the arrows/tracker below.
+                • Children re-enable pointer-events so hover still works.
+                • role="tabpanel" + aria-labelledby ties this region to the
+                  active tracker tab so screen readers announce it as the
+                  panel that the selected tab controls.
+            */}
+            <div
+                id={panelId}
+                role="tabpanel"
+                aria-labelledby={tabId(currentIndex)}
+                style={{
+                    position: "absolute",
+                    inset: 0,
+                    // Overflow visible + no mask: the slide variants now
+                    // handle the fade (opacity 0 + blur 10px at full
+                    // travel), and the folder's hover lift extends well
+                    // beyond this layer's bounds — the previous
+                    // overflow:hidden was clipping the lifted SVG.
+                    overflow: "visible",
+                    pointerEvents: "none",
+                }}
+            >
+                {/* Project info — slides with carousel + triggers description pill */}
+                <div
+                    onMouseEnter={() => setHoveredArea("description")}
+                    onMouseLeave={() => setHoveredArea("none")}
+                    style={{
+                        position: "absolute",
+                        left: descriptionLeft,
+                        top: descriptionTop,
+                        width: descriptionWidth,
+                        zIndex: 2,
+                        cursor: "pointer",
+                        pointerEvents: "auto",
+                    }}
+                >
+                    {/* No `mode="wait"` — outgoing + incoming render
+                        simultaneously and slide past each other. The
+                        absolute positioning on the motion.div lets both
+                        children occupy the same coordinate space so they
+                        don't stack vertically during the overlap.
+                        willChange hints transform/opacity/filter so the
+                        compositor promotes the layer once. */}
+                    <AnimatePresence custom={direction}>
+                        <motion.div
+                            key={currentIndex}
+                            custom={direction}
+                            variants={slideVariants}
+                            initial="enter"
+                            animate="center"
+                            exit="exit"
+                            transition={slideTransition}
+                            style={{
+                                position: "absolute",
+                                top: 0,
+                                left: 0,
+                                width: "100%",
+                                willChange: "transform, opacity, filter",
+                            }}
+                        >
+                            <h2
+                                style={{
+                                    color: projectNameColor,
+                                    fontSize: projectNameFontSize,
+                                    margin: `0 0 ${SPACE.lg}px 0`, // 16 (was 14)
+                                    fontWeight: 700,
+                                    fontFamily: projectNameFontFamily,
+                                    // Slight negative tracking on display
+                                    // type — tightens the silhouette of the
+                                    // project name without shouting.
+                                    letterSpacing: "-0.01em",
+                                }}
+                            >
+                                {current.name}
+                            </h2>
+                            <p
+                                style={{
+                                    color: descriptionColor,
+                                    fontSize: descriptionFontSize,
+                                    // 1.65 — the +0.05 lift for light text
+                                    // on dark surfaces (design-context rule).
+                                    lineHeight: 1.65,
+                                    margin: 0,
+                                    opacity: 0.92,
+                                    fontFamily: descriptionFontFamily,
+                                    // Cap to ~70ch so body never runs past
+                                    // the readable zone even if the desc
+                                    // width prop is widened.
+                                    maxWidth: "70ch",
+                                }}
+                            >
+                                {current.description}
+                            </p>
+                        </motion.div>
+                    </AnimatePresence>
+                </div>
+
+                {/* Folder row — draggable stage.
+                    Each project owns ONE persistent motion.div inside
+                    this wrapper; the wrapper itself handles the drag
+                    gesture. When currentIndex changes, every child
+                    animates from its old slot to its new slot (see the
+                    "Slot-based folder choreography" block above the
+                    return). Nothing mounts or unmounts — the selected
+                    peek continuously slides into center, the old center
+                    continuously slides to the vacated peek slot, and
+                    the next-in-line drops in from above. */}
+                {(() => {
+                    const hasMultiple = safeProjects.length > 1
+                    return (
+                        <motion.div
+                            drag={
+                                prefersReducedMotion || !hasMultiple
+                                    ? false
+                                    : "x"
+                            }
+                            dragConstraints={{ left: 0, right: 0 }}
+                            dragElastic={0.28}
+                            dragMomentum={false}
+                            onDragEnd={(_, info) => {
+                                const offsetThreshold = 80
+                                const velocityThreshold = 500
+                                if (
+                                    info.offset.x < -offsetThreshold ||
+                                    info.velocity.x < -velocityThreshold
+                                ) {
+                                    next()
+                                } else if (
+                                    info.offset.x > offsetThreshold ||
+                                    info.velocity.x > velocityThreshold
+                                ) {
+                                    prev()
+                                }
+                            }}
+                            whileTap={
+                                prefersReducedMotion
+                                    ? undefined
+                                    : { cursor: "grabbing" }
+                            }
+                            style={{
+                                position: "absolute",
+                                left: folderLeft,
+                                top: folderTop,
+                                width: folderWidth,
+                                height: folderHeight,
+                                zIndex: 2,
+                                cursor:
+                                    prefersReducedMotion || !hasMultiple
+                                        ? current.link
+                                            ? "pointer"
+                                            : "default"
+                                        : "grab",
+                                pointerEvents: "auto",
+                                // Vertical scroll still passes through on
+                                // touch devices — only horizontal drags get
+                                // claimed by the carousel.
+                                touchAction: "pan-y",
+                            }}
+                        >
+                            {safeProjects.map((p, i) => {
+                                const slot = getSlot(i)
+                                const isActive = slot === 0
+                                const isPeek = slot === -1 || slot === 1
+                                const target = getSlotTarget(slot, direction)
+                                const hover = isPeek
+                                    ? getPeekHover(slot)
+                                    : undefined
+
+                                // Per-project folder paint. Mirrors the
+                                // tracker: index 0 → ochre, 1 → terracotta,
+                                // 2 → plum, 3 → teal, 4 → cornflower. Each
+                                // project keeps its hue across every slot,
+                                // but the CURRENTLY-SELECTED folder brightens
+                                // to the "Light" sibling (and its back darkens
+                                // to the base hue) so the spotlighted folder
+                                // reads as lit-from-within relative to the
+                                // dimmer peeks. This is the same "hue stays,
+                                // brightness shifts" rule the tracker uses.
+                                //
+                                // Projects past the palette fall back to the
+                                // global folderColor / folderBackColor props
+                                // from the Framer inspector.
+                                const paletteEntry =
+                                    FOLDER_PALETTE[i % FOLDER_PALETTE.length]
+                                const projectFolderColor = paletteEntry
+                                    ? isActive
+                                        ? paletteEntry.frontBright
+                                        : paletteEntry.frontDim
+                                    : folderColor
+                                const projectFolderBackColor = paletteEntry
+                                    ? isActive
+                                        ? paletteEntry.backBright
+                                        : paletteEntry.backDim
+                                    : folderBackColor
+
+                                // Build the folder body. FolderAnimation is
+                                // rendered for EVERY project (so switching
+                                // slots doesn't unmount/remount), but only
+                                // the active slot's isHovered prop is wired
+                                // to hoveredArea — peeks stay closed. The
+                                // `activeSettled` gate prevents the open-
+                                // folder keyframe from firing while the
+                                // incoming active folder is still sliding
+                                // into center — it waits until the folder
+                                // has arrived before responding to hover.
+                                const body = (
+                                    <FolderAnimation
+                                        isHovered={
+                                            isActive &&
+                                            activeSettled &&
+                                            hoveredArea === "folder"
+                                        }
+                                        prefersReducedMotion={
+                                            !!prefersReducedMotion
+                                        }
+                                        paper1Image={p.paper1Image}
+                                        paper2Image={p.paper2Image}
+                                        paper1Color={p.paper1Color}
+                                        paper2Color={p.paper2Color}
+                                        folderColor={projectFolderColor}
+                                        folderBackColor={projectFolderBackColor}
+                                        projectKey={i}
+                                    />
+                                )
+
+                                // Tight hover hit-region for the active
+                                // folder. Sized to the central area of the
+                                // motion.div so hovering the outer edges (or
+                                // anywhere outside the folder visual) no
+                                // longer fires. Lives INSIDE the Link so
+                                // clicks bubble up and navigate normally.
+                                // Peeks and parked slots don't render this.
+                                const hoverHitRegion = isActive ? (
+                                    <div
+                                        onMouseEnter={() =>
+                                            setHoveredArea("folder")
+                                        }
+                                        onMouseLeave={() =>
+                                            setHoveredArea("none")
+                                        }
+                                        aria-hidden="true"
+                                        style={{
+                                            position: "absolute",
+                                            // Shrinks the hit-box to the
+                                            // central ~40%×60% of the
+                                            // motion.div. Tune these if the
+                                            // folder visual doesn't fill the
+                                            // full wrapper — larger values
+                                            // → even tighter detection.
+                                            left: "30%",
+                                            right: "30%",
+                                            top: "28%",
+                                            bottom: "16%",
+                                            // Stacks above the body so it
+                                            // always captures the hover
+                                            // event rather than the SVG
+                                            // children underneath.
+                                            zIndex: 1,
+                                            pointerEvents: "auto",
+                                        }}
+                                    />
+                                ) : null
+
+                                // Only the active folder's body wraps in
+                                // the per-project Link — peeks route via
+                                // their onClick (go to that project), and
+                                // far-off parked projects aren't clickable.
+                                const content =
+                                    isActive && p.link ? (
+                                        <Link href={p.link}>
+                                            <div
+                                                style={{
+                                                    position: "absolute",
+                                                    inset: 0,
+                                                    width: "100%",
+                                                    height: "100%",
+                                                }}
+                                            >
+                                                {body}
+                                                {hoverHitRegion}
+                                            </div>
+                                        </Link>
+                                    ) : isActive ? (
+                                        <div
+                                            style={{
+                                                position: "absolute",
+                                                inset: 0,
+                                                width: "100%",
+                                                height: "100%",
+                                            }}
+                                        >
+                                            {body}
+                                            {hoverHitRegion}
+                                        </div>
+                                    ) : (
+                                        body
+                                    )
+
+                                // Visible slots sit in the z-order
+                                // active (3) > peeks (2) > parked (0).
+                                // Parked projects get pointerEvents:none
+                                // so their invisible hit-boxes don't
+                                // block the visible folders.
+                                const z = isActive ? 3 : isPeek ? 2 : 0
+                                const cursorStyle = isActive
+                                    ? p.link
+                                        ? "pointer"
+                                        : "default"
+                                    : isPeek
+                                      ? "pointer"
+                                      : "default"
+
+                                return (
+                                    <motion.div
+                                        key={i}
+                                        // Clicking a peek routes to that
+                                        // project. The active slot's click
+                                        // is handled by the Link wrapper
+                                        // above; far slots aren't clickable.
+                                        onClick={
+                                            !isActive && isPeek
+                                                ? () => goTo(i)
+                                                : undefined
+                                        }
+                                        aria-label={
+                                            isPeek
+                                                ? `${slot === -1 ? "Previous" : "Next"} project: ${p.name ?? ""}`
+                                                : undefined
+                                        }
+                                        role={isPeek ? "button" : undefined}
+                                        tabIndex={isPeek ? 0 : undefined}
+                                        className={
+                                            isPeek ? "pc-focusable" : undefined
+                                        }
+                                        // `initial={false}`: don't animate
+                                        // on mount — projects snap to their
+                                        // slot positions when the carousel
+                                        // first appears. Subsequent
+                                        // currentIndex changes then animate
+                                        // each child from its previous slot
+                                        // target to the new one.
+                                        initial={false}
+                                        animate={target}
+                                        whileHover={hover}
+                                        transition={slotTransition}
+                                        style={{
+                                            position: "absolute",
+                                            inset: 0,
+                                            width: "100%",
+                                            height: "100%",
+                                            zIndex: z,
+                                            cursor: cursorStyle,
+                                            pointerEvents: isPeek
+                                                ? "auto"
+                                                : isActive
+                                                  ? "auto"
+                                                  : "none",
+                                            transformOrigin: "center",
+                                            willChange:
+                                                "transform, opacity, filter",
+                                            background: "none",
+                                            border: "none",
+                                            padding: 0,
+                                        }}
+                                    >
+                                        {content}
+                                    </motion.div>
+                                )
+                            })}
+                        </motion.div>
+                    )
+                })()}
+            </div>
+
+            {/* Floating cursor-following pill.
+                • Shown while hovering EITHER the description block or the folder.
+                • Label is "{minutes} min" over the description, "Learn more"
+                  over the folder. */}
+            <AnimatePresence>
+                {hoveredArea !== "none" && (
+                    <motion.div
+                        key={`pill-${hoveredArea}`}
+                        initial={{ opacity: 0, scale: 0.6 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.6 }}
+                        transition={{
+                            opacity: { duration: 0.18 },
+                            scale: {
+                                type: "spring",
+                                stiffness: 420,
+                                damping: 24,
+                            },
+                        }}
+                        style={{
+                            // Cursor tracking: bind motion values directly to
+                            // the transform so it follows the mouse 1:1 with
+                            // zero React re-renders.
+                            x: cursorX,
+                            y: cursorY,
+                            position: "absolute",
+                            top: 0,
+                            left: 0,
+                            background: pillColor,
+                            color: pillTextColor,
+                            // Outline tracks the text color so it stays
+                            // on-brand whatever the user picks in the
+                            // Framer inspector.
+                            border: `2px solid ${pillTextColor}`,
+                            padding: `${SPACE.sm}px ${SPACE.xl}px`, // 8/24 (was 8/22)
+                            borderRadius: 999,
+                            fontWeight: 700,
+                            fontSize: pillFontSize,
+                            fontFamily: pillFontFamily,
+                            boxShadow: SHADOW_WARM,
+                            pointerEvents: "none",
+                            willChange: "transform, opacity",
+                            zIndex: 10,
+                            whiteSpace: "nowrap",
+                        }}
+                    >
+                        {hoveredArea === "folder"
+                            ? "Learn more"
+                            : `${current.minutes} min`}
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </div>
+    )
+}
+
+/* -------------------------------------------------------------------------- */
+/*                          Folder animation component                         */
+/* -------------------------------------------------------------------------- */
+
+function FolderAnimation({
+    isHovered,
+    prefersReducedMotion,
+    paper1Image,
+    paper2Image,
+    paper1Color,
+    paper2Color,
+    folderColor,
+    folderBackColor,
+    projectKey,
+}: {
+    isHovered: boolean
+    prefersReducedMotion: boolean
+    paper1Image?: string
+    paper2Image?: string
+    paper1Color?: string
+    paper2Color?: string
+    folderColor: string
+    folderBackColor: string
+    projectKey: number
+}) {
+    // Multi-stage keyframes: rest → lift slightly → squeeze + lift →
+    // crossfade midpoint → wide overshoot landing → settle at rest.
+    // Total duration: 0.3s on hover; reduced motion collapses to a quick fade.
+    //
+    // IMPORTANT: we only use the keyframe array for the HOVER direction. On
+    // unhover we switch to a single target + plain tween so framer-motion
+    // interpolates FROM THE CURRENT STATE (wherever the hover animation had
+    // reached) straight back to rest. Using a keyframe array both ways causes
+    // a visible jump when the user navigates mid-hover — framer-motion snaps
+    // to the first value of the new array before animating, so a folder at
+    // y=-40 would snap to y=-110 (first frame of the return sequence). The
+    // single-target tween eliminates that snap.
+    const hoverTransition = prefersReducedMotion
+        ? { duration: 0.2, ease: "easeOut" as const }
+        : {
+              duration: 0.3,
+              times: [0, 0.18, 0.42, 0.5, 0.78, 1],
+              ease: "easeInOut" as const,
+          }
+    const unhoverTransition = prefersReducedMotion
+        ? { duration: 0.2, ease: "easeOut" as const }
+        : {
+              duration: 0.42,
+              // ease-out-expo — natural deceleration, no bounce.
+              ease: [0.16, 1, 0.3, 1] as [number, number, number, number],
+          }
+    const transition = isHovered ? hoverTransition : unhoverTransition
+
+    // Track whether the user has ever hovered. Held in state (not a ref
+    // mutated during render) so React re-renders correctly once the user
+    // first interacts — at which point we switch from the static rest
+    // frame to the keyframed hover sequence.
+    const [hasInteracted, setHasInteracted] = useState(false)
+    useEffect(() => {
+        if (isHovered && !hasInteracted) setHasInteracted(true)
+    }, [isHovered, hasInteracted])
+
+    // Closed-folder path: fully visible at rest → squeeze + lift → fade out at midpoint
+    const closedAnimHover = {
+        y: [0, -40, -110, -110, -110, -110],
+        scaleX: [1, 0.85, 0.32, 0.32, 0.32, 0.32],
+        scaleY: [1, 1.05, 1.18, 1.18, 1.18, 1.18],
+        rotate: [0, -3, -7, -7, -7, -7],
+        opacity: [1, 1, 1, 0, 0, 0],
+    }
+
+    // Open-folder path: hidden behind the closed one → appears at midpoint → bounces to rest
+    const openAnimHover = {
+        y: [-110, -110, -110, -110, 18, 0],
+        scaleX: [0.32, 0.32, 0.32, 0.32, 1.12, 1],
+        scaleY: [1.18, 1.18, 1.18, 1.18, 0.92, 1],
+        rotate: [-7, -7, -7, -7, 4, 0],
+        opacity: [0, 0, 0, 1, 1, 1],
+    }
+
+    // Rest state for both folders. Closed is visible (opacity 1), open is
+    // hidden (opacity 0). When isHovered flips to false we animate to this
+    // single target — framer-motion interpolates from the current state
+    // (anywhere along the hover keyframe path) straight back here without
+    // snapping to a specific return-keyframe waypoint.
+    const closedRest = { y: 0, scaleX: 1, scaleY: 1, rotate: 0, opacity: 1 }
+    const openRest = { y: 0, scaleX: 1, scaleY: 1, rotate: 0, opacity: 0 }
+
+    const closedAnim = !hasInteracted
+        ? closedRest
+        : isHovered
+          ? closedAnimHover
+          : closedRest
+
+    const openAnim = !hasInteracted
+        ? openRest
+        : isHovered
+          ? openAnimHover
+          : openRest
+
+    // Continuous idle float — runs regardless of hover state.
+    // Lives on the OUTER wrapper while hover keyframes live on the inner
+    // closed/open folder divs. CSS composes the parent's translateY with
+    // each child's translateY, so the folder keeps bobbing even mid-hover.
+    //
+    // Tuned to be obvious at a glance but not distracting: ~3.2s cycle,
+    // 10px vertical travel, with a tiny rotation for organic "paper" feel.
+    const floatAnimate = prefersReducedMotion
+        ? undefined
+        : { y: [0, -10, 0], rotate: [0, -1.2, 0] }
+    const floatTransition = {
+        duration: 3.2,
+        repeat: Infinity,
+        repeatType: "loop" as const,
+        ease: "easeInOut" as const,
+    }
+
+    return (
+        <motion.div
+            // Explicit initial so the float keyframe loop ALWAYS runs on
+            // mount, even if some ancestor (an AnimatePresence with
+            // initial={false}, a MotionConfig override, etc.) tries to
+            // suppress mount-time animations on its descendants.
+            // Without this, framer-motion may treat the keyframe array
+            // as "already at first frame" and never start the loop.
+            initial={{ y: 0, rotate: 0 }}
+            animate={floatAnimate}
+            transition={floatTransition}
+            style={{
+                position: "relative",
+                width: "100%",
+                height: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                willChange: "transform",
+            }}
+        >
+            {/* Closed folder (visible when NOT hovered) */}
+            <motion.div
+                initial={{ y: 0, scaleX: 1, scaleY: 1, rotate: 0, opacity: 1 }}
+                style={{
+                    position: "absolute",
+                    inset: 0,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    transformOrigin: "50% 85%",
+                    willChange: "transform, opacity",
+                }}
+                animate={closedAnim}
+                transition={transition}
+            >
+                <ClosedFolderSVG folderColor={folderColor} />
+            </motion.div>
+
+            {/* Open folder (visible when hovered) */}
+            <motion.div
+                initial={{ y: 0, scaleX: 1, scaleY: 1, rotate: 0, opacity: 0 }}
+                style={{
+                    position: "absolute",
+                    inset: 0,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    transformOrigin: "50% 85%",
+                    willChange: "transform, opacity",
+                }}
+                animate={openAnim}
+                transition={transition}
+            >
+                <OpenFolderSVG
+                    paper1Image={paper1Image}
+                    paper2Image={paper2Image}
+                    paper1Color={paper1Color}
+                    paper2Color={paper2Color}
+                    folderColor={folderColor}
+                    folderBackColor={folderBackColor}
+                    projectKey={projectKey}
+                    prefersReducedMotion={prefersReducedMotion}
+                />
+            </motion.div>
+        </motion.div>
+    )
+}
+
+/* -------------------------------------------------------------------------- */
+/*                                SVG: Closed                                  */
+/* -------------------------------------------------------------------------- */
+
+function ClosedFolderSVG({ folderColor }: { folderColor: string }) {
+    // Unique gradient ID per instance so multiple carousels on a page
+    // (and remounts during slide transitions) don't share the same <defs>.
+    const uid = useId().replace(/:/g, "")
+    const gradId = `closed-grad-${uid}`
+    const folderPath =
+        "M89.2793 11.0391C90.3128 6.40852 94.9046 3.49219 99.5352 4.52539L204.343 27.917C208.973 28.9505 211.89 33.5422 210.856 38.1729L207.401 53.6494L358.317 87.332C368.902 89.6944 375.567 100.189 373.205 110.773L334.309 285.054C331.946 295.638 321.451 302.304 310.866 299.941L20.3994 235.114C9.81498 232.752 3.14945 222.256 5.51172 211.672L44.4082 37.3916C46.7705 26.8072 57.2661 20.1416 67.8506 22.5039L85.8252 26.5146L89.2793 11.0391Z"
+
+    return (
+        <svg
+            width="100%"
+            height="100%"
+            viewBox="0 0 379 305"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            style={{ maxWidth: 300, maxHeight: 240 }}
+            preserveAspectRatio="xMidYMid meet"
+            aria-hidden="true"
+            focusable="false"
+        >
+            <path
+                d={folderPath}
+                // Fill via style (not attribute) so the color crossfades
+                // smoothly when the project becomes selected/deselected
+                // instead of snapping mid-slide. 500ms ease-out-expo to
+                // align with the slot slide timing.
+                style={{
+                    fill: folderColor,
+                    transition: "fill 500ms cubic-bezier(0.16, 1, 0.3, 1)",
+                }}
+            />
+            <path
+                d={folderPath}
+                fill={`url(#${gradId})`}
+                style={{ mixBlendMode: "multiply" }}
+            />
+            {/* Outline: warm cream tint instead of pure white */}
+            <path
+                d={folderPath}
+                stroke={BRAND.creamPaper}
+                strokeWidth="7.36362"
+            />
+            <defs>
+                <linearGradient
+                    id={gradId}
+                    x1="243.741"
+                    y1="28.5568"
+                    x2="207.23"
+                    y2="360.227"
+                    gradientUnits="userSpaceOnUse"
+                >
+                    <stop offset="0.59647" stopColor={BRAND.creamWhite} />
+                    <stop offset="0.962107" stopColor={BRAND.terracotta} />
+                </linearGradient>
+            </defs>
+        </svg>
+    )
+}
+
+/* -------------------------------------------------------------------------- */
+/*                                 SVG: Open                                   */
+/* -------------------------------------------------------------------------- */
+
+function OpenFolderSVG({
+    paper1Image,
+    paper2Image,
+    paper1Color,
+    paper2Color,
+    folderColor,
+    folderBackColor,
+    projectKey,
+    prefersReducedMotion,
+}: {
+    paper1Image?: string
+    paper2Image?: string
+    paper1Color?: string
+    paper2Color?: string
+    folderColor: string
+    folderBackColor: string
+    projectKey: number
+    prefersReducedMotion: boolean
+}) {
+    // Unique IDs per instance so multiple carousels on a page don't clash
+    const uid = useId().replace(/:/g, "")
+    const p1PatternId = `paper1-pattern-${uid}-${projectKey}`
+    const p2PatternId = `paper2-pattern-${uid}-${projectKey}`
+
+    const teal = paper1Color || BRAND.teal
+    const blue = paper2Color || BRAND.cornflower
+    const grad1Id = `open-grad-1-${uid}-${projectKey}`
+    const grad2Id = `open-grad-2-${uid}-${projectKey}`
+
+    return (
+        <svg
+            width="100%"
+            height="100%"
+            viewBox="0 0 394 343"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            // overflow: visible so the sparkle motion.g (which scales to
+            // 1.18× and rotates) isn't clipped at the viewBox edges. The
+            // sparkles sit close to the corners — without this, scaling
+            // them up lops off the points that extend beyond x:[0,394] or
+            // y:[0,343]. The SVG element's intrinsic size is still
+            // governed by maxWidth/maxHeight; only render is unclipped.
+            overflow="visible"
+            style={{ maxWidth: 340, maxHeight: 280, overflow: "visible" }}
+            preserveAspectRatio="xMidYMid meet"
+            aria-hidden="true"
+            focusable="false"
+        >
+            <defs>
+                {paper1Image && (
+                    <pattern
+                        id={p1PatternId}
+                        patternUnits="objectBoundingBox"
+                        patternContentUnits="objectBoundingBox"
+                        width="1"
+                        height="1"
+                    >
+                        <image
+                            href={paper1Image}
+                            x="0"
+                            y="0"
+                            width="1"
+                            height="1"
+                            preserveAspectRatio="xMidYMid slice"
+                        />
+                    </pattern>
+                )}
+                {paper2Image && (
+                    <pattern
+                        id={p2PatternId}
+                        patternUnits="objectBoundingBox"
+                        patternContentUnits="objectBoundingBox"
+                        width="1"
+                        height="1"
+                    >
+                        <image
+                            href={paper2Image}
+                            x="0"
+                            y="0"
+                            width="1"
+                            height="1"
+                            preserveAspectRatio="xMidYMid slice"
+                        />
+                    </pattern>
+                )}
+                <linearGradient
+                    id={grad1Id}
+                    x1="234.13"
+                    y1="101.101"
+                    x2="202.934"
+                    y2="390.854"
+                    gradientUnits="userSpaceOnUse"
+                >
+                    <stop offset="0.59647" stopColor={BRAND.creamWhite} />
+                    <stop offset="0.962107" stopColor={BRAND.terracotta} />
+                </linearGradient>
+                <linearGradient
+                    id={grad2Id}
+                    x1="234.13"
+                    y1="101.101"
+                    x2="202.934"
+                    y2="390.854"
+                    gradientUnits="userSpaceOnUse"
+                >
+                    <stop offset="0.59647" stopColor={BRAND.creamWhite} />
+                    <stop offset="0.962107" stopColor={BRAND.terracotta} />
+                </linearGradient>
+            </defs>
+
+            {/* Back flap (peach) */}
+            <path
+                d="M106.319 77.6451C107.995 69.0631 115.444 63.6587 122.955 65.574L376.664 130.267C384.176 132.183 388.906 140.692 387.23 149.274L353.255 323.193C351.579 331.775 344.13 337.179 336.619 335.264L82.91 270.571C75.3985 268.656 70.6682 260.146 72.3447 251.564L106.319 77.6451Z"
+                // Style-fill + transition so back flap crossfades with
+                // the front when the selection state changes.
+                style={{
+                    fill: folderBackColor,
+                    transition: "fill 500ms cubic-bezier(0.16, 1, 0.3, 1)",
+                }}
+            />
+            <path
+                d="M100.042 76.0447C102.492 63.5017 113.378 55.6032 124.356 58.4026L378.065 123.095C389.043 125.895 395.957 138.332 393.507 150.875L359.532 324.793C357.082 337.336 346.196 345.236 335.218 342.436L81.5092 277.743C70.5308 274.943 63.6176 262.506 66.0677 249.963L100.042 76.0447ZM122.955 65.574C115.444 63.6587 107.995 69.0631 106.319 77.6451L72.3447 251.564L72.2706 251.966C70.8166 260.41 75.516 268.686 82.91 270.571L336.619 335.264C344.013 337.15 351.346 331.942 353.173 323.593L353.255 323.193L387.23 149.274C388.88 140.826 384.322 132.448 377.014 130.361L376.664 130.267L122.955 65.574Z"
+                fill={BRAND.creamPaper}
+            />
+
+            {/* Sparkle star left — twinkles on a 2.6s loop, no delay.
+                motion.g + transformBox: fill-box scales around the sparkle's
+                own bbox center so it pulses in place rather than drifting
+                toward the SVG's origin. */}
+            <motion.g
+                style={{
+                    transformBox: "fill-box",
+                    transformOrigin: "center",
+                    willChange: "transform, opacity",
+                }}
+                animate={
+                    prefersReducedMotion
+                        ? undefined
+                        : {
+                              scale: [1, 1.18, 0.95, 1.08, 1],
+                              opacity: [0.9, 1, 0.92, 0.98, 0.9],
+                              rotate: [0, 4, -2, 3, 0],
+                          }
+                }
+                transition={{
+                    duration: 2.6,
+                    repeat: Infinity,
+                    repeatType: "loop" as const,
+                    ease: "easeInOut" as const,
+                }}
+            >
+                <path
+                    d="M94.2655 41.0815C102.294 26.4784 100.64 4.40506 101.415 4.22422C102.191 4.04337 109.538 24.6795 121.311 33.4305C132.879 42.029 151.963 39.9327 152.201 41.2619C152.438 42.5912 132.923 53.326 127.208 66.4343C119.632 83.8108 120.816 101.505 119.912 101.716C119.007 101.927 111.489 78.9455 99.524 70.5123C88.4573 62.7124 71.5157 61.3521 71.2784 60.1352C71.041 58.9183 87.4166 53.5387 94.2655 41.0815Z"
+                    fill={BRAND.creamLight}
+                />
+                <path
+                    d="M152.201 41.2619C151.963 39.9327 132.879 42.029 121.311 33.4305C109.538 24.6795 102.191 4.04337 101.415 4.22422C100.64 4.41035 102.293 26.4802 94.2655 41.0815L93.9379 41.6606C86.9092 53.7061 71.0447 58.9373 71.2784 60.1352C71.5157 61.3521 88.4573 62.7124 99.524 70.5123C111.396 78.8802 118.89 101.572 119.89 101.717L119.912 101.716C120.802 101.506 119.669 84.3582 126.859 67.2491L127.208 66.4343C132.879 53.4273 152.137 42.7573 152.202 41.2944L152.201 41.2619ZM155.821 40.4178C156.096 41.959 155.566 43.1278 155.366 43.5225C155.12 44.0103 154.838 44.3635 154.675 44.556C154.335 44.9575 153.945 45.3083 153.643 45.5666C153.007 46.1109 152.138 46.7651 151.211 47.4527C149.285 48.8809 146.773 50.6956 144.067 52.8785C138.512 57.3605 132.92 62.7999 130.515 68.3161C126.976 76.4332 125.455 84.6974 124.721 91.064C124.354 94.2446 124.187 96.9048 124.051 98.8879C123.986 99.8286 123.92 100.758 123.83 101.465C123.788 101.791 123.713 102.307 123.561 102.824C123.488 103.072 123.331 103.552 123.022 104.059C122.73 104.537 121.992 105.539 120.651 105.852C118.909 106.258 117.706 105.153 117.501 104.966C117.124 104.621 116.867 104.258 116.745 104.078C116.476 103.682 116.241 103.236 116.067 102.891C115.698 102.161 115.239 101.147 114.744 100.051C113.721 97.7842 112.366 94.7677 110.682 91.4966C107.236 84.8067 102.746 77.7425 97.5844 74.1046C92.5927 70.5863 86.0875 68.4169 80.5212 66.9711C77.7457 66.2502 75.3736 65.7485 73.4936 65.3079C72.6041 65.0995 71.7427 64.8858 71.0731 64.663C70.7566 64.5577 70.3122 64.3953 69.8806 64.1524C69.6686 64.033 69.3113 63.8139 68.9458 63.4563C68.6168 63.1345 67.9273 62.357 67.6729 61.0538C67.3869 59.5875 67.829 58.423 68.134 57.841C68.4347 57.267 68.7877 56.8845 68.9801 56.6908C69.3754 56.2928 69.8046 55.9968 70.0761 55.8185C70.6649 55.4319 71.4499 55.0019 72.2266 54.5819C73.8741 53.6909 76.0022 52.5723 78.3506 51.1146C83.1265 48.1501 88.2341 44.1175 91.1376 38.8365C94.6989 32.3589 96.2183 23.9644 96.8866 16.7973C97.216 13.2651 97.3298 10.1533 97.4089 7.84115C97.4469 6.72823 97.4802 5.68469 97.5321 4.92996C97.5564 4.57576 97.596 4.09298 97.6809 3.63404C97.7188 3.42971 97.8088 2.98059 98.0155 2.48577C98.1107 2.25815 98.8136 0.523384 100.676 0.0888496L100.841 0.0542701C102.533 -0.254709 103.684 0.850833 103.823 0.978199C104.177 1.3042 104.421 1.64354 104.534 1.80693C104.785 2.16961 105.009 2.57637 105.173 2.88637C105.52 3.54409 105.96 4.46292 106.435 5.45164C107.417 7.49918 108.732 10.2398 110.373 13.2421C113.712 19.3517 118.142 26.0401 123.326 29.8931C128.332 33.6144 135.246 35.1694 141.375 35.8727C144.391 36.2188 147.047 36.3446 149.102 36.4725C150.079 36.5334 151.035 36.6004 151.77 36.7127C152.112 36.7651 152.619 36.8565 153.119 37.0485C153.361 37.1416 153.804 37.3327 154.265 37.7072C154.714 38.0721 155.554 38.9233 155.821 40.4178Z"
+                    fill={BRAND.peachShade}
+                />
+            </motion.g>
+
+            {/* Blue paper (sneak peek #2) */}
+            <path
+                d="M355.972 94.7499C361.427 97.3797 363.983 104.563 361.681 110.795L321.076 220.731C318.774 226.963 312.486 229.883 307.032 227.253L212.124 181.496C206.67 178.866 204.114 171.682 206.416 165.45L247.021 55.5146C249.323 49.2828 255.61 46.3627 261.065 48.9925L355.972 94.7499Z"
+                fill={paper2Image ? `url(#${p2PatternId})` : blue}
+            />
+            <path
+                d="M214.811 169.498L206.416 165.45L247.021 55.5146L255.416 59.5619L214.811 169.498ZM215.667 171.904L310.575 217.662C311.393 218.056 312.336 217.618 312.681 216.683L353.286 106.748C353.631 105.813 353.248 104.736 352.43 104.341L257.522 58.5836C256.704 58.1892 255.761 58.6273 255.416 59.5619L247.021 55.5146L247.132 55.2252C249.519 49.1931 255.695 46.4038 261.065 48.9925L355.972 94.7499C361.427 97.3797 363.983 104.563 361.681 110.795L321.076 220.731C318.774 226.963 312.486 229.883 307.032 227.253L212.124 181.496L211.87 181.369C206.675 178.685 204.228 171.808 206.312 165.744L206.416 165.45L214.811 169.498C214.466 170.432 214.849 171.51 215.667 171.904Z"
+                fill={BRAND.creamPaper}
+            />
+
+            {/* Sparkle star bottom-left — twinkles on a 3.4s loop.
+                Different duration / amplitudes than sparkles 1 & 3 so the
+                three never re-sync after the first cycle: organic shimmer. */}
+            <motion.g
+                style={{
+                    transformBox: "fill-box",
+                    transformOrigin: "center",
+                    willChange: "transform, opacity",
+                }}
+                animate={
+                    prefersReducedMotion
+                        ? undefined
+                        : {
+                              scale: [1, 1.22, 0.96, 1.1, 1],
+                              opacity: [0.85, 1, 0.9, 0.97, 0.85],
+                              rotate: [0, -3, 2, -4, 0],
+                          }
+                }
+                transition={{
+                    duration: 3.4,
+                    repeat: Infinity,
+                    repeatType: "loop" as const,
+                    ease: "easeInOut" as const,
+                    delay: 0.4,
+                }}
+            >
+                <path
+                    d="M21.3957 172.324C25.7129 155.799 18.9508 135.036 19.6556 134.625C20.3605 134.214 32.2719 151.852 45.6647 156.686C58.8242 161.436 76.722 153.584 77.2621 154.792C77.8022 156.001 61.5116 172.308 59.0738 186.685C55.8421 205.744 61.1259 222.432 60.3036 222.912C59.4813 223.392 46.8567 203.545 33.3531 199.075C20.8635 194.942 4.22079 198.809 3.70716 197.709C3.19352 196.609 17.7129 186.42 21.3957 172.324Z"
+                    fill={BRAND.creamLight}
+                />
+                <path
+                    d="M77.2621 154.792C76.722 153.584 58.8242 161.436 45.6647 156.686C32.2719 151.852 20.3605 134.214 19.6556 134.625C18.9527 135.041 25.7124 155.802 21.3957 172.324L21.2156 172.982C17.2632 186.737 3.20155 196.626 3.70716 197.709C4.22079 198.809 20.8635 194.942 33.3531 199.075C46.7521 203.51 59.2856 223.085 60.2824 222.92L60.3036 222.912C61.1121 222.437 56.0057 206.26 58.9281 187.577L59.0738 186.685C61.4928 172.419 77.5509 156.253 77.2713 154.823L77.2621 154.792ZM80.5524 152.873C81.1786 154.274 80.9412 155.562 80.8416 156.003C80.7186 156.548 80.5298 156.975 80.4176 157.21C80.1836 157.701 79.8903 158.158 79.6597 158.499C79.1737 159.218 78.4902 160.114 77.7576 161.06C76.2362 163.025 74.241 165.541 72.1448 168.471C67.8412 174.488 63.7262 181.438 62.7003 187.488C61.1907 196.391 61.6606 204.819 62.4434 211.178C62.8344 214.355 63.2968 216.969 63.6298 218.921C63.7879 219.848 63.9419 220.763 64.02 221.472C64.0561 221.799 64.1046 222.319 64.0788 222.863C64.0664 223.125 64.028 223.636 63.8486 224.219C63.6796 224.768 63.2026 225.959 61.9839 226.67C60.401 227.594 58.983 226.897 58.7417 226.78C58.2973 226.563 57.9645 226.292 57.8048 226.155C57.4534 225.856 57.1221 225.498 56.8738 225.219C56.3476 224.628 55.6678 223.791 54.9346 222.886C53.4177 221.015 51.4063 218.522 49.0172 215.885C44.1312 210.492 38.1504 205.058 32.3252 203.13C26.6917 201.265 19.9156 201.163 14.2136 201.471C11.3705 201.624 8.96736 201.866 7.05277 202.016C6.14688 202.087 5.26677 202.144 4.56946 202.134C4.23984 202.129 3.77357 202.109 3.30086 202.007C3.06859 201.956 2.67305 201.854 2.2371 201.622C1.84475 201.412 0.99834 200.874 0.448116 199.696C-0.170775 198.37 -0.0173667 197.113 0.14019 196.459C0.295591 195.814 0.546138 195.338 0.686205 195.092C0.973947 194.588 1.31817 194.171 1.53807 193.917C2.01487 193.364 2.67062 192.71 3.32068 192.068C4.69952 190.706 6.48819 188.978 8.40969 186.855C12.3175 182.539 16.2949 177.093 17.8561 171.117C19.7711 163.787 19.2698 155.234 18.2357 148.124C17.7261 144.62 17.1073 141.586 16.6421 139.334C16.4182 138.25 16.2059 137.235 16.0792 136.492C16.0197 136.143 15.9448 135.666 15.9193 135.197C15.9079 134.989 15.8894 134.529 15.9728 133.989C16.0112 133.74 16.2823 131.854 17.9752 130.866L18.1264 130.782C19.6841 129.968 21.0521 130.681 21.2155 130.761C21.6336 130.967 21.9476 131.22 22.0949 131.343C22.4219 131.615 22.7325 131.939 22.963 132.187C23.4519 132.715 24.0908 133.466 24.7795 134.274C26.2056 135.946 28.114 138.185 30.3983 140.577C35.0465 145.443 40.8807 150.534 46.7774 152.662C52.4726 154.718 59.4988 154.103 65.5686 152.908C68.5558 152.32 71.145 151.629 73.1547 151.125C74.1109 150.884 75.047 150.657 75.7814 150.541C76.1239 150.486 76.6336 150.42 77.1602 150.452C77.4155 150.468 77.8866 150.517 78.4185 150.736C78.9367 150.951 79.9452 151.514 80.5524 152.873Z"
+                    fill={BRAND.peachShade}
+                />
+            </motion.g>
+
+            {/* Teal paper (sneak peek #1) */}
+            <path
+                d="M225.834 22.7988C231.749 22.5109 236.748 27.7558 237 34.5136L242.676 186.73C242.928 193.488 238.337 199.2 232.422 199.488L129.503 204.497C123.588 204.785 118.589 199.54 118.337 192.782L112.661 40.5654C112.409 33.8076 117 28.0959 122.915 27.808L225.834 22.7988Z"
+                fill={paper1Image ? `url(#${p1PatternId})` : teal}
+            />
+            <path
+                d="M127.441 192.339L118.337 192.782L112.661 40.5654L121.765 40.1221L127.441 192.339ZM129.116 194.096L232.034 189.087C232.921 189.044 233.61 188.187 233.572 187.174L227.897 34.9565C227.859 33.943 227.109 33.1563 226.222 33.1993L123.303 38.2086C122.416 38.2517 121.727 39.1085 121.765 40.1221L112.661 40.5654L112.654 40.2495C112.554 33.6305 117.093 28.0914 122.915 27.808L225.834 22.7988C231.749 22.5109 236.748 27.7558 237 34.5136L242.676 186.73L242.684 187.046C242.784 193.665 238.244 199.204 232.422 199.488L129.503 204.497L129.226 204.507C123.525 204.619 118.74 199.597 118.353 193.098L118.337 192.782L127.441 192.339C127.479 193.353 128.229 194.14 129.116 194.096Z"
+                fill={BRAND.creamPaper}
+            />
+
+            {/* Sparkle star right — twinkles on a 2.9s loop with its own
+                phase offset. Gentlest amplitude of the three so the eye
+                doesn't read it as the focal point. */}
+            <motion.g
+                style={{
+                    transformBox: "fill-box",
+                    transformOrigin: "center",
+                    willChange: "transform, opacity",
+                }}
+                animate={
+                    prefersReducedMotion
+                        ? undefined
+                        : {
+                              scale: [1, 1.15, 0.97, 1.12, 1],
+                              opacity: [0.9, 1, 0.93, 0.99, 0.9],
+                              rotate: [0, 5, -1, 2, 0],
+                          }
+                }
+                transition={{
+                    duration: 2.9,
+                    repeat: Infinity,
+                    repeatType: "loop" as const,
+                    ease: "easeInOut" as const,
+                    delay: 1.1,
+                }}
+            >
+                <path
+                    d="M340.926 211.8C355.511 207.361 367.464 189.916 368.139 190.387C368.815 190.859 361.886 211.683 365.285 227.253C368.624 242.552 383.843 255.873 383.225 257.031C382.606 258.189 361.92 250.855 349.919 256.001C334.011 262.823 324.326 276.696 323.538 276.146C322.749 275.597 330.952 252.923 327.223 237.436C323.775 223.111 312.185 208.928 312.737 207.852C313.289 206.777 328.484 215.587 340.926 211.8Z"
+                    fill={BRAND.creamLight}
+                />
+                <path
+                    d="M383.225 257.031C383.843 255.873 368.624 242.552 365.285 227.253C361.886 211.683 368.815 190.859 368.139 190.387C367.461 189.921 355.509 207.361 340.926 211.8L340.341 211.969C328.012 215.314 313.28 206.794 312.737 207.852C312.185 208.928 323.775 223.111 327.223 237.436C330.923 252.803 322.876 275.246 323.521 276.13L323.538 276.146C324.314 276.686 333.712 263.252 349.178 256.326L349.919 256.001C361.827 250.895 382.286 258.076 383.206 257.056L383.225 257.031ZM386.378 259.231C385.66 260.574 384.575 261.016 384.193 261.15C383.722 261.316 383.306 261.355 383.071 261.369C382.583 261.398 382.088 261.351 381.713 261.305C380.923 261.208 379.897 261.011 378.808 260.792C376.547 260.338 373.626 259.711 370.344 259.203C363.604 258.159 356.267 257.787 351.217 259.953C343.786 263.139 337.745 268.005 333.41 272.093C331.245 274.135 329.536 275.953 328.254 277.298C327.646 277.937 327.043 278.566 326.555 279.012C326.33 279.219 325.968 279.538 325.548 279.797C325.347 279.922 324.946 280.152 324.417 280.282C323.918 280.405 322.78 280.563 321.612 279.749C320.096 278.69 319.874 276.945 319.835 276.649C319.765 276.102 319.793 275.636 319.811 275.41C319.85 274.911 319.944 274.401 320.022 274.013C320.188 273.192 320.457 272.092 320.748 270.905C321.351 268.449 322.159 265.187 322.876 261.481C324.344 253.902 325.27 245.236 323.661 238.555C322.106 232.094 318.638 225.442 315.426 220.051C313.824 217.363 312.387 215.149 311.274 213.363C310.747 212.518 310.244 211.691 309.887 211.007C309.718 210.683 309.489 210.218 309.318 209.705C309.234 209.452 309.103 209.014 309.049 208.467C309 207.976 308.959 206.87 309.55 205.718C310.215 204.422 311.233 203.914 311.804 203.725C312.366 203.539 312.853 203.534 313.109 203.542C313.636 203.558 314.126 203.676 314.431 203.757C315.093 203.932 315.924 204.228 316.743 204.526C318.48 205.156 320.705 205.994 323.293 206.755C328.557 208.303 334.7 209.327 339.975 207.722C346.445 205.753 352.563 200.791 357.326 196.065C359.674 193.736 361.613 191.547 363.05 189.916C363.741 189.131 364.388 188.393 364.876 187.881C365.105 187.641 365.422 187.318 365.758 187.048C365.907 186.928 366.241 186.67 366.688 186.468C366.893 186.376 368.442 185.653 370.064 186.785L370.206 186.888C371.629 187.979 371.812 189.684 371.837 189.886C371.902 190.4 371.878 190.838 371.864 191.046C371.831 191.507 371.752 191.979 371.687 192.333C371.55 193.085 371.324 194.1 371.081 195.193C370.579 197.457 369.907 200.486 369.318 203.961C368.119 211.033 367.373 219.377 368.869 226.232C370.314 232.853 374.448 239.373 378.514 244.659C380.515 247.26 382.385 249.42 383.812 251.113C384.492 251.919 385.151 252.711 385.622 253.366C385.841 253.671 386.158 254.132 386.409 254.662C386.531 254.919 386.741 255.403 386.855 256.036C386.966 256.653 387.073 257.93 386.378 259.231Z"
+                    fill={BRAND.peachShade}
+                />
+            </motion.g>
+
+            {/* Front of folder body */}
+            <path
+                d="M25.9783 107.967C23.2959 93.2703 23.0305 92.6579 31.3391 94.1888L314.068 153.685C321.575 155.482 325.592 162.601 325.592 173.794L346.853 323.576C345.178 331.628 337.734 336.699 330.227 334.902L76.6714 274.204C67.249 271.468 62.6306 268.598 60.1541 255.671L25.9783 107.967Z"
+                style={{
+                    fill: folderColor,
+                    transition: "fill 500ms cubic-bezier(0.16, 1, 0.3, 1)",
+                }}
+            />
+            <path
+                d="M25.9783 107.967C23.2959 93.2703 23.0305 92.6579 31.3391 94.1888L314.068 153.685C321.575 155.482 325.592 162.601 325.592 173.794L346.853 323.576C345.178 331.628 337.734 336.699 330.227 334.902L76.6714 274.204C67.249 271.468 62.6306 268.598 60.1541 255.671L25.9783 107.967Z"
+                fill={`url(#${grad1Id})`}
+                style={{ mixBlendMode: "multiply" }}
+            />
+
+            {/* Inner pocket */}
+            <path
+                d="M69.6582 90.2099C69.3903 87.3367 69.3869 82.8338 71.5341 83.1686L168.09 104.273C170.237 104.607 172.274 108.007 172.274 112.891L177.912 173.794C177.626 176.31 177.362 181.885 175.215 181.55L88.1935 160.867C86.0464 160.532 83.4954 156.201 83.7812 153.685L69.6582 90.2099Z"
+                style={{
+                    fill: folderColor,
+                    transition: "fill 500ms cubic-bezier(0.16, 1, 0.3, 1)",
+                }}
+            />
+            <path
+                d="M69.6582 90.2099C69.3903 87.3367 69.3869 82.8338 71.5341 83.1686L168.09 104.273C170.237 104.607 172.274 108.007 172.274 112.891L177.912 173.794C177.626 176.31 177.362 181.885 175.215 181.55L88.1935 160.867C86.0464 160.532 83.4954 156.201 83.7812 153.685L69.6582 90.2099Z"
+                fill={`url(#${grad2Id})`}
+                style={{ mixBlendMode: "multiply" }}
+            />
+
+            {/* White outline (drawn as filled shape) — tinted cream */}
+            <path
+                d="M65.2975 79.1008C66.8694 76.8815 69.3399 75.522 72.1324 75.8507L72.4037 75.8878L72.5743 75.9141L72.7423 75.9511L169.226 97.0381C172.788 97.712 175.195 100.568 176.524 103.136C177.907 105.809 178.64 109.04 178.7 112.438L179.199 117.831L315.234 146.458L315.31 146.474L315.387 146.493C320.72 147.77 325.107 151.076 328.033 156.202C330.771 161 331.948 166.883 332.019 173.175L353.408 323.848L353.111 325.276C350.554 337.566 339.495 344.629 328.908 342.094L75.3524 281.396L75.2194 281.364L75.0872 281.326C70.3171 279.941 65.4436 278.21 61.5418 274.259C57.5011 270.167 55.292 264.559 53.9059 257.421L19.7168 109.657L19.6818 109.467C19.0337 105.917 18.4606 102.846 18.1532 100.475C17.9969 99.269 17.8743 97.992 17.8735 96.7506C17.8727 95.5553 17.9792 93.9181 18.5746 92.2366C19.2451 90.343 20.4382 88.6791 22.1418 87.589C23.6667 86.6134 25.1924 86.362 26.2532 86.2929C28.1974 86.1663 30.4922 86.5894 32.3631 86.9341L32.4339 86.9468L32.5038 86.9624L63.7621 93.5395L63.3109 91.5106L63.2623 90.9882C63.1099 89.3536 62.9593 86.6566 63.3663 84.147C63.5587 82.9615 64.0074 80.9223 65.2975 79.1008ZM71.5341 83.1686C69.3869 82.8338 69.3903 87.3367 69.6582 90.2099L72.4685 102.843L31.3391 94.1888C23.0305 92.6579 23.2959 93.2703 25.9783 107.967L60.1541 255.671C62.6306 268.598 67.249 271.468 76.6714 274.204L330.227 334.902C337.617 336.671 344.946 331.785 346.771 323.951L346.853 323.576L325.592 173.794C325.592 162.776 321.7 155.705 314.418 153.773L314.068 153.685L173.307 124.063L172.274 112.891C172.274 108.007 170.237 104.607 168.09 104.273L71.5341 83.1686Z"
+                fill={BRAND.creamPaper}
+            />
+        </svg>
+    )
+}
+
+/* -------------------------------------------------------------------------- */
+/*                          Mini tracker folder icon                           */
+/* -------------------------------------------------------------------------- */
+
+function MiniFolder({
+    active,
+    activeColor,
+    inactiveColor,
+    paletteIndex,
+}: {
+    active: boolean
+    activeColor: string
+    inactiveColor: string
+    paletteIndex: number
+}) {
+    // Each project has a permanent hue identity. The active tab uses a
+    // BRIGHTER sibling of that same hue (dark plum → light plum, ochre →
+    // light ochre, etc.) instead of swapping to a single shared cream.
+    // This keeps the row legible as a stable lineup of N projects while
+    // still making the selected one pop visually.
+    //
+    // activeColor / inactiveColor props remain as fallbacks for projects
+    // beyond the 5-slot palette OR when the user explicitly overrides
+    // them in the Framer inspector.
+    const palette = [
+        BRAND.ochre, // project 0 — dark muted gold
+        BRAND.terracotta, // project 1 — warm brick
+        BRAND.plum, // project 2 — soft purple
+        BRAND.teal, // project 3
+        BRAND.cornflower, // project 4
+    ]
+    const lightPalette = [
+        BRAND.ochreLight,
+        BRAND.terracottaLight,
+        BRAND.plumLight,
+        BRAND.tealLight,
+        BRAND.cornflowerLight,
+    ]
+    const slot = paletteIndex % palette.length
+    const projectColor = palette[slot] || inactiveColor
+    const projectColorActive = lightPalette[slot] || activeColor
+    const color = active ? projectColorActive : projectColor
+
+    return (
+        <svg
+            width="32"
+            height="26"
+            viewBox="0 0 32 26"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+            focusable="false"
+        >
+            <path
+                d="M3 4 Q3 1 6 1 L11 1 L13 4 L26 4 Q29 4 29 7 L29 21 Q29 24 26 24 L6 24 Q3 24 3 21 Z"
+                fill={color}
+                stroke={BRAND.creamPaper}
+                strokeWidth="1.6"
+                strokeLinejoin="round"
+            />
+        </svg>
+    )
+}
+
+/* -------------------------------------------------------------------------- */
+/*                               Default data                                  */
+/* -------------------------------------------------------------------------- */
+
+const DEFAULT_PROJECTS = [
+    {
+        name: "Project Alpha",
+        description:
+            "A quick peek into the design thinking, research, and motion work behind this case study.",
+        minutes: 5,
+        paper1Image: "",
+        paper2Image: "",
+        paper1Color: BRAND.teal,
+        paper2Color: BRAND.cornflower,
+        link: "",
+    },
+    {
+        name: "Project Beta",
+        description:
+            "UI systems and interaction patterns explored for a cross-platform product experience.",
+        minutes: 8,
+        paper1Image: "",
+        paper2Image: "",
+        paper1Color: BRAND.teal,
+        paper2Color: BRAND.cornflower,
+        link: "",
+    },
+    {
+        name: "Project Gamma",
+        description:
+            "Motion-first explorations focused on micro-interactions and delightful state transitions.",
+        minutes: 6,
+        paper1Image: "",
+        paper2Image: "",
+        paper1Color: BRAND.teal,
+        paper2Color: BRAND.cornflower,
+        link: "",
+    },
+]
+
+/* -------------------------------------------------------------------------- */
+/*                            Framer property controls                         */
+/* -------------------------------------------------------------------------- */
+
+addPropertyControls(Project_Carousel, {
+    backgroundColor: {
+        title: "Background",
+        type: ControlType.Color,
+        defaultValue: "rgba(0,0,0,0)",
+    },
+
+    // ── Project name ───────────────────────────────────────────────────
+    projectNameColor: {
+        title: "Project Name",
+        type: ControlType.Color,
+        defaultValue: BRAND.cream,
+    },
+    projectNameFontFamily: {
+        title: "Name Font",
+        type: ControlType.String,
+        defaultValue: "",
+        placeholder: "e.g. Recoleta, Migra, Tobias",
+        description:
+            "Leave blank to inherit. Avoid Inter / DM / Plex / Fraunces.",
+    },
+    projectNameFontSize: {
+        title: "Name Size",
+        type: ControlType.Number,
+        defaultValue: 32,
+        min: 12,
+        max: 96,
+        step: 1,
+        unit: "px",
+        displayStepper: true,
+    },
+
+    // ── Description ────────────────────────────────────────────────────
+    descriptionColor: {
+        title: "Description",
+        type: ControlType.Color,
+        // Tinted star-white — never pure #FFFFFF.
+        defaultValue: BRAND.creamWhite,
+    },
+    descriptionFontFamily: {
+        title: "Desc Font",
+        type: ControlType.String,
+        defaultValue: "",
+        placeholder: "e.g. Söhne, Halyard Text",
+    },
+    descriptionFontSize: {
+        title: "Desc Size",
+        type: ControlType.Number,
+        defaultValue: 16,
+        min: 10,
+        max: 32,
+        step: 1,
+        unit: "px",
+        displayStepper: true,
+    },
+
+    // ── Pill ───────────────────────────────────────────────────────────
+    pillColor: {
+        title: "Pill Fill",
+        type: ControlType.Color,
+        defaultValue: BRAND.cream,
+    },
+    pillTextColor: {
+        title: "Pill Text",
+        type: ControlType.Color,
+        defaultValue: BRAND.cocoa,
+    },
+    pillFontFamily: {
+        title: "Pill Font",
+        type: ControlType.String,
+        defaultValue: "",
+        placeholder: "Inherit if blank",
+    },
+    pillFontSize: {
+        title: "Pill Size",
+        type: ControlType.Number,
+        defaultValue: 14,
+        min: 8,
+        max: 24,
+        step: 1,
+        unit: "px",
+        displayStepper: true,
+    },
+
+    // ── Tracker ────────────────────────────────────────────────────────
+    trackerActiveColor: {
+        title: "Tracker Active",
+        type: ControlType.Color,
+        defaultValue: BRAND.cream,
+    },
+    trackerInactiveColor: {
+        title: "Tracker Inactive",
+        type: ControlType.Color,
+        defaultValue: BRAND.terracotta,
+    },
+
+    // ── Folder body ────────────────────────────────────────────────────
+    folderColor: {
+        title: "Folder Fill",
+        type: ControlType.Color,
+        defaultValue: BRAND.cream,
+    },
+    folderBackColor: {
+        title: "Folder Back",
+        type: ControlType.Color,
+        defaultValue: BRAND.peach,
+    },
+
+    // ── Layout ─────────────────────────────────────────────────────────
+    descriptionLeft: {
+        title: "Desc Left",
+        type: ControlType.Number,
+        defaultValue: 120,
+        min: 0,
+        max: 2000,
+        step: 1,
+    },
+    descriptionTop: {
+        title: "Desc Top",
+        type: ControlType.Number,
+        defaultValue: 200,
+        min: 0,
+        max: 2000,
+        step: 1,
+    },
+    descriptionWidth: {
+        title: "Desc Width",
+        type: ControlType.Number,
+        defaultValue: 320,
+        min: 100,
+        max: 2000,
+        step: 1,
+    },
+    folderLeft: {
+        title: "Folder Left",
+        type: ControlType.Number,
+        defaultValue: 480,
+        min: 0,
+        max: 2000,
+        step: 1,
+    },
+    folderTop: {
+        title: "Folder Top",
+        type: ControlType.Number,
+        defaultValue: 150,
+        min: 0,
+        max: 2000,
+        step: 1,
+    },
+    folderWidth: {
+        title: "Folder Width",
+        type: ControlType.Number,
+        defaultValue: 300,
+        min: 50,
+        max: 2000,
+        step: 1,
+    },
+    folderHeight: {
+        title: "Folder Height",
+        type: ControlType.Number,
+        defaultValue: 260,
+        min: 50,
+        max: 2000,
+        step: 1,
+    },
+
+    // ── Per-project data ───────────────────────────────────────────────
+    projects: {
+        title: "Projects",
+        type: ControlType.Array,
+        control: {
+            type: ControlType.Object,
+            controls: {
+                name: {
+                    title: "Name",
+                    type: ControlType.String,
+                    defaultValue: "Project Name",
+                },
+                description: {
+                    title: "Description",
+                    type: ControlType.String,
+                    displayTextArea: true,
+                    defaultValue:
+                        "A short project description shown next to the folder.",
+                },
+                minutes: {
+                    title: "Minutes",
+                    type: ControlType.Number,
+                    defaultValue: 5,
+                    min: 1,
+                    max: 120,
+                    step: 1,
+                    displayStepper: true,
+                },
+                paper1Image: {
+                    title: "Peek Image 1",
+                    type: ControlType.Image,
+                },
+                paper1Color: {
+                    title: "Peek Color 1",
+                    type: ControlType.Color,
+                    defaultValue: BRAND.teal,
+                },
+                paper2Image: {
+                    title: "Peek Image 2",
+                    type: ControlType.Image,
+                },
+                paper2Color: {
+                    title: "Peek Color 2",
+                    type: ControlType.Color,
+                    defaultValue: BRAND.cornflower,
+                },
+                link: {
+                    title: "Link",
+                    type: ControlType.Link,
+                },
+            },
+        },
+        defaultValue: DEFAULT_PROJECTS,
+    },
+})

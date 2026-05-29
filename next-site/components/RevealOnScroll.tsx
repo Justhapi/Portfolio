@@ -20,6 +20,18 @@ export default function RevealOnScroll() {
       return;
     }
 
+    // .connect is position:sticky at top:0 — its children are technically
+    // "in the viewport" from page load, so IntersectionObserver would fire
+    // them immediately while they're hidden behind the About section.
+    // Pre-mark connect reveals as already .in; the parallax scroll (About
+    // sliding off) is the reveal — no additional entrance animation needed.
+    const connectSection = document.querySelector(".connect");
+    if (connectSection) {
+      connectSection.querySelectorAll<HTMLElement>(".reveal, .reveal-stagger").forEach((el) => {
+        el.classList.add("in");
+      });
+    }
+
     const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => {
@@ -32,7 +44,10 @@ export default function RevealOnScroll() {
       { rootMargin: "-10% 0px", threshold: 0.05 },
     );
 
-    targets.forEach((t) => io.observe(t));
+    // Exclude connect's children — already handled above
+    targets.forEach((t) => {
+      if (!connectSection?.contains(t)) io.observe(t);
+    });
     return () => io.disconnect();
   }, []);
 

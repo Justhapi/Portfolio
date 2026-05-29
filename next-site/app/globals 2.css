@@ -1190,12 +1190,7 @@ body.on-paper .nav-pill {
 /* =====================================================
    WORK — folder cards
    ===================================================== */
-.work {
-  position: relative;
-  z-index: 1;
-  background: var(--bg);
-  box-shadow: 0 -12px 48px -4px rgba(0, 0, 0, 0.28), 0 -2px 8px rgba(0, 0, 0, 0.12);
-}
+.work { background: var(--bg); }
 .work .scribble {
   width: 220px; height: 14px;
   margin-top: 14px;
@@ -1391,15 +1386,6 @@ body.on-paper .nav-pill {
      during the morph's translate-up. */
   height: clamp(320px, 32vw, 460px);
   margin-bottom: 0;
-}
-/* Tilt wrapper — sits between .folder-art and .folder-svg.
-   JS writes perspective + rotateX/rotateY here so the 3D tilt
-   is isolated from the float animation running on .folder-svg. */
-.folder-tilt-wrap {
-  width: 100%;
-  height: 100%;
-  transform-style: preserve-3d;
-  will-change: transform;
 }
 .folder-svg {
   position: absolute;
@@ -1856,68 +1842,7 @@ body.on-paper .nav-pill {
 /* =====================================================
    ABOUT
    ===================================================== */
-/* =====================================================
-   AC-SCENE  (About + Connect sticky reveal)
-   ===================================================== */
-/* Scene wrapper — height is set by JS = aboutH + connectH.
-   Connect (sticky) is the pinned background; About (absolute)
-   starts on top and slides off to reveal Connect as you scroll. */
-.ac-scene {
-  position: relative;
-  /* height set dynamically by SmoothScroll.tsx */
-}
-
-/* Peek strip — sits flush at About's bottom edge, always visible as an
-   affordance for the Connect section below. Slides off with About. */
-.about-peek {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 52px;
-  background: var(--hero-bg);
-  color: var(--hero-fg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  text-decoration: none;
-  z-index: 3; /* above About content */
-  transition: opacity 180ms ease;
-}
-.about-peek:hover { opacity: 0.82; }
-
-.about-peek__label {
-  font-family: var(--f-display);
-  font-size: clamp(13px, 1.1vw, 15px);
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-.about-peek__arrow {
-  width: 15px;
-  height: 15px;
-  flex-shrink: 0;
-  opacity: 0.7;
-  animation: peek-bounce 1.6s ease-in-out infinite;
-}
-@keyframes peek-bounce {
-  0%, 100% { transform: translateY(0); }
-  50%       { transform: translateY(4px); }
-}
-
-.about {
-  background: var(--bg-2);
-  /* Absolute so it overlaps Connect from the top of the scene.
-     Removed from flow so scene height = Connect's contribution;
-     JS sets scene height = aboutH + connectH explicitly. */
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 2;
-  box-shadow: 0 12px 48px -4px rgba(0, 0, 0, 0.22), 0 2px 8px rgba(0, 0, 0, 0.1);
-}
+.about { background: var(--bg-2); }
 
 /* Single-column prose block — no polaroid, centered in section */
 .about-prose {
@@ -1985,7 +1910,7 @@ body.on-paper .nav-pill {
   font-size: clamp(26px, 3.4vw, 42px);
   line-height: 1.15;
   letter-spacing: -0.01em;
-  margin: 0 auto 30px;
+  margin: 0 auto 24px;
   max-width: 22ch;
 }
 .about-prose p {
@@ -2009,11 +1934,7 @@ body.on-paper .nav-pill {
    pill fades+rises in smoothly with no remount flash. */
 .hw {
   position: relative;
-  /* inline-block so position:relative creates a proper hit area around the
-     label — necessary now that .hw-label is inline-block (transform target).
-     Still renders inline within text flow. */
-  display: inline-block;
-  vertical-align: baseline;
+  display: inline;
 }
 .hw-label {
   font-weight: 700;
@@ -2023,9 +1944,7 @@ body.on-paper .nav-pill {
   text-underline-offset: 3px;
   text-decoration-color: var(--accent-soft);
   cursor: default;
-  display: inline-block; /* needed for transform to apply on inline text */
-  transition: color 150ms ease, text-decoration-color 150ms ease,
-              transform 260ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: color 150ms ease, text-decoration-color 150ms ease;
 }
 .hw--on .hw-label {
   color: var(--fg);
@@ -2162,36 +2081,15 @@ body.on-paper .nav-pill {
 .connect {
   background: var(--hero-bg);
   color: var(--hero-fg);
-  position: sticky;
-  top: 0;
-  z-index: 0;
-  /* Exact viewport height so Connect fills the sticky window cleanly */
-  height: 100vh;
+  position: relative;
   overflow: hidden;
-}
-/* .container inside Connect must stretch to the full section height so
-   the flex column can push the footer to the bottom edge. */
-.connect > .container {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  /* Minimal top padding — content starts near the top of Connect so it
-     sits under About on first reveal. Parallax drifts it downward into
-     view as About slides off. */
-  padding-top: 180px;
-  padding-bottom: 48px;
 }
 .connect .head { color: var(--hero-fg); }
 .connect-row {
-  /* Takes all vertical space above the footer */
-  flex: 1;
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 480px);
   gap: 80px;
   align-items: center;
-  /* start = content anchored to the top of the row, hidden under About
-     on first reveal, drifting into view via parallax as About slides off */
-  align-content: start;
 }
 /* ── Connect entrance — two-stage stagger ──────────────────────────────
    .connect-row is the IntersectionObserver trigger: it snaps visible in
@@ -2277,12 +2175,6 @@ body.on-paper .nav-pill {
   letter-spacing: 0.06em;
   color: rgba(246, 239, 220, 0.85);
   transition: color 200ms, padding 280ms var(--ease-out-quart);
-}
-.c-link:first-child {
-  border-top: none;
-}
-.c-link:last-child {
-  border-bottom: none;
 }
 .c-link:hover {
   color: var(--hero-fg);
@@ -2447,7 +2339,7 @@ body.on-paper .nav-pill {
   100% { transform: scale(1); opacity: 1; }
 }
 .foot {
-  margin-top: auto; /* pushes footer to the bottom regardless of row height */
+  margin-top: 80px;
   padding-top: 24px;
   border-top: 1px solid rgba(246, 239, 220, 0.12);
   display: flex;
@@ -3167,17 +3059,6 @@ body.on-paper .nav-pill {
   /* Same overhang reason as .folder's row-gap: a card's artwork bleeds
      DOWN past its box, so the gap to the next card's tag must clear it. */
   .folder-row { gap: clamp(32px, calc(37vw - 142px), 210px) 24px; }
-}
-
-/* Stacked folder layout — blurb fills the full column width.
-   Placed here (after the base .folder .blurb rule at ~line 1810) so this
-   media-query override actually wins the cascade at equal specificity. */
-@media (max-width: 820px) {
-  .folder .blurb { max-width: none; width: 100%; }
-  /* Match the folder SVG's 92% width — 4% percentage + 10px fixed nudge */
-  .folder-copy { text-align: center; padding-inline: calc(4% + 10px); }
-  /* .meta is a flex row — text-align doesn't reach it, needs justify-content */
-  .folder .meta { justify-content: center; }
 }
 
 @media (max-width: 640px) {

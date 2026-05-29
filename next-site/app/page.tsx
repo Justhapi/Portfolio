@@ -12,8 +12,15 @@ export default function Home() {
       <main className="portfolio-v2">
         <HeroV2 />
         <ProjectsV2 />
-        <AboutV2 />
-        <ConnectV2 />
+        {/* ac-scene: Connect is the sticky background layer, About is the
+            absolute foreground that starts on top and slides off, revealing
+            Connect. Connect must come FIRST in DOM so it has a valid sticky
+            range (same reason Hero comes before Work). JS sets scene height
+            = aboutH + connectH so About has room to fully scroll off. */}
+        <div className="ac-scene">
+          <ConnectV2 />
+          <AboutV2 />
+        </div>
       </main>
       <RevealOnScroll />
     </>

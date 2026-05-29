@@ -306,6 +306,38 @@ export default function ProjectsV2() {
   // whatever this points at, covering cases where onMouseLeave never
   // fired (e.g. a scroll sliding a new folder under a still cursor).
   const hoveredId = useRef<string | null>(null);
+
+  // ── 3-D tilt: direct DOM writes so mouse-move never triggers a re-render ──
+  const tiltRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
+  const handleTiltMove = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    tag: string
+  ) => {
+    const wrap = tiltRefs.current[tag];
+    if (!wrap) return;
+    const rect = wrap.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2;  // −1 → 1
+    const y = ((e.clientY - rect.top) / rect.height - 0.5) * 2;  // −1 → 1
+    // Magnetic pull toward the cursor + subtle 3-D tilt.
+    // translateX/Y moves the folder toward the mouse (±18px / ±14px);
+    // rotateY/X adds the depth lean on top.
+    // Spring easing gives physical weight — folder lags then overshoots.
+    wrap.style.transition =
+      "transform 260ms cubic-bezier(0.34, 1.56, 0.64, 1)";
+    wrap.style.transform =
+      `perspective(800px) translateX(${x * 18}px) translateY(${y * 14}px) rotateY(${x * 6}deg) rotateX(${-y * 4}deg)`;
+  };
+
+  const handleTiltLeave = (tag: string) => {
+    const wrap = tiltRefs.current[tag];
+    if (!wrap) return;
+    // Longer spring on leave so it visibly overshoots back to rest
+    wrap.style.transition =
+      "transform 700ms cubic-bezier(0.34, 1.56, 0.64, 1)";
+    wrap.style.transform =
+      "perspective(800px) translateX(0px) translateY(0px) rotateY(0deg) rotateX(0deg)";
+  };
   useEffect(() => {
     return () => {
       Object.values(leavingTimers.current).forEach((t) =>
@@ -435,23 +467,30 @@ export default function ProjectsV2() {
                     setHoverPill(p.readTime);
                     enterFolder(p.tag);
                   }}
+                  onMouseMove={(e) => handleTiltMove(e, p.tag)}
                   onMouseLeave={() => {
                     setHoverPill(null);
                     leaveFolder(p.tag);
+                    handleTiltLeave(p.tag);
                   }}
                 >
-                  <div className="folder-svg">
-                    <FolderClosed
-                      front={p.folder.front}
-                      shadow={p.folder.shadow}
-                    />
-                    <FolderOpen
-                      tint={p.accent[0]}
-                      tint2={p.accent[1]}
-                      front={p.folder.front}
-                      back={p.folder.back}
-                      shadow={p.folder.shadow}
-                    />
+                  <div
+                    className="folder-tilt-wrap"
+                    ref={(el) => { tiltRefs.current[p.tag] = el; }}
+                  >
+                    <div className="folder-svg">
+                      <FolderClosed
+                        front={p.folder.front}
+                        shadow={p.folder.shadow}
+                      />
+                      <FolderOpen
+                        tint={p.accent[0]}
+                        tint2={p.accent[1]}
+                        front={p.folder.front}
+                        back={p.folder.back}
+                        shadow={p.folder.shadow}
+                      />
+                    </div>
                   </div>
                 </Link>
                 {/* Copy column — wrapped so the .folder grid can place

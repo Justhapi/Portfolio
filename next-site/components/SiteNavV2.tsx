@@ -19,12 +19,26 @@ function useActiveSection(): SectionId {
     const update = () => {
       const probeY = window.innerHeight * 0.35;
       let current: SectionId = "hero";
+
       for (const id of SECTIONS) {
+        if (id === "connect") {
+          // #connect is position:sticky so its rect.top is always 0 while
+          // it's in the ac-scene — it would register as active the moment
+          // the ac-scene enters the viewport, even while About still covers
+          // it. Only mark Connect active once About has fully scrolled off
+          // (About's bottom edge is above the viewport).
+          const aboutEl = document.querySelector<HTMLElement>(".about");
+          if (aboutEl && aboutEl.getBoundingClientRect().bottom <= 0) {
+            current = "connect";
+          }
+          continue;
+        }
         const el = document.getElementById(id);
         if (!el) continue;
         const rect = el.getBoundingClientRect();
         if (rect.top <= probeY) current = id;
       }
+
       setActive(current);
     };
     update();
@@ -40,6 +54,17 @@ function useActiveSection(): SectionId {
 }
 
 function smoothScrollTo(id: string) {
+  if (id === "connect") {
+    // #connect is sticky behind About — scrollIntoView lands at the top of
+    // .ac-scene (About still covering it). We need to scroll past About's
+    // full height so Connect is completely revealed.
+    const scene = document.querySelector<HTMLElement>(".ac-scene");
+    const about = document.querySelector<HTMLElement>(".about");
+    if (scene && about) {
+      window.scrollTo({ top: scene.offsetTop + about.offsetHeight, behavior: "smooth" });
+      return;
+    }
+  }
   const el = document.getElementById(id);
   if (!el) return;
   el.scrollIntoView({ behavior: "smooth", block: "start" });

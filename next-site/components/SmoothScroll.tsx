@@ -30,6 +30,12 @@ import Lenis from "lenis";
  * Skip conditions:
  *   - prefers-reduced-motion: Lenis is skipped entirely; no parallax.
  *   - Touch / coarse-pointer devices: parallax only (Lenis still runs).
+ *
+ * About/Connect reveal:
+ *   .ac-scene wraps ConnectV2 (sticky, z:0) and AboutV2 (absolute, z:2).
+ *   About starts on top of Connect and slides off as the user scrolls,
+ *   revealing Connect behind it. JS sets scene height = aboutH + connectH
+ *   so Connect has a valid sticky range (= aboutH px of scroll).
  */
 
 type ParallaxConfig = {
@@ -48,18 +54,30 @@ type ParallaxConfig = {
    * knock the element off-centre.
    */
   centredX?: boolean;
+  /**
+   * If true, the parallax delta is computed relative to the .ac-scene's
+   * scroll start instead of 0. Use for Connect section elements so their
+   * offset is 0 when Connect first becomes visible, not from page top.
+   */
+  relativeToScene?: boolean;
 };
 
 const PARALLAX_TARGETS: ParallaxConfig[] = [
-  // Whole wordmark block (heading + subtitle) drifts upward as the
-  // work section approaches — the title "retreats" behind the rising card.
+  // ── Hero elements ────────────────────────────────────────────────────
   // centredX: true preserves the translateX(-50%) CSS centering.
-  { selector: ".ribbon-artist", speed: -0.13, centredX: true },
-  { selector: ".sticker.name-yellow", speed: -0.18, baseRotate: "8deg" },
-  { selector: ".chip-zh", speed: -0.14, baseRotate: "-6deg" },
+  { selector: ".ribbon-artist",          speed: -0.13, centredX: true },
+  { selector: ".sticker.name-yellow",    speed: -0.18, baseRotate: "8deg" },
+  { selector: ".chip-zh",               speed: -0.14, baseRotate: "-6deg" },
   { selector: ".sticker.designing-green", speed: -0.22, baseRotate: "-5deg" },
-  { selector: ".hero-polaroid", speed: -0.12, centred: true },
-  { selector: ".case-hero-image", speed: -0.18 },
+  { selector: ".hero-polaroid",          speed: -0.12, centred: true },
+  { selector: ".case-hero-image",        speed: -0.18 },
+
+  // ── Connect section elements ─────────────────────────────────────────
+  // Negative speed → row drifts DOWN as scroll increases (confirmed from
+  // browser: translateY sign is inverted for scene-relative targets).
+  // At ~0.55 the row exits the viewport bottom by end of the sticky range.
+  // Footer has no parallax — stays anchored at the bottom of Connect.
+  { selector: ".connect-row",           speed: -0.18, relativeToScene: true },
 ];
 
 /** Delay after page load before parallax transforms activate (ms). */
@@ -69,6 +87,31 @@ export default function SmoothScroll() {
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    /* ── About/Connect sticky reveal ─────────────────────────────────────
+       .ac-scene wraps <ConnectV2> (first in DOM) and <AboutV2> (second).
+       Connect is position:sticky top:0 z:0 — pinned background.
+       About is position:absolute top:0 z:2 — foreground that scrolls off.
+
+       For sticky to have a valid range, the containing block (.ac-scene)
+       must be taller than the sticky element by at least the desired range.
+       scene height = aboutH + connectH  →  sticky range = aboutH.
+       This is exactly how long About takes to fully scroll off the viewport.
+
+       A ResizeObserver keeps the height in sync on reflow. */
+    const sceneEl   = document.querySelector<HTMLElement>(".ac-scene");
+    const aboutEl   = document.querySelector<HTMLElement>(".about");
+    const connectEl = document.querySelector<HTMLElement>(".connect");
+
+    function syncScene() {
+      if (!sceneEl || !aboutEl || !connectEl) return;
+      sceneEl.style.height = `${aboutEl.offsetHeight + connectEl.offsetHeight}px`;
+    }
+    syncScene();
+
+    const ro = new ResizeObserver(syncScene);
+    if (aboutEl)   ro.observe(aboutEl);
+    if (connectEl) ro.observe(connectEl);
 
     /* ── Lenis initialisation ──────────────────────────────────────────── */
     const lenis = new Lenis({
@@ -93,30 +136,40 @@ export default function SmoothScroll() {
     // Skip parallax on touch — scroll behaviour already differs
     if (isTouchDevice) {
       return () => {
+        ro.disconnect();
         cancelAnimationFrame(rafId);
         lenis.destroy();
+        if (sceneEl) sceneEl.style.height = "";
       };
     }
 
     type ParallaxEntry = {
       el: HTMLElement;
       config: ParallaxConfig;
-      /** Scroll-Y at the moment the element's rect was last measured. */
-      originY: number;
+      /**
+       * The scroll value at which delta = 0 for this element.
+       * Hero elements: 0 (offset from page top).
+       * Connect elements: ac-scene's scroll offset (scene-relative).
+       */
+      scrollBase: number;
     };
     let entries: ParallaxEntry[] = [];
 
     function buildEntries() {
       entries = [];
+      // Measure ac-scene's scroll position for Connect-relative targets.
+      const sceneRect = sceneEl?.getBoundingClientRect();
+      const sceneBase = sceneRect
+        ? window.scrollY + sceneRect.top
+        : 0;
+
       for (const cfg of PARALLAX_TARGETS) {
         const nodes = document.querySelectorAll<HTMLElement>(cfg.selector);
         nodes.forEach((el) => {
           // Remove animation fill lock so inline transforms can take effect
           el.style.animation = "none";
-
-          const rect = el.getBoundingClientRect();
-          const originY = window.scrollY + rect.top + rect.height / 2;
-          entries.push({ el, config: cfg, originY });
+          const scrollBase = cfg.relativeToScene ? sceneBase : 0;
+          entries.push({ el, config: cfg, scrollBase });
         });
       }
     }
@@ -125,8 +178,8 @@ export default function SmoothScroll() {
     const activateTimer = setTimeout(buildEntries, PARALLAX_ACTIVATE_DELAY);
 
     function onScroll({ scroll }: { scroll: number }) {
-      for (const { el, config, originY } of entries) {
-        const delta = (scroll - 0) * config.speed;
+      for (const { el, config, scrollBase } of entries) {
+        const delta = (scroll - scrollBase) * config.speed;
 
         if (config.centred) {
           // .hero-polaroid uses translate(-50%,-50%) for centering —
@@ -149,16 +202,19 @@ export default function SmoothScroll() {
     // Re-measure on resize (layout may shift)
     const onResize = () => {
       if (entries.length) buildEntries();
+      syncScene();
     };
     window.addEventListener("resize", onResize);
 
     return () => {
+      ro.disconnect();
       clearTimeout(activateTimer);
       cancelAnimationFrame(rafId);
       lenis.off("scroll", onScroll);
       lenis.destroy();
       window.removeEventListener("resize", onResize);
-      // Restore elements
+      if (sceneEl) sceneEl.style.height = "";
+      // Restore parallax elements
       for (const { el } of entries) {
         el.style.transform = "";
         el.style.animation = "";

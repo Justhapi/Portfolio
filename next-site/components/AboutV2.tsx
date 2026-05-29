@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState } from "react";
+import { useRef, useState, useCallback } from "react";
 
 type View = "stack" | "mentor" | "illos" | "food" | "sketch";
 
@@ -49,7 +49,29 @@ function HoverWord({
 }) {
   const [on, setOn] = useState(false);
   const pillRef    = useRef<HTMLSpanElement>(null);
+  const labelRef   = useRef<HTMLElement>(null);
   const touchTimer = useRef<number | null>(null);
+
+  // ── Magnetic tilt (mirrors folder card behaviour) ────────────────────
+  /** Direct DOM write — no React re-render on every mousemove frame. */
+  const applyTilt = (e: React.MouseEvent) => {
+    const el = labelRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width  - 0.5) * 2; // −1 → 1
+    const y = ((e.clientY - rect.top)  / rect.height - 0.5) * 2; // −1 → 1
+    el.style.transition = "transform 220ms cubic-bezier(0.34,1.56,0.64,1)";
+    el.style.transform  =
+      `perspective(400px) translateX(${x * 5}px) translateY(${y * 3}px) rotateY(${x * 8}deg) rotateX(${-y * 5}deg)`;
+  };
+
+  const resetTilt = () => {
+    const el = labelRef.current;
+    if (!el) return;
+    el.style.transition = "transform 600ms cubic-bezier(0.34,1.56,0.64,1)";
+    el.style.transform  =
+      "perspective(400px) translateX(0px) translateY(0px) rotateY(0deg) rotateX(0deg)";
+  };
 
   // ── Mouse tracking (desktop) ──────────────────────────────────────────
   /** Direct DOM mutation — no React re-render on every mousemove frame. */
@@ -57,6 +79,7 @@ function HoverWord({
     if (!pillRef.current) return;
     pillRef.current.style.left = `${e.clientX + PILL_OFFSET_X}px`;
     pillRef.current.style.top  = `${e.clientY + PILL_OFFSET_Y}px`;
+    applyTilt(e);
   };
 
   // ── Touch support (iPhone / iPad) ─────────────────────────────────────
@@ -104,11 +127,12 @@ function HoverWord({
     setOn(true);
   };
 
-  const handleBlur = () => setOn(false);
+  const handleBlur = () => { setOn(false); resetTilt(); };
 
   // ── Label — plain span or real link ───────────────────────────────────
   const label = href ? (
     <a
+      ref={labelRef as React.RefObject<HTMLAnchorElement>}
       className="hw-label hw-label--link"
       href={href}
       target="_blank"
@@ -117,7 +141,7 @@ function HoverWord({
       {children}
     </a>
   ) : (
-    <span className="hw-label">{children}</span>
+    <span ref={labelRef as React.RefObject<HTMLSpanElement>} className="hw-label">{children}</span>
   );
 
   return (
@@ -125,7 +149,7 @@ function HoverWord({
       className={`hw${on ? " hw--on" : ""}`}
       onMouseEnter={(e) => { moveToPointer(e); setOn(true); }}
       onMouseMove={moveToPointer}
-      onMouseLeave={() => setOn(false)}
+      onMouseLeave={() => { setOn(false); resetTilt(); }}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
       onFocus={handleFocus}
@@ -150,6 +174,23 @@ function HoverWord({
 }
 
 export default function AboutV2() {
+  /**
+   * Peek strip click — scrolls to `ac-scene.offsetTop + about.offsetHeight`
+   * so the viewport lands with About fully scrolled off and Connect visible.
+   * Falls back to smooth anchor scroll if elements aren't found.
+   */
+  const handlePeekClick = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    const scene = document.querySelector<HTMLElement>(".ac-scene");
+    const about = document.querySelector<HTMLElement>(".about");
+    if (scene && about) {
+      const target = scene.offsetTop + about.offsetHeight;
+      window.scrollTo({ top: target, behavior: "smooth" });
+    } else {
+      document.getElementById("connect")?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, []);
+
   return (
     <section id="about" className="section about" data-screen-label="03 About">
       <div className="container">
@@ -216,6 +257,25 @@ export default function AboutV2() {
           </div>
         </div>
       </div>
+
+      {/* Peek strip — always visible at About's bottom edge, hinting
+          at the Connect section below. Clicking scrolls past About so
+          Connect is fully revealed rather than scrolling to page top. */}
+      <a href="#connect" className="about-peek" onClick={handlePeekClick}>
+        <span className="about-peek__label">Connect</span>
+        <svg
+          className="about-peek__arrow"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M12 5v14M5 12l7 7 7-7" />
+        </svg>
+      </a>
     </section>
   );
 }

@@ -62,24 +62,7 @@ export default function ConnectV2() {
         <SparkleField count={7} scale={1.5} slowdown={2.2} lifeScale={1.5} />
       </div>
       <div className="container">
-        <div className="section-head head reveal">
-          <div>
-            <h2 className="h">Connect</h2>
-            <div
-              style={{
-                fontFamily: "var(--f-mono)",
-                fontSize: 11,
-                letterSpacing: "0.18em",
-                color: "var(--muted)",
-                textTransform: "uppercase",
-                marginTop: 6,
-              }}
-            >
-              say hi · let&rsquo;s make something
-            </div>
-          </div>
-        </div>
-
+        {/* connect-row fills the space above the footer and slides down on scroll */}
         <div className="connect-row reveal">
           <div className="connect-pitch">
             I&rsquo;m open to <em>summer 2026 internships</em> in UI, interaction, and design-engineering — and to chatting with anyone who likes
@@ -141,6 +124,7 @@ export default function ConnectV2() {
           </div>
         </div>
 
+        {/* Footer anchored at the bottom of Connect */}
         <div className="foot">
           <span>© Kathleen Li · 李曦 · 2026</span>
           <span>Made with Procreate, Figma &amp; a lot of React</span>
