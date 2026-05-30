@@ -2971,32 +2971,93 @@ em.it { font-style: italic; }
   to   { opacity: 1; transform: rotate(-3deg); }
 }
 /* Line-and-sparkle divider — sits between every case-section except
-   the last. Previous version used dash glyphs which couldn't be sized
-   independently from the sparkle cluster (single font-size on a CSS
-   `content` string). Switched to drawn lines: two 1px hairline gradient
-   backgrounds flanking the sparkle text, with a 24% gap in the centre
-   for the glyphs. The sparkles can now scale up freely without the
-   dashes growing alongside — `✦ ݁˖` at 26px reads as the focal point
-   while the rules stay quiet. Opacity 0.8 keeps the whole divider soft
-   so it sits in the section rhythm rather than competing with headings. */
+   the last. The sparkles are pushed to 32px so they read as the focal
+   point, and the rules are alpha-mixed to 45% of currentColor so they
+   sit a deliberate notch behind the glyphs (effective contrast ≈ 2.2×).
+   Result: bold sparkle cluster, hairline rule.
+
+   Entrance is integrated into the existing case-section reveal cascade.
+   Default (no-JS) state shows the divider immediately. When
+   CaseReveal.tsx marks the body with data-case-animate="ready", the
+   divider starts hidden and animates in (fade up + lines grow from
+   centre outward) once the section's last direct child has received
+   .case-in — i.e. the divider arrives as the natural close of the
+   section's reveal sequence, not before. */
 .case-section:not(:last-child)::after {
   content: "✦ ݁˖";
   display: block;
   text-align: center;
   font-family: var(--f-mono);
-  font-size: 26px;
-  color: color-mix(in srgb, var(--accent-on-cream) 78%, transparent);
-  letter-spacing: 0.08em;
+  font-size: 32px;
+  color: color-mix(in srgb, var(--accent-on-cream) 82%, transparent);
+  letter-spacing: 0.1em;
   margin-top: 28px;
   padding: 14px 0;
   opacity: 0.8;
-  /* Two 1px hairline rules drawn with gradient backgrounds — left
-     segment fills 0–38%, right segment fills 62–100%, leaving a 24%
-     centre gap for the sparkle text. `currentColor` ties the rules to
-     the same colour token as the sparkles so they stay in sync. */
-  background:
-    linear-gradient(currentColor, currentColor) left center / 38% 1px no-repeat,
-    linear-gradient(currentColor, currentColor) right center / 38% 1px no-repeat;
+  /* Background longhand (NOT shorthand) so the background-size
+     transition is reliably animated in every browser — `background:`
+     shorthand resets all sub-properties in some engines, killing the
+     size animation. Two image layers: one rule on the left half, one
+     on the right, leaving a 24% centre gap for the sparkle text.
+     Lines are drawn at 45% of currentColor so they read softer than
+     the glyphs — effective contrast ≈ 2.2× between sparkle and rule. */
+  background-image:
+    linear-gradient(
+      color-mix(in srgb, currentColor 45%, transparent),
+      color-mix(in srgb, currentColor 45%, transparent)
+    ),
+    linear-gradient(
+      color-mix(in srgb, currentColor 45%, transparent),
+      color-mix(in srgb, currentColor 45%, transparent)
+    );
+  background-repeat: no-repeat, no-repeat;
+  background-position: left center, right center;
+  background-size: 38% 1px, 38% 1px;
+}
+
+/* Entrance — driven directly by the divider's own position in the
+   viewport using the scroll-driven `view()` timeline. The animation
+   progresses linearly as the divider enters the viewport: it's
+   invisible until the top edge of the divider hits the bottom 10% of
+   the viewport, fully resolved by the time it's 90% through its
+   entry range. Triggers exactly when the user sees the divider, not
+   before or after.
+
+   No JS or IntersectionObserver needed — view() reads the element's
+   own bounding box every frame and drives the animation timeline
+   from it. Works on pseudo-elements (Chrome 115+, Safari 18+).
+
+   Firefox and other browsers without view() support fall through to
+   the no-animation default below — the divider is visible from the
+   moment it renders, which is the safest fallback. */
+@supports (animation-timeline: view()) {
+  .case-body[data-case-animate="ready"] .case-section:not(:last-child)::after {
+    opacity: 0;
+    transform: translateY(12px);
+    background-size: 0% 1px, 0% 1px;
+    animation: caseDividerReveal linear forwards;
+    animation-timeline: view();
+    animation-range: entry 10% entry 90%;
+  }
+}
+
+@keyframes caseDividerReveal {
+  to {
+    opacity: 0.8;
+    transform: none;
+    background-size: 38% 1px, 38% 1px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @supports (animation-timeline: view()) {
+    .case-body[data-case-animate="ready"] .case-section:not(:last-child)::after {
+      opacity: 0.8 !important;
+      transform: none !important;
+      background-size: 38% 1px, 38% 1px !important;
+      animation: none !important;
+    }
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   .case-section h2::before { animation: none !important; }

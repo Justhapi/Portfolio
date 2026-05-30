@@ -106,21 +106,23 @@ export default function ConnectV2() {
             </div>
 
             <a
-              className="c-link is-pending"
-              href="#"
-              aria-label="LinkedIn (link coming soon)"
-              onClick={(e) => e.preventDefault()}
+              className="c-link"
+              href="https://www.linkedin.com/in/kathleen-li-564a13328"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="LinkedIn profile (opens in new tab)"
             >
               <span>
                 <SparkleBullet />
-                Linkedin
+                LinkedIn
               </span>
             </a>
             <a
-              className="c-link is-pending"
-              href="#"
-              aria-label="Resume (link coming soon)"
-              onClick={(e) => e.preventDefault()}
+              className="c-link"
+              href="/resume.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Resume PDF (opens in new tab)"
             >
               <span>
                 <SparkleBullet />
