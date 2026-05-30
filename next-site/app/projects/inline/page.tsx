@@ -23,7 +23,7 @@ export default function CompetitorResearchCaseStudy() {
         imageLabel="Competitive research · cover image"
       />
 
-      <main className="case-body">
+      <main id="main" className="case-body">
         <p className="case-disclaimer">
           This is an anonymized overview. The client, product, and proprietary details have been withheld or
           generalized to respect a confidentiality agreement. It focuses on my research process and methods rather

@@ -9,7 +9,7 @@ export default function Home() {
   return (
     <>
       <SiteNavV2 />
-      <main className="portfolio-v2">
+      <main id="main" className="portfolio-v2">
         <HeroV2 />
         <ProjectsV2 />
         {/* ac-scene: Connect is the sticky background layer, About is the

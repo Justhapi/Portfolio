@@ -197,19 +197,7 @@ export default function AboutV2() {
         <div className="section-head reveal">
           <div>
             <h2 className="h">About</h2>
-            <div
-              style={{
-                fontFamily: "var(--f-mono)",
-                fontSize: 12,
-                fontWeight: 600,
-                letterSpacing: "0.22em",
-                color: "var(--muted)",
-                textTransform: "uppercase",
-                marginTop: 10,
-              }}
-            >
-              self introduction
-            </div>
+            <div className="section-subhead">self introduction</div>
           </div>
         </div>
 
@@ -217,16 +205,7 @@ export default function AboutV2() {
           {/* Stage 1 — heading arrives first */}
           <h3 className="lead">
             Purdue UX undergrad with a{" "}
-            <em
-              style={{
-                fontFamily: "var(--f-display)",
-                fontStyle: "normal",
-                fontWeight: 800,
-                color: "var(--ink-soft)",
-              }}
-            >
-              design-engineering
-            </em>{" "}
+            <em className="de">design-engineering</em>{" "}
             minor.
           </h3>
 
@@ -243,7 +222,7 @@ export default function AboutV2() {
             <p>
               I joined UX once I realized I could keep{" "}
               <HoverWord view="illos">drawing, painting, and animating</HoverWord>
-              {" "}<em style={{ fontStyle: "italic" }}>and</em> solve real problems for
+              {" "}<em className="it">and</em> solve real problems for
               real people. I&rsquo;m also a mentor at{" "}
               <HoverWord view="mentor" href="https://linktr.ee/sasepurdue">Purdue SASE</HoverWord>
               , and I plan my{" "}

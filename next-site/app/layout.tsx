@@ -89,6 +89,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body>
+        {/* Skip link — first focusable element on every page. Lets
+            keyboard users jump past the nav directly to the page's
+            primary content. Each route's <main> carries id="main". */}
+        <a href="#main" className="skip-link">Skip to content</a>
         <div className="grain" aria-hidden="true" />
         {children}
         <SmoothScroll />

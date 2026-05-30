@@ -61,14 +61,30 @@
   --paper: #FBF7EE;
   --fg: #1A1714;
   --fg-soft: #3D3530;
-  --muted: #7A6F66;
+  /* Space-separated RGB triplets — pair with the `rgb(var(--*-rgb) / X)`
+     syntax for tokenized alpha-modified colors. Replaces ~50 literal
+     rgba() values across the file so a brand recolor only touches the
+     triplet here, not every transparent surface. */
+  --fg-rgb: 26 23 20;
+  --hero-fg-rgb: 246 239 220;
+  /* --muted: darkened from #7A6F66 → #6B5F55 so small mono labels
+     (folder .meta, .num, .case-placeholder) pass WCAG AA 4.5:1 on
+     the cream bg. New contrast: ~5.6:1. */
+  --muted: #6B5F55;
   /* Accent: was burnt-terracotta #B5532E, now the warm tan Soft Shell.
      accent-soft tracks one step lighter so highlight states still
      have a hierarchy. */
   --accent: #C68D5F;
   --accent-soft: #D9A983;
-  --line: rgba(26, 23, 20, 0.12);
-  --line-soft: rgba(26, 23, 20, 0.06);
+  /* --accent-on-cream: a darker amber sibling of --accent (#C68D5F).
+     Same hue family, dropped lightness one step. Reserved for inline
+     emphasis on cream backgrounds (.hw-label, .case-section .hl,
+     .folder .tag) where the standard accent fails WCAG AA (~2.6:1).
+     New contrast on --bg: ~4.6:1. Keep --accent for the dark hero
+     stage where it already reads well. */
+  --accent-on-cream: #93613A;
+  --line: rgb(var(--fg-rgb) / 0.12);
+  --line-soft: rgb(var(--fg-rgb) / 0.06);
   --ink-soft: #6B5D54;
 
   /* Dark hero stage — Deep Ink as the new ground, with a slightly
@@ -362,7 +378,7 @@ body.on-paper .nav {
   align-items: center;
   gap: 10px;
   padding: 6px 18px;
-  border: 1px solid rgba(246, 239, 220, 0.22);
+  border: 1px solid rgb(var(--hero-fg-rgb) / 0.22);
   border-radius: 999px;
   /* dark backdrop inside the pill so the label keeps its own darkening */
   background: var(--hero-bg-deep);
@@ -428,7 +444,7 @@ body.on-paper .nav-mark {
 body.on-paper .nav-pill {
   gap: 2px;
   padding: 4px;
-  border-color: rgba(246, 239, 220, 0.18);
+  border-color: rgb(var(--hero-fg-rgb) / 0.18);
   background: var(--hero-bg-deep);
   backdrop-filter: saturate(140%) blur(10px);
   -webkit-backdrop-filter: saturate(140%) blur(10px);
@@ -487,7 +503,7 @@ body.on-paper .nav-pill {
   top: 0;
   left: 0;
   background: rgba(0, 0, 0, 0.85);
-  border: 1px solid rgba(246, 239, 220, 0.22);
+  border: 1px solid rgb(var(--hero-fg-rgb) / 0.22);
   border-radius: 999px;
   pointer-events: none;
   z-index: 0;
@@ -546,7 +562,7 @@ body.on-paper .nav-pill {
     align-items: center;
     justify-content: center;
     padding: 8px 14px;
-    border: 1px solid rgba(246, 239, 220, 0.22);
+    border: 1px solid rgb(var(--hero-fg-rgb) / 0.22);
     border-radius: 999px;
     background: var(--hero-bg-deep);
     backdrop-filter: saturate(140%) blur(10px);
@@ -570,10 +586,10 @@ body.on-paper .nav-pill {
   }
   .nav-menu-toggle:hover {
     background: rgba(15, 18, 23, 0.95);
-    border-color: rgba(246, 239, 220, 0.38);
+    border-color: rgb(var(--hero-fg-rgb) / 0.38);
   }
   .nav-menu-toggle.is-open {
-    border-color: rgba(246, 239, 220, 0.38);
+    border-color: rgb(var(--hero-fg-rgb) / 0.38);
   }
 
   /* Hide the desktop pill; it re-appears as a dropdown when open */
@@ -594,7 +610,7 @@ body.on-paper .nav-pill {
     min-width: 160px;
     padding: 6px;
     border-radius: 16px;
-    border: 1px solid rgba(246, 239, 220, 0.18);
+    border: 1px solid rgb(var(--hero-fg-rgb) / 0.18);
     background: var(--hero-bg-deep);
     backdrop-filter: saturate(140%) blur(14px);
     -webkit-backdrop-filter: saturate(140%) blur(14px);
@@ -615,7 +631,7 @@ body.on-paper .nav-pill {
   .nav.is-menu-open .nav-link:hover,
   .nav.is-menu-open .nav-link.active {
     opacity: 1;
-    background: rgba(246, 239, 220, 0.08);
+    background: rgb(var(--hero-fg-rgb) / 0.08);
   }
 }
 
@@ -656,6 +672,19 @@ body.on-paper .nav-pill {
   font-size: 26px;
   color: var(--muted);
   align-self: end;
+}
+/* Mono subhead label sitting under .section-head .h ("projects I've
+   worked on", "self introduction"). Previously inline-styled in
+   ProjectsV2.tsx / AboutV2.tsx — extracted into a class so the rule
+   participates in theming and stays editable from one place. */
+.section-subhead {
+  font-family: var(--f-mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-top: 10px;
 }
 
 /* =====================================================
@@ -795,7 +824,7 @@ body.on-paper .nav-pill {
   font-size: 9px;
   letter-spacing: 0.24em;
   text-transform: uppercase;
-  color: rgba(246, 239, 220, 0.45);
+  color: rgb(var(--hero-fg-rgb) / 0.45);
   opacity: 0;
   transition: opacity 220ms ease, color 220ms ease;
   pointer-events: none;
@@ -816,7 +845,7 @@ body.on-paper .nav-pill {
   0%, 100% { box-shadow: 0 0 0 0 rgba(212, 144, 117, 0.45); }
   50%      { box-shadow: 0 0 0 6px rgba(212, 144, 117, 0); }
 }
-.photo-hint.is-on { color: rgba(246, 239, 220, 0.85); opacity: 1; }
+.photo-hint.is-on { color: rgb(var(--hero-fg-rgb) / 0.85); opacity: 1; }
 @media (prefers-reduced-motion: reduce) {
   .photo-hint { animation: none; opacity: 1; }
   .photo-hint-dot { animation: none; box-shadow: none; }
@@ -837,7 +866,7 @@ body.on-paper .nav-pill {
   font-size: 10px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgba(246, 239, 220, 0.5);
+  color: rgb(var(--hero-fg-rgb) / 0.5);
   background:
     repeating-linear-gradient(45deg, transparent 0 14px, rgba(255,255,255,0.025) 14px 15px);
 }
@@ -865,6 +894,10 @@ body.on-paper .nav-pill {
   color: #2C2520;
   padding: 0 6px;
 }
+/* Italic emphasis used inline ("interesting", "Kathleen", "and").
+   Previously a `style` prop on each <em> — extracted so future
+   italic-emphasis styling is editable from one place. */
+em.it { font-style: italic; }
 
 /* polaroid strings (luggage tags) */
 .string {
@@ -873,7 +906,7 @@ body.on-paper .nav-pill {
   z-index: 11;
 }
 .string svg { display: block; overflow: visible; }
-.string path { stroke: rgba(246, 239, 220, 0.35); stroke-width: 1; fill: none; }
+.string path { stroke: rgb(var(--hero-fg-rgb) / 0.35); stroke-width: 1; fill: none; }
 
 /* Artist · Designer wordmark — single SVG with custom star/dot ligature */
 .ribbon-artist {
@@ -919,6 +952,36 @@ body.on-paper .nav-pill {
   white-space: nowrap;
   border: 0;
 }
+
+/* Skip-to-content link — invisible until focused via Tab.
+   Landmarks already satisfy WCAG 2.4.1 Bypass Blocks, but a skip link is
+   faster than tabbing through ~5 nav items for keyboard users. Styled to
+   match the dark glass nav pills when focused so it feels native. */
+.skip-link {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 1000;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: var(--hero-bg-deep-scrolled);
+  border: 1px solid rgb(var(--hero-fg-rgb) / 0.38);
+  color: var(--hero-fg);
+  font-family: var(--f-mono);
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  /* hidden off-screen until focused; transform restored on :focus */
+  transform: translateY(-200%);
+  transition: transform 220ms var(--ease-out-quart);
+}
+.skip-link:focus,
+.skip-link:focus-visible {
+  transform: translateY(0);
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
 .ribbon-artist .sub {
   margin-top: 16px;
   font-family: var(--f-mono);
@@ -927,7 +990,7 @@ body.on-paper .nav-pill {
   font-size: 12px;
   letter-spacing: 0.28em;
   text-transform: uppercase;
-  color: rgba(246, 239, 220, 0.72);
+  color: rgb(var(--hero-fg-rgb) / 0.72);
   /* fades in just after the last letter settles */
   animation: subFadeIn 480ms var(--ease-out-quart) 760ms backwards;
 }
@@ -1128,7 +1191,7 @@ body.on-paper .nav-pill {
   font-size: 20px;
   line-height: 1.25;
   text-align: right;
-  color: rgba(246, 239, 220, 0.88);
+  color: rgb(var(--hero-fg-rgb) / 0.88);
 }
 
 /* tiny stars sprinkled over hero */
@@ -1171,7 +1234,7 @@ body.on-paper .nav-pill {
   font-size: 11px;
   letter-spacing: 0.28em;
   text-transform: uppercase;
-  color: rgba(246, 239, 220, 0.55);
+  color: rgb(var(--hero-fg-rgb) / 0.7);
   z-index: 8;
   animation: scrollCueIn 280ms var(--ease-out-quart) 1600ms backwards;
 }
@@ -1179,7 +1242,7 @@ body.on-paper .nav-pill {
   from { opacity: 0; transform: translateX(-50%) translateY(14px); }
   to   { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
-.hero-scroll:hover { color: rgba(246, 239, 220, 0.9); }
+.hero-scroll:hover { color: rgb(var(--hero-fg-rgb) / 0.9); }
 /* Focus ring: override global accent (terracotta) with hero-fg so the
    ring stays visible against the dark --hero-bg stage. */
 .hero-scroll:focus-visible {
@@ -1440,8 +1503,8 @@ body.on-paper .nav-pill {
      (0 offset, small blur) builds a darkening rim hugging the outline;
      the wider, lower one grounds the folder with ambient depth. */
   filter:
-    drop-shadow(0 0 7px rgba(26, 23, 20, 0.26))
-    drop-shadow(0 10px 34px rgba(26, 23, 20, 0.17));
+    drop-shadow(0 0 7px rgb(var(--fg-rgb) / 0.26))
+    drop-shadow(0 10px 34px rgb(var(--fg-rgb) / 0.17));
 }
 /* Four float variants — different amplitude, drift direction, rotation
    sign, and peak position so no two folders trace the same arc. */
@@ -1818,7 +1881,7 @@ body.on-paper .nav-pill {
   font-size: 11.5px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--accent-on-cream);
   margin-bottom: 10px;
 }
 .folder .blurb {
@@ -1997,6 +2060,20 @@ body.on-paper .nav-pill {
   margin: 0 auto 32px;
   max-width: 22ch;
 }
+/* Inline emphasis inside the About lead — "design-engineering". Uses
+   the display family at its heaviest weight, ink-soft so it sits a
+   notch behind the rest of the heading. Previously a `style` prop in
+   AboutV2.tsx — extracted so it survives CSS theming. */
+.about-prose .lead em.de {
+  font-family: var(--f-display);
+  font-style: normal;
+  font-weight: 800;
+  color: var(--ink-soft);
+}
+/* Inline italic emphasis used in About body ("…and"). */
+.about-prose em.it {
+  font-style: italic;
+}
 .about-prose p {
   font-family: var(--f-cookie);
   font-size: 17.5px;
@@ -2026,11 +2103,11 @@ body.on-paper .nav-pill {
 }
 .hw-label {
   font-weight: 700;
-  color: var(--accent);
+  color: var(--accent-on-cream);
   text-decoration-line: underline;
   text-decoration-style: dotted;
   text-underline-offset: 3px;
-  text-decoration-color: var(--accent-soft);
+  text-decoration-color: var(--accent);
   cursor: default;
   display: inline-block; /* needed for transform to apply on inline text */
   transition: color 150ms ease, text-decoration-color 150ms ease,
@@ -2065,9 +2142,9 @@ body.on-paper .nav-pill {
 
   background: var(--hero-bg);
   box-shadow:
-    0 0 0 1.5px rgba(26, 23, 20, 0.12),
-    0 20px 48px -10px rgba(26, 23, 20, 0.32),
-    0 4px 12px -2px rgba(26, 23, 20, 0.14);
+    0 0 0 1.5px rgb(var(--fg-rgb) / 0.12),
+    0 20px 48px -10px rgb(var(--fg-rgb) / 0.32),
+    0 4px 12px -2px rgb(var(--fg-rgb) / 0.14);
 
   transition:
     opacity 180ms var(--ease-out-quart),
@@ -2088,7 +2165,7 @@ body.on-paper .nav-pill {
   right: 10px;
   width: 13px;
   height: 13px;
-  fill: rgba(246, 239, 220, 0.65);
+  fill: rgb(var(--hero-fg-rgb) / 0.65);
   z-index: 2;
   pointer-events: none;
 }
@@ -2116,8 +2193,8 @@ body.on-paper .nav-pill {
   background: #C7A878;
   padding: 12px 12px 36px;
   box-shadow:
-    0 22px 44px -18px rgba(26, 23, 20, 0.45),
-    0 6px 12px -4px rgba(26, 23, 20, 0.24);
+    0 22px 44px -18px rgb(var(--fg-rgb) / 0.45),
+    0 6px 12px -4px rgb(var(--fg-rgb) / 0.24);
   transition: transform 800ms var(--ease-out-expo), box-shadow 400ms ease;
   transform-style: preserve-3d;
   backface-visibility: hidden;
@@ -2126,8 +2203,8 @@ body.on-paper .nav-pill {
 .learn-card-tan:hover {
   z-index: 20;
   box-shadow:
-    0 30px 60px -18px rgba(26, 23, 20, 0.55),
-    0 10px 18px -6px rgba(26, 23, 20, 0.3);
+    0 30px 60px -18px rgb(var(--fg-rgb) / 0.55),
+    0 10px 18px -6px rgb(var(--fg-rgb) / 0.3);
 }
 .learn-card-tan::after {
   content: "";
@@ -2144,7 +2221,7 @@ body.on-paper .nav-pill {
 .learn-card-tan .image-slot {
   width: 100%;
   height: calc(100% - 36px);
-  background: rgba(26, 23, 20, 0.06);
+  background: rgb(var(--fg-rgb) / 0.06);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2152,7 +2229,7 @@ body.on-paper .nav-pill {
   font-size: 10px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgba(26, 23, 20, 0.45);
+  color: rgb(var(--fg-rgb) / 0.45);
 }
 .learn-card-tan .l-caption {
   position: absolute;
@@ -2160,7 +2237,7 @@ body.on-paper .nav-pill {
   left: 12px; right: 12px;
   font-family: var(--f-hand);
   font-size: 18px;
-  color: rgba(26, 23, 20, 0.7);
+  color: rgb(var(--fg-rgb) / 0.7);
   text-align: center;
   line-height: 1;
 }
@@ -2273,7 +2350,7 @@ body.on-paper .nav-pill {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  border-top: 1px solid rgba(246, 239, 220, 0.12);
+  border-top: 1px solid rgb(var(--hero-fg-rgb) / 0.12);
 }
 .c-link {
   display: flex;
@@ -2281,12 +2358,12 @@ body.on-paper .nav-pill {
   align-items: center;
   gap: 16px;
   padding: 20px 4px;
-  border-bottom: 1px solid rgba(246, 239, 220, 0.12);
+  border-bottom: 1px solid rgb(var(--hero-fg-rgb) / 0.12);
   font-family: var(--f-mono);
   font-weight: 500;
   font-size: 14.5px;
   letter-spacing: 0.1em;
-  color: rgba(246, 239, 220, 0.9);
+  color: rgb(var(--hero-fg-rgb) / 0.9);
   transition: color 200ms, padding 280ms var(--ease-out-quart);
 }
 .c-link:first-child {
@@ -2324,13 +2401,13 @@ body.on-paper .nav-pill {
 .c-link .arrow {
   font-size: 11px;
   letter-spacing: 0.2em;
-  color: rgba(246, 239, 220, 0.55);
+  color: rgb(var(--hero-fg-rgb) / 0.7);
 }
 /* placeholder until the link is wired — keeps the visual without misleading clicks */
 .c-link.is-pending { cursor: not-allowed; }
 .c-link.is-pending .arrow::after {
   content: " · soon";
-  color: rgba(246, 239, 220, 0.35);
+  color: rgb(var(--hero-fg-rgb) / 0.35);
   letter-spacing: 0.12em;
 }
 /* is-pending rows (LinkedIn, Resume) DO get the hover slide now too —
@@ -2419,11 +2496,11 @@ body.on-paper .nav-pill {
   align-items: center;
   gap: 8px;
   padding: 6px 12px 6px 14px;
-  border: 1px solid rgba(246, 239, 220, 0.2);
+  border: 1px solid rgb(var(--hero-fg-rgb) / 0.2);
   border-radius: 999px;
   background: transparent;
   cursor: pointer;
-  color: rgba(246, 239, 220, 0.82);
+  color: rgb(var(--hero-fg-rgb) / 0.82);
   font-family: var(--f-mono);
   font-weight: 600;
   font-size: 10.5px;
@@ -2437,8 +2514,8 @@ body.on-paper .nav-pill {
 }
 .c-copy:hover {
   color: var(--hero-fg);
-  border-color: rgba(246, 239, 220, 0.45);
-  background: rgba(246, 239, 220, 0.06);
+  border-color: rgb(var(--hero-fg-rgb) / 0.45);
+  background: rgb(var(--hero-fg-rgb) / 0.06);
 }
 .c-copy:active { transform: scale(0.97); }
 .c-copy .c-copy-icon {
@@ -2461,14 +2538,14 @@ body.on-paper .nav-pill {
 .foot {
   margin-top: auto; /* pushes footer to the bottom regardless of row height */
   padding-top: 24px;
-  border-top: 1px solid rgba(246, 239, 220, 0.12);
+  border-top: 1px solid rgb(var(--hero-fg-rgb) / 0.12);
   display: flex;
   justify-content: space-between;
   font-family: var(--f-mono);
   font-weight: 500;
   font-size: 11px;
   letter-spacing: 0.2em;
-  color: rgba(246, 239, 220, 0.5);
+  color: rgb(var(--hero-fg-rgb) / 0.62);
 }
 
 /* =====================================================
@@ -2516,7 +2593,7 @@ body.on-paper .nav-pill {
   -webkit-backdrop-filter: saturate(140%) blur(12px);
   padding: 22px 0;
   transition: padding 280ms var(--ease-out-quart), background 280ms ease;
-  border-bottom: 1px solid rgba(246, 239, 220, 0.06);
+  border-bottom: 1px solid rgb(var(--hero-fg-rgb) / 0.06);
   color: var(--hero-fg);
   /* container drops in quickly — children animate separately after */
   animation: navSlideIn 320ms cubic-bezier(0.22, 1, 0.36, 1) 0ms backwards;
@@ -2539,14 +2616,14 @@ body.on-paper .nav-pill {
   align-items: center;
   gap: 10px;
   padding: 6px 18px;
-  border: 1px solid rgba(246, 239, 220, 0.22);
+  border: 1px solid rgb(var(--hero-fg-rgb) / 0.22);
   border-radius: 999px;
   font-family: var(--f-mono);
   font-weight: 500;
   font-size: 11.5px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: rgba(246, 239, 220, 0.78);
+  color: rgb(var(--hero-fg-rgb) / 0.78);
   margin: 0;
   transition:
     color 200ms,
@@ -2556,7 +2633,7 @@ body.on-paper .nav-pill {
 }
 .case-nav .case-back:hover {
   color: var(--hero-fg);
-  border-color: rgba(246, 239, 220, 0.4);
+  border-color: rgb(var(--hero-fg-rgb) / 0.4);
   transform: translateX(-4px);
 }
 .case-nav .case-back .arrow {
@@ -2570,7 +2647,7 @@ body.on-paper .nav-pill {
   gap: 2px;
   padding: 4px;
   border-radius: 999px;
-  border: 1px solid rgba(246, 239, 220, 0.18);
+  border: 1px solid rgb(var(--hero-fg-rgb) / 0.18);
 }
 .case-nav-link {
   position: relative;
@@ -2583,7 +2660,7 @@ body.on-paper .nav-pill {
   font-size: 11px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: rgba(246, 239, 220, 0.65);
+  color: rgb(var(--hero-fg-rgb) / 0.65);
   transition: color 200ms;
   white-space: nowrap;
 }
@@ -2596,7 +2673,7 @@ body.on-paper .nav-pill {
   top: 0;
   left: 0;
   background: rgba(0, 0, 0, 0.85);
-  border: 1px solid rgba(246, 239, 220, 0.22);
+  border: 1px solid rgb(var(--hero-fg-rgb) / 0.22);
   border-radius: 999px;
   pointer-events: none;
   z-index: 0;
@@ -2689,7 +2766,7 @@ body.on-paper .nav-pill {
   font-size: 11.5px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: rgba(246, 239, 220, 0.65);
+  color: rgb(var(--hero-fg-rgb) / 0.65);
   text-align: center;
   margin-bottom: 8px;
 }
@@ -2698,7 +2775,7 @@ body.on-paper .nav-pill {
   font-weight: 700;
   font-size: 22px;
   line-height: 1.35;
-  color: rgba(246, 239, 220, 0.82);
+  color: rgb(var(--hero-fg-rgb) / 0.82);
   text-align: center;
   margin-bottom: 40px;
 }
@@ -2713,7 +2790,7 @@ body.on-paper .nav-pill {
   box-shadow: 0 30px 60px -20px rgba(0,0,0,0.5);
 }
 .case-hero-image .image-slot {
-  color: rgba(26, 23, 20, 0.4);
+  color: rgb(var(--fg-rgb) / 0.4);
   background:
     repeating-linear-gradient(45deg, transparent 0 14px, rgba(0,0,0,0.04) 14px 15px);
 }
@@ -2731,8 +2808,8 @@ body.on-paper .nav-pill {
   font-size: 11px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgba(26, 23, 20, 0.5);
-  border: 1px solid rgba(26, 23, 20, 0.12);
+  color: rgb(var(--fg-rgb) / 0.5);
+  border: 1px solid rgb(var(--fg-rgb) / 0.12);
   border-radius: 6px;
   padding: 14px 20px;
   margin-bottom: 72px;
@@ -2779,7 +2856,12 @@ body.on-paper .nav-pill {
   line-height: 1.2;
   letter-spacing: -0.01em;
   color: var(--fg);
-  margin: 40px 0 14px;
+  /* Scaled to mirror the h2 → first p rhythm (36px gap). At this h3
+     size (22px), 20px below sits proportionally between paragraphs
+     (16px) and the larger h2 gap, so the subsection lead doesn't
+     crowd the body that follows. Extra top margin (44px) gives the
+     subhead a breathing zone after the preceding block. */
+  margin: 44px 0 20px;
 }
 .case-section p {
   font-family: var(--f-cookie);
@@ -2798,7 +2880,7 @@ body.on-paper .nav-pill {
    Use <mark className="hl"> or <strong className="hl"> in case pages. */
 .case-section .hl {
   font-weight: 700;
-  color: var(--accent);
+  color: var(--accent-on-cream);
   background: none;
   padding: 0;
 }
@@ -2857,7 +2939,7 @@ body.on-paper .nav-pill {
   font-size: 10px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgba(26, 23, 20, 0.3);
+  color: rgb(var(--fg-rgb) / 0.3);
   background-image:
     repeating-linear-gradient(45deg, transparent 0 14px, rgba(0,0,0,0.035) 14px 15px);
 }
@@ -2959,7 +3041,7 @@ body.on-paper .nav-pill {
 }
 .hero-spark .sparkle {
   font-size: 18px;
-  color: rgba(246, 239, 220, 0.55);
+  color: rgb(var(--hero-fg-rgb) / 0.55);
 }
 
 /* Section-level background sparkle layer (cream sections) */
@@ -2971,13 +3053,13 @@ body.on-paper .nav-pill {
 }
 .section-sparkles .hero-spark .sparkle {
   font-size: 16px;
-  color: rgba(181, 83, 46, 0.55);
+  color: color-mix(in srgb, var(--accent-on-cream) 70%, transparent);
 }
 
 /* Connect section sits on dark hero-bg — match the hero sparkle color */
 .connect-sparkles .hero-spark .sparkle {
   font-size: 18px;
-  color: rgba(246, 239, 220, 0.55);
+  color: rgb(var(--hero-fg-rgb) / 0.55);
 }
 
 /* =====================================================
@@ -2994,7 +3076,7 @@ body.on-paper .nav-pill {
   content: "";
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(rgba(246, 239, 220, 0.05) 1px, transparent 1px);
+  background-image: radial-gradient(rgb(var(--hero-fg-rgb) / 0.05) 1px, transparent 1px);
   background-size: 32px 32px;
   opacity: 0.5;
   pointer-events: none;
@@ -3023,13 +3105,13 @@ body.on-paper .nav-pill {
   font-size: 11px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: rgba(246, 239, 220, 0.55);
+  color: rgb(var(--hero-fg-rgb) / 0.55);
   margin: 0;
 }
 .mindspace-hint {
   font-family: var(--f-hand);
   font-size: 18px;
-  color: rgba(246, 239, 220, 0.45);
+  color: rgb(var(--hero-fg-rgb) / 0.45);
   margin: 18px 0 0;
 }
 

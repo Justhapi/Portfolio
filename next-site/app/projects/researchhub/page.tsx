@@ -23,7 +23,7 @@ export default function ResearchHubCaseStudy() {
         imageLabel="ResearchHub · cover image"
       />
 
-      <main className="case-body">
+      <main id="main" className="case-body">
         {/* ───── Overview ───── */}
         <section id="overview" className="case-section">
           <h2>Overview</h2>

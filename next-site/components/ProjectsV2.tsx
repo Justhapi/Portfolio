@@ -417,19 +417,7 @@ export default function ProjectsV2() {
         <div className="section-head reveal">
           <div>
             <h2 className="h">Projects</h2>
-            <div
-              style={{
-                fontFamily: "var(--f-mono)",
-                fontSize: 12,
-                fontWeight: 600,
-                letterSpacing: "0.22em",
-                color: "var(--muted)",
-                textTransform: "uppercase",
-                marginTop: 10,
-              }}
-            >
-              projects I&rsquo;ve worked on
-            </div>
+            <div className="section-subhead">projects I&rsquo;ve worked on</div>
           </div>
         </div>
 

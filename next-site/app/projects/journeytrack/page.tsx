@@ -24,7 +24,7 @@ export default function AIJourneyAgentCaseStudy() {
         imageLabel="AI maintenance agent · cover image"
       />
 
-      <main className="case-body">
+      <main id="main" className="case-body">
         <p className="case-disclaimer">
           Confidential and proprietary details have been removed or anonymized to protect client information.
         </p>

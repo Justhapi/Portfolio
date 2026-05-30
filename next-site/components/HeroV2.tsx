@@ -152,7 +152,7 @@ export default function HeroV2() {
           <div className="caption-block">
             <div className="caption-meta">Last Updated · 05/07/26</div>
             <div className="caption-line">
-              I use my design background to make interfaces with <em style={{ fontStyle: "italic" }}>interesting</em> moments
+              I use my design background to make interfaces with <em className="it">interesting</em> moments
             </div>
           </div>
         </div>
@@ -180,7 +180,7 @@ export default function HeroV2() {
             </defs>
           </svg>
           <div className="name-en">
-            <em style={{ fontStyle: "italic" }}>Kathleen</em>&nbsp;Li
+            <em className="it">Kathleen</em>&nbsp;Li
           </div>
           {/* Elaborate 4-pointed sparkle with curled arms */}
           <svg
