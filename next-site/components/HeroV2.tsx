@@ -152,7 +152,7 @@ export default function HeroV2() {
           <div className="caption-block">
             <div className="caption-meta">Last Updated · 05/07/26</div>
             <div className="caption-line">
-              I use my design background to make interfaces with <em className="it">interesting</em> moments
+              I design interfaces with moments worth <em className="it">lingering</em> on
             </div>
           </div>
         </div>
@@ -260,7 +260,7 @@ export default function HeroV2() {
             />
           </svg>
           <div className="d-text">
-            Currently designing as a Product Design intern while cafe hopping!
+            Currently a Product Design intern — drafting mostly from cafes!
           </div>
           <ul>
             <li>·</li>

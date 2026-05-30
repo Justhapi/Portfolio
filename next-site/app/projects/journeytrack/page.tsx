@@ -5,11 +5,12 @@ export const metadata = {
   title: "AI Journey Map Maintenance Agent — Kathleen Li",
 };
 
+/* Outcome leads so recruiters see results first. */
 const SECTIONS = [
+  { id: "outcome", label: "Outcome" },
   { id: "overview", label: "Overview" },
   { id: "process", label: "Process" },
   { id: "decisions", label: "Key Decisions" },
-  { id: "outcome", label: "Outcome" },
   { id: "takeaways", label: "Takeaways" },
 ];
 
@@ -28,6 +29,18 @@ export default function AIJourneyAgentCaseStudy() {
         <p className="case-disclaimer">
           Confidential and proprietary details have been removed or anonymized to protect client information.
         </p>
+
+        {/* ───── Outcome ───── (moved to top: recruiters see outcome first) */}
+        <section id="outcome" className="case-section">
+          <h2>Outcome</h2>
+          <p>
+            We delivered a high-fidelity interactive prototype, design-principle documentation, and a final
+            presentation to the client&rsquo;s leadership. The final design gives users a{" "}
+            <mark className="hl">trustworthy way to keep journey maps current</mark>: proactive alerts when content
+            drifts, transparent evidence for every recommendation, and controls that keep people in the loop rather
+            than handing decisions to automation.
+          </p>
+        </section>
 
         {/* ───── Overview ───── */}
         <section id="overview" className="case-section">
@@ -144,18 +157,6 @@ export default function AIJourneyAgentCaseStudy() {
               already had for that kind of control.
             </li>
           </ul>
-        </section>
-
-        {/* ───── Outcome ───── */}
-        <section id="outcome" className="case-section">
-          <h2>Outcome</h2>
-          <p>
-            We delivered a high-fidelity interactive prototype, design-principle documentation, and a final
-            presentation to the client&rsquo;s leadership. The final design gives users a{" "}
-            <mark className="hl">trustworthy way to keep journey maps current</mark>: proactive alerts when content
-            drifts, transparent evidence for every recommendation, and controls that keep people in the loop rather
-            than handing decisions to automation.
-          </p>
         </section>
 
         {/* ───── Takeaways ───── */}

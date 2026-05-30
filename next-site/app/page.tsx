@@ -4,12 +4,14 @@ import AboutV2 from "@/components/AboutV2";
 import ConnectV2 from "@/components/ConnectV2";
 import SiteNavV2 from "@/components/SiteNavV2";
 import RevealOnScroll from "@/components/RevealOnScroll";
+import ScrollRestore from "@/components/ScrollRestore";
 
 export default function Home() {
   return (
     <>
       <SiteNavV2 />
       <main id="main" className="portfolio-v2">
+        <ScrollRestore />
         <HeroV2 />
         <ProjectsV2 />
         {/* ac-scene: Connect is the sticky background layer, About is the

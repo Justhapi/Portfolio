@@ -3,6 +3,7 @@
 import type { CSSProperties, ReactNode } from "react";
 import { useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
+import { saveHomeScroll } from "@/components/ScrollRestore";
 
 /**
  * ProjectsV2 — port of Claude Design Portoflio/work.jsx
@@ -206,9 +207,24 @@ type Project = {
   folder: FolderTheme;
   href: string;
   readTime: string;
+  /** ── /shape decision: project thumbnail peeks out of open folder ──
+   *  When a recruiter hovers a folder card, the open SVG reveals two
+   *  sticky-note rects (the blue + teal `.fo-sticky` shapes). Once
+   *  case-study screenshots exist, the larger of those two stickies
+   *  will be replaced by a small thumbnail image at the same rotation
+   *  and shadow — the folder reveals the WORK, not a colored shape.
+   *  Holding the visual until assets land so an empty image-slot
+   *  doesn't leak into the card (the same reason HoverWord pills are
+   *  gated on imageSrc). When ready, set `thumbnail: "/projects/X.png"`
+   *  and `thumbnailAlt`. Implementation goes in FolderOpen: gate the
+   *  second `<rect>` on `thumbnail`, render an `<image>` element with
+   *  the same transform/clip when present. */
+  thumbnail?: string;
+  thumbnailAlt?: string;
 };
 
 const PROJECTS: Project[] = [
+  /** HIDE FOR NOW DUE TO CURRENTLY IN PROGRESS + NDA
   {
     tag: "inline · Product Design Intern",
     blurb: (
@@ -228,6 +244,7 @@ const PROJECTS: Project[] = [
     href: "/projects/inline",
     readTime: "3 min read",
   },
+  */
   {
     tag: "AI Customer Journey Management Platform · Designer", //need to update name to support NDA
     blurb: (
@@ -451,6 +468,11 @@ export default function ProjectsV2() {
                   href={p.href}
                   className={folderArtClass}
                   aria-label={`${p.tag} — ${p.readTime}`}
+                  /* Record exact home scrollY before navigating away. On
+                     return ScrollRestore picks it up and snaps the page
+                     back to this folder, so a recruiter clicking through
+                     projects keeps their place in the row. */
+                  onClick={saveHomeScroll}
                   onMouseEnter={(e) => {
                     setPos({ x: e.clientX, y: e.clientY });
                     setHoverPill(p.readTime);

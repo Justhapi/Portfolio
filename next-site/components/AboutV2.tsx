@@ -42,15 +42,29 @@ function HoverWord({
   children,
   view,
   href,
+  imageSrc,
+  hint = false,
 }: {
   children: React.ReactNode;
   view: View;
   href?: string;
+  /** When provided, the keyword opens an image pill on hover/focus. When
+   *  undefined, the keyword renders as a plain bold accent (or an
+   *  underlined link if `href` is set) with NO pill behavior — so empty
+   *  placeholders never flash on hover before assets land. */
+  imageSrc?: string;
+  /** When true, the label plays a one-time pulse animation on mount —
+   *  used on the first HoverWord in a section to signal that the
+   *  keyword is interactive (otherwise the dotted underline is too
+   *  subtle for a first-time visitor). */
+  hint?: boolean;
 }) {
   const [on, setOn] = useState(false);
   const pillRef    = useRef<HTMLSpanElement>(null);
   const labelRef   = useRef<HTMLElement>(null);
   const touchTimer = useRef<number | null>(null);
+  // Pill is only wired up when we actually have an image to show.
+  const hasPill = Boolean(imageSrc);
 
   // ── Magnetic tilt (mirrors folder card behaviour) ────────────────────
   /** Direct DOM write — no React re-render on every mousemove frame. */
@@ -129,11 +143,13 @@ function HoverWord({
 
   const handleBlur = () => { setOn(false); resetTilt(); };
 
+  const labelClass = `hw-label${href ? " hw-label--link" : ""}${hint ? " hw-label--hint" : ""}`;
+
   // ── Label — plain span or real link ───────────────────────────────────
   const label = href ? (
     <a
       ref={labelRef as React.RefObject<HTMLAnchorElement>}
-      className="hw-label hw-label--link"
+      className={labelClass}
       href={href}
       target="_blank"
       rel="noopener noreferrer"
@@ -141,9 +157,19 @@ function HoverWord({
       {children}
     </a>
   ) : (
-    <span ref={labelRef as React.RefObject<HTMLSpanElement>} className="hw-label">{children}</span>
+    <span ref={labelRef as React.RefObject<HTMLSpanElement>} className={labelClass}>{children}</span>
   );
 
+  // ── No-pill path: keyword renders as plain styled label only. ─────────
+  // This is the default state until per-view images exist. Recruiters
+  // no longer get an empty image-slot flash on hover; the dotted
+  // underline is also dropped via the `hw--no-pill` modifier so the
+  // affordance doesn't promise an interaction that isn't there.
+  if (!hasPill) {
+    return <span className="hw hw--no-pill">{label}</span>;
+  }
+
+  // ── Pill path: full HoverWord behavior with image pill. ───────────────
   return (
     <span
       className={`hw${on ? " hw--on" : ""}`}
@@ -159,13 +185,7 @@ function HoverWord({
       {/* pill always in DOM; left/top mutated directly for zero-lag tracking */}
       <span ref={pillRef} className="hw-pill" aria-hidden="true">
         <span className="hw-pill-img">
-          <div className="image-slot">
-            {view === "stack"  && "drop Purdue Stack screenshot"}
-            {view === "mentor" && "drop mentoring photo"}
-            {view === "illos"  && "drop illustration"}
-            {view === "food"   && "drop Beli screenshot"}
-            {view === "sketch" && "drop sketchbook photo"}
-          </div>
+          <img src={imageSrc} alt="" />
         </span>
         <Sparkle />
       </span>
@@ -213,7 +233,7 @@ export default function AboutV2() {
           <div className="about-body">
             <p>
               I prototype in code, sketch on{" "}
-              <HoverWord view="sketch">iPad</HoverWord>
+              <HoverWord view="sketch" hint>iPad</HoverWord>
               , and live in Figma. Most recently I co-led a kiosk design system
               that Frogslayer adopted as their internal reference, and I now lead UI at{" "}
               <HoverWord view="stack" href="https://www.purduestack.org">Purdue Stack</HoverWord>.

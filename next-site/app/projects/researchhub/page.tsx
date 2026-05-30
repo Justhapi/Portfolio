@@ -5,10 +5,11 @@ export const metadata = {
   title: "ResearchHub — Kathleen Li",
 };
 
+/* Outcome leads so recruiters see results first. */
 const SECTIONS = [
+  { id: "outcome", label: "Outcome" },
   { id: "overview", label: "Overview" },
   { id: "process", label: "Process" },
-  { id: "outcome", label: "Outcome" },
   { id: "takeaways", label: "Takeaways" },
 ];
 
@@ -24,6 +25,18 @@ export default function ResearchHubCaseStudy() {
       />
 
       <main id="main" className="case-body">
+        {/* ───── Outcome ───── (moved to top: recruiters see outcome first) */}
+        <section id="outcome" className="case-section">
+          <h2>Outcome</h2>
+          <p>
+            The semester&rsquo;s work produced a redesigned ResearchHub,{" "}
+            <mark className="hl">planned to ship in summer 2026</mark> so students and faculty can use it the
+            following semester. The redesign carried one idea through every screen — the platform should help people
+            evaluate <em>fit</em> (a professor&rsquo;s supervision style, lab culture, what the work actually
+            involves), not just logistics like hours and pay.
+          </p>
+        </section>
+
         {/* ───── Overview ───── */}
         <section id="overview" className="case-section">
           <h2>Overview</h2>
@@ -102,18 +115,6 @@ export default function ResearchHubCaseStudy() {
           <p>
             I also contributed front-end React — picking up the framework as I went (new to me, but close to my
             JavaScript background) to help build the platform alongside the design.
-          </p>
-        </section>
-
-        {/* ───── Outcome ───── */}
-        <section id="outcome" className="case-section">
-          <h2>Outcome</h2>
-          <p>
-            The semester&rsquo;s work produced a redesigned ResearchHub,{" "}
-            <mark className="hl">planned to ship in summer 2026</mark> so students and faculty can use it the
-            following semester. The redesign carried one idea through every screen — the platform should help people
-            evaluate <em>fit</em> (a professor&rsquo;s supervision style, lab culture, what the work actually
-            involves), not just logistics like hours and pay.
           </p>
         </section>
 

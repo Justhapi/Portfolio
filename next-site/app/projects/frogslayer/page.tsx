@@ -5,12 +5,17 @@ export const metadata = {
   title: "Kiosk Interface Design Guidelines — Kathleen Li",
 };
 
+/* Section order leads with Results (deliverables + impact) so recruiters
+   see the outcome first. Process sections (Researching → Ideating →
+   Verifying) follow as the supporting story, and Reflections closes
+   with next steps, refinements, and what was learned. */
 const SECTIONS = [
+  { id: "results", label: "Results" },
   { id: "overview", label: "Overview" },
   { id: "researching", label: "Researching" },
   { id: "ideating", label: "Ideating" },
   { id: "verifying", label: "Verifying" },
-  { id: "results", label: "Results" },
+  { id: "reflections", label: "Reflections" },
 ];
 
 export default function FrogslayerCaseStudy() {
@@ -24,20 +29,15 @@ export default function FrogslayerCaseStudy() {
         imageLabel="Frogslayer kiosk · cover image"
       />
 
-      <main className="case-body">
-        {/* ───── Overview ───── */}
-        <section id="overview" className="case-section">
-          <h2>Overview</h2>
-
-          <h3>Problem Scope</h3>
+      <main id="main" className="case-body">
+        {/* ───── Results ───── (deliverables + impact summary up front
+              so a recruiter reads the outcome in the first viewport) */}
+        <section id="results" className="case-section">
+          <h2>Results</h2>
           <p>
-            Touchscreen kiosks are replacing staffed counters across industries on the strength of cost savings. The
-            interfaces, though, <mark className="hl">share no design language</mark> — causing users to approach them
-            with habits from phones and ATMs and find them working like neither. Frogslayer wanted a guideline they
-            could <mark className="hl">apply across future kiosk projects</mark> to close that gap.
+            The project delivered <mark className="hl">design guidelines and a user journey map</mark> that{" "}
+            <mark className="hl">Frogslayer adopted as their internal kiosk reference</mark>.
           </p>
-
-          <h3>Project Results</h3>
           <div className="case-image-row">
             <figure>
               <div className="image-slot">design guidelines deck</div>
@@ -54,6 +54,21 @@ export default function FrogslayerCaseStudy() {
               </figcaption>
             </figure>
           </div>
+        </section>
+
+        {/* ───── Overview ───── (Project Results h3 moved up into the
+              top Results section; Overview now holds Problem Scope +
+              Project Contributions so it reads as scope + role.) */}
+        <section id="overview" className="case-section">
+          <h2>Overview</h2>
+
+          <h3>Problem Scope</h3>
+          <p>
+            Touchscreen kiosks are replacing staffed counters across industries on the strength of cost savings. The
+            interfaces, though, <mark className="hl">share no design language</mark> — causing users to approach them
+            with habits from phones and ATMs and find them working like neither. Frogslayer wanted a guideline they
+            could <mark className="hl">apply across future kiosk projects</mark> to close that gap.
+          </p>
 
           <h3>Project Contributions</h3>
           <p>
@@ -146,9 +161,12 @@ export default function FrogslayerCaseStudy() {
           </p>
         </section>
 
-        {/* ───── Results ───── */}
-        <section id="results" className="case-section">
-          <h2>Results</h2>
+        {/* ───── Reflections ───── (renamed from Results, now at the
+              bottom — top Results section holds deliverables + impact;
+              this section closes with next steps, refinements, and
+              what was learned. The original h3 labels stay intact.) */}
+        <section id="reflections" className="case-section">
+          <h2>Reflections</h2>
 
           <h3>Next steps</h3>
           <p>
