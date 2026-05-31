@@ -61,18 +61,16 @@ export default function ConnectV2() {
         {/* Fewer, larger, slower sparkles — wind-down feel vs hero's energetic scatter */}
         <SparkleField count={7} scale={1.5} slowdown={2.2} lifeScale={1.5} />
       </div>
-      {/* Visually-hidden heading: the .connect-pitch sentence below IS the
-          visible headline of this section, but it's too long to serve as an
-          accessible name for a region landmark. This h2 gives screen-reader
-          users a proper landmark heading ("Connect") matching what they see
-          in the nav, without changing the visual layout. */}
-      <h2 className="visually-hidden">Connect</h2>
       <div className="container">
-        {/* connect-row fills the space above the footer and slides down on scroll */}
+        {/* connect-row fills the space above the footer and slides down on scroll.
+            Heading sits INSIDE the grid as a row-1 element spanning both columns,
+            so it inherits the parallax transform applied to .connect-row by
+            SmoothScroll.tsx (the heading drifts in lockstep with the pitch + links
+            below it, no separate JS registration needed). */}
         <div className="connect-row reveal">
+          <h2 className="connect-head">Connect more over my designs?</h2>
           <div className="connect-pitch">
-            I&rsquo;m open to <em>summer 2026 internships</em> in UI, interaction, and design-engineering — and to chatting with anyone who likes
-            drawing problems before solving them.
+            I am available for <em>internships in Interaction Design, Product Design, and Design Engineering!</em>
           </div>
           <div className="connect-links">
             {/* Email row — link + dedicated copy-to-clipboard button */}

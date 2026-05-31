@@ -712,18 +712,46 @@ body.on-paper .nav-pill {
   min-height: 760px;
 }
 
-/* center polaroid — shifted down so the title has breathing room above */
+/* Center polaroid — vertical position tracks viewport width so the
+   polaroid keeps a consistent gap from the wordmark + "FROM ONE SCENE…"
+   subtitle on wider browsers. The wordmark width is `min(78vw, 880px)`
+   with a ~6.69:1 SVG aspect ratio, so its rendered height grows with
+   viewport width and pushes the subtitle line lower. A fixed `top: 58%`
+   leaves the polaroid behind, so its top edge starts overlapping the
+   subtitle on common laptop viewports (e.g. 1500×900). The clamp below
+   tracks wordmark growth via `420px + 12vw` and caps at 70% so tall
+   viewports keep generous spacing without dropping the polaroid off
+   the stage. */
 .hero-polaroid {
   position: absolute;
-  top: 58%;
+  top: clamp(58%, calc(420px + 12vw), 70%);
   left: 50%;
   transform: translate(-50%, -50%) rotate(-2deg);
   width: 360px;
-  background: #FBF7EE;
+  /* Subtle paper texture — a faint top-down gradient on the cream
+     surface suggests light catching the cardstock at the top edge.
+     Layered over the base cream colour with a near-imperceptible
+     1.5% lift at the top fading to 0% by 30%. */
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0) 30%),
+    #FBF7EE;
   padding: 18px 18px 60px;
+  /* Rounded frame — 16px on the outer cardstock for soft, modern
+     corners without losing the polaroid character. */
+  border-radius: 16px;
+  /* Four-layer shadow for high-fidelity lift:
+     1. Inset top — paper edge catching ambient light (1px hairline)
+     2. Inset bottom — paper edge in shadow at the bottom
+     3. Tight contact shadow — grounds the polaroid on the surface
+     4. Soft ambient cast — depth from the hero stage backdrop
+     The shadow stack reads as a physical print sitting on a dark
+     surface, not as a flat rectangle with a generic drop shadow. */
   box-shadow:
-    0 30px 60px -20px rgba(0,0,0,0.55),
-    0 8px 18px -8px rgba(0,0,0,0.4);
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    inset 0 -1px 0 rgba(26, 23, 20, 0.06),
+    0 2px 4px -1px rgba(0, 0, 0, 0.35),
+    0 12px 24px -8px rgba(0, 0, 0, 0.5),
+    0 30px 60px -20px rgba(0, 0, 0, 0.55);
   z-index: 10;
   /* 980ms = all letters landed (720ms) + star burst well underway, before it closes */
   animation: polaroidPlaceIn 380ms var(--ease-out-quart) 980ms backwards;
@@ -744,6 +772,18 @@ body.on-paper .nav-pill {
   aspect-ratio: 1 / 1;
   background: #2A302F;
   overflow: hidden;
+  /* Inner photo gets a smaller radius than the outer frame (8px vs
+     16px) — proportional softening so the photo's corners read as
+     intentionally rounded, not cut from the frame. */
+  border-radius: 8px;
+  /* Inset shadow stack — the photo reads as RECESSED into the
+     polaroid's cream cardstock rather than printed flush on top.
+     Top inset is the darker shadow (light coming from above casts
+     a shadow from the frame onto the photo well); the 1px hairline
+     softens the join between frame and photo edge. */
+  box-shadow:
+    inset 0 2px 6px rgba(0, 0, 0, 0.4),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.25);
 }
 .photo-swap {
   cursor: pointer;
@@ -1002,15 +1042,27 @@ em.it { font-style: italic; }
   to { stroke-dashoffset: 0; }
 }
 
-/* sticker base */
+/* sticker base — high-fidelity adhesive sticker treatment:
+   - 10px radius (was 6px) reads as a modern die-cut sticker rather
+     than a flat coloured rectangle
+   - Inset top-edge highlight (rgba(255,255,255,0.18) over the sticker
+     colour) suggests the sticker's surface catching ambient light
+   - Inset bottom-edge shadow grounds the sticker against the surface
+     it sits on
+   - 3-layer drop shadow: tight contact (3px) + mid lift (10px) +
+     soft ambient (28px) creates the "lifted off the page" depth
+     that signals a real sticker rather than printed colour. */
 .sticker {
   position: absolute;
   z-index: 12;
   padding: 14px 18px;
-  border-radius: 6px;
+  border-radius: 10px;
   box-shadow:
-    0 14px 30px -12px rgba(0,0,0,0.45),
-    0 4px 8px -2px rgba(0,0,0,0.3);
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.12),
+    0 2px 4px -1px rgba(0, 0, 0, 0.35),
+    0 8px 16px -6px rgba(0, 0, 0, 0.4),
+    0 22px 38px -16px rgba(0, 0, 0, 0.5);
   transform-origin: center center;
 }
 
@@ -1068,7 +1120,11 @@ em.it { font-style: italic; }
 /* keep the old class invisible if anything still references it */
 .sticker.name-yellow .spark-deco { display: none; }
 
-/* 李曦 oval (just under the Kathleen Li sticker) */
+/* 李曦 oval (just under the Kathleen Li sticker) — same high-fidelity
+   sticker treatment as .sticker but with a slightly smaller radius
+   (8px vs 10px) because this chip's smaller footprint reads cleaner
+   with a tighter curve. Shadow stack matches the .sticker pattern:
+   inset light/dark edges + 3-layer drop shadow. */
 .chip-zh {
   position: absolute;
   overflow: hidden;
@@ -1084,8 +1140,11 @@ em.it { font-style: italic; }
   line-height: 1;
   z-index: 13;
   box-shadow:
-    0 10px 20px -8px rgba(0,0,0,0.5),
-    0 2px 4px -1px rgba(0,0,0,0.3);
+    inset 0 1px 0 rgba(255, 255, 255, 0.24),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.14),
+    0 2px 4px -1px rgba(0, 0, 0, 0.35),
+    0 6px 12px -4px rgba(0, 0, 0, 0.42),
+    0 16px 28px -12px rgba(0, 0, 0, 0.5);
   animation: chipZhIn 260ms var(--ease-out-quart) 1280ms backwards;
 }
 .chip-zh .chip-zh-text {
@@ -1143,7 +1202,11 @@ em.it { font-style: italic; }
   background: rgba(246, 236, 216, 0.35);
   font-size: 0;
 }
-/* Interlocked circles doodle perched above the green sticky's top-right */
+/* Interlocked circles doodle perched above the green sticky's top-right.
+   Two-layer drop-shadow (tight contact + soft ambient) matches the
+   shadow language of the stickers + polaroid below, so the doodle
+   reads as the same physical layer of stickers stuck to the same
+   surface rather than a flat decorative graphic. */
 .sticker.designing-green .design-doodle {
   position: absolute;
   top: -28px;
@@ -1152,7 +1215,9 @@ em.it { font-style: italic; }
   height: 50px;
   color: var(--chip-green-ink);
   transform: rotate(-12deg);
-  filter: drop-shadow(0 3px 4px rgba(0,0,0,0.35));
+  filter:
+    drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4))
+    drop-shadow(0 6px 10px rgba(0, 0, 0, 0.3));
   pointer-events: none;
 }
 .sticker.designing-green .sticker-hatch {
@@ -2333,8 +2398,15 @@ em.it { font-style: italic; }
   /* Takes all vertical space above the footer */
   flex: 1;
   display: grid;
+  /* 2-column × 2-row grid: row 1 holds the heading (spanning both cols),
+     row 2 holds the pitch (left) + links (right). The grid IS the
+     "1×2 grid with heading on top" the layout calls for, and putting
+     the heading inside .connect-row means it inherits the parallax
+     transform set on this element automatically. */
   grid-template-columns: minmax(0, 1fr) minmax(0, 480px);
-  gap: 80px;
+  grid-template-rows: auto 1fr;
+  column-gap: 80px;
+  row-gap: 40px;
   align-items: center;
   /* start = content anchored to the top of the row, hidden under About
      on first reveal, drifting into view via parallax as About slides off */
@@ -2352,12 +2424,28 @@ em.it { font-style: italic; }
 }
 .connect-row.reveal.in { opacity: 1; }
 
+/* Heading entrance — fires before the pitch so the eye lands on the
+   headline first as the section reveals. Inside connect-row so the
+   parallax transform on the parent composes naturally with this
+   element's local translateY entrance. */
+.connect-head {
+  opacity: 0;
+  transform: translateY(22px);
+  transition:
+    opacity   580ms var(--ease-out-quart),
+    transform 580ms var(--ease-out-quart);
+}
+.connect-row.in .connect-head {
+  opacity: 1;
+  transform: none;
+}
+
 .connect-pitch {
   opacity: 0;
   transform: translateY(22px);
   transition:
-    opacity   580ms var(--ease-out-quart)  80ms,
-    transform 580ms var(--ease-out-quart)  80ms;
+    opacity   580ms var(--ease-out-quart)  180ms,
+    transform 580ms var(--ease-out-quart)  180ms;
 }
 .connect-row.in .connect-pitch {
   opacity: 1;
@@ -2394,18 +2482,53 @@ em.it { font-style: italic; }
   }
 }
 
+/* Connect heading — large centered display text sitting in row 1 of
+   .connect-row, spanning both columns above the pitch + links.
+   Switched from CookieRun to K2D Display (var(--f-display)) at the
+   same weight + size scale as .section-head .h elsewhere on the site
+   (Projects, About, case titles). Connect shares the dark hero-bg
+   with the Hero section, and the Hero stage uses K2D for all real
+   text (the wordmark is a custom SVG; tiny labels use mono); CookieRun
+   lives on cream surfaces only (About body, project blurbs, case
+   paragraphs). Matching K2D here keeps the dark-stage voice cohesive
+   across Hero ↔ Connect and the section-head pattern consistent
+   across every page section. */
+.connect-head {
+  /* Span row 1 across both grid columns */
+  grid-column: 1 / -1;
+  font-family: var(--f-display);
+  font-weight: 800;
+  font-size: clamp(38px, 4.8vw, 64px);
+  letter-spacing: -0.02em;
+  line-height: 0.95;
+  text-align: center;
+  color: var(--hero-fg);
+  margin: 0;
+}
+
 .connect-pitch {
-  font-family: var(--f-cookie);
+  /* K2D body voice on dark — matches the Hero polaroid caption-line
+     and the designing-green sticker, which both use K2D weight 700
+     with italic emphasis. Switched from CookieRun (warm cream-bg
+     body) to keep Connect's voice in the same family as the rest of
+     the dark stage. */
+  font-family: var(--f-sans);
   font-weight: 700;
-  font-size: clamp(30px, 3.6vw, 46px);
+  font-size: clamp(26px, 3.2vw, 42px);
   line-height: 1.2;
-  letter-spacing: -0.005em;
+  letter-spacing: -0.015em;
+  color: var(--hero-fg);
   /* No max-width cap — the pitch fills its full grid column so the
      text box runs all the way to the gap before the links list. */
 }
 .connect-pitch em {
+  /* True italic, not synthesized — K2D is loaded with both normal and
+     italic styles via next/font in layout.tsx, so `font-style: italic`
+     pulls the genuine italic variant. Same weight as the surrounding
+     text; the slant alone differentiates the emphasis. Echoes the
+     Hero polaroid's "moments worth *lingering* on" pattern. */
   font-style: italic;
-  color: var(--accent-soft);
+  color: inherit;
 }
 .connect-links {
   display: flex;
