@@ -152,7 +152,7 @@ export default function HeroV2() {
           <div className="caption-block">
             <div className="caption-meta">Last Updated · 05/07/26</div>
             <div className="caption-line">
-              I design interfaces with moments worth <em className="it">lingering</em> on
+              I design <strong>solutions</strong> with moments worth <strong>lingering</strong> on
             </div>
           </div>
         </div>
@@ -182,6 +182,36 @@ export default function HeroV2() {
           <div className="name-en">
             <em className="it">Kathleen</em>&nbsp;Li
           </div>
+          {/* 李曦 chip — NESTED INSIDE the Kathleen sticker so the two
+              elements share a single coordinate space. Any transform
+              applied to .sticker.name-yellow (parallax, entrance,
+              hover) automatically applies to the chip as well, which
+              means the chip cannot drift from the Kathleen sticker
+              under any circumstances — they literally move as one
+              element subtree. The chip's CSS uses absolute positioning
+              relative to its new containing block (the Kathleen
+              sticker), and has been removed from the parallax target
+              registry to avoid double-transform. */}
+          <div className="chip-zh" role="img" aria-label="Li Xi (李曦) — my Chinese name">
+            <svg
+              className="sticker-hatch hatch-tl"
+              viewBox="0 0 64 64"
+              aria-hidden="true"
+              preserveAspectRatio="none"
+            >
+              <g clipPath="url(#hatch-clip-zh)">
+                <line x1="-12" y1="-8" x2="72" y2="64" stroke="currentColor" strokeWidth="5" />
+                <line x1="-20" y1="8"  x2="64" y2="80" stroke="currentColor" strokeWidth="5" />
+                <line x1="-28" y1="24" x2="56" y2="96" stroke="currentColor" strokeWidth="5" />
+              </g>
+              <defs>
+                <clipPath id="hatch-clip-zh">
+                  <rect width="64" height="64" rx="6" />
+                </clipPath>
+              </defs>
+            </svg>
+            <span className="chip-zh-text">李曦</span>
+          </div>
           {/* Elaborate 4-pointed sparkle with curled arms */}
           <svg
             className="name-burst"
@@ -195,28 +225,6 @@ export default function HeroV2() {
             <path d="M134.924 258.15C142.477 265.711 63.089 364.003 30.963 379.123C-1.163 394.243 51.214 331.698 72.547 307.295C92.958 283.947 127.37 250.588 134.924 258.15Z" />
             <path d="M236.769 258.15C229.215 265.711 308.604 364.003 340.73 379.123C372.856 394.243 320.478 331.698 299.145 307.295C278.734 283.947 244.322 250.588 236.769 258.15Z" />
           </svg>
-        </div>
-
-        {/* 李曦 — small orange square chip (just under Kathleen Li) */}
-        <div className="chip-zh" role="img" aria-label="Li Xi (李曦) — my Chinese name">
-          <svg
-            className="sticker-hatch hatch-tl"
-            viewBox="0 0 64 64"
-            aria-hidden="true"
-            preserveAspectRatio="none"
-          >
-            <g clipPath="url(#hatch-clip-zh)">
-              <line x1="-12" y1="-8" x2="72" y2="64" stroke="currentColor" strokeWidth="5" />
-              <line x1="-20" y1="8"  x2="64" y2="80" stroke="currentColor" strokeWidth="5" />
-              <line x1="-28" y1="24" x2="56" y2="96" stroke="currentColor" strokeWidth="5" />
-            </g>
-            <defs>
-              <clipPath id="hatch-clip-zh">
-                <rect width="64" height="64" rx="6" />
-              </clipPath>
-            </defs>
-          </svg>
-          <span className="chip-zh-text">李曦</span>
         </div>
 
         {/* "Currently designing at" sticker (bottom-left) — muted green */}
@@ -260,25 +268,10 @@ export default function HeroV2() {
             />
           </svg>
           <div className="d-text">
-            Currently a Product Design intern — drafting mostly from cafes!
+            Currently a Product Design intern — drafting from cafes!
           </div>
-          <ul>
-            <li>·</li>
-            <li>·</li>
-            <li>·</li>
-          </ul>
         </div>
 
-        <a
-          href="#work"
-          className="hero-scroll"
-          onClick={(e) => {
-            e.preventDefault();
-            document.getElementById("work")?.scrollIntoView({ behavior: "smooth" });
-          }}
-        >
-          scroll to projects <span className="down" />
-        </a>
       </div>
 
       {/* string positions are hero-specific — kept inline so they live with the JSX */}

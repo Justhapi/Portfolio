@@ -66,9 +66,16 @@ const PARALLAX_TARGETS: ParallaxConfig[] = [
   // ── Hero elements ────────────────────────────────────────────────────
   // centredX: true preserves the translateX(-50%) CSS centering.
   { selector: ".ribbon-artist",          speed: -0.13, centredX: true },
+  // Kathleen Li sticker carries the chip 李曦 as its DOM child, so
+  // the chip inherits Kathleen's parallax transform automatically.
+  // Don't register the chip separately or it'll get double-transformed.
   { selector: ".sticker.name-yellow",    speed: -0.18, baseRotate: "8deg" },
-  { selector: ".chip-zh",               speed: -0.14, baseRotate: "-6deg" },
-  { selector: ".sticker.designing-green", speed: -0.22, baseRotate: "-5deg" },
+  // designing-green removed from parallax — its -0.22 speed was the
+  // most aggressive on the page and caused the sticker to drift
+  // significantly as the user scrolled, reading as "the status
+  // sticker is randomly minimising" because its position kept
+  // shifting relative to the surrounding stickers + polaroid. Now
+  // the sticker is locked at its natural CSS position.
   { selector: ".hero-polaroid",          speed: -0.12, centred: true },
   { selector: ".case-hero-image",        speed: -0.18 },
 
@@ -182,9 +189,11 @@ export default function SmoothScroll() {
         const delta = (scroll - scrollBase) * config.speed;
 
         if (config.centred) {
-          // .hero-polaroid uses translate(-50%,-50%) for centering —
-          // compose parallax offset as additional translateY
-          el.style.transform = `translate(-50%, calc(-50% + ${delta.toFixed(2)}px)) rotate(-2deg)`;
+          // .hero-polaroid is positioned by its TOP EDGE (translate(-50%, 0))
+          // so the gap from the "FROM ONE SCENE…" subtitle stays consistent
+          // across viewport widths. Parallax delta composes as the Y
+          // translation only — no -50% Y centering to preserve.
+          el.style.transform = `translate(-50%, ${delta.toFixed(2)}px) rotate(-2deg)`;
         } else if (config.centredX) {
           // Element uses translateX(-50%) horizontal centering only —
           // preserve it while adding the parallax Y offset.

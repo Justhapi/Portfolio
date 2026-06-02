@@ -708,8 +708,12 @@ body.on-paper .nav-pill {
 .hero-stage {
   position: relative;
   width: 100%;
-  height: 100vh;
-  min-height: 760px;
+  /* 92vh instead of 100vh so the cream Projects section bg peeks
+     below the dark hero on first paint — replaces the explicit
+     "scroll to projects" cue with a visual hint that there's more
+     content below the fold. */
+  height: 92vh;
+  min-height: 700px;
 }
 
 /* Center polaroid — vertical position tracks viewport width so the
@@ -724,18 +728,36 @@ body.on-paper .nav-pill {
    the stage. */
 .hero-polaroid {
   position: absolute;
-  top: clamp(58%, calc(420px + 12vw), 70%);
+  /* Position by TOP EDGE so the gap from the "FROM ONE SCENE…"
+     subtitle stays consistent across every viewport width. The
+     subtitle's vertical position depends on the wordmark's rendered
+     height, which is `min(78vw, 880px) / 6.69` (SVG aspect ratio).
+     Subtitle bottom Y ≈ 92px (ribbon top) + wordmark height + 32px
+     (sub margin + line). Add a constant 56px gap and that's the
+     polaroid's top edge. Only this `top` value responds to viewport
+     width — the polaroid's own size is fixed, so its scale doesn't
+     change with the browser. The location adapts; the artwork does not. */
+  top: calc(180px + min(12vw, 132px));
   left: 50%;
-  transform: translate(-50%, -50%) rotate(-2deg);
-  width: 360px;
+  /* translateY drops to 0 because we position by the polaroid's
+     top edge, not its centre. SmoothScroll.tsx's `centred: true`
+     parallax handling has been updated to match. */
+  transform: translate(-50%, 0) rotate(-2deg);
+  /* Fixed width — polaroid keeps its size on every viewport per the
+     spec ("reactive in location, not size"). 320px lands the frame
+     at a comfortable read on desktop while still fitting cleanly on
+     a 360px-wide phone. */
+  width: 320px;
   /* Subtle paper texture — a faint top-down gradient on the cream
-     surface suggests light catching the cardstock at the top edge.
-     Layered over the base cream colour with a near-imperceptible
-     1.5% lift at the top fading to 0% by 30%. */
+     surface suggests light catching the cardstock at the top edge. */
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0) 30%),
     #FBF7EE;
-  padding: 18px 18px 60px;
+  /* Padding: 10px top/sides keeps the photo well dominant; 50px
+     bottom gives the caption box a taller container so the meta
+     line and the two-line caption breathe instead of crowding the
+     bottom edge. */
+  padding: 10px 10px 50px;
   /* Rounded frame — 16px on the outer cardstock for soft, modern
      corners without losing the polaroid character. */
   border-radius: 16px;
@@ -748,7 +770,7 @@ body.on-paper .nav-pill {
      surface, not as a flat rectangle with a generic drop shadow. */
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.7),
-    inset 0 -1px 0 rgba(26, 23, 20, 0.06),
+    inset 0 -1px 0 rgb(var(--fg-rgb) / 0.06),
     0 2px 4px -1px rgba(0, 0, 0, 0.35),
     0 12px 24px -8px rgba(0, 0, 0, 0.5),
     0 30px 60px -20px rgba(0, 0, 0, 0.55);
@@ -759,11 +781,13 @@ body.on-paper .nav-pill {
 @keyframes polaroidPlaceIn {
   from {
     opacity: 0;
-    transform: translate(-50%, -42%) rotate(-9deg) scale(0.86);
+    /* enters from slightly above + tilted, mirrors the previous 8%
+       vertical drift but in the new top-edge coordinate space */
+    transform: translate(-50%, -8%) rotate(-9deg) scale(0.86);
   }
   to {
     opacity: 1;
-    transform: translate(-50%, -50%) rotate(-2deg) scale(1);
+    transform: translate(-50%, 0) rotate(-2deg) scale(1);
   }
 }
 .hero-polaroid .photo {
@@ -911,7 +935,9 @@ body.on-paper .nav-pill {
     repeating-linear-gradient(45deg, transparent 0 14px, rgba(255,255,255,0.025) 14px 15px);
 }
 .hero-polaroid .caption-block {
-  margin-top: 18px;
+  /* Fixed values — polaroid no longer scales, so all internal text
+     dimensions are constant. */
+  margin-top: 12px;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -920,15 +946,21 @@ body.on-paper .nav-pill {
 .hero-polaroid .caption-meta {
   font-family: var(--f-mono);
   font-weight: 500;
-  font-size: 10px;
-  letter-spacing: 0.22em;
+  font-size: 9px;
+  /* Letter-spacing trimmed from 0.22em → 0.18em so
+     "LAST UPDATED · 05/07/26" sits on a single line at the 320px
+     polaroid width without losing the tracked uppercase feel. */
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   color: #7A6F66;
 }
 .hero-polaroid .caption-line {
   font-family: var(--f-display);
   font-weight: 700;
-  font-size: 18px;
+  /* 16px lets "I design interfaces with moments worth lingering on"
+     wrap to exactly 2 lines at the 320px polaroid's content width —
+     produces the compact, balanced bottom block from image 2. */
+  font-size: 16px;
   line-height: 1.3;
   letter-spacing: -0.005em;
   color: #2C2520;
@@ -1080,10 +1112,21 @@ em.it { font-style: italic; }
 .sticker-hatch.hatch-bl { bottom: 4px; left: 4px;  width: 38%; height: 56%; }
 .sticker-hatch.hatch-br { bottom: 4px; right: 4px; width: 38%; height: 56%; }
 
-/* Kathleen Li sticker (right side, level with polaroid top) — olive yellow */
+/* Kathleen Li sticker — anchored 200px to the right of viewport
+   centre instead of `right: 9%` so the sticker stays a constant
+   distance from the polaroid (which is 320px wide and centred) on
+   every viewport width. The old percentage value drifted far from
+   the polaroid on wide monitors, leaving a huge dead gap. */
 .sticker.name-yellow {
-  top: 38%;
-  right: 9%;
+  /* Vertical position anchored to the polaroid's top edge so the
+     sticker stays in a stable visual relationship with the polaroid
+     across every viewport. The polaroid top is `calc(180px +
+     min(12vw, 132px))`; subtracting 30px puts the Kathleen Li
+     sticker just ABOVE the polaroid top so it never drifts down
+     into the photo well as the viewport changes height. */
+  top: calc(150px + min(12vw, 132px));
+  left: calc(50% + 200px);
+  right: auto;
   transform: rotate(8deg);
   background: var(--chip-yellow);
   color: var(--chip-yellow-ink);
@@ -1124,12 +1167,25 @@ em.it { font-style: italic; }
    sticker treatment as .sticker but with a slightly smaller radius
    (8px vs 10px) because this chip's smaller footprint reads cleaner
    with a tighter curve. Shadow stack matches the .sticker pattern:
-   inset light/dark edges + 3-layer drop shadow. */
+   inset light/dark edges + 3-layer drop shadow.
+   Position: anchored to viewport centre + 215px so it stays adjacent
+   to the Kathleen Li sticker above it on every viewport width. */
 .chip-zh {
   position: absolute;
   overflow: hidden;
-  top: calc(38% + 96px);
-  right: 14%;
+  /* Positioned relative to .sticker.name-yellow (its new parent in
+     the DOM). The chip is now a CHILD of the Kathleen sticker, so
+     any transform on the parent (parallax, entrance, etc.) applies
+     to the chip automatically — they share one coordinate space
+     and physically cannot drift apart.
+     - top: 50px places the chip below Kathleen's name text
+     - left: 60% places the chip off-centered to the right
+     - The chip's own rotate(-6deg) composes on top of Kathleen's
+       rotate(8deg) so the chip ends up tilted ~2deg in absolute
+       terms — a deliberate sticker-stack look. */
+  top: 50px;
+  left: 60%;
+  right: auto;
   transform: rotate(-6deg);
   background: #E8A765;
   color: #FBF7EE;
@@ -1162,10 +1218,24 @@ em.it { font-style: italic; }
   to   { opacity: 1; transform: rotate(-6deg) scale(1); }
 }
 
-/* Currently designing — green sticky (bottom-left) */
+/* Currently designing — green sticky. Anchored 200px to the LEFT of
+   viewport centre (via `right: calc(50% + 200px)`) so it sits a
+   constant distance from the polaroid's left edge instead of
+   drifting toward the far viewport edge on wide monitors. */
 .sticker.designing-green {
-  bottom: 14%;
-  left: 7%;
+  /* Anchored ~90px below the polaroid's bottom edge so the status
+     sticker reads as clearly LOWER than the polaroid on every
+     viewport. Polaroid bottom is at `calc(614px + min(12vw, 132px))`
+     (top 180 + frame height ~434); adding 86px gives a comfortable
+     visual gap that matches the "image 2" reference where the
+     sticker sits well below the polaroid rather than overlapping
+     its bottom edge. The hero's min-height has been increased to
+     1000px so this lower position stays within the visible hero
+     stage on every viewport. */
+  top: calc(700px + min(12vw, 132px));
+  bottom: auto;
+  right: calc(50% + 200px);
+  left: auto;
   transform: rotate(-5deg);
   background: var(--chip-green);
   color: var(--chip-green-ink);
@@ -1174,8 +1244,13 @@ em.it { font-style: italic; }
   animation: stickerGreenIn 320ms var(--ease-out-quart) 1420ms backwards;
 }
 @keyframes stickerGreenIn {
-  from { opacity: 0; transform: translate(-40px, 24px) rotate(-22deg); }
-  to   { opacity: 1; transform: rotate(-5deg); }
+  /* Simplified — sticker holds its final -5deg rotation throughout
+     entrance and just fades in with a small upward slide. Previous
+     keyframe rotated from -22deg, which on the way to -5deg passed
+     through angles that visually compressed the sticker (looked
+     like it was minimising). */
+  from { opacity: 0; transform: translateY(12px) rotate(-5deg); }
+  to   { opacity: 1; transform: translateY(0)    rotate(-5deg); }
 }
 .sticker.designing-green .d-text {
   font-family: var(--f-serif);
@@ -3596,12 +3671,29 @@ em.it { font-style: italic; }
     gap: 48px;
   }
   .hero-stage { min-height: 720px; }
-  .hero-polaroid { width: 280px; }
+  /* .hero-polaroid width is now driven by the fluid clamp() on the
+     base rule — no breakpoint override needed. */
   .ribbon-artist { top: 64px; width: min(86vw, 640px); }
-  .sticker.name-yellow { right: 4%; top: 32%; }
-  .sticker.designing-green { left: 4%; bottom: 10%; width: 220px; }
+  /* Reset the centre-anchored desktop positions; on mobile the
+     viewport is narrow enough that percentage-based anchoring to
+     the viewport edge reads more natural. */
+  .sticker.name-yellow { left: auto; right: 4%; top: 32%; }
+  /* Critical: explicitly reset `top: auto` because the desktop rule
+     now uses `top: calc(610px + …)`. Without this reset, the mobile
+     rule sets `bottom: 10%` while `top` is still inherited from
+     desktop — and when both top AND bottom are declared on an
+     absolutely-positioned element with a fixed width, the browser
+     stretches/compresses its height to fit the gap between them.
+     That was causing the green sticker to randomly minimise as the
+     viewport crossed certain widths where the calc'd top + 10%
+     bottom didn't leave enough room for the content's natural
+     height. */
+  .sticker.designing-green { right: auto; left: 4%; top: auto; bottom: 10%; width: 220px; }
   .hero-anno { display: none; }
-  .chip-zh { right: 8%; top: calc(32% + 80px); }
+  /* Chip is now a child of .sticker.name-yellow, so its position is
+     relative to the Kathleen sticker, not the hero stage. The base
+     rule's `top: 50px; left: 60%` works on mobile too — no override
+     needed. */
 
   .learn-canvas { height: 920px; }
   /* Same overhang reason as .folder's row-gap: a card's artwork bleeds
@@ -3621,7 +3713,8 @@ em.it { font-style: italic; }
 }
 
 @media (max-width: 640px) {
-  .hero-polaroid { width: 230px; padding: 12px 12px 50px; }
+  /* .hero-polaroid width + padding are now fluid via clamp() on the
+     base rule — no breakpoint override needed. */
   .ribbon-artist { top: 48px; width: min(92vw, 480px); }
   .nav-mark { font-size: 18px; }
   /* Keep mark-left / toggle-right layout — don't collapse to single centered column */
