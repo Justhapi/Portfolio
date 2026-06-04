@@ -230,8 +230,8 @@ const PROJECTS: Project[] = [
     blurb: (
       <>
         I<strong> researched and analyzed competitors</strong> apps to act as
-        a advisor for an event organization app to{" "}
-        <strong>successfully stand out in the market</strong>
+        a <strong>advisor for an event organization app's market success{" "}</strong>
+        
       </>
     ),
     meta: ["NDA", "Product Design", "Competitor Research", "2026"],
@@ -250,7 +250,7 @@ const PROJECTS: Project[] = [
     blurb: (
       <>
         I <strong>led concept ideation and exploration of an AI Journey Map Maintenance Agent</strong>,{" "}
-        to ensure its{" "}
+        to ensure{" "}
         <strong> user trust and usage</strong>
       </>
     ),
@@ -270,7 +270,7 @@ const PROJECTS: Project[] = [
     tag: "Purdue Stack · Design Engineer",
     blurb: (
       <>
-        I <strong> refined the design system's UI and conducted user research to </strong> for feature implementations{" "}
+        I <strong> refined the design system's UI and conducted user research </strong> for feature implementations{" "}
         relevant to the platform users{" "}
       </>
     ),
@@ -286,9 +286,8 @@ const PROJECTS: Project[] = [
     tag: "Frogslayer · Co-Lead Designer",
     blurb: (
       <>
-        I<strong> co-led the team and ran the usability testing</strong>,{" "}
-        turning user insights into a kiosk guideline{" "}
-        <strong>Frogslayer adopted as their reference</strong>
+        I<strong> co-led the team in research and usability testing</strong>,{" "}
+        turning <strong>research and user insights into kiosk interface guidelines{" "}</strong>
       </>
     ),
     meta: ["UI", "Interaction Design", "Usability Testing", "2025"],

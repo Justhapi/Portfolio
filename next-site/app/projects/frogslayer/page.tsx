@@ -35,8 +35,8 @@ export default function FrogslayerCaseStudy() {
         <section id="results" className="case-section">
           <h2>Results</h2>
           <p>
-            The project delivered <mark className="hl">design guidelines and a user journey map</mark> that{" "}
-            <mark className="hl">Frogslayer adopted as their internal kiosk reference</mark>.
+            The project delivered <mark className="hl">design guidelines, usability test user flow, and a user journey map</mark> that{" "}
+            Frogslayer also adopted as an <mark className="hl">internal references for future continuation of guidelines</mark>.
           </p>
           <div className="case-image-row">
             <figure>
@@ -64,18 +64,21 @@ export default function FrogslayerCaseStudy() {
 
           <h3>Problem Scope</h3>
           <p>
-            Touchscreen kiosks are replacing staffed counters across industries on the strength of cost savings. The
-            interfaces, though, <mark className="hl">share no design language</mark> — causing users to approach them
-            with habits from phones and ATMs and find them working like neither. Frogslayer wanted a guideline they
-            could <mark className="hl">apply across future kiosk projects</mark> to close that gap.
+            Due to cost effeciency, <mark className="hl">touchscreen kiosks are replacing staff</mark> across industries. However,
+            interface designs <mark className="hl">share no design consistency</mark>, causing <mark className="hl">user frustation from 
+            internal and external factors.</mark>
+            <br></br>
+            <br></br>
+            Frogslayer wants to develope a set of guidelines that could <mark className="hl">apply across future kiosk projects</mark> to resolve that gap.
           </p>
-
           <h3>Project Contributions</h3>
           <p>
             During the project, I was the team&rsquo;s <mark className="hl">primary point of contact</mark> with
             Frogslayer&rsquo;s product team and <mark className="hl">co-led our internal planning</mark> — defining
-            the order of work so we kept momentum throughout the spring semester. Inside the design work, I assisted
-            in building the base low-fi user flow, constructed the usability testing prototypes, and iterated on the
+            the order of work to maintain progress throughout the fall semester. 
+            <br></br>
+            <br></br>
+            Regarding design, I assisted in researching the current state of kiosk design, building the base low-fi user flow, constructed the usability testing prototypes, and iterated on the
             prototypes to address user insights.
           </p>
         </section>
@@ -84,14 +87,16 @@ export default function FrogslayerCaseStudy() {
         <section id="researching" className="case-section">
           <h2>Researching</h2>
           <p>
-            Kiosk research is a wide field. Rather than chase every direction, we ran a
+            Understanding kiosk design is a very general demand. Rather than chase every direction, we ran a
             <mark className="hl"> content audit on Frogslayer&rsquo;s existing prototype</mark> to anchor on the
-            questions they actually needed answered. That audit pointed us toward two under-explored areas:
+            questions they desire further studies on. That audit pointed us toward two under-explored areas:
             <strong> loyalty programs</strong> and <strong>UI ergonomics</strong>.
           </p>
           <p>
-            We built a research base around four questions: what makes up a kiosk, why a kiosk is preferable to other
-            technologies, how companies design them today, and how users feel about them. Methods spanned secondary
+            We built our knowledge of foundation around four questions: what makes up a kiosk, why a kiosk is preferable to other
+            technologies, how companies design them today, and how users feel about them. 
+            <br></br><br></br>
+            Methods spanned secondary
             research, competitive analysis, field observation, and user interviews to address the questions.
           </p>
           <div className="case-image-grid">

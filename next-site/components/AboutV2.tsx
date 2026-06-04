@@ -224,35 +224,28 @@ export default function AboutV2() {
         <div className="about-prose reveal">
           {/* Stage 1 — heading arrives first */}
           <h3 className="lead">
-            Purdue UX undergrad with a{" "}
-            <em className="de">design-engineering</em>{" "}
-            minor.
+            A designer who avoids being "the <em className="de">architect</em> in a <em className="de">room of engineers</em>"
           </h3>
 
           {/* Stage 2 — body follows 300 ms after the heading starts */}
           <div className="about-body">
             <p>
-              I prototype in code, sketch on{" "}
-              <HoverWord view="sketch" hint>iPad</HoverWord>
-              , and live in Figma. Most recently I co-led a kiosk design system
-              that Frogslayer adopted as their internal reference, and I now lead UI at{" "}
-              <HoverWord view="stack" href="https://www.purduestack.org">Purdue Stack</HoverWord>.
+              Once I realized I can keep{" "} designing as an
+              <HoverWord view="illos"> artist</HoverWord>
+              {" "}<em className="it">while</em> solving real problems for
+              real people as a UX designer, I decided to jump into the field.
             </p>
-
             <p>
-              I joined UX once I realized I could keep{" "}
-              <HoverWord view="illos">drawing, painting, and animating</HoverWord>
-              {" "}<em className="it">and</em> solve real problems for
-              real people. I&rsquo;m also a mentor at{" "}
+              To ensure my designing method and experiences are applicable to real world
+               solutions in interdisciplinary groups, I am also pursuing a
+               Computer Science minor and contributing to Purdue Stack as one of the UI Designers.
+            </p>
+            <p>
+              I&rsquo;m also a mentor at{" "}
               <HoverWord view="mentor" href="https://linktr.ee/sasepurdue">Purdue SASE</HoverWord>
               , and I plan my{" "}
               <HoverWord view="food" href="https://beliapp.co/app/lyux">next trip</HoverWord>
               {" "}around a list of local food spots.
-            </p>
-
-            <p>
-              Looking for a <strong>summer 2026 internship</strong> where that
-              crossover earns its keep.
             </p>
           </div>
         </div>
