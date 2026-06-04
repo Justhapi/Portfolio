@@ -29,11 +29,12 @@ export default function ResearchHubCaseStudy() {
         <section id="outcome" className="case-section">
           <h2>Outcome</h2>
           <p>
-            The semester&rsquo;s work produced a redesigned ResearchHub,{" "}
-            <mark className="hl">planned to ship in summer 2026</mark> so students and faculty can use it the
-            following semester. The redesign carried one idea through every screen — the platform should help people
-            evaluate <em>fit</em> (a professor&rsquo;s supervision style, lab culture, what the work actually
-            involves), not just logistics like hours and pay.
+            The semester-long project&rsquo; resulted in a <mark className="hl">redesign of ResearchHub</mark>, an Purdue specific collaboration research platform, <mark className="hl">with new additional features,</mark>{" "}
+            planned to ship in summer 2026 for students and faculty to utilize the
+            following semester.
+            <br></br><br></br>
+            Although some of the new features were <mark className="hl">directly requested by our client Professor Reese,</mark> a professor from the stats
+             department, other features were made to <mark className="hl">address student needs, regarding specficially communication and maintenance.</mark>
           </p>
         </section>
 
@@ -41,47 +42,51 @@ export default function ResearchHubCaseStudy() {
         <section id="overview" className="case-section">
           <h2>Overview</h2>
           <p>
-            ResearchHub is an AI-assisted platform that streamlines how Purdue students discover and join faculty
-            research projects, and how professors find and onboard the right students. I was the{" "}
-            <mark className="hl">sole designer</mark> on the six-person Purdue Stack team — owning all UX and UI
-            decisions, and also writing front-end React code when the team needed it.
+            ResearchHub is an <mark className="hl">AI-assisted platform</mark> that streamlines <mark className="hl">Purdue students' ability to discover and contribute</mark> to Purdue
+            research projects and assists <mark className="hl">professors to find and onboard the right students.</mark>
           </p>
 
           <h3>The Problem</h3>
           <p>
-            At Purdue, joining faculty research is friction-heavy. Opportunities are scattered across department
-            pages, faculty sites, and word-of-mouth, and listings describe <em>logistics</em> — hours, pay, location
-            — but almost nothing about <em>fit</em>. Students commit to projects and discover weeks in that the work
-            wasn&rsquo;t what they expected. Professors, meanwhile, drown in unfocused applications and have no shared
-            workspace to coordinate once students are accepted.
+            Currently at Purdue, research pportunities are <mark className="hl">plentiful but scattered across sources</mark> such as department
+            pages, faculty sites, and word-of-mouth, and listings.
+            <br></br><br></br>
+            Students<mark className="hl"> require an adequate method of connecting with professors </mark> 
+            during and after the research project. 
+            <br></br><br></br>
+            Professors <mark className="hl">have no consistent
+            workspace to coordinate and maintain</mark> project workload to their students.
           </p>
 
           <h3>My Role</h3>
           <p>
-            <mark className="hl">Design Engineer — roughly 70% design, 30% front-end.</mark> I owned every UX and UI
-            decision and also wrote front-end React, because the team had to design <em>and</em> build ResearchHub
-            within a single semester. Designing while knowing I might code the feature myself kept my specs pragmatic
-            and genuinely buildable.
+            During the project I was the{" "}<mark className="hl">sole UI designer, later a Design Engineer,</mark> in the 6 person Purdue Stack team with 5 full stack developers where I <mark className="hl">owned all UX and UI
+            decisions, and also writing front-end React code</mark> during stagnated project progression.
+            <br></br><br></br>
+            While designing and coding for professor and student needs, I also <mark className="hl">maintained 
+            discussions with my teammates to ensure alignment and feasibility of conceptualized features.</mark>
           </p>
         </section>
 
         {/* ───── Process ───── */}
         <section id="process" className="case-section">
           <h2>Process</h2>
-
-          <h3>Audit &amp; UI revamp</h3>
+          <h3>Context</h3>
           <p>
-            I inherited a functional but visually inconsistent prototype. I walked it as both a student and a
-            professor, logged every point of friction, and turned it into a prioritized punch-list that the team used
-            to plan the rework.
+            I inherited a functional but <mark className="hl">visually basic AI-generated</mark> prototype
+            that I needed to <mark className="hl">build a plan</mark> of redesign and feature implementation <mark className="hl">in a span of 1.5 weeks</mark> for my teammates to effectively further the platform's development over the semester.
+          </p>
+          <h3>Auditing the Current State of Platform</h3>
+          <p>
+            I <mark className="hl">explored the platform</mark> as both a student and professor, <mark className="hl">logging pain points of redundancy and opportunity gaps for new feature.</mark>
           </p>
 
-          <h3>User research</h3>
+          <h3>Understanding User Needs</h3>
           <p>
-            In a tight 1.5-week window — which also had to cover the UI audit — I ran{" "}
-            <mark className="hl">4 student interviews</mark> and synthesized them with affinity diagramming. Faculty
-            weren&rsquo;t available to interview directly, so I grounded the professor side in our faculty
-            client&rsquo;s brief. The breakthrough insight: the platform surfaced logistics well but not <em>fit</em>{" "}
+            Due to understanding the professor's needs through Professor Reese but not the needs of students', I <mark className="hl">conducted{" "}
+            4 student interviews and synthesized them with affinity diagramming.</mark>
+            <br></br><br></br>
+            The breakthrough insight: the platform surfaced logistics well but not <em>fit</em>{" "}
             — yet fit (supervision style, lab culture, what the work actually involves) was what students genuinely
             decided on. That insight became the north star for every decision after.
           </p>
@@ -92,11 +97,11 @@ export default function ResearchHubCaseStudy() {
             </figcaption>
           </figure>
 
-          <h3>Design system</h3>
+          <h3>Constructing a More Attractive Design System</h3>
           <p>
-            With the team designing <em>and</em> developing in one semester, building a system from scratch
-            wasn&rsquo;t realistic — so I worked within the existing design system, refining its UI and components so
-            a small team could move fast and stay consistent.
+            With the team designing and developing in one semester, building <mark className="hl">a design system completely from scratch
+            was not realistic</mark>. As a result, I worked within the existing base, refining the UI and components with a 
+            <mark className="hl"> stronger focus of Purdue University's color scheme</mark> to highlight the platform's focus on Purdue research.
           </p>
           <figure>
             <div className="image-slot">design system</div>
@@ -105,16 +110,15 @@ export default function ResearchHubCaseStudy() {
             </figcaption>
           </figure>
 
-          <h3>Prototyping &amp; handoff</h3>
+          <h3>Prototyping to Describe to Developers Better</h3>
           <p>
-            I built interactive prototypes to catch UX gaps before any code was written, and wrote handoff
-            documentation the engineering team could build from independently.
+            To ensure my teammates understand my redesigns, I <mark className="hl">constructed various prototypes in Figma </mark>
+            that showcased my <mark className="hl">conceptualization of a full redesign of the platform.</mark>
           </p>
 
-          <h3>Implementation</h3>
+          <h3>Implementing the Designs</h3>
           <p>
-            I also contributed front-end React — picking up the framework as I went (new to me, but close to my
-            JavaScript background) to help build the platform alongside the design.
+            Due to the <mark className="hl">tight timeline in addition to academic workload causing some of my teammates not being able to meet consistent progression,</mark> I also contributed through front-end React coding to help build the platform.
           </p>
         </section>
 
@@ -122,11 +126,12 @@ export default function ResearchHubCaseStudy() {
         <section id="takeaways" className="case-section">
           <h2>What I Took Away</h2>
           <p>
-            <mark className="hl">Designing and building in the same breath changes how you design.</mark> Because I
-            might code a feature myself, I designed for what was actually buildable in our one-semester timeline —
-            not just what looked best in a mockup. Working as both designer and engineer kept me close to
-            implementation as a <em>partner</em>, and picking up React on the fly proved I could learn fast enough to
-            help ship, not just hand off.
+            <mark className="hl">Directly building my own ideas has definitely modified my factoring of 
+            limitations.</mark> Sometimes I would half-angerly think "Jeez who is the designer who designed and though of all these (details)". Working as both designer and engineer has emphasized to me
+            the need to ideate as <em>partner</em> rather than a <em>ideater and documenter</em>.
+            <br></br><br></br>
+            Due to needing conceptualization rather early into the semester, I was <mark className="hl">unable to conduct user research on professors as in depth as I did with students </mark> 
+            due to differing user group access. Despite that, I was still able to make design decisions address both user group needs through <mark className="hl">effectively utilizing what I had immediate access to within the small window frame given.</mark>
           </p>
         </section>
       </main>
