@@ -99,8 +99,10 @@ export default function ResearchHubCaseStudy() {
 
           <h3>Constructing a More Attractive Design System</h3>
           <p>
-            With the team designing and developing in one semester, building <mark className="hl">a design system completely from scratch
-            was not realistic</mark>. As a result, I worked within the existing base, refining the UI and components with a
+            With me designing and my teammates developing concurrently throughout the semester, building <mark className="hl">a complex design system completely from scratch
+            was not realistic</mark>.
+            <br></br><br></br>
+            As a result, I worked within the existing base, refining the UI and components with a
             <mark className="hl"> stronger focus on Purdue University's color scheme</mark> to highlight the platform's focus on Purdue research.
           </p>
           <figure>
