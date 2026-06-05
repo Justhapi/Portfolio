@@ -2223,21 +2223,32 @@ em.it { font-style: italic; }
 .about-prose .lead {
   font-family: var(--f-display);
   font-weight: 800;
-  font-size: clamp(30px, 3.8vw, 48px);
-  line-height: 1.12;
+  /* Bumped from clamp(30, 3.8vw, 48) → clamp(34, 4.4vw, 56) so the
+     About lead reads at the same display scale as .section-head .h
+     and .case-title elsewhere on the site. The previous size made
+     the lead feel like a sub-heading; at this scale it claims the
+     section's primary statement role. */
+  font-size: clamp(34px, 4.4vw, 56px);
+  /* Tightened from 1.12 → 1.05 for a more confident display headline.
+     Combined with -0.02em tracking, this matches the display rhythm
+     of section heads and case titles. */
+  line-height: 1.05;
   letter-spacing: -0.02em;
-  margin: 0 auto 32px;
+  /* More breathing room below the lead before the body starts. */
+  margin: 0 auto 40px;
   max-width: 22ch;
 }
-/* Inline emphasis inside the About lead — "design-engineering". Uses
-   the display family at its heaviest weight, ink-soft so it sits a
-   notch behind the rest of the heading. Previously a `style` prop in
-   AboutV2.tsx — extracted so it survives CSS theming. */
+/* Inline emphasis inside the About lead — "design-engineering".
+   Switched from --ink-soft (a muted neutral) to --accent-on-cream
+   (the warm amber). Now matches the accent-emphasis pattern used
+   everywhere else on cream surfaces: case-section .hl marks, folder
+   .tag, HoverWord linked keywords. Reads as deliberate brand
+   emphasis instead of "darker text". */
 .about-prose .lead em.de {
   font-family: var(--f-display);
   font-style: normal;
   font-weight: 800;
-  color: var(--ink-soft);
+  color: var(--accent-on-cream);
 }
 /* Inline italic emphasis used in About body ("…and"). */
 .about-prose em.it {
@@ -2245,14 +2256,23 @@ em.it { font-style: italic; }
 }
 .about-prose p {
   font-family: var(--f-cookie);
-  font-size: 17.5px;
+  /* Body bumped 17.5 → 19px so the CookieRun body holds its own
+     against the now-larger lead and the prose has more presence on
+     the cream surface. Still within the comfortable read range. */
+  font-size: 19px;
   line-height: 1.6;
   color: var(--fg-soft);
-  margin: 0 auto 18px;
+  margin: 0 auto 20px;
   max-width: 56ch;
 }
+/* Strong emphasis in About body — currently the CTA "summer 2026
+   internship". Previously rendered with --fg + weight 700, which
+   read as "slightly heavier text in the same colour". Now matches
+   the case-section .hl pattern: accent-on-cream + weight 700.
+   Same visual treatment recruiters already see on case-study
+   highlights, so the internship CTA pops at the same intensity. */
 .about-prose p strong {
-  color: var(--fg);
+  color: var(--accent-on-cream);
   font-weight: 700;
 }
 

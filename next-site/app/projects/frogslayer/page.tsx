@@ -74,12 +74,12 @@ export default function FrogslayerCaseStudy() {
           <h3>Project Contributions</h3>
           <p>
             During the project, I was the team&rsquo;s <mark className="hl">primary point of contact</mark> with
-            Frogslayer&rsquo;s product team and <mark className="hl">co-led our internal planning</mark> — defining
-            the order of work to maintain progress throughout the fall semester. 
+            Frogslayer&rsquo;s product team and <mark className="hl">co-led our internal planning</mark> by defining
+            the order of work to maintain progression throughout the fall semester. 
             <br></br>
             <br></br>
-            Regarding design, I assisted in researching the current state of kiosk design, building the base low-fi user flow, constructed the usability testing prototypes, and iterated on the
-            prototypes to address user insights.
+            Regarding design, I also contributed through <mark className="hl">researching the current state of kiosk design, building the base low-fi user flow, constructed the usability testing prototypes, and iterated on the
+            prototypes to address user insights.</mark>
           </p>
         </section>
 
@@ -91,10 +91,15 @@ export default function FrogslayerCaseStudy() {
             <mark className="hl"> content audit on Frogslayer&rsquo;s existing prototype</mark> to anchor on the
             questions they desire further studies on. That audit pointed us toward two under-explored areas:
             <strong> loyalty programs</strong> and <strong>UI ergonomics</strong>.
-          </p>
-          <p>
-            We built our knowledge of foundation around four questions: what makes up a kiosk, why a kiosk is preferable to other
-            technologies, how companies design them today, and how users feel about them. 
+            <br></br><br></br>
+            We built our knowledge of foundation around four questions:
+            <br></br><br></br>
+            <strong>
+            <ul>"What makes up a kiosk"</ul>
+            <ul>"Why a kiosk is preferable (to other technologies)"</ul>
+            <ul>"How do companies design them currently"</ul>
+            <ul>"How do users feel about them"</ul>
+            </strong>
             <br></br><br></br>
             Methods spanned secondary
             research, competitive analysis, field observation, and user interviews to address the questions.
@@ -196,7 +201,7 @@ export default function FrogslayerCaseStudy() {
             participant set didn&rsquo;t reveal.
           </p>
 
-          <h3>Reflections</h3>
+          <h3>Takeaways</h3>
           <p>
             Users don&rsquo;t approach a kiosk as a blank slate — they refer to habits from phones, ATMs, and ordering
             apps. <mark className="hl">Designing against that prior experience is a losing battle.</mark> The

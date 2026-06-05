@@ -3,6 +3,7 @@ import { K2D, JetBrains_Mono, Caveat } from "next/font/google";
 import "./globals.css";
 import CursorFollower from "@/components/CursorFollower";
 import SmoothScroll from "@/components/SmoothScroll";
+import ClickSound from "@/components/ClickSound";
 
 /* ── Google Fonts via next/font ────────────────────────────────────────────
    Self-hosted at build time — no render-blocking @import, no Google DNS
@@ -97,6 +98,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {children}
         <SmoothScroll />
         <CursorFollower />
+        <ClickSound />
       </body>
     </html>
   );

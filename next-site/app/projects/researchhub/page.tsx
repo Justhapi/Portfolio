@@ -29,12 +29,12 @@ export default function ResearchHubCaseStudy() {
         <section id="outcome" className="case-section">
           <h2>Outcome</h2>
           <p>
-            The semester-long project&rsquo; resulted in a <mark className="hl">redesign of ResearchHub</mark>, an Purdue specific collaboration research platform, <mark className="hl">with new additional features,</mark>{" "}
+            The semester-long project resulted in a <mark className="hl">redesign of ResearchHub</mark>, a Purdue-specific collaboration research platform, <mark className="hl">with new additional features,</mark>{" "}
             planned to ship in summer 2026 for students and faculty to utilize the
             following semester.
             <br></br><br></br>
             Although some of the new features were <mark className="hl">directly requested by our client Professor Reese,</mark> a professor from the stats
-             department, other features were made to <mark className="hl">address student needs, regarding specficially communication and maintenance.</mark>
+             department, other features were made to <mark className="hl">address student needs, specifically regarding communication and maintenance.</mark>
           </p>
         </section>
 
@@ -48,8 +48,8 @@ export default function ResearchHubCaseStudy() {
 
           <h3>The Problem</h3>
           <p>
-            Currently at Purdue, research pportunities are <mark className="hl">plentiful but scattered across sources</mark> such as department
-            pages, faculty sites, and word-of-mouth, and listings.
+            Currently at Purdue, research opportunities are <mark className="hl">plentiful but scattered across sources</mark> such as department
+            pages, faculty sites, listings, and word-of-mouth.
             <br></br><br></br>
             Students<mark className="hl"> require an adequate method of connecting with professors </mark> 
             during and after the research project. 
@@ -61,7 +61,7 @@ export default function ResearchHubCaseStudy() {
           <h3>My Role</h3>
           <p>
             During the project I was the{" "}<mark className="hl">sole UI designer, later a Design Engineer,</mark> in the 6 person Purdue Stack team with 5 full stack developers where I <mark className="hl">owned all UX and UI
-            decisions, and also writing front-end React code</mark> during stagnated project progression.
+            decisions and also wrote front-end React code</mark> during stagnated project progression.
             <br></br><br></br>
             While designing and coding for professor and student needs, I also <mark className="hl">maintained 
             discussions with my teammates to ensure alignment and feasibility of conceptualized features.</mark>
@@ -78,12 +78,12 @@ export default function ResearchHubCaseStudy() {
           </p>
           <h3>Auditing the Current State of Platform</h3>
           <p>
-            I <mark className="hl">explored the platform</mark> as both a student and professor, <mark className="hl">logging pain points of redundancy and opportunity gaps for new feature.</mark>
+            I <mark className="hl">explored the platform</mark> as both a student and professor, <mark className="hl">logging pain points of redundancy and opportunity gaps for new features.</mark>
           </p>
 
           <h3>Understanding User Needs</h3>
           <p>
-            Due to understanding the professor's needs through Professor Reese but not the needs of students', I <mark className="hl">conducted{" "}
+            Due to understanding the professor's needs through Professor Reese but not the needs of students, I <mark className="hl">conducted{" "}
             4 student interviews and synthesized them with affinity diagramming.</mark>
             <br></br><br></br>
             The breakthrough insight: the platform surfaced logistics well but not <em>fit</em>{" "}
@@ -100,8 +100,8 @@ export default function ResearchHubCaseStudy() {
           <h3>Constructing a More Attractive Design System</h3>
           <p>
             With the team designing and developing in one semester, building <mark className="hl">a design system completely from scratch
-            was not realistic</mark>. As a result, I worked within the existing base, refining the UI and components with a 
-            <mark className="hl"> stronger focus of Purdue University's color scheme</mark> to highlight the platform's focus on Purdue research.
+            was not realistic</mark>. As a result, I worked within the existing base, refining the UI and components with a
+            <mark className="hl"> stronger focus on Purdue University's color scheme</mark> to highlight the platform's focus on Purdue research.
           </p>
           <figure>
             <div className="image-slot">design system</div>
@@ -124,14 +124,14 @@ export default function ResearchHubCaseStudy() {
 
         {/* ───── Takeaways ───── */}
         <section id="takeaways" className="case-section">
-          <h2>What I Took Away</h2>
+          <h2>Takeaways</h2>
           <p>
-            <mark className="hl">Directly building my own ideas has definitely modified my factoring of 
-            limitations.</mark> Sometimes I would half-angerly think "Jeez who is the designer who designed and though of all these (details)". Working as both designer and engineer has emphasized to me
-            the need to ideate as <em>partner</em> rather than a <em>ideater and documenter</em>.
+            <mark className="hl">Directly building my own ideas has definitely modified my factoring of
+            limitations.</mark> Sometimes I would half-angrily think, "Jeez, who is the designer who designed and thought of all these (details)". Working as both designer and engineer has emphasized to me
+            the need to ideate as <em>partner</em> instead of simply an <em>ideater or documenter</em>.
             <br></br><br></br>
-            Due to needing conceptualization rather early into the semester, I was <mark className="hl">unable to conduct user research on professors as in depth as I did with students </mark> 
-            due to differing user group access. Despite that, I was still able to make design decisions address both user group needs through <mark className="hl">effectively utilizing what I had immediate access to within the small window frame given.</mark>
+            Due to needing conceptualization finalized rather early into the semester, I was <mark className="hl">unable to conduct user research on professors as in-depth as I did with students </mark>
+            due to differing user group access. Despite that, I was still able to make design decisions that address both user group needs through <mark className="hl">effectively utilizing what I had immediate access to within the small window frame given.</mark>
           </p>
         </section>
       </main>
