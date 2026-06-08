@@ -5,11 +5,16 @@ export const metadata = {
   title: "AI Journey Map Maintenance Agent — Kathleen Li",
 };
 
-/* Outcome leads so recruiters see results first. */
+/* Outcome leads so recruiters see results first. Process is broken
+   into its three actual phases (Researching, Ideating, Verifying) so
+   the nav exposes the work rather than collapsing it under a single
+   "Process" label — matches the structure used in Frogslayer. */
 const SECTIONS = [
   { id: "outcome", label: "Outcome" },
   { id: "overview", label: "Overview" },
-  { id: "process", label: "Process" },
+  { id: "researching", label: "Researching" },
+  { id: "ideating", label: "Ideating" },
+  { id: "verifying", label: "Verifying" },
   { id: "decisions", label: "Key Decisions" },
   { id: "takeaways", label: "Takeaways" },
 ];
@@ -81,11 +86,10 @@ export default function AIJourneyAgentCaseStudy() {
           </p>
         </section>
 
-        {/* ───── Process ───── */}
-        <section id="process" className="case-section">
-          <h2>Process</h2>
-
-          <h3>Research — Understand what would make a journey maintenance agent effective</h3>
+        {/* ───── Researching ───── */}
+        <section id="researching" className="case-section">
+          <h2>Researching</h2>
+          <h3>Understanding what would make a journey maintenance agent effective</h3>
           <p>
             To gain a strong foundation of our oppurtunity space, we researched the components that make up a journey maintenance agent.
             <br></br><br></br>
@@ -111,16 +115,24 @@ export default function AIJourneyAgentCaseStudy() {
             <mark className="hl">reactive, manual, and tied to project milestones</mark> — and users only trust AI
             suggestions when they can see the reasoning behind them.
           </p>
+        </section>
 
-          <h3>Ideation — from six concepts to one</h3>
+        {/* ───── Ideating ───── */}
+        <section id="ideating" className="case-section">
+          <h2>Ideating</h2>
+          <h3>From six concepts to one</h3>
           <p>
             Through Crazy 8&rsquo;s and group whiteboarding we developed six concept directions and presented them to
             the client&rsquo;s sponsors. They selected two — a <em>proactive</em> suggestion model and a{" "}
             <em>reactive</em> guided-walkthrough model — which we combined into a single, cohesive agent after
             recognizing how much the two overlapped.
           </p>
+        </section>
 
-          <h3>Design &amp; testing</h3>
+        {/* ───── Verifying ───── */}
+        <section id="verifying" className="case-section">
+          <h2>Verifying</h2>
+          <h3>Designing and testing the unified agent</h3>
           <p>
             We built a high-fidelity, interactive Figma prototype: evidence-backed suggestion cards, approve / deny /
             snooze controls, a guided walkthrough, and an in-context AI chat. Usability testing with six participants

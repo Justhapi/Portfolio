@@ -5,11 +5,16 @@ export const metadata = {
   title: "ResearchHub — Kathleen Li",
 };
 
-/* Outcome leads so recruiters see results first. */
+/* Outcome leads so recruiters see results first. Process is broken
+   into its three actual phases (Researching, Designing, Implementing)
+   so the nav exposes the work rather than collapsing it under a
+   single "Process" label — matches the structure used in Frogslayer. */
 const SECTIONS = [
   { id: "outcome", label: "Outcome" },
   { id: "overview", label: "Overview" },
-  { id: "process", label: "Process" },
+  { id: "researching", label: "Researching" },
+  { id: "designing", label: "Designing" },
+  { id: "implementing", label: "Implementing" },
   { id: "takeaways", label: "Takeaways" },
 ];
 
@@ -68,9 +73,9 @@ export default function ResearchHubCaseStudy() {
           </p>
         </section>
 
-        {/* ───── Process ───── */}
-        <section id="process" className="case-section">
-          <h2>Process</h2>
+        {/* ───── Researching ───── */}
+        <section id="researching" className="case-section">
+          <h2>Researching</h2>
           <h3>Context</h3>
           <p>
             I inherited a functional but <mark className="hl">visually basic AI-generated</mark> prototype
@@ -96,7 +101,11 @@ export default function ResearchHubCaseStudy() {
               Affinity diagramming 4 student interviews into the core insight: students decide on fit, not logistics.
             </figcaption>
           </figure>
+        </section>
 
+        {/* ───── Designing ───── */}
+        <section id="designing" className="case-section">
+          <h2>Designing</h2>
           <h3>Constructing a More Attractive Design System</h3>
           <p>
             With me designing and my teammates developing concurrently throughout the semester, building <mark className="hl">a complex design system completely from scratch
@@ -117,8 +126,12 @@ export default function ResearchHubCaseStudy() {
             To ensure my teammates understand my redesigns, I <mark className="hl">constructed various prototypes in Figma </mark>
             that showcased my <mark className="hl">conceptualization of a full redesign of the platform.</mark>
           </p>
+        </section>
 
-          <h3>Implementing the Designs</h3>
+        {/* ───── Implementing ───── */}
+        <section id="implementing" className="case-section">
+          <h2>Implementing</h2>
+          <h3>Stepping in to ship the platform on time</h3>
           <p>
             Due to the <mark className="hl">tight timeline in addition to academic workload causing some of my teammates not being able to meet consistent progression,</mark> I also contributed through front-end React coding to help build the platform.
           </p>

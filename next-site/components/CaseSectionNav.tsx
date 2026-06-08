@@ -52,11 +52,53 @@ export default function CaseSectionNav({ sections }: { sections: Section[] }) {
         h: el.offsetHeight,
         visible: true,
       });
+      // Keep the active link visible inside the (possibly horizontally
+      // scrollable) pill — when the user scrolls the page and the
+      // active section changes, the pill auto-scrolls so the active
+      // label is in view. Critical for case studies with many sections
+      // (e.g. Frogslayer's 6) where the pill is wider than the
+      // viewport. Centred so the active label sits in the middle of
+      // the visible pill area, with neighbours visible on either side.
+      const pillRect = pill.getBoundingClientRect();
+      const linkRect = el.getBoundingClientRect();
+      // Only scroll if the link is outside the visible area
+      if (linkRect.left < pillRect.left || linkRect.right > pillRect.right) {
+        const targetLeft =
+          el.offsetLeft - pill.clientWidth / 2 + el.offsetWidth / 2;
+        pill.scrollTo({ left: targetLeft, behavior: "smooth" });
+      }
     };
     measure();
     window.addEventListener("resize", measure);
     return () => window.removeEventListener("resize", measure);
   }, [active]);
+
+  // ── Overflow-edge affordance ──────────────────────────────────────────
+  // When the nav pill has content scrolled off either edge, that edge's
+  // corner radius collapses from the full pill curve (999px) to a sharp
+  // 10px corner, signaling visually that more sections exist past the
+  // cut-off. The opposite edge stays fully rounded. Implemented via
+  // direct DOM class toggling on every scroll event (no React re-render)
+  // because the scroll handler fires at frame rate.
+  useEffect(() => {
+    const pill = pillRef.current;
+    if (!pill) return;
+    const updateOverflow = () => {
+      // 4px fudge prevents flicker at the exact scroll boundary
+      const hasOverflowLeft = pill.scrollLeft > 4;
+      const hasOverflowRight =
+        pill.scrollLeft < pill.scrollWidth - pill.clientWidth - 4;
+      pill.classList.toggle("has-overflow-left", hasOverflowLeft);
+      pill.classList.toggle("has-overflow-right", hasOverflowRight);
+    };
+    updateOverflow();
+    pill.addEventListener("scroll", updateOverflow, { passive: true });
+    window.addEventListener("resize", updateOverflow);
+    return () => {
+      pill.removeEventListener("scroll", updateOverflow);
+      window.removeEventListener("resize", updateOverflow);
+    };
+  }, [sections]);
 
   return (
     <nav className={`case-nav ${scrolled ? "scrolled" : ""}`} aria-label="Section navigation">
