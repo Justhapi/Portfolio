@@ -1223,16 +1223,18 @@ em.it { font-style: italic; }
    constant distance from the polaroid's left edge instead of
    drifting toward the far viewport edge on wide monitors. */
 .sticker.designing-green {
-  /* Anchored ~90px below the polaroid's bottom edge so the status
-     sticker reads as clearly LOWER than the polaroid on every
-     viewport. Polaroid bottom is at `calc(614px + min(12vw, 132px))`
-     (top 180 + frame height ~434); adding 86px gives a comfortable
-     visual gap that matches the "image 2" reference where the
-     sticker sits well below the polaroid rather than overlapping
-     its bottom edge. The hero's min-height has been increased to
-     1000px so this lower position stays within the visible hero
-     stage on every viewport. */
-  top: calc(700px + min(12vw, 132px));
+  /* Anchored ~30px below the polaroid's bottom edge so the status
+     sticker stays in the comfortable read zone on common laptop
+     fullscreen viewports (1080–1136px). The previous +86px gap put
+     the sticker's bottom at ~920px which fell out of view on
+     anything shorter than ~1100px; this trims the gap and adds a
+     viewport-relative cap (`min(..., 68vh)`) so the sticker can never
+     drop below 68% of the viewport height, regardless of how tall
+     the hero stage stretches. The polaroid bottom is at
+     `calc(180 + 12vw + ~412)` ≈ `592 + 12vw`, so `top = 622 + 12vw`
+     keeps a clean 30px gap that matches the doodle's 28px overhang
+     into a hairline visual separation. */
+  top: min(calc(642px + min(12vw, 132px)), calc(68vh + 20px));
   bottom: auto;
   right: calc(50% + 200px);
   left: auto;
@@ -1588,6 +1590,19 @@ em.it { font-style: italic; }
   text-transform: uppercase;
   box-shadow: 0 12px 28px -10px rgba(0,0,0,0.45), 0 4px 8px -4px rgba(0,0,0,0.25);
   animation: pillIn 240ms var(--ease-out-quart);
+  /* Lock the pill to a single-line horizontal layout. The pill is
+     positioned `fixed` and follows the cursor — when the cursor
+     approaches the right viewport edge, the browser was applying an
+     implicit max-width based on the remaining space (viewport right
+     edge minus `left: cursorX + 10px`), wrapping "3 MIN READ" to 3
+     lines and turning the pill into a near-circle. `white-space:
+     nowrap` keeps the text on one line; `width: max-content` makes
+     the pill size to its content rather than the available space;
+     `max-width: none` overrides any cascading caps that would
+     re-introduce wrapping. */
+  white-space: nowrap;
+  width: max-content;
+  max-width: none;
 }
 @keyframes pillIn {
   from { opacity: 0; transform: translateY(4px) scale(0.96); }
@@ -3339,6 +3354,76 @@ em.it { font-style: italic; }
      crowd the body that follows. Extra top margin (44px) gives the
      subhead a breathing zone after the preceding block. */
   margin: 44px 0 20px;
+}
+
+/* ──────────────────────────────────────────────────────────────────────
+   JourneyTrack — Parallel research tracks
+
+   The team split into two smaller groups to research JourneyTrack's
+   current platform state and the agent's components in parallel within
+   the project window. The layout puts the two h3 subsections side-by-
+   side under a shared lead-in, with a faint vertical divider down the
+   middle to read as a "track separator" rather than a heavy border.
+   Each track carries a small chip label so the parallel work is legible
+   at a glance. Stacks to a single column on narrow viewports.
+   ────────────────────────────────────────────────────────────────────── */
+.case-section .research-split-lead {
+  margin-bottom: 20px;
+}
+.case-section .parallel-tracks {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  margin: 0 0 32px;
+  position: relative;
+}
+.case-section .parallel-tracks::before {
+  content: "";
+  position: absolute;
+  top: 32px;
+  bottom: 32px;
+  left: 50%;
+  width: 1px;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgb(var(--fg-rgb) / 0.12) 12%,
+    rgb(var(--fg-rgb) / 0.12) 88%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+.case-section .parallel-tracks .research-track {
+  min-width: 0; /* prevent grid blowout from long figures */
+}
+.case-section .parallel-tracks .research-track h3 {
+  /* Tighter top margin inside tracks — the column already separates
+     them visually, no need for the 44px headroom h3 gets in flow. */
+  margin-top: 8px;
+}
+.case-section .parallel-tracks .track-label {
+  display: inline-block;
+  font-family: var(--f-mono);
+  font-weight: 700;
+  font-size: 10.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent-on-cream);
+  background: rgb(var(--fg-rgb) / 0.04);
+  border: 1px solid rgb(var(--fg-rgb) / 0.1);
+  border-radius: 999px;
+  padding: 3px 10px;
+}
+.case-section .parallel-tracks .research-track figure {
+  margin-bottom: 0;
+}
+
+@media (max-width: 760px) {
+  .case-section .parallel-tracks {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .case-section .parallel-tracks::before { display: none; }
 }
 .case-section p {
   font-family: var(--f-cookie);

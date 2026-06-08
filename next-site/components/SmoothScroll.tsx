@@ -70,12 +70,16 @@ const PARALLAX_TARGETS: ParallaxConfig[] = [
   // the chip inherits Kathleen's parallax transform automatically.
   // Don't register the chip separately or it'll get double-transformed.
   { selector: ".sticker.name-yellow",    speed: -0.18, baseRotate: "8deg" },
-  // designing-green removed from parallax — its -0.22 speed was the
-  // most aggressive on the page and caused the sticker to drift
-  // significantly as the user scrolled, reading as "the status
-  // sticker is randomly minimising" because its position kept
-  // shifting relative to the surrounding stickers + polaroid. Now
-  // the sticker is locked at its natural CSS position.
+  // designing-green re-added with speed: -0.18 — matched exactly to
+  // .sticker.name-yellow so both stickers drift at the same rate and
+  // visually feel like the same physical layer of paper stuck to the
+  // hero stage. Previous -0.22 was too aggressive and caused the
+  // sticker to drift noticeably faster than its siblings, which
+  // (combined with its starting rotation) read as the sticker
+  // randomly minimising. At -0.18 the green and yellow stickers
+  // travel together. baseRotate "-5deg" preserves the green
+  // sticker's natural CSS rotation through the parallax transform.
+  { selector: ".sticker.designing-green", speed: -0.18, baseRotate: "-5deg" },
   { selector: ".hero-polaroid",          speed: -0.12, centred: true },
   { selector: ".case-hero-image",        speed: -0.18 },
 

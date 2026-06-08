@@ -54,6 +54,17 @@ function useActiveSection(): SectionId {
 }
 
 function smoothScrollTo(id: string) {
+  if (id === "hero") {
+    // #hero is position: sticky, top: 0 — meaning when the user is
+    // scrolled down the hero element is "pinned" at the top of the
+    // viewport. scrollIntoView reads the element's rendered position
+    // (top: 0 in viewport coords) and thinks it's already in view,
+    // so the page never scrolls. Scroll the window to absolute top
+    // instead — the hero will smoothly come back into focus and any
+    // sections layered on top of it will scroll off.
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    return;
+  }
   if (id === "connect") {
     // #connect is sticky behind About — scrollIntoView lands at the top of
     // .ac-scene (About still covering it). We need to scroll past About's
