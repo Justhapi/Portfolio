@@ -3445,6 +3445,7 @@ em.it { font-style: italic; }
   font-size: 20px;
   line-height: 1;
   color: rgb(var(--fg-rgb) / 0.35);
+  text-align: center;
   user-select: none;
 }
 .research-questions figure {
