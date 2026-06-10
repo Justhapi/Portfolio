@@ -292,8 +292,15 @@ const PROJECTS: Project[] = [
     ),
     meta: ["UI", "Interaction Design", "Usability Testing", "2025"],
     accent: ["#84C0FA", "#53EC9D"],
-    // Soft Shell — the warm tan from the new palette
-    folder: { front: "#0F1217", back: "#1A2028", shadow: "#050608" },
+    // Deep Ink — lifted from #0F1217 to a slate-navy base so the
+    // multiply gradient actually reads: at the old near-black front,
+    // front × shadow ≈ black-on-black and the cover looked flat. The
+    // shadow stop is raised in step (multiply result at the bottom
+    // edge ≈ #090C12, roughly the old front color) so the gradient
+    // spans a visible range without crushing to mud. Back returns to
+    // the standard darker-than-front pattern now that the front is
+    // light enough to hold the contrast.
+    folder: { front: "#262E3A", back: "#171C24", shadow: "#3F444E" },
     href: "/projects/frogslayer",
     readTime: "6 min read",
   },

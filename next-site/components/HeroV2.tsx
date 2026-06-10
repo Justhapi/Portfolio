@@ -109,7 +109,13 @@ export default function HeroV2() {
         <h1 className="ribbon-artist">
           <span className="visually-hidden">Artist · Designer</span>
           <ArtistDesignerWordmark />
-          <span className="sub">From one scene to multiple scenarios</span>
+          {/* .sub-type is the clip-typed text; the block cursor is
+              .sub::after so it rides OUTSIDE the clip and stays visible
+              one cell ahead of the reveal edge. 36 chars — the CSS
+              steps()/translate distance are derived from that count. */}
+          <span className="sub">
+            <span className="sub-type">From one scene to multiple scenarios</span>
+          </span>
         </h1>
 
         {/* cycling-glyph sparkle field — slots respawn at fresh random positions */}
@@ -151,8 +157,15 @@ export default function HeroV2() {
           </div>
           <div className="caption-block">
             <div className="caption-meta">Last Updated · 05/07/26</div>
+            {/* Two explicit line spans (.cap-write) — each wipes in
+                left→right like being written, line 1 then line 2. A
+                single wipe over the naturally-wrapped block would
+                reveal both lines column-wise, which reads as a print
+                effect, not handwriting. Line break is hand-placed for
+                the fixed 320px polaroid width. */}
             <div className="caption-line">
-              I design <strong>solutions</strong> with moments worth <strong>lingering</strong> on
+              <span className="cap-write">I design <strong>solutions</strong> with</span>
+              <span className="cap-write">moments worth <strong>lingering</strong> on</span>
             </div>
           </div>
         </div>

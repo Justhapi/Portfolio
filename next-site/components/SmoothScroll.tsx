@@ -60,6 +60,16 @@ type ParallaxConfig = {
    * offset is 0 when Connect first becomes visible, not from page top.
    */
   relativeToScene?: boolean;
+  /**
+   * If true, the delta zeroes at the END of the sticky range
+   * (sceneTop + aboutHeight) — the moment About has fully slid off.
+   * Use for elements that must SETTLE at their natural layout position
+   * when the reveal completes (e.g. .foot, pinned to Connect's bottom:
+   * a scene-start base would leave it permanently displaced once the
+   * reveal finishes). With negative speed the element sits below its
+   * resting spot during the reveal and rises into place.
+   */
+  relativeToSceneEnd?: boolean;
 };
 
 const PARALLAX_TARGETS: ParallaxConfig[] = [
@@ -87,8 +97,14 @@ const PARALLAX_TARGETS: ParallaxConfig[] = [
   // Negative speed → row drifts DOWN as scroll increases (confirmed from
   // browser: translateY sign is inverted for scene-relative targets).
   // At ~0.55 the row exits the viewport bottom by end of the sticky range.
-  // Footer has no parallax — stays anchored at the bottom of Connect.
   { selector: ".connect-row",           speed: -0.18, relativeToScene: true },
+  // Footer credits line — counter-drift vs .connect-row for depth.
+  // Scene-END base so delta = 0 exactly when About finishes sliding off:
+  // during the reveal the footer sits below its resting spot (~0.08 ×
+  // viewport height ≈ 70px down, off the viewport edge) and rises into
+  // place as Connect is uncovered. Ends pinned at Connect's bottom with
+  // no residual offset — the divider + © line travel as one block.
+  { selector: ".foot",                  speed: -0.08, relativeToSceneEnd: true },
 ];
 
 /** Delay after page load before parallax transforms activate (ms). */
@@ -173,13 +189,20 @@ export default function SmoothScroll() {
       const sceneBase = sceneRect
         ? window.scrollY + sceneRect.top
         : 0;
+      // End of the sticky range — scroll position at which About has
+      // fully slid off and Connect is completely revealed.
+      const sceneEndBase = sceneBase + (aboutEl?.offsetHeight ?? 0);
 
       for (const cfg of PARALLAX_TARGETS) {
         const nodes = document.querySelectorAll<HTMLElement>(cfg.selector);
         nodes.forEach((el) => {
           // Remove animation fill lock so inline transforms can take effect
           el.style.animation = "none";
-          const scrollBase = cfg.relativeToScene ? sceneBase : 0;
+          const scrollBase = cfg.relativeToSceneEnd
+            ? sceneEndBase
+            : cfg.relativeToScene
+              ? sceneBase
+              : 0;
           entries.push({ el, config: cfg, scrollBase });
         });
       }
@@ -187,6 +210,34 @@ export default function SmoothScroll() {
 
     // Wait for all entrance animations to complete before activating parallax
     const activateTimer = setTimeout(buildEntries, PARALLAX_ACTIVATE_DELAY);
+
+    /* ── Footer fade-in on first uncover ────────────────────────────────
+       .foot can't use the .reveal IO pattern: it sits inside sticky
+       .connect, whose reveal children are pre-marked .in at page load
+       (they're always "in viewport", just covered by About). The true
+       encounter is About's bottom edge rising past the footer's top, so
+       we check that each scroll frame and add .foot--in once, first
+       time it happens. Armed HERE rather than hidden in CSS so the
+       touch and reduced-motion paths — which never reach onScroll —
+       leave the footer fully visible. */
+    const footEl = document.querySelector<HTMLElement>(".foot");
+    let footShown = false;
+    footEl?.classList.add("foot--armed");
+
+    function checkFoot() {
+      if (footShown || !footEl || !aboutEl) return;
+      // Both rects include live transforms (About scrolling off, the
+      // footer's own parallax rise), so the crossover is the actual
+      // visual uncover moment.
+      if (aboutEl.getBoundingClientRect().bottom <= footEl.getBoundingClientRect().top) {
+        footShown = true;
+        footEl.classList.add("foot--in");
+      }
+    }
+    // Cover restored scroll positions past the scene (deep-link /
+    // refresh mid-page) — without this the footer would stay hidden
+    // until the first scroll event.
+    checkFoot();
 
     function onScroll({ scroll }: { scroll: number }) {
       for (const { el, config, scrollBase } of entries) {
@@ -208,6 +259,7 @@ export default function SmoothScroll() {
           el.style.transform = `translateY(${delta.toFixed(2)}px)`;
         }
       }
+      checkFoot();
     }
 
     lenis.on("scroll", onScroll);
@@ -227,6 +279,7 @@ export default function SmoothScroll() {
       lenis.destroy();
       window.removeEventListener("resize", onResize);
       if (sceneEl) sceneEl.style.height = "";
+      footEl?.classList.remove("foot--armed", "foot--in");
       // Restore parallax elements
       for (const { el } of entries) {
         el.style.transform = "";

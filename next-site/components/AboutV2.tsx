@@ -251,23 +251,34 @@ export default function AboutV2() {
         </div>
       </div>
 
-      {/* Peek strip — always visible at About's bottom edge, hinting
-          at the Connect section below. Clicking scrolls past About so
-          Connect is fully revealed rather than scrolling to page top. */}
-      <a href="#connect" className="about-peek" onClick={handlePeekClick}>
-        <span className="about-peek__label">Connect</span>
-        <svg
-          className="about-peek__arrow"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <path d="M12 5v14M5 12l7 7 7-7" />
-        </svg>
+      {/* Peek combo — handwritten Caveat note + a thin sliver of the
+          Connect surface peeking under About's bottom edge. The text
+          wipes in left→right and the arrow traces itself once when the
+          strip nears the viewport (.reveal → .in via RevealOnScroll).
+          Clicking scrolls past About so Connect is fully revealed. */}
+      <a href="#connect" className="about-peek reveal" onClick={handlePeekClick}>
+        <span className="about-peek__note">
+          <span className="about-peek__text">let&rsquo;s connect</span>
+          <svg
+            className="about-peek__arrow"
+            viewBox="0 0 36 44"
+            fill="none"
+            aria-hidden="true"
+          >
+            {/* curvy shaft drawn first, casual v-head second */}
+            <path
+              className="ap-stroke ap-shaft"
+              pathLength={1}
+              d="M14 3 C 24 9, 10 19, 17 29 C 19 33, 21 35, 21 38"
+            />
+            <path
+              className="ap-stroke ap-head"
+              pathLength={1}
+              d="M12 31 C 15 35, 18 37.5, 21 39 C 24 36, 26.5 33, 28 29.5"
+            />
+          </svg>
+        </span>
+        <span className="about-peek__edge" aria-hidden="true" />
       </a>
     </section>
   );

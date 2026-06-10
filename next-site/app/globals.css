@@ -955,16 +955,46 @@ body.on-paper .nav-pill {
   color: #7A6F66;
 }
 .hero-polaroid .caption-line {
-  font-family: var(--f-display);
-  font-weight: 700;
-  /* 16px lets "I design interfaces with moments worth lingering on"
-     wrap to exactly 2 lines at the 320px polaroid's content width —
-     produces the compact, balanced bottom block from image 2. */
-  font-size: 16px;
-  line-height: 1.3;
-  letter-spacing: -0.005em;
+  /* Caveat (--f-hand) — same handwriting voice as the "let's connect"
+     peek note, so the polaroid reads as hand-captioned, the way a real
+     polaroid gets written on. Sized up from the previous 16px K2D:
+     script faces carry less visual weight per point, so 20px/600
+     lands at roughly the same optical size while staying ~2 lines at
+     the 320px polaroid width. Letter-spacing zeroed — tracking breaks
+     the joined, written feel of a script face. The meta line above
+     stays JetBrains Mono deliberately: it's a date STAMP, and the
+     stamp-vs-handwriting contrast is what sells the caption. */
+  font-family: var(--f-hand);
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 1.15;
+  letter-spacing: 0;
   color: #2C2520;
-  padding: 0 6px;
+  /* No extra side padding — the caption spans the full inner width of
+     the polaroid (320px − 2×10px frame padding = 300px), writing edge
+     to edge of the cardstock like a real hand-captioned polaroid. */
+  padding: 0;
+}
+/* Handwritten caption entrance — each line wipes in left→right like a
+   pen writing onto the polaroid, starting after the polaroid lands
+   (980–1360ms). Line 2 begins as line 1 finishes. ease-in-out: a hand
+   accelerates through the middle of a stroke. Negative vertical insets
+   keep Caveat's ascenders/descenders from clipping mid-wipe. */
+.hero-polaroid .cap-write {
+  display: block;
+  clip-path: inset(-15% 102% -15% -2%);
+}
+.hero-polaroid .cap-write:nth-child(1) {
+  animation: capWrite 1150ms cubic-bezier(0.45, 0.05, 0.55, 0.95) 1450ms forwards;
+}
+.hero-polaroid .cap-write:nth-child(2) {
+  /* Starts at ~78% through line 1 — the ease-in-out tail of line 1 is
+     slow, so a strict sequential start read as a stall. Overlapping
+     the starts keeps the pen moving. */
+  animation: capWrite 1250ms cubic-bezier(0.45, 0.05, 0.55, 0.95) 2350ms forwards;
+}
+@keyframes capWrite {
+  to { clip-path: inset(-15% -2% -15% -2%); }
 }
 /* Italic emphasis used inline ("interesting", "Kathleen", "and").
    Previously a `style` prop on each <em> — extracted so future
@@ -1055,6 +1085,7 @@ em.it { font-style: italic; }
   outline-offset: 3px;
 }
 .ribbon-artist .sub {
+  position: relative; /* anchors the ::after block cursor */
   margin-top: 16px;
   font-family: var(--f-mono);
   font-style: normal;
@@ -1063,12 +1094,80 @@ em.it { font-style: italic; }
   letter-spacing: 0.28em;
   text-transform: uppercase;
   color: rgb(var(--hero-fg-rgb) / 0.72);
-  /* fades in just after the last letter settles */
-  animation: subFadeIn 480ms var(--ease-out-quart) 760ms backwards;
 }
-@keyframes subFadeIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to   { opacity: 1; transform: none; }
+/* Typed-in entrance — starts at 1350ms, after the FULL wordmark
+   choreography lands (letters ~720ms → i-dot flight → star burst
+   ~944ms → ejected middot settles ~1304ms), so the typing reads as
+   the next beat rather than competing with the dot-and-star play.
+   Human-paced: each keyframe segment types one word
+   as a steps() burst (per-keyframe animation-timing-function), with
+   held frames as thinking pauses and a rushed last word — instead of
+   the metronome-even steps(36) a machine would produce. Every value
+   still lands exactly on a character cell (each char = 100%/36 of the
+   box: monospace + uniform letter-spacing). 2600ms total ≈ 72ms/char
+   average. Negative top/bottom insets stop edge-clipping.
+   NOTE: the caret ride keyframes below mirror these percentages 1:1 —
+   edit them together or the cursor drifts off the reveal edge. */
+.ribbon-artist .sub .sub-type {
+  display: inline-block;
+  clip-path: inset(-10% 100% -10% 0);
+  animation: subType 2600ms linear 1350ms forwards;
+}
+@keyframes subType {
+  0%   { clip-path: inset(-10% 100% -10% 0);    animation-timing-function: steps(4, end); } /* "From" */
+  12%  { clip-path: inset(-10% 88.889% -10% 0); animation-timing-function: steps(1, end); } /* ␣ */
+  16%  { clip-path: inset(-10% 86.111% -10% 0); animation-timing-function: steps(3, end); } /* "one" */
+  26%  { clip-path: inset(-10% 77.778% -10% 0); animation-timing-function: steps(1, end); } /* ␣ */
+  29%  { clip-path: inset(-10% 75% -10% 0);     animation-timing-function: linear; }        /* …pause */
+  36%  { clip-path: inset(-10% 75% -10% 0);     animation-timing-function: steps(5, end); } /* "scene" */
+  50%  { clip-path: inset(-10% 61.111% -10% 0); animation-timing-function: steps(1, end); } /* ␣ */
+  53%  { clip-path: inset(-10% 58.333% -10% 0); animation-timing-function: steps(3, end); } /* "to␣" */
+  61%  { clip-path: inset(-10% 50% -10% 0);     animation-timing-function: linear; }        /* …think */
+  68%  { clip-path: inset(-10% 50% -10% 0);     animation-timing-function: steps(4, end); } /* "mult" */
+  77%  { clip-path: inset(-10% 38.889% -10% 0); animation-timing-function: linear; }        /* hitch */
+  80%  { clip-path: inset(-10% 38.889% -10% 0); animation-timing-function: steps(5, end); } /* "iple␣" */
+  88%  { clip-path: inset(-10% 25% -10% 0);     animation-timing-function: steps(9, end); } /* "scenarios" rush */
+  100% { clip-path: inset(-10% 0% -10% 0); }
+}
+/* Block cursor — terminal style. Lives on .sub (NOT the clipped
+   .sub-type) so it stays visible while riding one cell ahead of the
+   reveal edge. One char cell = 1ch + 0.28em letter-spacing; each stop
+   below is n×that, matching the subType percentages exactly. Solid
+   while typing, then blinks, then off. */
+.ribbon-artist .sub::after {
+  content: "";
+  position: absolute;
+  top: -1px;
+  bottom: -1px;
+  left: 0;
+  width: 0.62em;
+  background: rgb(var(--hero-fg-rgb) / 0.6);
+  opacity: 0;
+  animation:
+    subCaretRide 2600ms linear 1350ms forwards,
+    subCaretLife 3700ms linear 1350ms forwards;
+}
+@keyframes subCaretRide {
+  0%   { transform: translateX(0);                       animation-timing-function: steps(4, end); }
+  12%  { transform: translateX(calc(4ch + 1.12em));      animation-timing-function: steps(1, end); }
+  16%  { transform: translateX(calc(5ch + 1.4em));       animation-timing-function: steps(3, end); }
+  26%  { transform: translateX(calc(8ch + 2.24em));      animation-timing-function: steps(1, end); }
+  29%  { transform: translateX(calc(9ch + 2.52em));      animation-timing-function: linear; }
+  36%  { transform: translateX(calc(9ch + 2.52em));      animation-timing-function: steps(5, end); }
+  50%  { transform: translateX(calc(14ch + 3.92em));     animation-timing-function: steps(1, end); }
+  53%  { transform: translateX(calc(15ch + 4.2em));      animation-timing-function: steps(3, end); }
+  61%  { transform: translateX(calc(18ch + 5.04em));     animation-timing-function: linear; }
+  68%  { transform: translateX(calc(18ch + 5.04em));     animation-timing-function: steps(4, end); }
+  77%  { transform: translateX(calc(22ch + 6.16em));     animation-timing-function: linear; }
+  80%  { transform: translateX(calc(22ch + 6.16em));     animation-timing-function: steps(5, end); }
+  88%  { transform: translateX(calc(27ch + 7.56em));     animation-timing-function: steps(9, end); }
+  100% { transform: translateX(calc(36ch + 10.08em)); }
+}
+@keyframes subCaretLife {
+  0%, 70%   { opacity: 1; } /* solid through the 2600ms type (≈70%) */
+  71%, 80%  { opacity: 0; } /* then blink… */
+  81%, 90%  { opacity: 1; }
+  91%, 100% { opacity: 0; } /* …and sign off */
 }
 @keyframes draw {
   to { stroke-dashoffset: 0; }
@@ -1243,16 +1342,20 @@ em.it { font-style: italic; }
   color: var(--chip-green-ink);
   width: 248px;
   padding: 16px 18px;
-  animation: stickerGreenIn 320ms var(--ease-out-quart) 1420ms backwards;
+  animation: stickerGreenIn 280ms var(--ease-out-quart) 1420ms backwards;
 }
 @keyframes stickerGreenIn {
-  /* Simplified — sticker holds its final -5deg rotation throughout
-     entrance and just fades in with a small upward slide. Previous
-     keyframe rotated from -22deg, which on the way to -5deg passed
-     through angles that visually compressed the sticker (looked
-     like it was minimising). */
-  from { opacity: 0; transform: translateY(12px) rotate(-5deg); }
-  to   { opacity: 1; transform: translateY(0)    rotate(-5deg); }
+  /* Mirror of stickerNameIn — slaps in from the LEFT with the same
+     up-and-over arc and rotation settle, signs flipped (the name
+     sticker arrives from the right). 280ms matches the name sticker
+     so the pair read as the same gesture from opposite sides.
+     History note: an earlier -22deg rotation entrance read as the
+     sticker "minimising" — that variant also slid upward from below
+     (translateY +12px). The mirrored diagonal (-48px, -18px) matches
+     the name sticker's proven path, so the rotation reads as a slap,
+     not a shrink. */
+  from { opacity: 0; transform: translate(-48px, -18px) rotate(-22deg); }
+  to   { opacity: 1; transform: rotate(-5deg); }
 }
 .sticker.designing-green .d-text {
   font-family: var(--f-serif);
@@ -1448,7 +1551,10 @@ em.it { font-style: italic; }
   backface-visibility: hidden;
 }
 .folder-row > .folder.in .folder-art {
-  animation: folderArtSpringIn 650ms cubic-bezier(0.34, 1.56, 0.64, 1) 120ms both;
+  /* Delay 560ms (was 120ms): the copy column (tag 40ms → meta 110ms →
+     blurb 180ms, 460ms transitions) lands first, THEN the folder
+     springs in — text introduces the project, art punctuates it. */
+  animation: folderArtSpringIn 650ms cubic-bezier(0.34, 1.56, 0.64, 1) 560ms both;
 }
 
 .folder-row > .folder .tag,
@@ -2111,43 +2217,84 @@ em.it { font-style: italic; }
   /* height set dynamically by SmoothScroll.tsx */
 }
 
-/* Peek strip — sits flush at About's bottom edge, always visible as an
-   affordance for the Connect section below. Slides off with About. */
+/* Peek combo — handwritten note + thin dark sliver of the Connect
+   surface under About's bottom edge. Replaces the full-width dark
+   "CONNECT ↓" bar: the sliver foreshadows Connect's color, the inset
+   shadow makes About read as a sheet resting on top (matching the
+   slide-off mechanic), and the Caveat note + traced arrow carry the
+   site's hand-drawn voice. Slides off with About. */
 .about-peek {
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  height: 52px;
-  background: var(--hero-bg);
-  color: var(--hero-fg);
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 10px;
   text-decoration: none;
   z-index: 3; /* above About content */
-  transition: opacity 180ms ease;
 }
-.about-peek:hover { opacity: 0.82; }
+/* Override generic .reveal hide — the container stays put; only the
+   note's text wipe + arrow trace animate on .in. */
+.about-peek.reveal { opacity: 1; transform: none; transition: none; }
 
-.about-peek__label {
-  font-family: var(--f-display);
-  font-size: clamp(13px, 1.1vw, 15px);
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+.about-peek__note {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 7px;
+  padding-bottom: 9px;
+  transform: rotate(-2deg); /* hand-placed, like the stickers */
+  color: var(--accent);
+  transition: transform 300ms var(--ease-out-quart);
 }
+/* Hover invites downward instead of dimming */
+.about-peek:hover .about-peek__note { transform: rotate(-2deg) translateY(3px); }
+
+.about-peek__text {
+  font-family: var(--f-hand);
+  font-size: clamp(21px, 2vw, 26px);
+  font-weight: 600;
+  line-height: 1.1;
+  /* hidden via left→right wipe; negative top/bottom insets keep
+     Caveat's descenders/swashes from clipping at the line box */
+  clip-path: inset(-20% 100% -20% 0);
+  transition: clip-path 700ms ease 120ms;
+}
+.about-peek.in .about-peek__text { clip-path: inset(-20% -10% -20% 0); }
+
 .about-peek__arrow {
-  width: 15px;
-  height: 15px;
+  width: 26px;
+  height: 32px;
   flex-shrink: 0;
-  opacity: 0.7;
-  animation: peek-bounce 1.6s ease-in-out infinite;
+  margin-top: 12px; /* arrow hangs below the text baseline */
 }
-@keyframes peek-bounce {
-  0%, 100% { transform: translateY(0); }
-  50%       { transform: translateY(4px); }
+.ap-stroke {
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1; /* pathLength=1 normalises both paths */
+  stroke-dashoffset: 1;
+}
+/* Trace choreography: text wipe (120–820ms) → shaft → head */
+.about-peek.in .ap-shaft { transition: stroke-dashoffset 460ms ease-out 780ms; stroke-dashoffset: 0; }
+.about-peek.in .ap-head  { transition: stroke-dashoffset 240ms ease-out 1200ms; stroke-dashoffset: 0; }
+
+/* Dark sliver — Connect's surface peeking out under the page edge.
+   Inset top shadow = About casting a shadow onto the layer beneath. */
+.about-peek__edge {
+  width: 100%;
+  height: 14px;
+  background: var(--hero-bg);
+  box-shadow: inset 0 7px 9px -5px rgba(0, 0, 0, 0.55);
+  transition: height 300ms var(--ease-out-quart);
+}
+.about-peek:hover .about-peek__edge { height: 20px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .about-peek__text { clip-path: none; transition: none; }
+  .ap-stroke { stroke-dasharray: none; stroke-dashoffset: 0; }
+  .about-peek__note, .about-peek__edge { transition: none; }
 }
 
 .about {
@@ -2617,11 +2764,11 @@ em.it { font-style: italic; }
 }
 
 .connect-pitch {
-  /* K2D body voice on dark — matches the Hero polaroid caption-line
-     and the designing-green sticker, which both use K2D weight 700
-     with italic emphasis. Switched from CookieRun (warm cream-bg
-     body) to keep Connect's voice in the same family as the rest of
-     the dark stage. */
+  /* K2D body voice on dark — matches the designing-green sticker's
+     K2D weight 700 with italic emphasis. (The polaroid caption-line
+     used to share this; it's since moved to Caveat handwriting.)
+     Switched from CookieRun (warm cream-bg body) to keep Connect's
+     voice in the same family as the rest of the dark stage. */
   font-family: var(--f-sans);
   font-weight: 700;
   font-size: clamp(26px, 3.2vw, 42px);
@@ -2829,6 +2976,14 @@ em.it { font-style: italic; }
   60%  { transform: scale(1.2); opacity: 1; }
   100% { transform: scale(1); opacity: 1; }
 }
+/* Fade-in on first uncover — .foot--armed is added by SmoothScroll
+   (desktop, non-reduced-motion only; the touch and reduced-motion
+   paths never arm it, so the footer stays visible there). .foot--in
+   lands the first time About's bottom edge clears the footer. Opacity
+   only — transform belongs to the parallax inline writes. */
+.foot.foot--armed { opacity: 0; transition: opacity 700ms var(--ease-out-quart); }
+.foot.foot--armed.foot--in { opacity: 1; }
+
 .foot {
   margin-top: auto; /* pushes footer to the bottom regardless of row height */
   padding-top: 24px;
