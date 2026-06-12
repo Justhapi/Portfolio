@@ -108,7 +108,11 @@ const PARALLAX_TARGETS: ParallaxConfig[] = [
 ];
 
 /** Delay after page load before parallax transforms activate (ms). */
-const PARALLAX_ACTIVATE_DELAY = 2400;
+/* Must be greater than the latest hero entrance settle time so the parallax
+ * system doesn't clear an animation's `backwards` fill-mode mid-flight.
+ * Post-/animate restage: green sticker now settles at ~3180ms; activate
+ * after a comfortable 320ms buffer. */
+const PARALLAX_ACTIVATE_DELAY = 3500;
 
 export default function SmoothScroll() {
   useEffect(() => {

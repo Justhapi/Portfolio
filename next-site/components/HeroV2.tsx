@@ -57,9 +57,18 @@ export default function HeroV2() {
       layer.style.setProperty("--peek-y", "50%");
     }
 
-    // polaroid entrance: 980ms delay + 380ms duration → settles at 1360ms.
-    // Fire the hint after the full collage has landed (stickers settle ~1700ms).
-    const HINT_START = 1900;
+    // Hero entrance choreography (post-/animate restage):
+    //   wordmark trace  : 80–980ms
+    //   subtitle types  : 1350–3950ms (ambient, runs behind the rest)
+    //   polaroid lands  : 1500–1880ms
+    //   Kathleen settles: 2200–2480ms
+    //   李曦 chip       : 2380–2640ms
+    //   green sticker   : 2900–3180ms
+    //   scroll cue      : 3500–3780ms
+    // Fire the polaroid swap-hint AFTER the last sticker settles + a beat
+    // of breathing room, so the hint reads as its own moment rather than
+    // overlapping the green sticker's arrival.
+    const HINT_START = 3950;
     const HINT_HOLD = 850;
 
     timers.push(window.setTimeout(() => setHinting(true), HINT_START));

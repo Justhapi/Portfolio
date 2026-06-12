@@ -776,7 +776,7 @@ body.on-paper .nav-pill {
     0 30px 60px -20px rgba(0, 0, 0, 0.55);
   z-index: 10;
   /* 980ms = all letters landed (720ms) + star burst well underway, before it closes */
-  animation: polaroidPlaceIn 380ms var(--ease-out-quart) 980ms backwards;
+  animation: polaroidPlaceIn 380ms var(--ease-out-quart) 1500ms backwards;
 }
 @keyframes polaroidPlaceIn {
   from {
@@ -1230,7 +1230,7 @@ em.it { font-style: italic; }
   background: var(--chip-yellow);
   color: var(--chip-yellow-ink);
   padding: 18px 24px 16px;
-  animation: stickerNameIn 280ms var(--ease-out-quart) 1160ms backwards;
+  animation: stickerNameIn 280ms var(--ease-out-quart) 2200ms backwards;
 }
 @keyframes stickerNameIn {
   from { opacity: 0; transform: translate(48px, -18px) rotate(22deg); }
@@ -1300,7 +1300,7 @@ em.it { font-style: italic; }
     0 2px 4px -1px rgba(0, 0, 0, 0.35),
     0 6px 12px -4px rgba(0, 0, 0, 0.42),
     0 16px 28px -12px rgba(0, 0, 0, 0.5);
-  animation: chipZhIn 260ms var(--ease-out-quart) 1280ms backwards;
+  animation: chipZhIn 260ms var(--ease-out-quart) 2380ms backwards;
 }
 .chip-zh .chip-zh-text {
   position: relative;
@@ -1342,7 +1342,7 @@ em.it { font-style: italic; }
   color: var(--chip-green-ink);
   width: 248px;
   padding: 16px 18px;
-  animation: stickerGreenIn 280ms var(--ease-out-quart) 1420ms backwards;
+  animation: stickerGreenIn 280ms var(--ease-out-quart) 2900ms backwards;
 }
 @keyframes stickerGreenIn {
   /* Mirror of stickerNameIn — slaps in from the LEFT with the same
@@ -1481,7 +1481,7 @@ em.it { font-style: italic; }
   text-transform: uppercase;
   color: rgb(var(--hero-fg-rgb) / 0.7);
   z-index: 8;
-  animation: scrollCueIn 280ms var(--ease-out-quart) 1600ms backwards;
+  animation: scrollCueIn 280ms var(--ease-out-quart) 3500ms backwards;
 }
 @keyframes scrollCueIn {
   from { opacity: 0; transform: translateX(-50%) translateY(14px); }
@@ -2638,6 +2638,31 @@ em.it { font-style: italic; }
   height: 100vh;
   overflow: hidden;
 }
+/* When the email compose form is open it expands the connect-links column
+   downward — pushing LinkedIn, Resume, and the footer past the 100vh
+   bound. To keep all of them reachable:
+   1. The section itself switches to `overflow-y: auto` so the visitor
+      can scroll inside Connect.
+   2. The container drops its `height: 100%` cap and uses `min-height`
+      instead — now it can grow with content rather than clipping it.
+   3. `.connect-row` drops `flex: 1` so it sizes to its content (rather
+      than holding the row fixed and clipping the form's expansion).
+   Together these three changes let the form expand cleanly, the footer
+   falls below it in normal flow, and the visitor scrolls inside Connect
+   to reach the footer. */
+.connect.has-open-form { overflow-y: auto; }
+.connect.has-open-form > .container {
+  height: auto;
+  min-height: 100%;
+}
+.connect.has-open-form .connect-row {
+  flex: 0 0 auto;
+}
+/* Keep the pitch text anchored to the TOP of its grid row when the
+   links column grows. Without this, `align-items: center` on
+   `.connect-row` re-centers the pitch as the right column expands —
+   sliding the pitch downward as the form opens. */
+.connect-pitch { align-self: start; }
 /* .container inside Connect must stretch to the full section height so
    the flex column can push the footer to the bottom edge. */
 .connect > .container {
@@ -2709,7 +2734,14 @@ em.it { font-style: italic; }
   transform: none;
 }
 
-.connect-links > * {
+/* Entrance stagger for the three link rows — Email, LinkedIn, Resume.
+   The `.c-email-form` sibling between Email and LinkedIn is EXCLUDED
+   from this stagger via `:not(.c-email-form)` because the form has its
+   own opacity/max-height transitions tied to `formOpen`. Without that
+   exclusion, the form was being counted as `:nth-child(2)`, shifting
+   LinkedIn to (3) and Resume to (4) — and the original stagger only
+   went up to (3), so Resume stayed at `opacity: 0` forever. */
+.connect-links > *:not(.c-email-form) {
   opacity: 0;
   transform: translateY(16px);
   transition:
@@ -2726,9 +2758,13 @@ em.it { font-style: italic; }
     opacity   500ms var(--ease-out-quart),
     transform 500ms var(--ease-out-quart);
 }
+/* `:nth-child(N of selector)` would be cleanest but Safari support is
+   only ~16.4+; use `:nth-child` with the actual DOM positions instead.
+   Email is child 1, form is child 2 (skip — has its own transitions),
+   LinkedIn is child 3, Resume is child 4. */
 .connect-row.in .connect-links > *:nth-child(1) { opacity: 1; transform: none; transition-delay: 380ms; }
-.connect-row.in .connect-links > *:nth-child(2) { opacity: 1; transform: none; transition-delay: 470ms; }
-.connect-row.in .connect-links > *:nth-child(3) { opacity: 1; transform: none; transition-delay: 560ms; }
+.connect-row.in .connect-links > *:nth-child(3) { opacity: 1; transform: none; transition-delay: 470ms; }
+.connect-row.in .connect-links > *:nth-child(4) { opacity: 1; transform: none; transition-delay: 560ms; }
 
 @media (prefers-reduced-motion: reduce) {
   .connect-pitch,
@@ -2976,6 +3012,233 @@ em.it { font-style: italic; }
   60%  { transform: scale(1.2); opacity: 1; }
   100% { transform: scale(1); opacity: 1; }
 }
+
+/* ──────────────────────────────────────────────────────────────────────
+   Email compose form — inline drop-down beneath the Email row
+
+   Click the Email row → the form expands underneath it (max-height
+   transition for the slide, opacity + translateY for the inner content).
+   Visually anchored to the email row by reusing the same .c-link border
+   treatment, mono labels, and cream-on-dark palette. The form opens a
+   `mailto:` URL on submit — no backend; the visitor's mail client
+   handles delivery.
+   ────────────────────────────────────────────────────────────────────── */
+
+/* Move the email row's bottom separator OFF the row itself and ONTO
+   the form below it. The form's bottom border is always visible (not
+   transitioning) — so when the form is collapsed (max-height: 0), the
+   form's bottom edge sits flush with the email row's bottom, and the
+   line appears in its closed position. When the form expands, the
+   form's bottom border physically translates downward with the
+   expansion — producing a "line slides down" effect instead of a
+   border fade. The email row's own bottom border is suppressed
+   permanently to avoid a double line. */
+.c-link.c-email {
+  border-bottom-color: transparent;
+}
+
+/* Container — collapsed/expanded via max-height. `overflow: hidden`
+   clips the inner content during the transition so it doesn't appear
+   before the box has space for it. Bottom border opacity (`0.12`)
+   matches the other `.c-link` separator lines so the email row reads
+   as one continuous separator system — except this particular line
+   physically slides downward with the form's max-height transition
+   when expanding (and back upward when collapsing).
+
+   CRITICAL: the form box itself stays at `opacity: 1`. Putting opacity
+   on the form would also hide the border (CSS opacity affects the
+   entire box including its border), which is exactly the bug the
+   visible-outline was meant to fix. Inner content fade is handled by
+   `.c-email-form-inner`'s own opacity transition. */
+.c-email-form {
+  max-height: 0;
+  overflow: hidden;
+  border-bottom: 1px solid rgb(var(--hero-fg-rgb) / 0.12);
+  transition: max-height 380ms var(--ease-out-quart);
+}
+.c-email-form.is-open {
+  /* Generous cap so the form's natural height is never clipped on
+     desktop (subject + textarea + actions ≈ 360px). The transition
+     finishes when the actual content height is reached. */
+  max-height: 520px;
+}
+
+.c-email-form-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px 4px 22px;
+  /* Subtle bonded look — a thin guide line on the left ties the form
+     visually to the bullet point above it so the form reads as a
+     continuation of the email row, not a separate panel. */
+  position: relative;
+  /* Inner content slides up + fades in slightly after the box opens. */
+  transform: translateY(-6px);
+  opacity: 0;
+  transition:
+    transform 320ms var(--ease-out-quart) 80ms,
+    opacity 260ms ease 80ms;
+}
+.c-email-form.is-open .c-email-form-inner {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.c-email-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.c-email-form-label {
+  font-family: var(--f-mono);
+  font-weight: 600;
+  font-size: 10.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgb(var(--hero-fg-rgb) / 0.55);
+}
+.c-email-form-field input,
+.c-email-form-field textarea {
+  font-family: var(--f-sans);
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--hero-fg);
+  background: rgb(var(--hero-fg-rgb) / 0.04);
+  border: 1px solid rgb(var(--hero-fg-rgb) / 0.16);
+  border-radius: 8px;
+  padding: 12px 14px;
+  width: 100%;
+  resize: vertical;
+  transition:
+    border-color 200ms ease,
+    background 200ms ease,
+    box-shadow 200ms ease;
+  /* Override Safari/Chrome's default focus ring — the connect section's
+     palette demands a softer treatment than the OS default. */
+  outline: none;
+}
+.c-email-form-field input::placeholder,
+.c-email-form-field textarea::placeholder {
+  color: rgb(var(--hero-fg-rgb) / 0.32);
+}
+.c-email-form-field input:focus,
+.c-email-form-field textarea:focus {
+  border-color: var(--accent-soft);
+  background: rgb(var(--hero-fg-rgb) / 0.08);
+  box-shadow: 0 0 0 3px rgba(212, 144, 117, 0.12);
+}
+.c-email-form-field textarea {
+  min-height: 120px;
+  font-family: var(--f-sans);
+}
+
+/* Actions row — From field stretches across the left, Send Message pill
+   on the right. From captures the visitor's preferred contact channel
+   (email, LinkedIn, etc.) so Kathleen knows how to reach back; on
+   submit it's prepended to the mail body as `Contact: <value>` because
+   `mailto:` URLs can't reliably set a Reply-To header. */
+.c-email-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+  gap: 12px;
+  padding-top: 4px;
+}
+.c-email-form-from {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1 1 auto;
+  min-width: 0; /* let it shrink rather than force horizontal overflow */
+}
+/* Inputs inside .c-email-form-from match the Subject/Message field
+   styling — same border, padding, focus state — so the actions row
+   reads as a continuation of the form rather than a separate cluster. */
+.c-email-form-from input {
+  font-family: var(--f-sans);
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--hero-fg);
+  background: rgb(var(--hero-fg-rgb) / 0.04);
+  border: 1px solid rgb(var(--hero-fg-rgb) / 0.16);
+  border-radius: 8px;
+  padding: 12px 14px;
+  width: 100%;
+  outline: none;
+  transition:
+    border-color 200ms ease,
+    background 200ms ease,
+    box-shadow 200ms ease;
+}
+.c-email-form-from input::placeholder {
+  color: rgb(var(--hero-fg-rgb) / 0.32);
+}
+.c-email-form-from input:focus {
+  border-color: var(--accent-soft);
+  background: rgb(var(--hero-fg-rgb) / 0.08);
+  box-shadow: 0 0 0 3px rgba(212, 144, 117, 0.12);
+}
+.c-email-form-send {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 20px;
+  background: var(--hero-fg);
+  color: var(--hero-bg, #0d1014);
+  border: 1px solid var(--hero-fg);
+  border-radius: 999px;
+  cursor: pointer;
+  font-family: var(--f-mono);
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  transition:
+    background 200ms ease,
+    border-color 200ms ease,
+    transform 240ms var(--ease-out-quart),
+    box-shadow 240ms var(--ease-out-quart);
+  box-shadow: 0 6px 16px -8px rgba(0, 0, 0, 0.5);
+}
+.c-email-form-send:hover,
+.c-email-form-send:focus-visible {
+  background: var(--accent-soft);
+  border-color: var(--accent-soft);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px -10px rgba(0, 0, 0, 0.6);
+  outline: none;
+}
+.c-email-form-send:active {
+  transform: translateY(0) scale(0.98);
+}
+.c-email-form-send-arrow {
+  display: inline-block;
+  transition: transform 240ms var(--ease-out-quart);
+}
+.c-email-form-send:hover .c-email-form-send-arrow {
+  transform: translateX(3px);
+}
+
+@media (max-width: 640px) {
+  .c-email-form.is-open { max-height: 720px; }
+  .c-email-form-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .c-email-form-from { flex: 0 0 auto; }
+  .c-email-form-send { justify-content: center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .c-email-form,
+  .c-email-form-inner,
+  .c-email-form-send,
+  .c-email-form-send-arrow { transition: none !important; }
+}
+
 /* Fade-in on first uncover — .foot--armed is added by SmoothScroll
    (desktop, non-reduced-motion only; the touch and reduced-motion
    paths never arm it, so the footer stays visible there). .foot--in
@@ -3524,6 +3787,32 @@ em.it { font-style: italic; }
    ────────────────────────────────────────────────────────────────────── */
 .case-section .research-split-lead {
   margin-bottom: 20px;
+}
+
+/* Throughline lead — promoted from the end of JT Researching to its
+   top so a skimmer reading the first paragraph still walks away with
+   the section's payoff. Visually distinct from regular paragraphs:
+   slightly larger, accent-tinted, and bracketed with a faint top/bottom
+   rule so it reads as a primer / pull-quote rather than body copy. */
+.case-section .research-throughline-lead {
+  font-family: var(--f-cookie);
+  font-size: 18.5px;
+  line-height: 1.55;
+  color: var(--fg);
+  padding: 16px 0 18px;
+  margin: 0 0 24px;
+  border-top: 1px solid rgb(var(--fg-rgb) / 0.08);
+  border-bottom: 1px solid rgb(var(--fg-rgb) / 0.08);
+}
+.case-section .research-throughline-lead strong {
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent-on-cream);
+  display: block;
+  margin-bottom: 6px;
 }
 .case-section .parallel-tracks {
   display: grid;
@@ -4079,6 +4368,15 @@ em.it { font-style: italic; }
   inset: 0;
   pointer-events: none;
   z-index: 4;             /* above grid bg, below polaroid/stickers */
+  /* Hold sparkles out of the entrance choreography — they fade in
+     AFTER the green sticker (the last staged element) has settled, so
+     they read as ambient atmosphere arriving after the main collage
+     rather than competing with each piece as it lands. */
+  opacity: 0;
+  animation: heroSparklesFadeIn 800ms var(--ease-out-quart) 3300ms forwards;
+}
+@keyframes heroSparklesFadeIn {
+  to { opacity: 1; }
 }
 .hero-spark {
   position: absolute;

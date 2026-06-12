@@ -89,8 +89,19 @@ export default function AIJourneyAgentCaseStudy() {
         <section id="researching" className="case-section">
           <h2>Researching</h2>
           <h3>Understanding what would make a journey maintenance agent effective</h3>
+
+          {/* Throughline promoted to the TOP of Researching so a skimmer
+              who reads only the first paragraph still walks away with
+              the section's payoff. The body below explains how we got
+              here across four lenses; the throughline names where it
+              landed. */}
+          <p className="research-throughline-lead">
+            <strong>The throughline:</strong> maintenance today is{" "}
+            <mark className="hl">reactive, manual, and tied to project milestones</mark> —
+            and users only trust AI suggestions when they can see the reasoning behind them.
+          </p>
           <p>
-            We grounded the project through research across four lenses:{" "}
+            We arrived there through four research lenses:{" "}
             <mark className="hl">the platform, the agent components, the industry, and our users.</mark>
           </p>
 
@@ -192,13 +203,9 @@ export default function AIJourneyAgentCaseStudy() {
           {/* ── User Interviews ── */}
           <h3>User interviews</h3>
           <p>
-            We interviewed <mark className="hl">six current JourneyTrack users</mark> — CX
-            strategists and UX researchers — to hear how they actually maintain journey maps today.
-            <br></br><br></br>
-            Synthesizing through <mark className="hl">affinity diagramming</mark>, the themes
-            confirmed what desk research had hinted at: there is{" "}
-            <mark className="hl">no clear system for spotting outdated content</mark>, and users
-            wanted AI involved — but only if they could see <em>why</em> it was suggesting something.
+            Six interviews with current CX strategists and UX researchers (affinity-diagrammed)
+            confirmed the desk research: <mark className="hl">no clear system for spotting
+            outdated content</mark>, and users want AI involved — only if they can see <em>why</em>.
           </p>
           <figure>
             <div className="image-slot">user interview synthesis · affinity diagram</div>
@@ -207,12 +214,6 @@ export default function AIJourneyAgentCaseStudy() {
               that drove ideation.
             </figcaption>
           </figure>
-
-          <p>
-            The throughline across all four lenses: maintenance today is{" "}
-            <mark className="hl">reactive, manual, and tied to project milestones</mark> — and users
-            only trust AI suggestions when they can see the reasoning behind them.
-          </p>
         </section>
 
         {/* ───── Ideating ───── */}
