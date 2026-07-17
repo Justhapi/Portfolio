@@ -1404,40 +1404,9 @@ em.it { font-style: italic; }
   color: rgba(255, 255, 255, 0.5);
 }
 
-/* annotation arrow (bottom-right) */
-.hero-anno {
-  position: absolute;
-  bottom: 16%;
-  right: 8%;
-  z-index: 9;
-  width: 220px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  align-items: flex-end;
-  color: var(--hero-fg);
-  opacity: 0.85;
-}
-.hero-anno svg {
-  width: 140px; height: 110px;
-  align-self: flex-start;
-}
-.hero-anno path {
-  stroke: var(--hero-fg);
-  stroke-width: 1.5;
-  fill: none;
-  stroke-linecap: round;
-  stroke-dasharray: 300;
-  stroke-dashoffset: 300;
-  animation: draw 1.6s var(--ease-out-quart) 0.9s forwards;
-}
-.hero-anno .anno-text {
-  font-family: var(--f-hand);
-  font-size: 20px;
-  line-height: 1.25;
-  text-align: right;
-  color: rgb(var(--hero-fg-rgb) / 0.88);
-}
+/* .hero-anno annotation arrow removed — no TSX references the class
+   (grep-verified). Was an SVG arrow + Caveat text in the hero's
+   bottom-right corner from an earlier iteration. */
 
 /* tiny stars sprinkled over hero */
 .star {
@@ -2560,70 +2529,9 @@ em.it { font-style: italic; }
   }
 }
 
-/* =====================================================
-   LEARNINGS — scattered cards w/ parallax
-   ===================================================== */
-.learnings { background: var(--bg); }
-.learn-canvas {
-  position: relative;
-  height: 760px;
-  margin-top: 32px;
-  perspective: 1600px;
-  transform-style: preserve-3d;
-}
-.learn-card-tan {
-  position: absolute;
-  background: #C7A878;
-  padding: 12px 12px 36px;
-  box-shadow:
-    0 22px 44px -18px rgb(var(--fg-rgb) / 0.45),
-    0 6px 12px -4px rgb(var(--fg-rgb) / 0.24);
-  transition: transform 800ms var(--ease-out-expo), box-shadow 400ms ease;
-  transform-style: preserve-3d;
-  backface-visibility: hidden;
-  will-change: transform;
-}
-.learn-card-tan:hover {
-  z-index: 20;
-  box-shadow:
-    0 30px 60px -18px rgb(var(--fg-rgb) / 0.55),
-    0 10px 18px -6px rgb(var(--fg-rgb) / 0.3);
-}
-.learn-card-tan::after {
-  content: "";
-  position: absolute;
-  inset: 12px 12px 36px;
-  background: repeating-linear-gradient(
-    45deg,
-    rgba(255,255,255,0.08) 0 14px,
-    transparent 14px 15px
-  );
-  pointer-events: none;
-}
-.learn-card-tan image-slot,
-.learn-card-tan .image-slot {
-  width: 100%;
-  height: calc(100% - 36px);
-  background: rgb(var(--fg-rgb) / 0.06);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--f-mono);
-  font-size: 10px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: rgb(var(--fg-rgb) / 0.45);
-}
-.learn-card-tan .l-caption {
-  position: absolute;
-  bottom: 8px;
-  left: 12px; right: 12px;
-  font-family: var(--f-hand);
-  font-size: 18px;
-  color: rgb(var(--fg-rgb) / 0.7);
-  text-align: center;
-  line-height: 1;
-}
+/* LEARNINGS block removed — no `.learnings`, `.learn-canvas`,
+   `.learn-card-tan`, or `.l-caption` references in any tsx file
+   (grep-verified). Was ~62 lines. */
 
 /* =====================================================
    CONNECT
@@ -2650,7 +2558,18 @@ em.it { font-style: italic; }
    Together these three changes let the form expand cleanly, the footer
    falls below it in normal flow, and the visitor scrolls inside Connect
    to reach the footer. */
-.connect.has-open-form { overflow-y: auto; }
+.connect.has-open-form {
+  overflow-y: auto;
+  /* Hide the scrollbar indicator that appears when Connect becomes
+     internally scrollable — the visitor still gets scroll functionality
+     (wheel + touch + arrow keys all work), just no visible track/thumb
+     on the section's right edge. Kept for both Firefox (`scrollbar-width`)
+     and Chromium/Safari (`::-webkit-scrollbar`). */
+  scrollbar-width: none;
+}
+.connect.has-open-form::-webkit-scrollbar {
+  display: none;
+}
 .connect.has-open-form > .container {
   height: auto;
   min-height: 100%;
@@ -2892,39 +2811,6 @@ em.it { font-style: italic; }
    rows don't have a separate right-side element like the copy button,
    shifting the whole row is functionally identical to shifting only
    the bullet + label group. */
-
-/* ===== Mindspace badge in the Connect section header ===== */
-.mindspace-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 0;
-  border: none;
-  background: transparent;
-  font-family: var(--f-hand);
-  font-size: 26px;
-  color: var(--accent-soft);
-  align-self: end;
-  transition:
-    color 200ms ease,
-    transform 240ms var(--ease-out-quart);
-}
-.mindspace-badge:hover {
-  color: var(--hero-fg);
-  transform: translateY(-2px) rotate(-1.5deg);
-}
-.mindspace-badge .mindspace-plant {
-  /* shrunk 20% from the previous 24px → ~19px */
-  width: 19px;
-  height: auto;
-  flex-shrink: 0;
-  margin-top: -4px;          /* the stem extends above the badge baseline */
-  filter: drop-shadow(0 0 5px rgba(212, 144, 117, 0.35));
-  transition: transform 320ms cubic-bezier(0.34, 1.4, 0.64, 1);
-}
-.mindspace-badge:hover .mindspace-plant {
-  transform: rotate(-10deg) scale(1.08);
-}
 
 /* ===== Email row — link + copy button sharing one .c-link container ===== */
 .c-link.c-email {
@@ -4368,15 +4254,14 @@ em.it { font-style: italic; }
   inset: 0;
   pointer-events: none;
   z-index: 4;             /* above grid bg, below polaroid/stickers */
-  /* Hold sparkles out of the entrance choreography — they fade in
-     AFTER the green sticker (the last staged element) has settled, so
-     they read as ambient atmosphere arriving after the main collage
-     rather than competing with each piece as it lands. */
-  opacity: 0;
-  animation: heroSparklesFadeIn 800ms var(--ease-out-quart) 3300ms forwards;
-}
-@keyframes heroSparklesFadeIn {
-  to { opacity: 1; }
+  /* Container-level fade removed. Each `.star-slot` now blinks in
+     independently via its own `--star-delay` custom prop (set inline
+     from SparkleField's per-slot spawnDelay). See `.star-slot` below. */
+  /* Hold sparkles out of the entrance choreography — deferred per-slot
+     via SparkleField's BASE_DELAY (3300ms, matching the old
+     container-level fade). Each slot then blinks in independently over
+     the following ~1.6s so the field reads as arriving one star at a
+     time instead of as a single synchronized fade. */
 }
 .hero-spark {
   position: absolute;
@@ -4385,11 +4270,13 @@ em.it { font-style: italic; }
 
 /* SparkleField slot: each star fades in, twinkles for a while, then fades out.
    JS-driven respawn re-mounts the element (new key), restarting this keyframe
-   at a fresh random position. */
+   at a fresh random position. `--star-delay` is set inline per-slot so the
+   initial field blinks in independently over ~1.6s; respawns get delay 0. */
 .star-slot {
   --star-life: 4000ms;
+  --star-delay: 0ms;
   opacity: 0;
-  animation: starLife var(--star-life) ease-in-out forwards;
+  animation: starLife var(--star-life) ease-in-out var(--star-delay) forwards;
 }
 @keyframes starLife {
   0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.4); }
@@ -4423,184 +4310,11 @@ em.it { font-style: italic; }
   color: rgb(var(--hero-fg-rgb) / 0.55);
 }
 
-/* =====================================================
-   MINDSPACE PLAYGROUND PAGE
-   ===================================================== */
-.mindspace {
-  position: relative;
-  min-height: 100vh;
-  background: var(--hero-bg);
-  color: var(--hero-fg);
-  overflow: hidden;
-}
-.mindspace::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image: radial-gradient(rgb(var(--hero-fg-rgb) / 0.05) 1px, transparent 1px);
-  background-size: 32px 32px;
-  opacity: 0.5;
-  pointer-events: none;
-}
-.mindspace-top {
-  position: relative;
-  z-index: 2;
-  padding: 32px 40px 24px;
-  text-align: center;
-}
-.mindspace-top .case-back {
-  position: absolute;
-  left: 40px;
-  top: 32px;
-}
-.mindspace-title {
-  font-family: var(--f-hand);
-  font-size: clamp(64px, 9vw, 120px);
-  letter-spacing: 0.01em;
-  color: var(--accent-soft);
-  margin: 0 0 8px;
-  filter: drop-shadow(0 0 12px rgba(212, 144, 117, 0.3));
-}
-.mindspace-sub {
-  font-family: var(--f-mono);
-  font-size: 11px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: rgb(var(--hero-fg-rgb) / 0.55);
-  margin: 0;
-}
-.mindspace-hint {
-  font-family: var(--f-hand);
-  font-size: 18px;
-  color: rgb(var(--hero-fg-rgb) / 0.45);
-  margin: 18px 0 0;
-}
-
-/* Garden — ASCII plant scatter, each plant sways on its own rhythm */
-.mindspace-garden {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-}
-.m-plant {
-  /* per-plant CSS vars set inline from JS — but the motion runs entirely in CSS */
-  --m-base-rot: 0deg;
-  --m-base-scale: 1;
-  --m-sway-amp: 5deg;
-  --m-sway-duration: 6s;
-  --m-sway-delay: 0s;
-  --m-sway-direction: normal;
-  --m-sprout-delay: 0s;
-  /* the active sway angle (animated by the keyframe below) */
-  --m-sway: 0deg;
-
-  position: absolute;
-  margin: 0;
-  font-family: var(--f-mono);
-  font-size: 13px;
-  line-height: 1.05;
-  letter-spacing: 0.02em;
-  white-space: pre;
-  text-align: center;
-  user-select: none;
-  cursor: pointer;
-  pointer-events: auto;
-
-  transform-origin: center bottom;
-  transform:
-    translate(-50%, -50%)
-    rotate(var(--m-base-rot))
-    rotate(var(--m-sway))
-    scale(var(--m-base-scale));
-
-  filter: drop-shadow(0 0 4px currentColor);
-
-  opacity: 0;
-  animation:
-    mPlantSprout 700ms var(--ease-out-quart) var(--m-sprout-delay) forwards,
-    mPlantSway var(--m-sway-duration) ease-in-out var(--m-sway-delay) infinite alternate;
-  animation-direction: forwards, var(--m-sway-direction);
-}
-@keyframes mPlantSprout {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-/* sway between -amp and +amp — the keyframe animates the --m-sway var
-   which the transform reads above. Registering the property would let us
-   transition it smoothly across browsers; fallback animates rotate directly. */
-@property --m-sway {
-  syntax: "<angle>";
-  inherits: false;
-  initial-value: 0deg;
-}
-@keyframes mPlantSway {
-  from { --m-sway: calc(var(--m-sway-amp) * -1); }
-  to   { --m-sway: var(--m-sway-amp); }
-}
-
-/* hover — gentle brighten (motion stays autonomous) */
-.m-plant:hover {
-  filter: drop-shadow(0 0 10px currentColor) drop-shadow(0 0 18px currentColor);
-}
-
-/* clicked / bloomed state — boost the sway range and saturate the glow */
-.m-plant.is-bloomed {
-  --m-sway-amp: 12deg;
-  --m-sway-duration: 2.8s;
-  filter:
-    drop-shadow(0 0 8px currentColor)
-    drop-shadow(0 0 16px currentColor);
-}
-
-/* fallback for browsers that ignore @property — animate the underlying transform
-   directly. (Safari ≥16.4 and Chrome/Firefox modern support @property natively.) */
-@supports not (background: paint(something)) {
-  .m-plant {
-    animation:
-      mPlantSprout 700ms var(--ease-out-quart) var(--m-sprout-delay) forwards,
-      mPlantSwayFallback var(--m-sway-duration) ease-in-out var(--m-sway-delay) infinite alternate;
-  }
-  @keyframes mPlantSwayFallback {
-    from { transform: translate(-50%, -50%) rotate(var(--m-base-rot)) rotate(calc(var(--m-sway-amp) * -1)) scale(var(--m-base-scale)); }
-    to   { transform: translate(-50%, -50%) rotate(var(--m-base-rot)) rotate(var(--m-sway-amp)) scale(var(--m-base-scale)); }
-  }
-}
-
-/* Center content slot — sits ABOVE the garden */
-.mindspace-content {
-  position: relative;
-  z-index: 3;
-  max-width: 540px;
-  margin: 64px auto 96px;
-  padding: 40px 32px;
-  text-align: center;
-}
-.mindspace-blurb {
-  font-family: var(--f-display);
-  font-weight: 600;
-  font-size: clamp(20px, 2.4vw, 28px);
-  line-height: 1.5;
-  letter-spacing: 0;
-  color: var(--hero-fg);
-  margin: 0 0 18px;
-}
-.mindspace-blurb-soft {
-  font-family: var(--f-hand);
-  font-size: 22px;
-  color: var(--accent-soft);
-  margin: 0;
-}
-
-@media (max-width: 720px) {
-  .mindspace-top { padding: 88px 24px 24px; }
-  .mindspace-top .case-back { left: 24px; top: 24px; }
-  .mindspace-content { margin: 32px auto 64px; padding: 24px 20px; }
-  .m-plant { font-size: 11px; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .m-plant { animation: none !important; opacity: 1 !important; }
-}
+/* MINDSPACE PLAYGROUND PAGE — REMOVED (178 lines).
+   No `.mindspace` route or component exists in this codebase
+   (grep-verified across app/ and components/). Related classes
+   removed: .mindspace, .mindspace-*, .m-plant, @property --m-sway,
+   @keyframes mPlantSprout/mPlantSway. */
 
 /* =====================================================
    RESPONSIVE
@@ -4645,7 +4359,6 @@ em.it { font-style: italic; }
      rule's `top: 50px; left: 60%` works on mobile too — no override
      needed. */
 
-  .learn-canvas { height: 920px; }
   /* Same overhang reason as .folder's row-gap: a card's artwork bleeds
      DOWN past its box, so the gap to the next card's tag must clear it. */
   .folder-row { gap: clamp(32px, calc(37vw - 142px), 210px) 24px; }

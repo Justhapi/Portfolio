@@ -31,13 +31,18 @@ type SlotData = {
   duration: number; // glyph cycle period (s)
   life: number; // ms the slot lives before respawning
   scale: number; // visual size multiplier
+  /** Delay before the slot's starLife entrance begins (ms). Non-zero
+   *  on FIRST mount so slots blink in independently instead of appearing
+   *  as a single fade. Zero on subsequent respawns — those already
+   *  have organic timing from the previous slot's life ending. */
+  spawnDelay: number;
 };
 
 function rand(min: number, max: number) {
   return min + Math.random() * (max - min);
 }
 
-function freshFields(slowdown = 1, lifeScale = 1, scale = 1): Omit<SlotData, "id"> {
+function freshFields(slowdown = 1, lifeScale = 1, scale = 1): Omit<SlotData, "id" | "spawnDelay"> {
   return {
     x: rand(3, 97),
     y: rand(3, 97),
@@ -60,7 +65,10 @@ function StarSlot({
   onExpire: (id: number) => void;
 }) {
   useEffect(() => {
-    const t = window.setTimeout(() => onExpire(data.id), data.life);
+    // Expire timer includes the spawnDelay so a slot with a large initial
+    // delay (say 4200ms) still gets its full `life` visible on-screen
+    // before it fades out and respawns.
+    const t = window.setTimeout(() => onExpire(data.id), data.life + data.spawnDelay);
     return () => window.clearTimeout(t);
     // re-run only when THIS slot respawns (generation bump) or unmounts
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -70,6 +78,9 @@ function StarSlot({
     left: `${data.x}%`,
     top: `${data.y}%`,
     "--star-life": `${data.life}ms`,
+    // per-slot entrance stagger so the field blinks in independently
+    // instead of arriving as one synchronized fade
+    "--star-delay": `${data.spawnDelay}ms`,
     // scale via font-size so the glyph and any border/padding scale together
     fontSize: `${data.scale}em`,
   };
@@ -96,11 +107,18 @@ export default function SparkleField({
   const [slots, setSlots] = useState<Array<SlotData & { gen: number }>>([]);
 
   // Populate client-side to avoid Math.random hydration mismatch.
+  // Initial slots get staggered spawn delays so the field blinks in
+  // over ~1.6s instead of arriving as one synchronized fade — but the
+  // FIRST slot starts at delay 0 so the viewer sees sparkles from the
+  // moment the page loads. Previously deferred to 3300ms; the sparkles
+  // are lightweight enough visually (12–20px, low-opacity) that they
+  // don't compete with the hero entrance choreography at t=0.
   useEffect(() => {
     setSlots(
       Array.from({ length: count }, (_, i) => ({
         id: i,
         gen: 0,
+        spawnDelay: i * 180 + Math.random() * 400,
         ...freshFields(slowdown, lifeScale, scale),
       })),
     );
@@ -110,7 +128,9 @@ export default function SparkleField({
     (id: number) => {
       setSlots((prev) =>
         prev.map((s) =>
-          s.id === id ? { id, gen: s.gen + 1, ...freshFields(slowdown, lifeScale, scale) } : s,
+          // Respawn: no additional delay — the previous slot's life already
+          // ended organically, and adding a delay would leave a visible gap.
+          s.id === id ? { id, gen: s.gen + 1, spawnDelay: 0, ...freshFields(slowdown, lifeScale, scale) } : s,
         ),
       );
     },
