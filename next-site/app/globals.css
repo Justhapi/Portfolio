@@ -742,22 +742,23 @@ body.on-paper .nav-pill {
   /* translateY drops to 0 because we position by the polaroid's
      top edge, not its centre. SmoothScroll.tsx's `centred: true`
      parallax handling has been updated to match. */
-  transform: translate(-50%, 0) rotate(-2deg);
+  transform: translate(-50%, 0) rotate(-4deg);
   /* Fixed width — polaroid keeps its size on every viewport per the
-     spec ("reactive in location, not size"). 320px lands the frame
-     at a comfortable read on desktop while still fitting cleanly on
-     a 360px-wide phone. */
-  width: 320px;
+     spec ("reactive in location, not size"). Shrunk from 320px → 220px
+     to reframe it as ONE decorative collage element rather than the
+     hero's visual centerpiece. The tilt also went from -2° to -4° so
+     the smaller frame reads more clearly as a "pinned postcard" than
+     as a photo the viewer is meant to focus on. */
+  width: 220px;
   /* Subtle paper texture — a faint top-down gradient on the cream
      surface suggests light catching the cardstock at the top edge. */
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0) 30%),
     #FBF7EE;
-  /* Padding: 10px top/sides keeps the photo well dominant; 50px
-     bottom gives the caption box a taller container so the meta
-     line and the two-line caption breathe instead of crowding the
-     bottom edge. */
-  padding: 10px 10px 50px;
+  /* Padding tightened proportionally to the new 220px width: 8px
+     top/sides + 34px bottom keeps the caption box's ratio to the photo
+     roughly the same as the 320px version had (10:50 ≈ 8:34). */
+  padding: 8px 8px 34px;
   /* Rounded frame — 16px on the outer cardstock for soft, modern
      corners without losing the polaroid character. */
   border-radius: 16px;
@@ -776,18 +777,18 @@ body.on-paper .nav-pill {
     0 30px 60px -20px rgba(0, 0, 0, 0.55);
   z-index: 10;
   /* 980ms = all letters landed (720ms) + star burst well underway, before it closes */
-  animation: polaroidPlaceIn 380ms var(--ease-out-quart) 1500ms backwards;
+  animation: polaroidPlaceIn 380ms var(--ease-out-quart) 1200ms backwards;
 }
 @keyframes polaroidPlaceIn {
   from {
     opacity: 0;
     /* enters from slightly above + tilted, mirrors the previous 8%
        vertical drift but in the new top-edge coordinate space */
-    transform: translate(-50%, -8%) rotate(-9deg) scale(0.86);
+    transform: translate(-50%, -8%) rotate(-11deg) scale(0.86);
   }
   to {
     opacity: 1;
-    transform: translate(-50%, 0) rotate(-2deg) scale(1);
+    transform: translate(-50%, 0) rotate(-4deg) scale(1);
   }
 }
 .hero-polaroid .photo {
@@ -1085,7 +1086,6 @@ em.it { font-style: italic; }
   outline-offset: 3px;
 }
 .ribbon-artist .sub {
-  position: relative; /* anchors the ::after block cursor */
   margin-top: 16px;
   font-family: var(--f-mono);
   font-style: normal;
@@ -1094,81 +1094,17 @@ em.it { font-style: italic; }
   letter-spacing: 0.28em;
   text-transform: uppercase;
   color: rgb(var(--hero-fg-rgb) / 0.72);
-}
-/* Typed-in entrance — starts at 1350ms, after the FULL wordmark
-   choreography lands (letters ~720ms → i-dot flight → star burst
-   ~944ms → ejected middot settles ~1304ms), so the typing reads as
-   the next beat rather than competing with the dot-and-star play.
-   Human-paced: each keyframe segment types one word
-   as a steps() burst (per-keyframe animation-timing-function), with
-   held frames as thinking pauses and a rushed last word — instead of
-   the metronome-even steps(36) a machine would produce. Every value
-   still lands exactly on a character cell (each char = 100%/36 of the
-   box: monospace + uniform letter-spacing). 2600ms total ≈ 72ms/char
-   average. Negative top/bottom insets stop edge-clipping.
-   NOTE: the caret ride keyframes below mirror these percentages 1:1 —
-   edit them together or the cursor drifts off the reveal edge. */
-.ribbon-artist .sub .sub-type {
-  display: inline-block;
-  clip-path: inset(-10% 100% -10% 0);
-  animation: subType 2600ms linear 1350ms forwards;
-}
-@keyframes subType {
-  0%   { clip-path: inset(-10% 100% -10% 0);    animation-timing-function: steps(4, end); } /* "From" */
-  12%  { clip-path: inset(-10% 88.889% -10% 0); animation-timing-function: steps(1, end); } /* ␣ */
-  16%  { clip-path: inset(-10% 86.111% -10% 0); animation-timing-function: steps(3, end); } /* "one" */
-  26%  { clip-path: inset(-10% 77.778% -10% 0); animation-timing-function: steps(1, end); } /* ␣ */
-  29%  { clip-path: inset(-10% 75% -10% 0);     animation-timing-function: linear; }        /* …pause */
-  36%  { clip-path: inset(-10% 75% -10% 0);     animation-timing-function: steps(5, end); } /* "scene" */
-  50%  { clip-path: inset(-10% 61.111% -10% 0); animation-timing-function: steps(1, end); } /* ␣ */
-  53%  { clip-path: inset(-10% 58.333% -10% 0); animation-timing-function: steps(3, end); } /* "to␣" */
-  61%  { clip-path: inset(-10% 50% -10% 0);     animation-timing-function: linear; }        /* …think */
-  68%  { clip-path: inset(-10% 50% -10% 0);     animation-timing-function: steps(4, end); } /* "mult" */
-  77%  { clip-path: inset(-10% 38.889% -10% 0); animation-timing-function: linear; }        /* hitch */
-  80%  { clip-path: inset(-10% 38.889% -10% 0); animation-timing-function: steps(5, end); } /* "iple␣" */
-  88%  { clip-path: inset(-10% 25% -10% 0);     animation-timing-function: steps(9, end); } /* "scenarios" rush */
-  100% { clip-path: inset(-10% 0% -10% 0); }
-}
-/* Block cursor — terminal style. Lives on .sub (NOT the clipped
-   .sub-type) so it stays visible while riding one cell ahead of the
-   reveal edge. One char cell = 1ch + 0.28em letter-spacing; each stop
-   below is n×that, matching the subType percentages exactly. Solid
-   while typing, then blinks, then off. */
-.ribbon-artist .sub::after {
-  content: "";
-  position: absolute;
-  top: -1px;
-  bottom: -1px;
-  left: 0;
-  width: 0.62em;
-  background: rgb(var(--hero-fg-rgb) / 0.6);
+  /* Gentle fade-in AFTER the wordmark trace lands (~980ms). Replaces
+     the previous terminal-typed reveal — quieter, feels less like a
+     demo and more like a statement that just settles into place. */
   opacity: 0;
-  animation:
-    subCaretRide 2600ms linear 1350ms forwards,
-    subCaretLife 3700ms linear 1350ms forwards;
+  animation: heroSubFade 520ms var(--ease-out-quart) 1100ms forwards;
 }
-@keyframes subCaretRide {
-  0%   { transform: translateX(0);                       animation-timing-function: steps(4, end); }
-  12%  { transform: translateX(calc(4ch + 1.12em));      animation-timing-function: steps(1, end); }
-  16%  { transform: translateX(calc(5ch + 1.4em));       animation-timing-function: steps(3, end); }
-  26%  { transform: translateX(calc(8ch + 2.24em));      animation-timing-function: steps(1, end); }
-  29%  { transform: translateX(calc(9ch + 2.52em));      animation-timing-function: linear; }
-  36%  { transform: translateX(calc(9ch + 2.52em));      animation-timing-function: steps(5, end); }
-  50%  { transform: translateX(calc(14ch + 3.92em));     animation-timing-function: steps(1, end); }
-  53%  { transform: translateX(calc(15ch + 4.2em));      animation-timing-function: steps(3, end); }
-  61%  { transform: translateX(calc(18ch + 5.04em));     animation-timing-function: linear; }
-  68%  { transform: translateX(calc(18ch + 5.04em));     animation-timing-function: steps(4, end); }
-  77%  { transform: translateX(calc(22ch + 6.16em));     animation-timing-function: linear; }
-  80%  { transform: translateX(calc(22ch + 6.16em));     animation-timing-function: steps(5, end); }
-  88%  { transform: translateX(calc(27ch + 7.56em));     animation-timing-function: steps(9, end); }
-  100% { transform: translateX(calc(36ch + 10.08em)); }
+@keyframes heroSubFade {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
-@keyframes subCaretLife {
-  0%, 70%   { opacity: 1; } /* solid through the 2600ms type (≈70%) */
-  71%, 80%  { opacity: 0; } /* then blink… */
-  81%, 90%  { opacity: 1; }
-  91%, 100% { opacity: 0; } /* …and sign off */
-}
+
 @keyframes draw {
   to { stroke-dashoffset: 0; }
 }
@@ -1230,7 +1166,7 @@ em.it { font-style: italic; }
   background: var(--chip-yellow);
   color: var(--chip-yellow-ink);
   padding: 18px 24px 16px;
-  animation: stickerNameIn 280ms var(--ease-out-quart) 2200ms backwards;
+  animation: stickerNameIn 280ms var(--ease-out-quart) 1600ms backwards;
 }
 @keyframes stickerNameIn {
   from { opacity: 0; transform: translate(48px, -18px) rotate(22deg); }
@@ -1300,7 +1236,7 @@ em.it { font-style: italic; }
     0 2px 4px -1px rgba(0, 0, 0, 0.35),
     0 6px 12px -4px rgba(0, 0, 0, 0.42),
     0 16px 28px -12px rgba(0, 0, 0, 0.5);
-  animation: chipZhIn 260ms var(--ease-out-quart) 2380ms backwards;
+  animation: chipZhIn 260ms var(--ease-out-quart) 1780ms backwards;
 }
 .chip-zh .chip-zh-text {
   position: relative;
@@ -1342,7 +1278,7 @@ em.it { font-style: italic; }
   color: var(--chip-green-ink);
   width: 248px;
   padding: 16px 18px;
-  animation: stickerGreenIn 280ms var(--ease-out-quart) 2900ms backwards;
+  animation: stickerGreenIn 280ms var(--ease-out-quart) 2000ms backwards;
 }
 @keyframes stickerGreenIn {
   /* Mirror of stickerNameIn — slaps in from the LEFT with the same
@@ -1450,7 +1386,7 @@ em.it { font-style: italic; }
   text-transform: uppercase;
   color: rgb(var(--hero-fg-rgb) / 0.7);
   z-index: 8;
-  animation: scrollCueIn 280ms var(--ease-out-quart) 3500ms backwards;
+  animation: scrollCueIn 280ms var(--ease-out-quart) 2500ms backwards;
 }
 @keyframes scrollCueIn {
   from { opacity: 0; transform: translateX(-50%) translateY(14px); }

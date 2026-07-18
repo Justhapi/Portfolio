@@ -1,6 +1,6 @@
 # Portfolio Handover
 
-**Project:** Kathleen Li — personal portfolio  
+**Project:** Kathleen Li — personal and professional UX Design portfolio  
 **Stack:** Next.js 14 (TypeScript, App Router, static export) · Lenis v1.3.23 smooth scroll · Google Fonts via `next/font`  
 **Repo root:** `/Users/kathleenli/Desktop/Portfolio/next-site/`  
 **Live deploy:** GitHub Pages via `.github/workflows/static.yml`

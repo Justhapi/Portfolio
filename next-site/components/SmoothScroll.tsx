@@ -110,9 +110,11 @@ const PARALLAX_TARGETS: ParallaxConfig[] = [
 /** Delay after page load before parallax transforms activate (ms). */
 /* Must be greater than the latest hero entrance settle time so the parallax
  * system doesn't clear an animation's `backwards` fill-mode mid-flight.
- * Post-/animate restage: green sticker now settles at ~3180ms; activate
- * after a comfortable 320ms buffer. */
-const PARALLAX_ACTIVATE_DELAY = 3500;
+ * Post-polish pass: green sticker settles at ~2280ms; scroll cue at 2780ms;
+ * polaroid hint runs to ~3750ms. Activate at 2600ms — after the collage
+ * has landed but before the hint plays, so parallax is live while the
+ * viewer's cursor is likely to first touch the polaroid. */
+const PARALLAX_ACTIVATE_DELAY = 2600;
 
 export default function SmoothScroll() {
   useEffect(() => {
@@ -252,7 +254,7 @@ export default function SmoothScroll() {
           // so the gap from the "FROM ONE SCENE…" subtitle stays consistent
           // across viewport widths. Parallax delta composes as the Y
           // translation only — no -50% Y centering to preserve.
-          el.style.transform = `translate(-50%, ${delta.toFixed(2)}px) rotate(-2deg)`;
+          el.style.transform = `translate(-50%, ${delta.toFixed(2)}px) rotate(-4deg)`;
         } else if (config.centredX) {
           // Element uses translateX(-50%) horizontal centering only —
           // preserve it while adding the parallax Y offset.

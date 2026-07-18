@@ -57,18 +57,20 @@ export default function HeroV2() {
       layer.style.setProperty("--peek-y", "50%");
     }
 
-    // Hero entrance choreography (post-/animate restage):
-    //   wordmark trace  : 80–980ms
-    //   subtitle types  : 1350–3950ms (ambient, runs behind the rest)
-    //   polaroid lands  : 1500–1880ms
-    //   Kathleen settles: 2200–2480ms
-    //   李曦 chip       : 2380–2640ms
-    //   green sticker   : 2900–3180ms
-    //   scroll cue      : 3500–3780ms
+    // Hero entrance choreography (polish pass — trimmed from ~5s → ~2.8s
+    // for a gentler, less-theatrical arrival modeled on emmiwu.com /
+    // jackiezhang.co.za):
+    //   location strip : 300–820ms (small, arrives first as grounding)
+    //   wordmark trace : 80–980ms
+    //   subtitle fade  : 1100–1620ms (was terminal-typed to 3950ms)
+    //   polaroid lands : 1200–1580ms
+    //   Kathleen sticker: 1600–1880ms
+    //   李曦 chip       : 1780–2040ms
+    //   green sticker   : 2000–2280ms
+    //   scroll cue      : 2500–2780ms
     // Fire the polaroid swap-hint AFTER the last sticker settles + a beat
-    // of breathing room, so the hint reads as its own moment rather than
-    // overlapping the green sticker's arrival.
-    const HINT_START = 3950;
+    // of breathing room.
+    const HINT_START = 2900;
     const HINT_HOLD = 850;
 
     timers.push(window.setTimeout(() => setHinting(true), HINT_START));
@@ -118,18 +120,22 @@ export default function HeroV2() {
         <h1 className="ribbon-artist">
           <span className="visually-hidden">Artist · Designer</span>
           <ArtistDesignerWordmark />
-          {/* .sub-type is the clip-typed text; the block cursor is
-              .sub::after so it rides OUTSIDE the clip and stays visible
-              one cell ahead of the reveal edge. 36 chars — the CSS
-              steps()/translate distance are derived from that count. */}
+          {/* Subtitle now a simple fade instead of the previous
+              terminal-typed reveal — quieter, feels less like a demo
+              and more like an intentional statement. Copy names what
+              she does (three practice areas) with the × separator
+              echoing the wordmark's t→D X-ligature. */}
           <span className="sub">
-            <span className="sub-type">From one scene to multiple scenarios</span>
+            Interaction &times; Product &times; Design Engineering
           </span>
         </h1>
 
-        {/* cycling-glyph sparkle field — slots respawn at fresh random positions */}
+        {/* cycling-glyph sparkle field — slots respawn at fresh random positions.
+            Reduced from 14 → 8 for the professional-polish pass: fewer
+            simultaneous sparkles reads as intentional atmosphere rather
+            than decorative noise. */}
         <div className="hero-sparkles" aria-hidden="true">
-          <SparkleField count={14} />
+          <SparkleField count={8} />
         </div>
 
         {/* center polaroid — two-layer photo with cursor-peek + click-swap */}
