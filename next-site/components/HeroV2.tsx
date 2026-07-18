@@ -29,6 +29,11 @@ export default function HeroV2() {
   const [swapping, setSwapping] = useState(false);
   // first-load hint: fades the OTHER image in at 50% over the polaroid
   const [hinting, setHinting] = useState(false);
+  // immediately-post-swap suppression. Blocks the peek layer from being
+  // visible at ALL for a short window after the swap completes — the
+  // clip-path snap-back from 140% to 16px was leaving a lingering
+  // spotlight of the previously-hidden image at cursor position.
+  const [justSwapped, setJustSwapped] = useState(false);
 
   // body class for nav theming + scrolled state
   useEffect(() => {
@@ -83,6 +88,7 @@ export default function HeroV2() {
 
   const handlePhotoMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (swapping) return; // don't drift the spotlight mid-expansion
+    if (justSwapped) return; // suppress peek during the post-swap window
     const rect = photoRef.current?.getBoundingClientRect();
     const layer = peekLayerRef.current;
     if (!rect || !layer) return;
@@ -100,10 +106,19 @@ export default function HeroV2() {
   const handlePhotoClick = () => {
     if (swapping) return;
     setSwapping(true);
-    // after the expansion animation, commit the swap and reset
+    // After the 700ms expansion animation:
+    // 1. commit the mode swap
+    // 2. clear peekOn so the peek layer's `is-on` class drops
+    // 3. flip on `justSwapped` for 500ms so the peek layer is
+    //    HARD-hidden (opacity 0, no transitions) during that window —
+    //    otherwise the fade-out + clip-path snap left a lingering
+    //    spotlight of the previous image at cursor position.
     window.setTimeout(() => {
       setMode((m) => (m === "drawing" ? "photo" : "drawing"));
       setSwapping(false);
+      setPeekOn(false);
+      setJustSwapped(true);
+      window.setTimeout(() => setJustSwapped(false), 500);
     }, 700);
   };
 
@@ -164,7 +179,7 @@ export default function HeroV2() {
                 On click, the spotlight expands to fill the frame, completing the swap. */}
             <div
               ref={peekLayerRef}
-              className={`photo-layer photo-peek photo-${otherMode} ${peekOn || swapping ? "is-on" : ""} ${swapping ? "is-swapping" : ""} ${hinting ? "is-hinting" : ""}`}
+              className={`photo-layer photo-peek photo-${otherMode} ${peekOn || swapping ? "is-on" : ""} ${swapping ? "is-swapping" : ""} ${hinting ? "is-hinting" : ""} ${justSwapped ? "is-just-swapped" : ""}`}
             >
               <div className="image-slot">{labelFor(otherMode)}</div>
             </div>

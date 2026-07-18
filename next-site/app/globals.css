@@ -728,16 +728,15 @@ body.on-paper .nav-pill {
    the stage. */
 .hero-polaroid {
   position: absolute;
-  /* Position by TOP EDGE so the gap from the "FROM ONE SCENE…"
-     subtitle stays consistent across every viewport width. The
-     subtitle's vertical position depends on the wordmark's rendered
-     height, which is `min(78vw, 880px) / 6.69` (SVG aspect ratio).
-     Subtitle bottom Y ≈ 92px (ribbon top) + wordmark height + 32px
-     (sub margin + line). Add a constant 56px gap and that's the
-     polaroid's top edge. Only this `top` value responds to viewport
-     width — the polaroid's own size is fixed, so its scale doesn't
-     change with the browser. The location adapts; the artwork does not. */
-  top: calc(180px + min(12vw, 132px));
+  /* Fixed vertical anchor — the polaroid's Y position now stays constant
+     regardless of viewport width. Previously used `calc(240px + min(12vw, 132px))`
+     so it tracked the wordmark's viewport-width-driven vertical growth,
+     but that made the polaroid slide UPWARD as the browser was narrowed,
+     which read as unwanted motion rather than adaptive layout.
+     372px matches the value the polaroid landed at on wide viewports
+     (240 + 132), keeping it vertically centered between the Kathleen Li
+     sticker (upper-right) and the green status sticker (lower-left). */
+  top: 372px;
   left: 50%;
   /* translateY drops to 0 because we position by the polaroid's
      top edge, not its centre. SmoothScroll.tsx's `centred: true`
@@ -855,6 +854,21 @@ body.on-paper .nav-pill {
   transition: opacity 180ms ease;
 }
 .photo-peek.is-on { opacity: 1; }
+
+/* Post-swap suppression window (500ms). HARD-hides the peek layer with
+   no transitions so no residual spotlight is visible after the swap
+   commits. Without this, when the spotlight snaps from 140% back to
+   the base 16px clip, a small circle of the previously-hidden image
+   was appearing at cursor position and fading over 180ms — reading
+   as a "temporary filter" after every click. `!important` beats every
+   other state class so we're guaranteed to catch race conditions. */
+.photo-peek.is-just-swapped {
+  opacity: 0 !important;
+  transition: none !important;
+  clip-path: circle(0 at var(--peek-x, 50%) var(--peek-y, 50%)) !important;
+  -webkit-clip-path: circle(0 at var(--peek-x, 50%) var(--peek-y, 50%)) !important;
+}
+
 /* swap — spotlight expands smoothly to engulf the frame */
 .photo-peek.is-swapping {
   opacity: 1;
