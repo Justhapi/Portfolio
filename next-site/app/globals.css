@@ -3313,12 +3313,16 @@ em.it { font-style: italic; }
   animation: caseImageIn 600ms var(--ease-out-quart) 1020ms backwards;
 }
 
+/* Subtle vertical entrance motion — reduced further from 6px / 10px
+   to 3px / 5px. Just enough for a soft settle in each element without
+   any perceptible slide, so the staggered kicker → title → meta →
+   subtitle → image cascade reads as a fade with a light lift. */
 @keyframes caseFadeUp {
-  from { opacity: 0; transform: translateY(20px); }
+  from { opacity: 0; transform: translateY(3px); }
   to   { opacity: 1; transform: none; }
 }
 @keyframes caseImageIn {
-  from { opacity: 0; transform: translateY(32px) scale(0.97); }
+  from { opacity: 0; transform: translateY(5px) scale(0.99); }
   to   { opacity: 1; transform: none; }
 }
 
@@ -3337,7 +3341,15 @@ em.it { font-style: italic; }
   background: var(--hero-bg);
   color: var(--hero-fg);
   padding: 16px 0 80px;
-  position: relative;
+  /* Sticky so it pins to the top of the viewport while .case-body physically
+     scrolls over it — creates the "content section rising over the hero" depth
+     illusion. Mirrors the main page's .hero → .work pattern. z-index:0 keeps
+     it beneath the case-body (z:1) and the case-nav (z:60). No min-height —
+     the hero sits at its natural content height, same as before the sticky
+     conversion. */
+  position: sticky;
+  top: 0;
+  z-index: 0;
 }
 .case-cover-inner {
   max-width: 980px;
@@ -3415,6 +3427,28 @@ em.it { font-style: italic; }
      hero sticker palette so case pages share visual vocabulary
      with the home page. */
   counter-reset: case-section;
+  /* Slides over the pinned .case-cover to create the depth illusion —
+     mirrors the main page's .hero → .work pattern. z-index:1 keeps it
+     above the sticky hero (z:0) but below the case-nav (z:60). The
+     ::before pseudo-element paints a full-viewport-width cream sheet
+     behind the max-width content column with a top shadow that reads
+     as the sheet's leading edge lifting over the dark hero. */
+  position: relative;
+  z-index: 1;
+}
+.case-body::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(-50vw + 50%);
+  right: calc(-50vw + 50%);
+  background: var(--bg);
+  box-shadow:
+    0 -12px 48px -4px rgba(0, 0, 0, 0.28),
+    0 -2px 8px rgba(0, 0, 0, 0.12);
+  z-index: -1;
+  pointer-events: none;
 }
 
 /* ── Case disclaimer (NDA / anonymization notice) ──────────────────────── */

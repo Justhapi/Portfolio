@@ -18,7 +18,12 @@ import Lenis from "lenis";
  *   .chip-zh                speed −0.06  (preserves rotate(−6deg) base)
  *   .sticker.designing-green speed −0.11  (preserves rotate(−5deg) base)
  *   .hero-polaroid          speed −0.05  (special centred-transform handling)
- *   .case-hero-image        speed −0.08  (project cover image)
+ *
+ * Case-cover hero — no per-element parallax. Instead .case-cover is
+ * position: sticky at top:0 (z:0) and .case-body is position: relative
+ * (z:1) with a cream background, so the content section physically
+ * slides UP over the pinned hero as the user scrolls. This mirrors the
+ * main page's .hero → .work depth illusion.
  *
  * Entrance animation fill-mode lock:
  *   CSS `animation: ... both` keeps elements at their final keyframe,
@@ -91,7 +96,12 @@ const PARALLAX_TARGETS: ParallaxConfig[] = [
   // sticker's natural CSS rotation through the parallax transform.
   { selector: ".sticker.designing-green", speed: -0.18, baseRotate: "-5deg" },
   { selector: ".hero-polaroid",          speed: -0.12, centred: true },
-  { selector: ".case-hero-image",        speed: -0.18 },
+
+  // ── Case-cover hero ──────────────────────────────────────────────────
+  // No per-element parallax on case study heroes. The depth illusion is
+  // achieved via CSS: .case-cover is sticky top:0 z:0, .case-body is
+  // relative z:1 with a cream bg, so the content physically slides over
+  // the pinned hero (matches the main page's .hero → .work pattern).
 
   // ── Connect section elements ─────────────────────────────────────────
   // Negative speed → row drifts DOWN as scroll increases (confirmed from

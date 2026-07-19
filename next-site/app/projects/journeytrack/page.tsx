@@ -8,7 +8,14 @@ export const metadata = {
 /* Outcome leads so recruiters see results first. Process is broken
    into its three actual phases (Researching, Ideating, Verifying) so
    the nav exposes the work rather than collapsing it under a single
-   "Process" label — matches the structure used in Frogslayer. */
+   "Process" label — matches the structure used in Frogslayer.
+
+   NDA note: this case study operates under a strict sponsor
+   confidentiality agreement. Content is intentionally kept at a
+   process/methodology level — feature mechanics, product UI details,
+   proprietary terminology, and any interview findings that could
+   identify the sponsor, its clients, or its platform users have been
+   removed or generalized. */
 const SECTIONS = [
   { id: "outcome", label: "Outcome" },
   { id: "overview", label: "Overview" },
@@ -24,25 +31,28 @@ export default function AIJourneyAgentCaseStudy() {
       <CaseSectionNav sections={SECTIONS} />
       <CaseCover
         title="Designing an AI Maintenance Agent for Customer Journey Maps"
-        meta="14 weeks · 9 designers · UI & Interaction · Designer"
-        subtitle="An agentic AI concept that keeps customer journey maps accurate and trustworthy over time"
+        meta="Spring 2026 · 14 weeks · 9-person team · UX Designer & Researcher"
+        subtitle="An agentic AI concept for keeping customer journey maps accurate and trustworthy over time"
         imageLabel="AI maintenance agent · cover image"
       />
 
       <main id="main" className="case-body">
         <p className="case-disclaimer">
-          Confidential and proprietary details have been removed or anonymized to protect client information.
+          This case study operates under an active sponsor confidentiality agreement. Product-specific mechanics,
+          UI details, proprietary terminology, and identifying research findings have been removed or generalized.
+          The content below focuses on the design and research process rather than the resulting product.
         </p>
 
         {/* ───── Outcome ───── (moved to top: recruiters see outcome first) */}
         <section id="outcome" className="case-section">
           <h2>Outcome</h2>
           <p>
-            We delivered a high-fidelity interactive prototype, design-principle documentation, and a final
-            presentation to the client&rsquo;s leadership. The final design gives users a{" "}
-            <mark className="hl">trustworthy way to keep journey maps current</mark>: proactive alerts when content
-            drifts, transparent evidence for every recommendation, and controls that keep people in the loop rather
-            than handing decisions to automation.
+            We delivered a <mark className="hl">high-fidelity interactive concept prototype</mark> and{" "}
+            <mark className="hl">design-principle documentation</mark> to the sponsor&rsquo;s leadership. The work
+            defined how an agentic AI concept could{" "}
+            <mark className="hl">keep a class of living documents accurate and trustworthy over time</mark> —
+            grounded in a set of trust principles the research surfaced, and validated through usability testing at
+            the concept level.
           </p>
         </section>
 
@@ -50,68 +60,58 @@ export default function AIJourneyAgentCaseStudy() {
         <section id="overview" className="case-section">
           <h2>Overview</h2>
           <p>
-            This <mark className="hl">conceptualization</mark> ideated and tested during this project was for a <mark className="hl">customer journey management platform</mark> — a tool teams utilize to close the gap of understanding their customers' experience utilizing their products.
-            <br></br><br></br>
-            Our team researched and designed an <mark className="hl"> AI{" "}
-            &ldquo;maintenance intelligence agent&rdquo;</mark> that 
-            <br></br>
-            <br></br>
-            <li>continuously monitors journey data, personas, and insights relevance</li>
-            <li>informs users of data flagged as outdated</li>
-            <li>recommends actions for updates</li>
-            <br></br>
-            to consistently keep maps accurate and trustworthy over time.
+            The sponsor operates a{" "}
+            <mark className="hl">customer journey management platform</mark> &mdash; a category of tool teams use
+            to close the gap in understanding their customers&rsquo; experience across a product. Our team was
+            asked to explore how <mark className="hl">agentic and maintenance AI</mark> could help these teams
+            keep their journey documentation current.
           </p>
 
           <h3>The Problem</h3>
           <p>
-            A <mark className="hl">journey map's value degrades</mark> everytime an <mark className="hl">older and outdated content is not flagged</mark> as such upon the <mark className="hl">addition of newer and more accurate data.</mark>
-            <br></br><br></br>
-            The journey map platform&rsquo;s users — CX strategists, designers, product teams — are tasked with managing and analyzing the customer journey maps.
-            <br></br><br></br>
-            However, <mark className="hl">maintenance becomes increasingly difficult</mark> as the volume of data to assess increases, resulting in journey map content becoming outdated without any alerts to address the staleness.
+            A journey map&rsquo;s value <mark className="hl">degrades over time</mark> as source realities shift
+            faster than the documentation is refreshed. The platform&rsquo;s users &mdash; CX strategists,
+            designers, and product teams &mdash; are tasked with managing and analyzing these maps, but{" "}
+            <mark className="hl">maintenance becomes increasingly difficult as the volume of content grows</mark>.
+            Without a system for flagging staleness, teams rely on manual review cadences and indirect cues,
+            and confidence in the maps quietly erodes.
           </p>
 
           <h3>My Role</h3>
           <p>
-            During the project, I worked in UX studio team of nine people. I{" "}
-            <mark className="hl">led concept ideation and exploration</mark> and contributed to research synthesis, wireframing, high-fidelity prototyping, and
-            usability testing.
-
+            I worked in a UX studio team of nine. I{" "}
+            <mark className="hl">led concept ideation and exploration</mark> and contributed to research synthesis,
+            wireframing, high-fidelity prototyping, and usability testing.
             <br></br><br></br>
-            In addition to leading ideation, I also managed communication between <mark className="hl">the team, the
-            company leads, and platform users</mark> to ensure alignment in regards to project progression, company 
-            goals, and user needs through update meetings, update emails, and inteview organization.
+            In addition to leading ideation, I managed communication between{" "}
+            <mark className="hl">the team, the sponsor leads, and platform users</mark> &mdash; ensuring alignment
+            on project progression, sponsor goals, and user needs through update meetings, update emails, and
+            interview organization. I also{" "}
+            <mark className="hl">mentored three junior designers</mark> joining the studio.
           </p>
         </section>
 
         {/* ───── Researching ───── */}
         <section id="researching" className="case-section">
           <h2>Researching</h2>
-          <h3>Understanding what would make a journey maintenance agent effective</h3>
+          <h3>Understanding What Would Make a Maintenance Agent Effective</h3>
 
           {/* Throughline promoted to the TOP of Researching so a skimmer
               who reads only the first paragraph still walks away with
-              the section's payoff. The body below explains how we got
-              here across four lenses; the throughline names where it
-              landed. */}
+              the section's payoff. Kept at process-level; no product
+              or interview specifics named. */}
           <p className="research-throughline-lead">
             <strong>The throughline:</strong> maintenance today is{" "}
-            <mark className="hl">reactive, manual, and tied to project milestones</mark> —
-            and users only trust AI suggestions when they can see the reasoning behind them.
+            <mark className="hl">reactive, manual, and tied to project milestones</mark> &mdash;
+            and users only trust AI when they can see the reasoning behind its suggestions.
           </p>
           <p>
             We arrived there through four research lenses:{" "}
-            <mark className="hl">the platform, the agent components, the industry, and our users.</mark>
+            <mark className="hl">the platform&rsquo;s current state, the agent&rsquo;s underlying components,
+            the industry, and our users.</mark>
           </p>
 
-          {/* ── Parallel research tracks ──
-              The team split into two smaller groups to research the
-              platform's current state and the agent's components in
-              parallel within the project window. The .parallel-tracks
-              grid below puts the two h3 subsections side-by-side with
-              a faint vertical divider between them, visually
-              communicating the split. */}
+          {/* ── Parallel research tracks ── */}
           <p className="research-split-lead">
             To cover both within the project window, we{" "}
             <mark className="hl">split into two smaller teams running in parallel:</mark>
@@ -119,99 +119,98 @@ export default function AIJourneyAgentCaseStudy() {
           <div className="parallel-tracks">
             <div className="research-track">
               <span className="track-label">Track 1</span>
-              <h3>Current state of platform</h3>
+              <h3>Current State of Platform</h3>
               <p>
-                We reviewed JourneyTrack as a user,{" "}
-                <mark className="hl">logging what worked and where the gaps were</mark> before
-                proposing anything new.
-                <br></br><br></br>
-                The biggest gap:{" "}
-                <mark className="hl">staleness still depended on a &ldquo;last modified&rdquo; timestamp</mark>,
-                and the agent <mark className="hl">required a manual trigger</mark> to do anything
-                useful.
+                One track reviewed the platform as a user, logging{" "}
+                <mark className="hl">what worked and where the gaps were</mark> before proposing anything new.
+                Specific findings are omitted here per the confidentiality agreement; the takeaways informed the
+                design principles we later documented.
               </p>
               <figure>
-                <div className="image-slot">JourneyTrack platform · current-state audit</div>
+                <div className="image-slot">methodology · current-state audit approach (non-identifying)</div>
                 <figcaption>
-                  Mapping JourneyTrack&rsquo;s current strengths and opportunity gaps.
+                  The audit approach; platform-specific findings are held under confidentiality.
                 </figcaption>
               </figure>
             </div>
             <div className="research-track">
               <span className="track-label">Track 2</span>
-              <h3>Current state of agent components</h3>
+              <h3>Current State of Agent Components</h3>
               <p>
-                To design a maintenance agent, we needed to understand its{" "}
-                <mark className="hl">moving parts</mark>: the kinds of AI involved, how they monitor,
-                and what makes users trust them.
+                A parallel track surveyed the AI components a maintenance agent would need to rest on:{" "}
+                <mark className="hl">the categories of AI involved, how they monitor, and what makes users
+                trust them</mark>.
                 <br></br><br></br>
-                We compared <mark className="hl">agentic vs maintenance AI</mark>, focused on{" "}
-                <mark className="hl">proactive (not reactive) monitoring</mark>, and identified the
-                conditions that build trust — <em>transparency, user control, and visible
-                reasoning.</em>
+                We compared <mark className="hl">agentic vs. maintenance AI</mark>, focused on{" "}
+                <mark className="hl">proactive (not reactive) monitoring</mark>, and identified the conditions
+                that build trust &mdash; <em>transparency, user control, and visible reasoning</em>.
               </p>
               <figure>
-                <div className="image-slot">agent components · AI types · monitoring · trust</div>
+                <div className="image-slot">AI-types comparison · monitoring · trust conditions</div>
                 <figcaption>
-                  Comparing AI types, monitoring approaches, and the conditions that build user trust.
+                  Comparing AI types, monitoring approaches, and the conditions that build user trust. Industry-
+                  general knowledge, not sponsor material.
                 </figcaption>
               </figure>
             </div>
           </div>
 
-          {/* ── Industry & Interaction Patterns ──
-              The competitive analysis (direct + indirect) and the
-              interaction-pattern synthesis covered the same material
-              (how the broader industry handles maintenance + verification),
-              so they're grouped under one umbrella here. */}
-          <h3>Industry &amp; interaction patterns</h3>
+          {/* ── Industry & Interaction Patterns ── */}
+          <h3>Industry &amp; Interaction Patterns</h3>
           <p>
-            A competitive analysis across two groups — <mark className="hl">direct
-            competitors</mark> in the journey-management category and{" "}
-            <mark className="hl">indirect competitors</mark> from analogous SaaS — then triangulated
-            through an interaction-pattern synthesis of four verification-focused platforms.
+            A competitive analysis across two groups &mdash; <mark className="hl">direct competitors</mark> in
+            the journey-management category and <mark className="hl">indirect competitors</mark> from analogous
+            AI-driven SaaS &mdash; then triangulated through an interaction-pattern synthesis of four
+            verification-focused platforms.
           </p>
           <p>
-            <strong>Direct</strong> — <em>TheyDo, Cemantica, Smaply.</em> They led with{" "}
-            <mark className="hl">actionable insights and AI-powered creation.</mark>
+            <strong>Direct</strong> &mdash; <em>TheyDo, Cemantica, Smaply.</em> Public products in the
+            journey-management space.
           </p>
           <figure>
-            <div className="image-slot">direct competitors · TheyDo · Cemantica · Smaply</div>
-            <figcaption>Direct competitors in the journey-management category.</figcaption>
+            <div className="image-slot">methodology diagram · two-ring competitive framework (no filled analysis)</div>
+            <figcaption>
+              The two-ring competitive framework. The filled synthesis is sponsor work product and is not shown.
+            </figcaption>
           </figure>
           <p>
-            <strong>Indirect</strong> — <em>Gong, Observe.AI, Productboard.</em> They excelled at{" "}
+            <strong>Indirect</strong> &mdash; <em>Gong, Observe.AI, Productboard.</em> Analogous SaaS solving
+            parallel monitoring + insight problems. They converge on{" "}
             <mark className="hl">proactive monitoring</mark> and turning raw data into{" "}
-            <mark className="hl">structured, actionable insights.</mark>
+            <mark className="hl">structured, actionable insights</mark>.
           </p>
           <figure>
-            <div className="image-slot">indirect competitors · Gong · Observe.AI · Productboard</div>
-            <figcaption>Analogous SaaS solving parallel monitoring + insight problems.</figcaption>
+            <div className="image-slot">analogous SaaS · Gong · Observe.AI · Productboard</div>
+            <figcaption>Public analogous SaaS surveyed for pattern transfer.</figcaption>
           </figure>
           <p>
             We then combined both groups through an{" "}
-            <mark className="hl">interaction pattern synthesis</mark> of Notion, Confluence, Guru,
-            and Alation — surfacing the structural moves every modern verification flow shares.
+            <mark className="hl">interaction-pattern synthesis</mark> of Notion, Confluence, Guru, and Alation
+            &mdash; four public knowledge-verification platforms &mdash; surfacing the structural moves every
+            modern verification flow shares.
           </p>
           <figure>
-            <div className="image-slot">interaction pattern synthesis · Notion · Confluence · Guru · Alation</div>
+            <div className="image-slot">annotated verification flow · public platform (e.g., Notion)</div>
             <figcaption>
-              Annotated verification flows surfacing transferable patterns for our own design.
+              Annotated flow of a public third-party verification pattern; shows the method without exposing the
+              sponsor&rsquo;s IP.
             </figcaption>
           </figure>
 
           {/* ── User Interviews ── */}
-          <h3>User interviews</h3>
+          <h3>User Interviews</h3>
           <p>
-            Six interviews with current CX strategists and UX researchers (affinity-diagrammed)
-            confirmed the desk research: <mark className="hl">no clear system for spotting
-            outdated content</mark>, and users want AI involved — only if they can see <em>why</em>.
+            Six interviews with current CX strategists and UX researchers (affinity-diagrammed) confirmed the
+            desk research&rsquo;s direction. Specific participant findings are held under confidentiality; the
+            synthesis pattern was that{" "}
+            <mark className="hl">maintenance is reactive, project-bound, and manually heavy</mark> today, and{" "}
+            <mark className="hl">trust in AI depends on transparent, defensible outputs</mark> &mdash; full
+            automation was explicitly not desired.
           </p>
           <figure>
-            <div className="image-slot">user interview synthesis · affinity diagram</div>
+            <div className="image-slot">affinity diagram · text blurred to texture</div>
             <figcaption>
-              Six interviews with CX strategists and UX researchers, synthesized into the themes
-              that drove ideation.
+              Interview synthesis with sticky-note text blurred; shows synthesis rigor without exposing findings.
             </figcaption>
           </figure>
         </section>
@@ -219,54 +218,55 @@ export default function AIJourneyAgentCaseStudy() {
         {/* ───── Ideating ───── */}
         <section id="ideating" className="case-section">
           <h2>Ideating</h2>
-          <h3>From six concepts to one cohesive agent</h3>
+          <h3>From Individual Sketching to a Sponsor-Selected Direction</h3>
           <p>
             We developed concept directions in three passes:{" "}
-            <mark className="hl">sketching, concept proposals, and wireframing.</mark>
+            <mark className="hl">sketching, concept proposals, and wireframing</mark>.
           </p>
 
           {/* ── Sketching ── */}
           <h3>Sketching</h3>
           <p>
-            Each designer started with <mark className="hl">Crazy 8&rsquo;s</mark>, then we walked
-            through everyone&rsquo;s sheets together and combined the strongest threads through{" "}
+            Each designer started with <mark className="hl">Crazy 8&rsquo;s</mark>, then we walked through
+            everyone&rsquo;s sheets together and combined the strongest threads through{" "}
             <mark className="hl">group whiteboarding</mark>.
           </p>
           <figure>
-            <div className="image-slot">individual sketches + group whiteboarding</div>
+            <div className="image-slot">Crazy 8&rsquo;s + group whiteboarding (hand sketches)</div>
             <figcaption>
-              Crazy 8&rsquo;s into a collaborative whiteboarding session to refine and combine ideas.
+              Individual ideation into a collaborative whiteboarding session. Hand sketches are inherently
+              low-fidelity and don&rsquo;t reveal platform specifics.
             </figcaption>
           </figure>
 
           {/* ── Concept Proposals ── */}
-          <h3>Concept proposals</h3>
+          <h3>Concept Proposals</h3>
           <p>
-            We presented <mark className="hl">six mid-fi concepts</mark> to our sponsors — four
-            within scope (proactive insights, walkthrough mode, AI chat, growing tracker) and two
-            exploratory.
-            <br></br><br></br>
-            They selected <mark className="hl">a proactive suggestion model and a reactive
-            guided-walkthrough model</mark> to move forward with.
+            We presented <mark className="hl">six mid-fidelity concept directions</mark> to the sponsor with the
+            research evidence behind each. The sponsor selected two complementary directions to move forward
+            with. Specifics of the six concepts and the two selected are withheld per the confidentiality
+            agreement.
           </p>
           <figure>
-            <div className="image-slot">concept proposal slides · A · B · C · D · E · F</div>
-            <figcaption>Six mid-fi concepts presented for sponsor selection.</figcaption>
+            <div className="image-slot">concept proposal method diagram (labels abstracted)</div>
+            <figcaption>
+              The proposal method &mdash; six directions on one deck; selection driven by evidence-tied trade-offs.
+            </figcaption>
           </figure>
 
           {/* ── Wireframing & Combining ── */}
-          <h3>Wireframing &amp; combining into one</h3>
+          <h3>Wireframing &amp; Merging into One System</h3>
           <p>
-            After wireframing both selected concepts in parallel, we recognized how much the
-            proactive and reactive models overlapped — and{" "}
-            <mark className="hl">combined them into a single cohesive agent</mark> rather than two
-            competing AI surfaces.
+            Wireframing both selected concepts in parallel revealed <mark className="hl">heavy overlap</mark>{" "}
+            &mdash; they relied on the same context and evidence. Rather than shipping two parallel surfaces, we{" "}
+            <mark className="hl">merged them into a single agentic system</mark>: a continuous loop where the
+            agent anticipates needs while also adapting to user-initiated inquiry. The specific interaction
+            mechanics of that unified system are withheld.
           </p>
           <figure>
-            <div className="image-slot">proposal A + B wireframes → unified concept</div>
+            <div className="image-slot">abstract concept diagram · two loops converging into one system</div>
             <figcaption>
-              Wireframing surfaced enough overlap between proactive + reactive to merge them into
-              one agent.
+              Diagram of the reasoning behind the merge &mdash; process-level, not product UI.
             </figcaption>
           </figure>
         </section>
@@ -274,57 +274,65 @@ export default function AIJourneyAgentCaseStudy() {
         {/* ───── Verifying ───── */}
         <section id="verifying" className="case-section">
           <h2>Verifying</h2>
-          <h3>Designing and testing the unified agent</h3>
+          <h3>Prototyping and Testing the Unified Concept</h3>
           <p>
             We took the combined concept into{" "}
-            <mark className="hl">high-fidelity prototyping, usability testing, and iteration.</mark>
+            <mark className="hl">high-fidelity prototyping, usability testing, and iteration</mark>. The
+            specifics of the mechanics tested are held under confidentiality; the process below describes how the
+            work was structured.
           </p>
 
           {/* ── Hi-Fi Prototyping ── */}
-          <h3>Hi-fi prototyping</h3>
+          <h3>Hi-Fi Prototyping</h3>
           <p>
-            We built an interactive Figma prototype with the agent&rsquo;s core moves:{" "}
-            <mark className="hl">evidence-backed suggestion cards</mark> (each with reasoning and a
-            quote pulled from the user&rsquo;s own documents),{" "}
-            <mark className="hl">approve / deny / snooze controls</mark>, a guided walkthrough, and
-            an in-context AI chat.
+            We built an interactive Figma prototype that expressed the unified concept end-to-end, applying the
+            trust principles the research had surfaced &mdash;{" "}
+            <mark className="hl">transparency of AI reasoning, evidence pairing, user-in-control approvals,
+            reviewable history, and guided assistance</mark>. Every design move traced back to one of those
+            principles.
           </p>
           <figure>
-            <div className="image-slot">hi-fi prototype · suggestion cards · walkthrough · chat</div>
+            <div className="image-slot">anonymized wireframe · component-anatomy diagram (lorem-ipsum content)</div>
             <figcaption>
-              The agent panel: proactive suggestions and a reactive assistant, unified in one surface.
+              An anonymized wireframe showing the anatomy of one component &mdash; content replaced with lorem
+              ipsum, sponsor branding and navigation removed.
             </figcaption>
           </figure>
 
           {/* ── Usability Testing ── */}
-          <h3>Usability testing</h3>
+          <h3>Usability Testing</h3>
           <p>
-            Six UX designers familiar with journey mapping ran through three tasks.{" "}
-            <mark className="hl">Average task difficulty: 3 out of 10.</mark>
-            <br></br><br></br>
-            They appreciated the evidence transparency and the reduced cognitive load of the
-            walkthrough — but flagged that <mark className="hl">evidence interactions weren&rsquo;t
-            obvious</mark>, suggestion cards felt text-heavy, and the storytelling AI and maintenance
-            AI got mixed up.
+            <mark className="hl">Six participants</mark> experienced in journey mapping ran through three tasks
+            comparing two entry-point navigations and probing whether users found the AI&rsquo;s evidence
+            trustworthy. Reception was positive on simplicity and{" "}
+            <mark className="hl">evidence transparency was explicitly appreciated</mark> &mdash; but testing
+            surfaced friction points which we addressed in iteration. Specific findings are held under
+            confidentiality.
           </p>
           <figure>
-            <div className="image-slot">usability testing debrief · affinity diagram</div>
-            <figcaption>Six sessions synthesized into iteration insights.</figcaption>
+            <div className="image-slot">usability-testing affinity diagram · blurred to texture</div>
+            <figcaption>
+              Six sessions synthesized into iteration insights. Sticky-note text intentionally blurred.
+            </figcaption>
           </figure>
 
           {/* ── Iterations ── */}
           <h3>Iterations</h3>
           <p>
-            We tightened evidence interactions to match other interactable elements, raised spacing
-            and contrast on the suggestion cards, consolidated the maintenance AI into the chatbot
-            in the corner, and <mark className="hl">moved agent customization into general
-            settings</mark> to match users&rsquo; existing mental model.
+            Iterations focused on clarifying interactable affordances, restructuring information density, and
+            simplifying flow between related agent capabilities. Each iteration was traceable back to a specific
+            usability finding &mdash; we shipped an <em>insight &rarr; reasoning &rarr; proposed iteration</em>{" "}
+            table so the closed-loop reasoning was visible on one page.
+          </p>
+          <p>
+            Honest handoff notes flagged what we couldn&rsquo;t verify in time, along with recommended next steps
+            for onboarding and real-user validation.
           </p>
           <figure>
-            <div className="image-slot">final iterated hi-fi design</div>
+            <div className="image-slot">insight → iteration table (generic wording, non-proprietary)</div>
             <figcaption>
-              The final agent: evidence-backed suggestions, approve/deny/snooze, a guided
-              walkthrough, and a unified chat.
+              A generic-worded rewrite of the iteration table &mdash; describes reasoning, not proprietary
+              functionality.
             </figcaption>
           </figure>
         </section>
@@ -333,11 +341,17 @@ export default function AIJourneyAgentCaseStudy() {
         <section id="takeaways" className="case-section">
           <h2>Takeaways</h2>
           <p>
-            Designing for AI is mostly designing for <em>trust</em>. The hardest problems
-            weren&rsquo;t visual — they were about transparency, control, and helping users decide
-            when to rely on the system. I also learned to design within an existing product: every
-            decision had to fit the platform&rsquo;s established patterns and its users&rsquo;
-            mental models.
+            The core design lesson: for AI that edits people&rsquo;s work,{" "}
+            <mark className="hl">trust is the feature</mark>. Every mechanism that tested well &mdash; evidence
+            pairing, visible reasoning, undoable decisions, review history &mdash; was a trust mechanism first
+            and an interaction second.
+          </p>
+          <p>
+            I also learned the value of <mark className="hl">letting research kill symmetry</mark>: we started
+            with two separate concepts and only earned the simpler, unified design by wireframing both far enough
+            to see they were the same system. And I learned to design within an existing product context &mdash;
+            every decision had to fit the platform&rsquo;s established patterns and its users&rsquo; mental
+            models.
           </p>
         </section>
       </main>

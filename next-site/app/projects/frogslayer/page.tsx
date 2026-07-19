@@ -6,14 +6,13 @@ export const metadata = {
   title: "Kiosk Interface Design Guidelines — Kathleen Li",
 };
 
-/* Section order leads with Results (deliverables + impact) so recruiters
-   see the outcome first. Process sections (Researching → Ideating →
+/* Section order leads with Outcome (deliverables + impact) so recruiters
+   see results first. Process sections (Researching → Ideating →
    Verifying) follow as the supporting story, and Takeaways closes
-   with next steps, refinements, and what was learned. Renamed from
-   "Reflections" to match the takeaway naming used in JourneyTrack
-   and ResearchHub. */
+   with next steps, refinements, and what was learned. Section naming
+   (Outcome/Takeaways) matches JourneyTrack, ResearchHub, and inline. */
 const SECTIONS = [
-  { id: "results", label: "Results" },
+  { id: "outcome", label: "Outcome" },
   { id: "overview", label: "Overview" },
   { id: "researching", label: "Researching" },
   { id: "ideating", label: "Ideating" },
@@ -27,54 +26,55 @@ export default function FrogslayerCaseStudy() {
       <CaseSectionNav sections={SECTIONS} />
       <CaseCover
         title="Kiosk Interface Design Guidelines"
-        meta="16 weeks · 6 designers · UI & Product · Co-Lead + Point of Communication"
+        meta="Fall 2025 · 16 weeks · 6-person team · UX Designer & Researcher, Point of Communication"
         subtitle="Adopted as Frogslayer's guideline reference + collaboration extended"
         imageLabel="Frogslayer kiosk · cover image"
       />
 
       <main id="main" className="case-body">
-        {/* ───── Results ───── (deliverables + impact summary up front
-              so a recruiter reads the outcome in the first viewport) */}
-        <section id="results" className="case-section">
-          <h2>Results</h2>
+        {/* ───── Outcome ───── (deliverables + impact summary up front
+              so a recruiter reads the outcome in the first viewport;
+              naming matches the other three case studies) */}
+        <section id="outcome" className="case-section">
+          <h2>Outcome</h2>
           <p>
-            The project delivered <mark className="hl">design guidelines, usability test user flow, and a user journey map</mark> that{" "}
-            Frogslayer also adopted as an <mark className="hl">internal references for future continuation of guidelines</mark>.
+            The semester resulted in a <mark className="hl">validated set of best-practice design guidelines for entertainment and hospitality kiosk interfaces</mark>, modeled after Nielsen Norman Group&rsquo;s design heuristics and handed off to Frogslayer alongside a final journey map and recommended next steps.
+            <br></br><br></br>
+            Rather than shipping a single polished product, we <mark className="hl">used a mid-fidelity prototype as a research instrument</mark> — three rounds of usability testing (including an A/B test of two loyalty program models) grounded every guideline in observed user behavior rather than assumption. A key applied finding: <mark className="hl">an upsell-based loyalty model outperformed a tier-based one for arcade kiosks</mark>, and surfacing &ldquo;Join for Free&rdquo; prominently was the single biggest conversion driver.
           </p>
           <div className="case-image-row">
             <figure>
               <div className="image-slot">design guidelines deck</div>
               <figcaption>
-                A set of design guidelines for hospitality and entertainment kiosks verified and based on the project
-                findings.
+                A set of design guidelines for hospitality and entertainment kiosks, formatted after NN/g&rsquo;s
+                heuristics and verified across three rounds of testing.
               </figcaption>
             </figure>
             <figure>
               <div className="image-slot">user journey map</div>
               <figcaption>
-                A journey map of the project&rsquo;s final user flow to act as a reference, providing foundational
-                baseline understanding and insights.
+                A journey map of the project&rsquo;s final validated user flow, capturing emotion dips and reference
+                insights for the guidelines.
               </figcaption>
             </figure>
           </div>
         </section>
 
-        {/* ───── Overview ───── (Project Results h3 moved up into the
-              top Results section; Overview now holds Problem Scope +
-              Project Contributions so it reads as scope + role.) */}
+        {/* ───── Overview ───── (Overview holds The Problem + My Role
+              so it reads as scope + role — matches the subsection
+              naming used in JourneyTrack, ResearchHub, and inline.) */}
         <section id="overview" className="case-section">
           <h2>Overview</h2>
 
-          <h3>Problem Scope</h3>
+          <h3>The Problem</h3>
           <p>
-            Due to cost effeciency, <mark className="hl">touchscreen kiosks are replacing staff</mark> across industries. However,
-            interface designs <mark className="hl">share no design consistency</mark>, causing <mark className="hl">user frustation from 
-            internal and external factors.</mark>
-            <br></br>
-            <br></br>
-            Frogslayer wants to develope a set of guidelines that could <mark className="hl">apply across future kiosk projects</mark> to resolve that gap.
+            Frogslayer is a custom software development firm that partners with food and entertainment brands to build guest-facing digital products, including large-screen kiosks.
+            <br></br><br></br>
+            Interactive kiosks in public hospitality and entertainment venues consistently create <mark className="hl">user frustration, anxiety, and privacy concerns</mark> — driven by confusing navigation, inefficient use of screen real estate, and designs that ignore the public, high-traffic context they live in.
+            <br></br><br></br>
+            Kiosks are a <mark className="hl">billion-dollar industry</mark>, yet their design is fragmented and inconsistent: businesses keep repeating the same usability mistakes because <mark className="hl">no evidence-based, standardized guidelines exist</mark> for designers to build against. Frogslayer wanted a guideline set that could <mark className="hl">apply across future kiosk projects</mark> to resolve that gap.
           </p>
-          <h3>Project Contributions</h3>
+          <h3>My Role</h3>
           <p>
             During the project, I was the team&rsquo;s <mark className="hl">primary point of contact</mark> with
             Frogslayer&rsquo;s product team, maintaining <mark className="hl">both sides' mutual understanding of the project's progression</mark>, 
@@ -90,23 +90,19 @@ export default function FrogslayerCaseStudy() {
         {/* ───── Researching ───── */}
         <section id="researching" className="case-section">
           <h2>Researching</h2>
-          <h3>Aligning and Narrowing Research Focus With Frogslayer's Intentions</h3>
+          <h3>Aligning with the Sponsor</h3>
           <p>
-            Due to the <mark className="hl">problem scope intially being vague</mark> with "Design kiosk interface guidelines verified through 
-            research", we understood the need to <mark className="hl">immediately narrow down the broad scope 
-            for tangible results.</mark>
+            Due to the <mark className="hl">problem scope initially being vague</mark> with &ldquo;Design kiosk interface guidelines verified through
+            research&rdquo;, we understood the need to <mark className="hl">immediately narrow down the broad scope for tangible results.</mark>
             <br></br><br></br>
-            As a result, we wanted to <mark className="hl"> avoid acting upon inferences</mark> from just the intial scope and instead
-            <mark className="hl"> act on concrete evidence of Frogslayer's vision.</mark> This led to us requesting elaboration and being 
-            provided with <mark className="hl">a prototype previously constructed</mark>, relating to kiosk 
-            interface design.
+            We began with a <mark className="hl">content audit of Frogslayer&rsquo;s prior internal research</mark>, including an existing Figma prototype. This revealed the sponsor&rsquo;s previous focus on <mark className="hl">interface ergonomics</mark> — and clarified that they wanted us to research <mark className="hl">in the opposite, externally oriented direction</mark>: how a consumer&rsquo;s environment affects kiosk use. It also confirmed <mark className="hl">loyalty programs as a secondary focus</mark> of the deliverable.
             <br></br><br></br>
-            We then ran a<mark className="hl"> content audit on the prototype</mark> that pointed us towards the following focuses:
+            The audit ultimately pointed us toward the following focuses:
             <br></br><br></br>
             <strong>
-            <ul>Hospitality & entertainment industry</ul>
+            <ul>Hospitality &amp; entertainment industry</ul>
             <ul>Loyalty programs</ul>
-            <ul>UI ergonomics</ul>
+            <ul>External environment (not internal ergonomics)</ul>
             </strong>
           </p>
           <h3>Understanding the Current State Internally and Externally</h3>
@@ -228,9 +224,11 @@ export default function FrogslayerCaseStudy() {
           <h3>Validating and Retesting with User Insights</h3>
           <p>
             We ran <mark className="hl">three rounds of moderated usability testing</mark> at the Purdue Memorial
-            Union (PMU), chosen to simulate the high-traffic, distractible atmosphere of a real arcade. Between
-            rounds the prototype was iterated against the recorded friction points — not against our own opinions —
-            which kept every change small, defensible, and quick to ship.
+            Union (PMU), chosen to <mark className="hl">simulate the busy, distracting atmosphere of a real arcade</mark>. The prototype was <mark className="hl">used as a research instrument, not a shippable product</mark> — between
+            rounds it was iterated against the recorded friction points, not our own opinions, so every change
+            was small, defensible, and directly traceable to a user behavior.
+            <br></br><br></br>
+            Field observations before testing had already surfaced the highest-friction moments: <mark className="hl">payment interactions were the biggest point of confusion</mark> (tap vs. swipe vs. insert), and <mark className="hl">stressful auditory countdown cues damaged user confidence</mark>.
           </p>
 
           {/* Each round is its own block with a header naming the round
@@ -324,6 +322,15 @@ export default function FrogslayerCaseStudy() {
             itself was validated as intuitive at first contact. With both confirmed, the team moved into guideline
             synthesis.
           </p>
+          <p>
+            We compiled findings into a final journey map demonstrating the validated flow, then ran a
+            <mark className="hl"> guideline workshop</mark> with our project owner to categorize insights into
+            <mark className="hl"> Marketing/Loyalty Programs, UX/UI, and Social Implications/Physical Placement</mark>{" "}
+            — formatted after NN/g&rsquo;s design heuristics as the most comprehensive yet minimal model. Handoff
+            included honest limitations and next steps: testing loyalty models beyond tiers/upsells, diversifying
+            venues beyond arcades, widening the tester demographic beyond college students, and validating with
+            real purchase stakes.
+          </p>
         </section>
 
         {/* ───── Takeaways ───── (closes the case study with what was
@@ -334,11 +341,9 @@ export default function FrogslayerCaseStudy() {
         <section id="takeaways" className="case-section">
           <h2>Takeaways</h2>
           <p>
-            User interactions are <mark className="hl">do not occur just from instinctual rocognition, but also from habits shaped
-            through prior experiences of a similar stimuli.</mark> Users consistently refer to extensive experiences of <mark className="hl">utilziing similar 
-            technology such as phones and encountering ads</mark> as the fuel of their actions when interacting with the kiosk. As a result, directly <mark className="hl">designing against 
-            prior experiences is a losing battle, highlighting reliance on familiar mental models</mark> to better guide favorable 
-            user actions.
+            Designing a prototype <mark className="hl">as a tool for generating evidence, not as a product</mark>, changed how I evaluated every screen — each element existed to test a hypothesis, and &ldquo;is it pretty?&rdquo; mattered less than &ldquo;what will this teach us?&rdquo;
+            <br></br><br></br>
+            The project also showed me how much <mark className="hl">environment is a design material</mark>: testing in a deliberately busy student union surfaced behaviors — skimming, rushing, tunnel vision on the screen — that a quiet lab never would have. User actions are shaped as much by <mark className="hl">habits and prior experiences with similar stimuli</mark> (phones, ads, familiar interfaces) as by the interface itself, so designing against those mental models is a losing battle; the guidelines work by leaning on them.
           </p>
         </section>
       </main>
