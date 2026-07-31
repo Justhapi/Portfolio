@@ -132,24 +132,51 @@ export default function SiteNavV2() {
   const pillRef = useRef<HTMLDivElement | null>(null);
   const [hl, setHl] = useState({ x: 0, y: 0, w: 0, h: 0, visible: false });
 
-  // Close on Escape, scroll, or outside click
+  // While the mobile menu is open: Esc closes, outside click closes, and
+  // Tab is trapped within the nav so keyboard users can't escape into the
+  // visually-hidden page behind the overlay. Scroll no longer closes —
+  // that was killing the menu whenever a user hit Space / PageDown while
+  // still inside it. Esc + outside click already cover intent.
   useEffect(() => {
     if (!menuOpen) return;
+    const nav = navRef.current;
+    if (!nav) return;
+
+    const getFocusable = () =>
+      Array.from(
+        nav.querySelectorAll<HTMLElement>(
+          "a[href], button:not([disabled])",
+        ),
+      ).filter((el) => !el.hasAttribute("aria-hidden"));
+
+    const focusable = getFocusable();
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    // Move focus into the menu so keyboard users land inside it on open.
+    first?.focus();
+
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setMenuOpen(false);
-    };
-    const onScroll = () => setMenuOpen(false);
-    const onOutside = (e: MouseEvent) => {
-      if (navRef.current && !navRef.current.contains(e.target as Node)) {
+      if (e.key === "Escape") {
         setMenuOpen(false);
+        return;
+      }
+      if (e.key !== "Tab" || focusable.length === 0) return;
+      const active = document.activeElement;
+      if (e.shiftKey && active === first) {
+        e.preventDefault();
+        last?.focus();
+      } else if (!e.shiftKey && active === last) {
+        e.preventDefault();
+        first?.focus();
       }
     };
+    const onOutside = (e: MouseEvent) => {
+      if (!nav.contains(e.target as Node)) setMenuOpen(false);
+    };
     window.addEventListener("keydown", onKey);
-    window.addEventListener("scroll", onScroll, { passive: true });
     document.addEventListener("mousedown", onOutside);
     return () => {
       window.removeEventListener("keydown", onKey);
-      window.removeEventListener("scroll", onScroll);
       document.removeEventListener("mousedown", onOutside);
     };
   }, [menuOpen]);
@@ -195,8 +222,12 @@ export default function SiteNavV2() {
           className="nav-mark"
           href="#hero"
           onClick={(e) => {
+            // #hero is position:sticky so scrollIntoView never fires — we
+            // need window.scrollTo(0). Intercept, then clear the URL hash
+            // via history.replaceState so the visible URL stays at "/".
             e.preventDefault();
             smoothScrollTo("hero");
+            history.replaceState(null, "", window.location.pathname);
             setMenuOpen(false);
           }}
         >
@@ -222,9 +253,19 @@ export default function SiteNavV2() {
               key={id}
               href={`#${id}`}
               className={`nav-link ${active === id ? "active" : ""}`}
+              aria-current={active === id ? "page" : undefined}
               onClick={(e) => {
-                e.preventDefault();
-                smoothScrollTo(id);
+                // #connect is sticky behind About — the browser's native
+                // anchor jump lands on ac-scene's top (About still covers
+                // Connect), so we intercept and scroll past About's height
+                // manually. history.pushState keeps the URL hash so Back/
+                // Forward and share-links still work. Other section links
+                // let the browser handle the anchor + hash natively.
+                if (id === "connect") {
+                  e.preventDefault();
+                  smoothScrollTo(id);
+                  history.pushState(null, "", `#${id}`);
+                }
                 setMenuOpen(false);
               }}
             >

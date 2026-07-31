@@ -224,27 +224,24 @@ type Project = {
 };
 
 const PROJECTS: Project[] = [
-  /** HIDE FOR NOW DUE TO CURRENTLY IN PROGRESS + NDA
   {
     tag: "inline · Product Design Intern",
     blurb: (
       <>
-        I<strong> researched and analyzed competitors</strong> apps to act as
-        a <strong>advisor for an event organization app's market success{" "}</strong>
-        
+        I <strong>served as sole designer and lead usability facilitator</strong>,{" "}
+        translating <strong>competitor research into a shipped prototype validated across four testing rounds{" "}</strong>
       </>
     ),
-    meta: ["NDA", "Product Design", "Competitor Research", "2026"],
-    accent: ["#FF8FA8", "#9D9BF5"],
+    meta: ["NDA", "Product Design", "Usability Testing", "AI Prototyping", "2026"],
+    accent: ["#F5B8CB", "#9D9BF5"],
     // Mulled Plum — a warm wine/berry cover that sits apart from the
-    // tan, ink-black, and teal folders. Back steps a notch darker; the
+    // tan, teal, and slate-navy folders. Back steps a notch darker; the
     // shadow stop holds just above black so the multiply gradient keeps
     // depth on the open folder without crushing the bottom edge to mud.
     folder: { front: "#7C4A63", back: "#5E3349", shadow: "#39202F" },
     href: "/projects/inline",
-    readTime: "3 min read",
+    readTime: "4 min read",
   },
-  */
   {
     tag: "AI Customer Journey Management Platform · Designer", //need to update name to support NDA
     blurb: (

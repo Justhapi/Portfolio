@@ -107,7 +107,38 @@ export default function CaseSectionNav({ sections }: { sections: Section[] }) {
           <span className="arrow">←</span>
           <span>Back to projects</span>
         </Link>
-        <div className="case-nav-pill" ref={pillRef}>
+        {/* Horizontal-scroll pill — Arrow Left/Right on the pill itself
+            scroll it programmatically so keyboard-only users can reveal
+            overflow items without a mouse/trackpad. Also Home/End jump
+            to the ends. Tab still moves through the section links
+            normally; the pill's arrow-key handler only fires when the
+            pill container (not a link inside it) has focus, so per-link
+            Tab focus behavior is unchanged. */}
+        <div
+          className="case-nav-pill"
+          ref={pillRef}
+          tabIndex={0}
+          role="tablist"
+          aria-label="Case study sections"
+          onKeyDown={(e) => {
+            const pill = pillRef.current;
+            if (!pill) return;
+            const STEP = 120;
+            if (e.key === "ArrowRight") {
+              e.preventDefault();
+              pill.scrollBy({ left: STEP, behavior: "smooth" });
+            } else if (e.key === "ArrowLeft") {
+              e.preventDefault();
+              pill.scrollBy({ left: -STEP, behavior: "smooth" });
+            } else if (e.key === "Home") {
+              e.preventDefault();
+              pill.scrollTo({ left: 0, behavior: "smooth" });
+            } else if (e.key === "End") {
+              e.preventDefault();
+              pill.scrollTo({ left: pill.scrollWidth, behavior: "smooth" });
+            }
+          }}
+        >
           <span
             className="case-nav-pill-highlight"
             aria-hidden="true"
@@ -123,10 +154,12 @@ export default function CaseSectionNav({ sections }: { sections: Section[] }) {
               key={s.id}
               href={`#${s.id}`}
               className={`case-nav-link ${active === s.id ? "active" : ""}`}
+              aria-current={active === s.id ? "location" : undefined}
               onClick={(e) => {
                 e.preventDefault();
                 const el = document.getElementById(s.id);
                 if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+                history.pushState(null, "", `#${s.id}`);
               }}
             >
               {s.label}

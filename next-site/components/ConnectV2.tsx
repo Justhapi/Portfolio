@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import SparkleField from "@/components/SparkleField";
 
 /**
@@ -9,13 +9,19 @@ import SparkleField from "@/components/SparkleField";
  * Bullets are 4-pointed sparkle SVGs (ported from Home/style.css "footer-link-spark")
  * — they rotate 90° on hover with a spring ease.
  *
- * Email row drops down an inline compose form on click — Subject + Message
- * inputs + "Send Message" button. Send opens `mailto:` with the filled
- * values so the visitor's default mail client handles delivery. No backend
- * needed; the form is purely a UX wrapper around mailto.
+ * Email row: clicking the Email bullet opens a Gmail compose draft in a new
+ * tab (pre-addressed to Kathleen). A companion "copy email" button next to
+ * it copies the address to the clipboard for visitors who prefer their own
+ * mail client. The inline expand-to-compose form was removed — the direct
+ * open-Gmail-draft flow matches how LinkedIn / Resume behave (single click,
+ * off you go) and skips the friction of typing into a form on the page.
  */
 
 const EMAIL = "likathleen094@gmail.com";
+// Gmail's compose URL — opens a new draft addressed to EMAIL in whichever
+// Gmail account the visitor is signed into. Falls back gracefully to a
+// standard Gmail landing page if they aren't signed in.
+const GMAIL_COMPOSE_URL = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(EMAIL)}`;
 
 /** 4-pointed sparkle SVG used as the bullet on each connect link row. */
 const SparkleBullet = () => (
@@ -31,48 +37,7 @@ const SparkleBullet = () => (
 
 export default function ConnectV2() {
   const [copied, setCopied] = useState(false);
-  const [formOpen, setFormOpen] = useState(false);
-  const [subject, setSubject] = useState("");
-  const [body, setBody] = useState("");
-  const [from, setFrom] = useState("");
   const sectionRef = useRef<HTMLElement | null>(null);
-  const subjectRef = useRef<HTMLInputElement | null>(null);
-
-  // Focus the subject input once the form has finished expanding so the
-  // visitor can start typing immediately. Delay matches the panel's
-  // max-height transition (320ms) so the focus ring doesn't appear inside
-  // an in-flight reveal.
-  useEffect(() => {
-    if (!formOpen) return;
-    const t = window.setTimeout(() => subjectRef.current?.focus(), 320);
-    return () => window.clearTimeout(t);
-  }, [formOpen]);
-
-  // Esc closes the form. Scoped to formOpen so the listener only attaches
-  // when there's actually a form to close.
-  useEffect(() => {
-    if (!formOpen) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setFormOpen(false);
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [formOpen]);
-
-  const handleSend = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Prepend the visitor's contact info to the body so Kathleen sees how
-    // to reach them even if the mail client's From header doesn't match
-    // their preferred contact channel (e.g. they typed a LinkedIn URL or
-    // a non-default email).
-    const composedBody = from.trim()
-      ? `Contact: ${from.trim()}\n\n${body}`
-      : body;
-    const url = `mailto:${EMAIL}?subject=${encodeURIComponent(
-      subject
-    )}&body=${encodeURIComponent(composedBody)}`;
-    window.location.href = url;
-  };
 
   const handleCopy = async () => {
     try {
@@ -90,7 +55,7 @@ export default function ConnectV2() {
         setCopied(true);
         window.setTimeout(() => setCopied(false), 1800);
       } catch {
-        /* silent — user can still click the mailto */
+        /* silent — user can still click the Gmail draft link */
       }
       document.body.removeChild(ta);
     }
@@ -99,7 +64,7 @@ export default function ConnectV2() {
   return (
     <section
       id="connect"
-      className={`section connect ${formOpen ? "has-open-form" : ""}`}
+      className="section connect"
       data-screen-label="04 Connect"
       ref={sectionRef}
     >
@@ -118,21 +83,17 @@ export default function ConnectV2() {
           <div className="connect-pitch">
             I am available for <em>internships in Interaction Design, Product Design, and Design Engineering!</em>
           </div>
-          <div className={`connect-links ${formOpen ? "has-open-form" : ""}`}>
-            {/* Email row — click expands an inline compose form below it.
-                The mailto link is preserved as a fallback for keyboard
-                users who Cmd+click (open default mail client) and for
-                visitors with JavaScript disabled. */}
-            <div className={`c-link c-email ${formOpen ? "is-open" : ""}`}>
+          <div className="connect-links">
+            {/* Email row — click opens a Gmail compose draft in a new tab.
+                The neighbouring copy button lets visitors who don't use
+                Gmail grab the address directly. */}
+            <div className="c-link c-email">
               <a
-                href={`mailto:${EMAIL}`}
+                href={GMAIL_COMPOSE_URL}
                 className="c-email-main"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setFormOpen((v) => !v);
-                }}
-                aria-expanded={formOpen}
-                aria-controls="email-compose-form"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Open Gmail compose draft (new tab)"
               >
                 <span>
                   <SparkleBullet />
@@ -160,61 +121,6 @@ export default function ConnectV2() {
                 </span>
               </button>
             </div>
-
-            {/* Email compose form — drops down underneath the Email row.
-                `max-height` + `opacity` transitions give the slide-out
-                feel. Inputs follow the Connect section palette: dark
-                surface, cream text, accent-soft borders. The form opens
-                a `mailto:` URL on submit — no backend required; the
-                visitor's default mail client handles delivery. */}
-            <form
-              id="email-compose-form"
-              className={`c-email-form ${formOpen ? "is-open" : ""}`}
-              onSubmit={handleSend}
-              aria-hidden={!formOpen}
-            >
-              <div className="c-email-form-inner">
-                <label className="c-email-form-field">
-                  <span className="c-email-form-label">Subject</span>
-                  <input
-                    ref={subjectRef}
-                    type="text"
-                    name="subject"
-                    placeholder="What's this about?"
-                    value={subject}
-                    onChange={(e) => setSubject(e.target.value)}
-                    autoComplete="off"
-                  />
-                </label>
-                <label className="c-email-form-field">
-                  <span className="c-email-form-label">Message</span>
-                  <textarea
-                    name="body"
-                    placeholder="Write your message…"
-                    rows={6}
-                    value={body}
-                    onChange={(e) => setBody(e.target.value)}
-                  />
-                </label>
-                <div className="c-email-form-actions">
-                  <label className="c-email-form-from">
-                    <span className="c-email-form-label">From</span>
-                    <input
-                      type="text"
-                      name="from"
-                      placeholder="your email or LinkedIn — so I can reply"
-                      value={from}
-                      onChange={(e) => setFrom(e.target.value)}
-                      autoComplete="email"
-                    />
-                  </label>
-                  <button type="submit" className="c-email-form-send">
-                    <span>Send Message</span>
-                    <span className="c-email-form-send-arrow" aria-hidden="true">→</span>
-                  </button>
-                </div>
-              </div>
-            </form>
 
             <a
               className="c-link"

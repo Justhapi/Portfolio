@@ -18,7 +18,7 @@ type PhotoMode = "drawing" | "photo";
 
 export default function HeroV2() {
   const stageRef = useRef<HTMLDivElement | null>(null);
-  const photoRef = useRef<HTMLDivElement | null>(null);
+  const photoRef = useRef<HTMLButtonElement | null>(null);
   const peekLayerRef = useRef<HTMLDivElement | null>(null);
 
   // which photo is currently the "front" — toggles on click
@@ -86,7 +86,7 @@ export default function HeroV2() {
     };
   }, []);
 
-  const handlePhotoMove = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handlePhotoMove = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (swapping) return; // don't drift the spotlight mid-expansion
     if (justSwapped) return; // suppress peek during the post-swap window
     const rect = photoRef.current?.getBoundingClientRect();
@@ -153,23 +153,21 @@ export default function HeroV2() {
           <SparkleField count={8} />
         </div>
 
-        {/* center polaroid — two-layer photo with cursor-peek + click-swap */}
+        {/* center polaroid — two-layer photo with cursor-peek + click-swap.
+            Uses a native <button> so keyboard Enter/Space, focus ring,
+            and screen-reader "toggle button, pressed/not pressed" all
+            come for free. aria-pressed tracks the mode: pressed = photo,
+            not pressed = drawing. */}
         <div className="hero-polaroid" data-cursor="polaroid">
-          <div
+          <button
+            type="button"
             className="photo photo-swap"
             ref={photoRef}
             onMouseMove={handlePhotoMove}
             onMouseLeave={handlePhotoLeave}
             onClick={handlePhotoClick}
-            role="button"
-            tabIndex={0}
-            aria-label={`Currently showing ${mode}. Click to swap, hover to peek.`}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                handlePhotoClick();
-              }
-            }}
+            aria-label={`Currently showing ${mode}. Click to swap between drawing and photo.`}
+            aria-pressed={mode === "photo"}
           >
             {/* base layer — currently selected mode */}
             <div className={`photo-layer photo-base photo-${mode}`}>
@@ -184,7 +182,7 @@ export default function HeroV2() {
               <div className="image-slot">{labelFor(otherMode)}</div>
             </div>
 
-          </div>
+          </button>
           <div className="caption-block">
             <div className="caption-meta">Last Updated · 05/07/26</div>
             {/* Two explicit line spans (.cap-write) — each wipes in

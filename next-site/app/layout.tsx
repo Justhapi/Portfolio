@@ -88,6 +88,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Long+Cang&text=%E6%9D%8E%E6%9B%A6&display=swap"
         />
+        {/* No-JS fallback — .reveal / .reveal-stagger start opacity:0 and
+            wait for RevealOnScroll's IntersectionObserver to add .in.
+            Without JS the class never lands, so content stays invisible.
+            Same for the footer's opacity gate. This <noscript> block
+            forces everything visible so the page is still readable when
+            JavaScript is disabled. */}
+        <noscript>
+          <style>{`
+            .reveal, .reveal-stagger > *, .foot.foot--armed { opacity: 1 !important; transform: none !important; }
+          `}</style>
+        </noscript>
       </head>
       <body>
         {/* Skip link — first focusable element on every page. Lets

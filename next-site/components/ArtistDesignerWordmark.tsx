@@ -143,8 +143,10 @@ export default function ArtistDesignerWordmark() {
         preserveAspectRatio="xMidYMid meet"
         overflow="visible"
         style={{ overflow: "visible" }}
-        aria-hidden="true"
+        role="img"
+        aria-label="Artist × Designer"
       >
+        <title>Artist × Designer</title>
         {GLYPHS.map((g) => (
           <path key={g.id} d={g.d} fill="var(--hero-fg)" />
         ))}
@@ -164,8 +166,10 @@ export default function ArtistDesignerWordmark() {
       preserveAspectRatio="xMidYMid meet"
       overflow="visible"
       style={{ overflow: "visible" }}
-      aria-hidden="true"
+      role="img"
+      aria-label="Artist × Designer"
     >
+      <title>Artist × Designer</title>
       {/* glyphs — each letter drops in from above with a bounce.
           The 4-point star is special: it bursts open at the moment the
           flying dot lands on it (no drop-in). */}

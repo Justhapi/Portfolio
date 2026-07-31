@@ -129,7 +129,6 @@ const PARALLAX_ACTIVATE_DELAY = 2600;
 export default function SmoothScroll() {
   useEffect(() => {
     if (typeof window === "undefined") return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     /* ── About/Connect sticky reveal ─────────────────────────────────────
        .ac-scene wraps <ConnectV2> (first in DOM) and <AboutV2> (second).
@@ -141,7 +140,12 @@ export default function SmoothScroll() {
        scene height = aboutH + connectH  →  sticky range = aboutH.
        This is exactly how long About takes to fully scroll off the viewport.
 
-       A ResizeObserver keeps the height in sync on reflow. */
+       A ResizeObserver keeps the height in sync on reflow.
+
+       This block runs BEFORE the reduced-motion early-return below so the
+       reveal still works with smooth scroll + parallax disabled — otherwise
+       ac-scene collapses to Connect's 100vh natural height and the user
+       arrives at Connect after 0 px of About-slide scroll. */
     const sceneEl   = document.querySelector<HTMLElement>(".ac-scene");
     const aboutEl   = document.querySelector<HTMLElement>(".about");
     const connectEl = document.querySelector<HTMLElement>(".connect");
@@ -155,6 +159,16 @@ export default function SmoothScroll() {
     const ro = new ResizeObserver(syncScene);
     if (aboutEl)   ro.observe(aboutEl);
     if (connectEl) ro.observe(connectEl);
+
+    /* Reduced-motion: keep the ac-scene sync + ResizeObserver running above
+       so the About→Connect reveal still has scroll range, but skip Lenis
+       smooth-scroll and parallax below. */
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return () => {
+        ro.disconnect();
+        if (sceneEl) sceneEl.style.height = "";
+      };
+    }
 
     /* ── Lenis initialisation ──────────────────────────────────────────── */
     const lenis = new Lenis({

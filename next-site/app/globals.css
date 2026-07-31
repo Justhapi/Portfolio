@@ -781,9 +781,10 @@ body.on-paper .nav-pill {
 @keyframes polaroidPlaceIn {
   from {
     opacity: 0;
-    /* enters from slightly above + tilted, mirrors the previous 8%
-       vertical drift but in the new top-edge coordinate space */
-    transform: translate(-50%, -8%) rotate(-11deg) scale(0.86);
+    /* Y drift softened from -8% → -3% so the polaroid entrance reads as
+       a place-down rather than a fall-in. Rotation + scale carry the
+       gesture; the smaller Y keeps the settle tight. */
+    transform: translate(-50%, -3%) rotate(-11deg) scale(0.86);
   }
   to {
     opacity: 1;
@@ -812,7 +813,22 @@ body.on-paper .nav-pill {
 .photo-swap {
   cursor: pointer;
   user-select: none;
+  /* Native <button> reset — the photo swap is a real button now (for
+     Enter/Space + screen-reader "toggle button" semantics), so strip
+     the UA button styles that would otherwise show a border, tinted
+     background, and platform font. Visual stays identical to the
+     old div. */
+  appearance: none;
+  -webkit-appearance: none;
+  padding: 0;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  text-align: inherit;
 }
+/* :focus-visible ring already handled by the global focus rule; the
+   default focus outline on native button gets replaced by the
+   accent-colored ring keyboard users expect. */
 .photo-layer {
   position: absolute;
   inset: 0;
@@ -1183,7 +1199,9 @@ em.it { font-style: italic; }
   animation: stickerNameIn 280ms var(--ease-out-quart) 1600ms backwards;
 }
 @keyframes stickerNameIn {
-  from { opacity: 0; transform: translate(48px, -18px) rotate(22deg); }
+  /* Y translate softened from -18px → -7px so the sticker slap reads as
+     more of a horizontal arrive-and-settle. X kept for the arc gesture. */
+  from { opacity: 0; transform: translate(48px, -7px) rotate(22deg); }
   to   { opacity: 1; transform: rotate(8deg); }
 }
 .sticker.name-yellow .name-en {
@@ -1263,7 +1281,9 @@ em.it { font-style: italic; }
   mix-blend-mode: screen;
 }
 @keyframes chipZhIn {
-  from { opacity: 0; transform: translate(30px, -10px) rotate(-22deg) scale(0.8); }
+  /* Y translate softened from -10px → -4px so the chip settle feels
+     less droppy. Scale + rotation carry the sticker-slap character. */
+  from { opacity: 0; transform: translate(30px, -4px) rotate(-22deg) scale(0.8); }
   to   { opacity: 1; transform: rotate(-6deg) scale(1); }
 }
 
@@ -1272,18 +1292,12 @@ em.it { font-style: italic; }
    constant distance from the polaroid's left edge instead of
    drifting toward the far viewport edge on wide monitors. */
 .sticker.designing-green {
-  /* Anchored ~30px below the polaroid's bottom edge so the status
-     sticker stays in the comfortable read zone on common laptop
-     fullscreen viewports (1080–1136px). The previous +86px gap put
-     the sticker's bottom at ~920px which fell out of view on
-     anything shorter than ~1100px; this trims the gap and adds a
-     viewport-relative cap (`min(..., 68vh)`) so the sticker can never
-     drop below 68% of the viewport height, regardless of how tall
-     the hero stage stretches. The polaroid bottom is at
-     `calc(180 + 12vw + ~412)` ≈ `592 + 12vw`, so `top = 622 + 12vw`
-     keeps a clean 30px gap that matches the doodle's 28px overhang
-     into a hairline visual separation. */
-  top: min(calc(642px + min(12vw, 132px)), calc(68vh + 20px));
+  /* Anchored below the polaroid's bottom edge with enough clearance that
+     the sticker's tilt + doodle overhang no longer visually collide with
+     the polaroid — both the base value and the vh cap moved down (+100px
+     on the base, 68vh → 80vh on the cap) so the sticker sits closer to
+     the bottom of the hero stage instead of hugging the polaroid. */
+  top: min(calc(742px + min(12vw, 132px)), calc(80vh + 20px));
   bottom: auto;
   right: calc(50% + 200px);
   left: auto;
@@ -1299,12 +1313,10 @@ em.it { font-style: italic; }
      up-and-over arc and rotation settle, signs flipped (the name
      sticker arrives from the right). 280ms matches the name sticker
      so the pair read as the same gesture from opposite sides.
-     History note: an earlier -22deg rotation entrance read as the
-     sticker "minimising" — that variant also slid upward from below
-     (translateY +12px). The mirrored diagonal (-48px, -18px) matches
-     the name sticker's proven path, so the rotation reads as a slap,
-     not a shrink. */
-  from { opacity: 0; transform: translate(-48px, -18px) rotate(-22deg); }
+     Y translate softened from -18px → -7px in step with stickerNameIn so
+     the paired entrances stay symmetric and the up-and-over gesture stays
+     tight enough not to over-cross the polaroid mid-animation. */
+  from { opacity: 0; transform: translate(-48px, -7px) rotate(-22deg); }
   to   { opacity: 1; transform: rotate(-5deg); }
 }
 .sticker.designing-green .d-text {
@@ -1403,7 +1415,9 @@ em.it { font-style: italic; }
   animation: scrollCueIn 280ms var(--ease-out-quart) 2500ms backwards;
 }
 @keyframes scrollCueIn {
-  from { opacity: 0; transform: translateX(-50%) translateY(14px); }
+  /* Y translate softened from 14px → 5px so the scroll cue settles
+     with a light lift rather than a slide. */
+  from { opacity: 0; transform: translateX(-50%) translateY(5px); }
   to   { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 .hero-scroll:hover { color: rgb(var(--hero-fg-rgb) / 0.9); }
@@ -2133,7 +2147,19 @@ em.it { font-style: italic; }
    starts on top and slides off to reveal Connect as you scroll. */
 .ac-scene {
   position: relative;
-  /* height set dynamically by SmoothScroll.tsx */
+  /* Height is set dynamically by SmoothScroll.tsx to aboutH + connectH so
+     Connect's sticky range equals aboutH. The min-height below is a safety
+     net for the two cases where the JS-computed height is too short:
+       1. SmoothScroll bails early on prefers-reduced-motion, leaving
+          ac-scene with no inline height — natural layout collapses to just
+          Connect's 100vh, so the user reaches Connect after 0 px of About-
+          slide scroll.
+       2. At very narrow viewport widths some layouts have measured About
+          smaller than expected in the first paint, shrinking the scroll
+          range before the ResizeObserver catches up.
+     200vh guarantees at least 100vh of About-slide range in both cases —
+     when the JS-computed value is larger (the common case), it wins. */
+  min-height: 200vh;
 }
 
 /* Peek combo — handwritten note + thin dark sliver of the Connect
@@ -2496,41 +2522,10 @@ em.it { font-style: italic; }
   height: 100vh;
   overflow: hidden;
 }
-/* When the email compose form is open it expands the connect-links column
-   downward — pushing LinkedIn, Resume, and the footer past the 100vh
-   bound. To keep all of them reachable:
-   1. The section itself switches to `overflow-y: auto` so the visitor
-      can scroll inside Connect.
-   2. The container drops its `height: 100%` cap and uses `min-height`
-      instead — now it can grow with content rather than clipping it.
-   3. `.connect-row` drops `flex: 1` so it sizes to its content (rather
-      than holding the row fixed and clipping the form's expansion).
-   Together these three changes let the form expand cleanly, the footer
-   falls below it in normal flow, and the visitor scrolls inside Connect
-   to reach the footer. */
-.connect.has-open-form {
-  overflow-y: auto;
-  /* Hide the scrollbar indicator that appears when Connect becomes
-     internally scrollable — the visitor still gets scroll functionality
-     (wheel + touch + arrow keys all work), just no visible track/thumb
-     on the section's right edge. Kept for both Firefox (`scrollbar-width`)
-     and Chromium/Safari (`::-webkit-scrollbar`). */
-  scrollbar-width: none;
-}
-.connect.has-open-form::-webkit-scrollbar {
-  display: none;
-}
-.connect.has-open-form > .container {
-  height: auto;
-  min-height: 100%;
-}
-.connect.has-open-form .connect-row {
-  flex: 0 0 auto;
-}
-/* Keep the pitch text anchored to the TOP of its grid row when the
-   links column grows. Without this, `align-items: center` on
-   `.connect-row` re-centers the pitch as the right column expands —
-   sliding the pitch downward as the form opens. */
+/* Keep the pitch text anchored to the TOP of its grid row so the layout
+   stays consistent — was previously used to prevent re-centering when the
+   inline email compose form expanded, but the form is gone; the anchor
+   still helps keep vertical alignment predictable across viewports. */
 .connect-pitch { align-self: start; }
 /* .container inside Connect must stretch to the full section height so
    the flex column can push the footer to the bottom edge. */
@@ -2604,13 +2599,10 @@ em.it { font-style: italic; }
 }
 
 /* Entrance stagger for the three link rows — Email, LinkedIn, Resume.
-   The `.c-email-form` sibling between Email and LinkedIn is EXCLUDED
-   from this stagger via `:not(.c-email-form)` because the form has its
-   own opacity/max-height transitions tied to `formOpen`. Without that
-   exclusion, the form was being counted as `:nth-child(2)`, shifting
-   LinkedIn to (3) and Resume to (4) — and the original stagger only
-   went up to (3), so Resume stayed at `opacity: 0` forever. */
-.connect-links > *:not(.c-email-form) {
+   After removing the inline email compose form, the connect-links
+   children are now contiguous: Email is child 1, LinkedIn is child 2,
+   Resume is child 3. */
+.connect-links > * {
   opacity: 0;
   transform: translateY(16px);
   transition:
@@ -2627,13 +2619,9 @@ em.it { font-style: italic; }
     opacity   500ms var(--ease-out-quart),
     transform 500ms var(--ease-out-quart);
 }
-/* `:nth-child(N of selector)` would be cleanest but Safari support is
-   only ~16.4+; use `:nth-child` with the actual DOM positions instead.
-   Email is child 1, form is child 2 (skip — has its own transitions),
-   LinkedIn is child 3, Resume is child 4. */
 .connect-row.in .connect-links > *:nth-child(1) { opacity: 1; transform: none; transition-delay: 380ms; }
-.connect-row.in .connect-links > *:nth-child(3) { opacity: 1; transform: none; transition-delay: 470ms; }
-.connect-row.in .connect-links > *:nth-child(4) { opacity: 1; transform: none; transition-delay: 560ms; }
+.connect-row.in .connect-links > *:nth-child(2) { opacity: 1; transform: none; transition-delay: 470ms; }
+.connect-row.in .connect-links > *:nth-child(3) { opacity: 1; transform: none; transition-delay: 560ms; }
 
 @media (prefers-reduced-motion: reduce) {
   .connect-pitch,
@@ -2849,231 +2837,12 @@ em.it { font-style: italic; }
   100% { transform: scale(1); opacity: 1; }
 }
 
-/* ──────────────────────────────────────────────────────────────────────
-   Email compose form — inline drop-down beneath the Email row
-
-   Click the Email row → the form expands underneath it (max-height
-   transition for the slide, opacity + translateY for the inner content).
-   Visually anchored to the email row by reusing the same .c-link border
-   treatment, mono labels, and cream-on-dark palette. The form opens a
-   `mailto:` URL on submit — no backend; the visitor's mail client
-   handles delivery.
-   ────────────────────────────────────────────────────────────────────── */
-
-/* Move the email row's bottom separator OFF the row itself and ONTO
-   the form below it. The form's bottom border is always visible (not
-   transitioning) — so when the form is collapsed (max-height: 0), the
-   form's bottom edge sits flush with the email row's bottom, and the
-   line appears in its closed position. When the form expands, the
-   form's bottom border physically translates downward with the
-   expansion — producing a "line slides down" effect instead of a
-   border fade. The email row's own bottom border is suppressed
-   permanently to avoid a double line. */
-.c-link.c-email {
-  border-bottom-color: transparent;
-}
-
-/* Container — collapsed/expanded via max-height. `overflow: hidden`
-   clips the inner content during the transition so it doesn't appear
-   before the box has space for it. Bottom border opacity (`0.12`)
-   matches the other `.c-link` separator lines so the email row reads
-   as one continuous separator system — except this particular line
-   physically slides downward with the form's max-height transition
-   when expanding (and back upward when collapsing).
-
-   CRITICAL: the form box itself stays at `opacity: 1`. Putting opacity
-   on the form would also hide the border (CSS opacity affects the
-   entire box including its border), which is exactly the bug the
-   visible-outline was meant to fix. Inner content fade is handled by
-   `.c-email-form-inner`'s own opacity transition. */
-.c-email-form {
-  max-height: 0;
-  overflow: hidden;
-  border-bottom: 1px solid rgb(var(--hero-fg-rgb) / 0.12);
-  transition: max-height 380ms var(--ease-out-quart);
-}
-.c-email-form.is-open {
-  /* Generous cap so the form's natural height is never clipped on
-     desktop (subject + textarea + actions ≈ 360px). The transition
-     finishes when the actual content height is reached. */
-  max-height: 520px;
-}
-
-.c-email-form-inner {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  padding: 18px 4px 22px;
-  /* Subtle bonded look — a thin guide line on the left ties the form
-     visually to the bullet point above it so the form reads as a
-     continuation of the email row, not a separate panel. */
-  position: relative;
-  /* Inner content slides up + fades in slightly after the box opens. */
-  transform: translateY(-6px);
-  opacity: 0;
-  transition:
-    transform 320ms var(--ease-out-quart) 80ms,
-    opacity 260ms ease 80ms;
-}
-.c-email-form.is-open .c-email-form-inner {
-  transform: translateY(0);
-  opacity: 1;
-}
-
-.c-email-form-field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-.c-email-form-label {
-  font-family: var(--f-mono);
-  font-weight: 600;
-  font-size: 10.5px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: rgb(var(--hero-fg-rgb) / 0.55);
-}
-.c-email-form-field input,
-.c-email-form-field textarea {
-  font-family: var(--f-sans);
-  font-weight: 400;
-  font-size: 15px;
-  line-height: 1.5;
-  color: var(--hero-fg);
-  background: rgb(var(--hero-fg-rgb) / 0.04);
-  border: 1px solid rgb(var(--hero-fg-rgb) / 0.16);
-  border-radius: 8px;
-  padding: 12px 14px;
-  width: 100%;
-  resize: vertical;
-  transition:
-    border-color 200ms ease,
-    background 200ms ease,
-    box-shadow 200ms ease;
-  /* Override Safari/Chrome's default focus ring — the connect section's
-     palette demands a softer treatment than the OS default. */
-  outline: none;
-}
-.c-email-form-field input::placeholder,
-.c-email-form-field textarea::placeholder {
-  color: rgb(var(--hero-fg-rgb) / 0.32);
-}
-.c-email-form-field input:focus,
-.c-email-form-field textarea:focus {
-  border-color: var(--accent-soft);
-  background: rgb(var(--hero-fg-rgb) / 0.08);
-  box-shadow: 0 0 0 3px rgba(212, 144, 117, 0.12);
-}
-.c-email-form-field textarea {
-  min-height: 120px;
-  font-family: var(--f-sans);
-}
-
-/* Actions row — From field stretches across the left, Send Message pill
-   on the right. From captures the visitor's preferred contact channel
-   (email, LinkedIn, etc.) so Kathleen knows how to reach back; on
-   submit it's prepended to the mail body as `Contact: <value>` because
-   `mailto:` URLs can't reliably set a Reply-To header. */
-.c-email-form-actions {
-  display: flex;
-  justify-content: flex-end;
-  align-items: flex-end;
-  gap: 12px;
-  padding-top: 4px;
-}
-.c-email-form-from {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  flex: 1 1 auto;
-  min-width: 0; /* let it shrink rather than force horizontal overflow */
-}
-/* Inputs inside .c-email-form-from match the Subject/Message field
-   styling — same border, padding, focus state — so the actions row
-   reads as a continuation of the form rather than a separate cluster. */
-.c-email-form-from input {
-  font-family: var(--f-sans);
-  font-weight: 400;
-  font-size: 15px;
-  line-height: 1.5;
-  color: var(--hero-fg);
-  background: rgb(var(--hero-fg-rgb) / 0.04);
-  border: 1px solid rgb(var(--hero-fg-rgb) / 0.16);
-  border-radius: 8px;
-  padding: 12px 14px;
-  width: 100%;
-  outline: none;
-  transition:
-    border-color 200ms ease,
-    background 200ms ease,
-    box-shadow 200ms ease;
-}
-.c-email-form-from input::placeholder {
-  color: rgb(var(--hero-fg-rgb) / 0.32);
-}
-.c-email-form-from input:focus {
-  border-color: var(--accent-soft);
-  background: rgb(var(--hero-fg-rgb) / 0.08);
-  box-shadow: 0 0 0 3px rgba(212, 144, 117, 0.12);
-}
-.c-email-form-send {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 11px 20px;
-  background: var(--hero-fg);
-  color: var(--hero-bg, #0d1014);
-  border: 1px solid var(--hero-fg);
-  border-radius: 999px;
-  cursor: pointer;
-  font-family: var(--f-mono);
-  font-weight: 700;
-  font-size: 12px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  transition:
-    background 200ms ease,
-    border-color 200ms ease,
-    transform 240ms var(--ease-out-quart),
-    box-shadow 240ms var(--ease-out-quart);
-  box-shadow: 0 6px 16px -8px rgba(0, 0, 0, 0.5);
-}
-.c-email-form-send:hover,
-.c-email-form-send:focus-visible {
-  background: var(--accent-soft);
-  border-color: var(--accent-soft);
-  transform: translateY(-1px);
-  box-shadow: 0 10px 22px -10px rgba(0, 0, 0, 0.6);
-  outline: none;
-}
-.c-email-form-send:active {
-  transform: translateY(0) scale(0.98);
-}
-.c-email-form-send-arrow {
-  display: inline-block;
-  transition: transform 240ms var(--ease-out-quart);
-}
-.c-email-form-send:hover .c-email-form-send-arrow {
-  transform: translateX(3px);
-}
-
-@media (max-width: 640px) {
-  .c-email-form.is-open { max-height: 720px; }
-  .c-email-form-actions {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
-  }
-  .c-email-form-from { flex: 0 0 auto; }
-  .c-email-form-send { justify-content: center; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .c-email-form,
-  .c-email-form-inner,
-  .c-email-form-send,
-  .c-email-form-send-arrow { transition: none !important; }
-}
+/* Email compose form CSS removed — the Email row now opens a Gmail
+   compose draft in a new tab on click instead of expanding an inline
+   compose form. Cleaned selectors: .c-email-form, .c-email-form-inner,
+   .c-email-form-field, .c-email-form-label, .c-email-form-actions,
+   .c-email-form-from, .c-email-form-send(-arrow), plus the related
+   media queries. */
 
 /* Fade-in on first uncover — .foot--armed is added by SmoothScroll
    (desktop, non-reduced-motion only; the touch and reduced-motion
@@ -4327,16 +4096,23 @@ em.it { font-style: italic; }
      the viewport edge reads more natural. */
   .sticker.name-yellow { left: auto; right: 4%; top: 32%; }
   /* Critical: explicitly reset `top: auto` because the desktop rule
-     now uses `top: calc(610px + …)`. Without this reset, the mobile
-     rule sets `bottom: 10%` while `top` is still inherited from
-     desktop — and when both top AND bottom are declared on an
-     absolutely-positioned element with a fixed width, the browser
-     stretches/compresses its height to fit the gap between them.
-     That was causing the green sticker to randomly minimise as the
-     viewport crossed certain widths where the calc'd top + 10%
-     bottom didn't leave enough room for the content's natural
-     height. */
-  .sticker.designing-green { right: auto; left: 4%; top: auto; bottom: 10%; width: 220px; }
+     now uses `top: calc(742px + …)`. Without this reset, the mobile
+     rule sets `bottom` while `top` is still inherited from desktop —
+     and when both top AND bottom are declared on an absolutely-
+     positioned element with a fixed width, the browser stretches/
+     compresses its height to fit the gap between them. That was
+     causing the green sticker to randomly minimise as the viewport
+     crossed certain widths where the calc'd top + bottom didn't
+     leave enough room for the content's natural height.
+     Bottom offset dropped from 10% → 3% so the sticker sits near
+     the bottom-left corner of the hero stage, matching its relative
+     Y placement on wide viewports — the previous 10% put it in the
+     mid-lower region, visually colliding with the polaroid's bottom
+     edge on narrow browsers.
+     Width override removed — the sticker now keeps its base 248px on
+     every viewport width instead of shrinking to 220px on ≤980px, so
+     its text wrap and doodle-relative sizing stays consistent. */
+  .sticker.designing-green { right: auto; left: 4%; top: auto; bottom: 3%; }
   .hero-anno { display: none; }
   /* Chip is now a child of .sticker.name-yellow, so its position is
      relative to the Kathleen sticker, not the hero stage. The base
