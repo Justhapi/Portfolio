@@ -150,9 +150,23 @@ export default function SmoothScroll() {
     const aboutEl   = document.querySelector<HTMLElement>(".about");
     const connectEl = document.querySelector<HTMLElement>(".connect");
 
+    /* Forward-declared so syncScene() can call buildEntries + applyParallax
+       once they're defined further down. Kept as `let` bindings so JS
+       hoisting of the actual function declarations still works. */
+    let buildEntries: () => void = () => {};
+    let applyParallax: (scroll: number) => void = () => {};
+
     function syncScene() {
       if (!sceneEl || !aboutEl || !connectEl) return;
       sceneEl.style.height = `${aboutEl.offsetHeight + connectEl.offsetHeight}px`;
+      /* Rebuild parallax entries whenever the ac-scene resizes — otherwise
+         Connect elements (relativeToScene / relativeToSceneEnd) keep a
+         stale scrollBase and drift out of alignment as About/Connect
+         content reflows (fonts loading, images decoding, form opening,
+         viewport changes). Apply transforms immediately so the fix is
+         visible without waiting for the next scroll event. */
+      buildEntries();
+      applyParallax(window.scrollY);
     }
     syncScene();
 
@@ -211,8 +225,13 @@ export default function SmoothScroll() {
       scrollBase: number;
     };
     let entries: ParallaxEntry[] = [];
+    let activated = false;
 
-    function buildEntries() {
+    /* Reassign the forward-declared hoists above so syncScene() can
+       call these. Function expressions instead of declarations because
+       hoisting a later `function buildEntries()` would shadow the
+       `let buildEntries` above and break syncScene's binding. */
+    buildEntries = function () {
       entries = [];
       // Measure ac-scene's scroll position for Connect-relative targets.
       const sceneRect = sceneEl?.getBoundingClientRect();
@@ -236,10 +255,19 @@ export default function SmoothScroll() {
           entries.push({ el, config: cfg, scrollBase });
         });
       }
-    }
+    };
 
-    // Wait for all entrance animations to complete before activating parallax
-    const activateTimer = setTimeout(buildEntries, PARALLAX_ACTIVATE_DELAY);
+    /* Wait for hero entrance animations to complete before flipping
+       `activated` — parallax onScroll no-ops until this fires so we
+       don't inline-override an animation still in flight. Once activated,
+       buildEntries runs and an initial applyParallax pass writes the
+       transforms for the current scroll position (no more "silent until
+       next scroll" dead frame). */
+    const activateTimer = window.setTimeout(() => {
+      activated = true;
+      buildEntries();
+      applyParallax(window.scrollY);
+    }, PARALLAX_ACTIVATE_DELAY);
 
     /* ── Footer fade-in on first uncover ────────────────────────────────
        .foot can't use the .reveal IO pattern: it sits inside sticky
@@ -269,7 +297,12 @@ export default function SmoothScroll() {
     // until the first scroll event.
     checkFoot();
 
-    function onScroll({ scroll }: { scroll: number }) {
+    /* Shared transform-apply pass — used by both the Lenis scroll
+       handler and one-shot triggers (buildEntries, syncScene,
+       visibilitychange). Extracting this means every "resync" path
+       reads the current scroll position and writes transforms once,
+       instead of waiting for the next wheel event. */
+    applyParallax = function (scroll: number) {
       for (const { el, config, scrollBase } of entries) {
         const delta = (scroll - scrollBase) * config.speed;
 
@@ -290,24 +323,52 @@ export default function SmoothScroll() {
         }
       }
       checkFoot();
+    };
+
+    function onScroll({ scroll }: { scroll: number }) {
+      if (!activated) {
+        // Still in the entrance-animation window; skip parallax writes
+        // so inline transforms don't override a running keyframe. Foot
+        // fade-in check is safe to run since it only toggles a class.
+        checkFoot();
+        return;
+      }
+      applyParallax(scroll);
     }
 
     lenis.on("scroll", onScroll);
 
-    // Re-measure on resize (layout may shift)
+    /* Rebuild + reapply on resize regardless of whether parallax has
+       activated yet — layout numbers (scene position, offsetHeight)
+       can shift during the entrance window too, and we want them
+       captured whenever they change. */
     const onResize = () => {
-      if (entries.length) buildEntries();
       syncScene();
+      if (activated) applyParallax(window.scrollY);
     };
     window.addEventListener("resize", onResize);
 
+    /* When the tab regains focus, Lenis's RAF was paused — scroll
+       events fired natively in the meantime weren't relayed, and the
+       parallax offsets can be stale relative to the current position.
+       Rebuild + reapply so nothing looks frozen mid-scroll after a
+       tab switch. */
+    const onVisibility = () => {
+      if (document.visibilityState !== "visible") return;
+      if (!activated) return;
+      buildEntries();
+      applyParallax(window.scrollY);
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+
     return () => {
       ro.disconnect();
-      clearTimeout(activateTimer);
+      window.clearTimeout(activateTimer);
       cancelAnimationFrame(rafId);
       lenis.off("scroll", onScroll);
       lenis.destroy();
       window.removeEventListener("resize", onResize);
+      document.removeEventListener("visibilitychange", onVisibility);
       if (sceneEl) sceneEl.style.height = "";
       footEl?.classList.remove("foot--armed", "foot--in");
       // Restore parallax elements
