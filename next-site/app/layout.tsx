@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { K2D, JetBrains_Mono, Caveat } from "next/font/google";
+import { K2D, JetBrains_Mono, Caveat, Klee_One } from "next/font/google";
 import "./globals.css";
 import CursorFollower from "@/components/CursorFollower";
 import SmoothScroll from "@/components/SmoothScroll";
@@ -33,6 +33,17 @@ const caveat = Caveat({
   subsets: ["latin"],
   weight: ["400", "600"],
   variable: "--font-caveat",
+  display: "swap",
+});
+
+/** Klee One — rounded handwriting-inspired serif for Japandi pull-quotes.
+ *  Restricted to editorial callouts (case-study takeaways, opening
+ *  pull-quotes) so it stays a distinct editorial voice rather than
+ *  competing with the site's other display faces. */
+const kleeOne = Klee_One({
+  subsets: ["latin"],
+  weight: ["400", "600"],
+  variable: "--font-klee",
   display: "swap",
 });
 
@@ -77,7 +88,12 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const fontVars = [k2d.variable, jetbrainsMono.variable, caveat.variable].join(" ");
+  const fontVars = [
+    k2d.variable,
+    jetbrainsMono.variable,
+    caveat.variable,
+    kleeOne.variable,
+  ].join(" ");
 
   return (
     <html lang="en" className={fontVars}>

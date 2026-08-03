@@ -78,24 +78,37 @@ type ParallaxConfig = {
 };
 
 const PARALLAX_TARGETS: ParallaxConfig[] = [
-  // ── Hero elements ────────────────────────────────────────────────────
-  // centredX: true preserves the translateX(-50%) CSS centering.
-  { selector: ".ribbon-artist",          speed: -0.13, centredX: true },
-  // Kathleen Li sticker carries the chip 李曦 as its DOM child, so
-  // the chip inherits Kathleen's parallax transform automatically.
-  // Don't register the chip separately or it'll get double-transformed.
-  { selector: ".sticker.name-yellow",    speed: -0.18, baseRotate: "8deg" },
-  // designing-green re-added with speed: -0.18 — matched exactly to
-  // .sticker.name-yellow so both stickers drift at the same rate and
-  // visually feel like the same physical layer of paper stuck to the
-  // hero stage. Previous -0.22 was too aggressive and caused the
-  // sticker to drift noticeably faster than its siblings, which
-  // (combined with its starting rotation) read as the sticker
-  // randomly minimising. At -0.18 the green and yellow stickers
-  // travel together. baseRotate "-5deg" preserves the green
-  // sticker's natural CSS rotation through the parallax transform.
-  { selector: ".sticker.designing-green", speed: -0.18, baseRotate: "-5deg" },
-  { selector: ".hero-polaroid",          speed: -0.12, centred: true },
+  // ── Hero parallax gradient ────────────────────────────────────────────
+  // Ordered TOP-to-BOTTOM by vertical position on the hero, with speed
+  // scaling from FASTEST at the top to SLOWEST at the bottom. All speeds
+  // ~2× stronger than the previous pass so the motion actually reads
+  // as parallax — the slowest sticker (Available) now drifts visibly
+  // instead of looking pinned.
+  //
+  //   school-note (top-left of polaroid)  → effective -0.44  (fastest)
+  //   hero-greeting (mid, left column)    → effective -0.28
+  //   hero-polaroid (mid, right column)   → effective -0.20
+  //   designing-green (bottom-right)      → effective -0.12  (slowest, visible)
+  //
+  // Effective drift for polaroid-attached stickers = polaroid's own
+  // speed + the sticker's own speed (parent transform moves the whole
+  // subtree, sticker's own transform adds extra drift).
+
+  // TOP — school-note (Currently @ Purdue, top-left of polaroid):
+  //   effective = polaroid (-0.20) + own (-0.24) = -0.44 FASTEST
+  { selector: ".sticker.school-note",     speed: -0.24, baseRotate: "-6deg" },
+
+  // MID-UPPER — greeting column (Kathleen sticker + wordmark + focus line):
+  { selector: ".hero-greeting",           speed: -0.28 },
+
+  // MID — polaroid frame:
+  { selector: ".hero-polaroid",           speed: -0.20, baseRotate: "-4deg" },
+
+  // BOTTOM — designing-green (Available Summer 2026, bottom-right of polaroid):
+  //   effective = polaroid (-0.20) + own (+0.08) = -0.12 SLOWEST but
+  //   clearly moving (previous +0.06 landed at effective -0.04 which
+  //   read as pinned).
+  { selector: ".sticker.designing-green", speed:  0.08, baseRotate: "-4deg" },
 
   // ── Case-cover hero ──────────────────────────────────────────────────
   // No per-element parallax on case study heroes. The depth illusion is
@@ -118,13 +131,12 @@ const PARALLAX_TARGETS: ParallaxConfig[] = [
 ];
 
 /** Delay after page load before parallax transforms activate (ms). */
-/* Must be greater than the latest hero entrance settle time so the parallax
- * system doesn't clear an animation's `backwards` fill-mode mid-flight.
- * Post-polish pass: green sticker settles at ~2280ms; scroll cue at 2780ms;
- * polaroid hint runs to ~3750ms. Activate at 2600ms — after the collage
- * has landed but before the hint plays, so parallax is live while the
- * viewer's cursor is likely to first touch the polaroid. */
-const PARALLAX_ACTIVATE_DELAY = 2600;
+/* Short — parallax runs concurrently with hero entrance animations
+ * (see comment in buildEntries below explaining why the two systems
+ * don't fight). 300ms is just enough for React hydration + first
+ * layout so `getBoundingClientRect` calls in buildEntries return
+ * stable numbers. */
+const PARALLAX_ACTIVATE_DELAY = 300;
 
 export default function SmoothScroll() {
   useEffect(() => {
@@ -245,8 +257,25 @@ export default function SmoothScroll() {
       for (const cfg of PARALLAX_TARGETS) {
         const nodes = document.querySelectorAll<HTMLElement>(cfg.selector);
         nodes.forEach((el) => {
-          // Remove animation fill lock so inline transforms can take effect
-          el.style.animation = "none";
+          /* Do NOT clear the element's `animation` property here. Prior
+             implementation set `el.style.animation = "none"` under the
+             assumption that a running entrance animation would fight the
+             parallax's inline transform. In practice the two systems
+             time-share cleanly:
+               - Before/during the entrance animation: the animation wins
+                 the transform property (browser gives animations priority
+                 over author styles during their active + fill windows).
+                 Parallax's inline write has no visible effect for those
+                 few hundred ms — invisible on `opacity: 0` anyway.
+               - After the animation ends: since we use `backwards` fill
+                 (pre-fill only), no post-fill state holds the transform.
+                 Cascade normalises, and parallax's inline transform wins
+                 on every subsequent scroll frame.
+             Leaving the animation alone means the entrance can start,
+             finish, and hand off to parallax without either system
+             stepping on the other. This also lets PARALLAX_ACTIVATE_DELAY
+             be short (parallax active immediately, not after the whole
+             hero settles). */
           const scrollBase = cfg.relativeToSceneEnd
             ? sceneEndBase
             : cfg.relativeToScene

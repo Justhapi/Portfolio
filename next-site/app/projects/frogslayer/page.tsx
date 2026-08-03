@@ -340,8 +340,15 @@ export default function FrogslayerCaseStudy() {
               one-paragraph takeaways pattern in the other two cases. */}
         <section id="takeaways" className="case-section">
           <h2>Takeaways</h2>
+          {/* Editorial pull-quote — Klee One (Japandi editorial voice)
+              with an ochre left rule. Used sparingly, one per case
+              study, to anchor a defining line. */}
+          <blockquote className="case-pullquote">
+            &ldquo;Is it pretty?&rdquo; mattered less than &ldquo;what will this teach us?&rdquo;
+            <cite>Frogslayer · design guideline project</cite>
+          </blockquote>
           <p>
-            Designing a prototype <mark className="hl">as a tool for generating evidence, not as a product</mark>, changed how I evaluated every screen — each element existed to test a hypothesis, and &ldquo;is it pretty?&rdquo; mattered less than &ldquo;what will this teach us?&rdquo;
+            Designing a prototype <mark className="hl">as a tool for generating evidence, not as a product</mark>, changed how I evaluated every screen — each element existed to test a hypothesis, and the pull-quote above became the working rule for every review.
             <br></br><br></br>
             The project also showed me how much <mark className="hl">environment is a design material</mark>: testing in a deliberately busy student union surfaced behaviors — skimming, rushing, tunnel vision on the screen — that a quiet lab never would have. User actions are shaped as much by <mark className="hl">habits and prior experiences with similar stimuli</mark> (phones, ads, familiar interfaces) as by the interface itself, so designing against those mental models is a losing battle; the guidelines work by leaning on them.
           </p>

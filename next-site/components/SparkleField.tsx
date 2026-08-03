@@ -21,7 +21,7 @@ import Sparkle from "./SparkleText";
  * Usage — connect (slow, spacious):  <SparkleField count={10} scale={1.5} slowdown={2} lifeScale={1.4} />
  */
 
-type Variant = "gem" | "mini";
+type Variant = "gem" | "mini" | "splatter";
 
 type SlotData = {
   id: number;
@@ -43,10 +43,22 @@ function rand(min: number, max: number) {
 }
 
 function freshFields(slowdown = 1, lifeScale = 1, scale = 1): Omit<SlotData, "id" | "spawnDelay"> {
+  /* Variant selection:
+       ~12.5%  splatter — rare hand-drawn ink blob for texture accent
+       ~40%    mini     — soft dot cycle
+       ~47.5%  gem      — the standard ✦ 𖥔 sparkle
+     Splatter is intentionally rare so it reads as an accidental
+     ink-fleck rather than a repeating decorative element. */
+  const roll = Math.random();
+  let variant: Variant;
+  if (roll < 0.125) variant = "splatter";
+  else if (roll < 0.525) variant = "mini";
+  else variant = "gem";
+
   return {
     x: rand(3, 97),
     y: rand(3, 97),
-    variant: Math.random() < 0.45 ? "mini" : "gem",
+    variant,
     duration: rand(0.45, 0.75) * slowdown,
     // each star lives 10–20 s (× lifeScale) before fading out and respawning elsewhere
     life: rand(10000, 20000) * lifeScale,

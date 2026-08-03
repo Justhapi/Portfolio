@@ -35,16 +35,33 @@ export default function HeroV2() {
   // spotlight of the previously-hidden image at cursor position.
   const [justSwapped, setJustSwapped] = useState(false);
 
-  // body class for nav theming + scrolled state
+  // body class for nav theming + scrolled state.
+  // Two triggers add `on-paper`:
+  //   1. Scroll past 70% of the hero (viewer is exiting the collage).
+  //   2. A time-based fallback at ~2900ms — right after the hero
+  //      entrance choreography settles — so the sidebar nav appears
+  //      even if the viewer never scrolls. Once added, on-paper is
+  //      NEVER removed (previously toggled off when scrolling back
+  //      up, which would re-hide the nav mid-session — annoying).
   useEffect(() => {
+    const HERO_ENTRANCE_END = 2900; // ms — matches scroll cue settle + a beat
+    let hasPaper = false;
+    const applyPaper = () => {
+      if (hasPaper) return;
+      hasPaper = true;
+      document.body.classList.add("on-paper");
+    };
     const onScroll = () => {
-      const onPaper = window.scrollY > window.innerHeight * 0.7;
-      document.body.classList.toggle("on-paper", onPaper);
+      if (window.scrollY > window.innerHeight * 0.7) applyPaper();
       document.body.classList.toggle("scrolled", window.scrollY > 60);
     };
+    const revealTimer = window.setTimeout(applyPaper, HERO_ENTRANCE_END);
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      window.clearTimeout(revealTimer);
+      window.removeEventListener("scroll", onScroll);
+    };
   }, []);
 
   // first-load polaroid hint: after the entrance choreography lands (~1.8s),
@@ -129,35 +146,56 @@ export default function HeroV2() {
   return (
     <section id="hero" className="hero" data-screen-label="01 Hero">
       <div className="hero-stage" ref={stageRef}>
-        {/* Artist · Designer wordmark — primary page heading.
-            Handwriting animation: letters trace in via centerline strokes;
-            the i-dot from "Artist" shoots over to become the middot. */}
-        <h1 className="ribbon-artist">
-          <span className="visually-hidden">Artist · Designer</span>
-          <ArtistDesignerWordmark />
-          {/* Subtitle now a simple fade instead of the previous
-              terminal-typed reveal — quieter, feels less like a demo
-              and more like an intentional statement. Copy names what
-              she does (three practice areas) with the × separator
-              echoing the wordmark's t→D X-ligature. */}
-          <span className="sub">
-            Interaction &times; Product &times; Design Engineering
-          </span>
-        </h1>
+        {/* ── LEFT column: handwritten greeting ──────────────────────────
+            "Hello, I'm [Kathleen sticker + 李曦 chip], an Artist/Designer
+             focusing on product design & design engineering."
+            Sketch-driven layout — the greeting flows in Caveat/Klee
+            handwriting so the recruiter reads a first-person address
+            (matches the peer pattern from Rachel/Arjun/Emmi/Jackie)
+            rather than a decorative wordmark alone.
+        */}
+        <div className="hero-greeting">
+          <p className="hero-greet-lead">
+            <span className="hero-greet-hi">Hello, I&rsquo;m </span>
+            {/* Kathleen sticker + 李曦 chip inline within the greeting
+                sentence — they now flow with the text instead of
+                floating as absolute decorations on the hero stage. */}
+            <span className="sticker name-yellow name-inline">
+              <span className="name-en">Kathleen</span>
+              <span
+                className="chip-zh"
+                role="img"
+                aria-label="Li Xi (李曦) — my Chinese name"
+              >
+                <span className="chip-zh-text">李曦</span>
+              </span>
+            </span>
+          </p>
+          {/* "an Artist · Designer" — kept as the animated wordmark for
+              signature-flair but left-aligned + demoted to h2 weight so
+              the greeting above reads as the primary hero H1. */}
+          <h1 className="ribbon-artist">
+            <span className="visually-hidden">an Artist · Designer</span>
+            <span className="hero-an" aria-hidden="true">an </span>
+            <ArtistDesignerWordmark />
+          </h1>
+          <p className="hero-focus">
+            focusing on <strong>product design</strong>
+            {" & "}
+            <strong>design engineering</strong>
+          </p>
+        </div>
 
-        {/* cycling-glyph sparkle field — slots respawn at fresh random positions.
-            Reduced from 14 → 8 for the professional-polish pass: fewer
-            simultaneous sparkles reads as intentional atmosphere rather
-            than decorative noise. */}
+        {/* cycling-glyph sparkle field — slots respawn at fresh random positions. */}
         <div className="hero-sparkles" aria-hidden="true">
           <SparkleField count={8} />
         </div>
 
-        {/* center polaroid — two-layer photo with cursor-peek + click-swap.
-            Uses a native <button> so keyboard Enter/Space, focus ring,
-            and screen-reader "toggle button, pressed/not pressed" all
-            come for free. aria-pressed tracks the mode: pressed = photo,
-            not pressed = drawing. */}
+        {/* ── RIGHT column: polaroid + attached stickers ─────────────────
+            The polaroid now hosts the two contextual stickers directly
+            (Purdue year at top-right, availability at bottom-right)
+            instead of them floating as separate elements on the stage.
+        */}
         <div className="hero-polaroid" data-cursor="polaroid">
           <button
             type="button"
@@ -186,20 +224,59 @@ export default function HeroV2() {
           <div className="caption-block">
             <div className="caption-meta">Last Updated · 05/07/26</div>
             {/* Two explicit line spans (.cap-write) — each wipes in
-                left→right like being written, line 1 then line 2. A
-                single wipe over the naturally-wrapped block would
-                reveal both lines column-wise, which reads as a print
-                effect, not handwriting. Line break is hand-placed for
-                the fixed 320px polaroid width. */}
+                left→right like being written, line 1 then line 2. */}
             <div className="caption-line">
               <span className="cap-write">I design <strong>solutions</strong> with</span>
               <span className="cap-write">moments worth <strong>lingering</strong> on</span>
             </div>
           </div>
+
+          {/* Purdue year sticker — attached to the polaroid's TOP-RIGHT
+              corner, overlapping it. Was previously nested inside the
+              green availability sticker; moved to the polaroid to make
+              the polaroid the anchor of the recruitment cluster (per
+              redesign sketch). */}
+          <div className="sticker school-note polaroid-attached">
+            <span className="school-note-text">
+              Currently completing my junior year @ Purdue
+            </span>
+          </div>
+
+          {/* Availability sticker — attached to the polaroid's BOTTOM-
+              RIGHT corner. Was previously floating bottom-left of the
+              hero stage; now paired with the polaroid so all recruiter
+              signals cluster around the visual centerpiece. */}
+          <div className="sticker designing-green polaroid-attached">
+            {/* interlocked-circles doodle */}
+            <svg
+              className="design-doodle"
+              viewBox="0 0 274 240"
+              aria-hidden="true"
+            >
+              <path
+                d="M110.5 20.5C160.118 20.5 200.5 60.931 200.5 111C200.5 161.069 160.118 201.5 110.5 201.5C60.882 201.5 20.5 161.069 20.5 111C20.5 60.931 60.882 20.5 110.5 20.5Z"
+                stroke="currentColor"
+                strokeWidth="28"
+                fill="none"
+              />
+              <path
+                d="M200 102C237.711 102 268 131.703 268 168C268 204.297 237.711 234 200 234C162.289 234 132 204.297 132 168C132 131.703 162.289 102 200 102Z"
+                stroke="currentColor"
+                strokeWidth="12"
+                fill="none"
+              />
+            </svg>
+            <div className="d-text">
+              <strong>Available Summer 2026</strong>
+              <span className="d-sub">
+                Product Design · Design Engineering internships
+              </span>
+            </div>
+          </div>
         </div>
 
-        {/* Kathleen Li sticker (top-right) — olive yellow */}
-        <div className="sticker name-yellow">
+        {/* LEGACY-REMOVE-START */}
+        <div className="legacy-hidden" style={{ display: "none" }} aria-hidden="true">
           {/* diagonal hatching corner accent — top-right */}
           <svg
             className="sticker-hatch hatch-tr"
@@ -253,23 +330,24 @@ export default function HeroV2() {
             </svg>
             <span className="chip-zh-text">李曦</span>
           </div>
-          {/* Elaborate 4-pointed sparkle with curled arms */}
+          {/* 4-pointed X-star with wavy tips — the same hand-drawn
+              twinkle used inside the FolderOpen SVGs on the Projects
+              cards. Reused here so the sticker's punctuation mark
+              shares vocabulary with the project cards. */}
           <svg
             className="name-burst"
-            viewBox="0 0 384 435"
+            viewBox="70 0 95 105"
             aria-hidden="true"
             preserveAspectRatio="xMidYMid meet"
           >
-            <path d="M160.666 177.674C165.866 162.553 169.711 0 183.351 0C196.991 0 204.94 166.333 209.815 177.674C214.691 189.015 383.712 186.207 383.712 202.249C383.712 218.291 212.959 217.367 209.815 228.708C206.671 240.049 203.991 434.742 189.023 434.742C174.055 434.742 166.868 238.159 160.666 228.708C154.464 219.257 0.609 225.625 0.002 207.916C-0.605 190.207 156.116 190.905 160.666 177.674Z" />
-            <path d="M134.924 149.755C142.477 142.193 63.089 43.902 30.963 28.782C-1.163 13.662 51.214 76.207 72.547 100.61C92.958 123.958 127.37 157.316 134.924 149.755Z" />
-            <path d="M350.404 27.544C357.957 35.106 278.569 133.397 246.443 148.517C214.317 163.637 266.695 101.092 288.027 76.69C308.438 53.342 342.851 19.983 350.404 27.544Z" />
-            <path d="M134.924 258.15C142.477 265.711 63.089 364.003 30.963 379.123C-1.163 394.243 51.214 331.698 72.547 307.295C92.958 283.947 127.37 250.588 134.924 258.15Z" />
-            <path d="M236.769 258.15C229.215 265.711 308.604 364.003 340.73 379.123C372.856 394.243 320.478 331.698 299.145 307.295C278.734 283.947 244.322 250.588 236.769 258.15Z" />
+            <path d="M105.094 7.08122C105.939 6.98293 106.516 7.46228 106.604 7.53257C106.807 7.69599 106.955 7.87395 107.04 7.98072C107.222 8.21067 107.403 8.49446 107.565 8.76349C107.901 9.31864 108.335 10.1108 108.836 11.0247C109.856 12.8849 111.244 15.4194 112.98 18.1993C116.482 23.8068 121.264 30.1843 127.011 33.9235C132.613 37.5682 140.181 39.0139 146.606 39.6593C149.793 39.9795 152.611 40.0964 154.717 40.2112C155.745 40.2672 156.662 40.3255 157.338 40.4159C157.663 40.4594 158.041 40.523 158.381 40.6373C158.548 40.6932 158.81 40.7946 159.072 40.9809C159.327 41.1627 159.776 41.5673 159.919 42.2651C160.066 42.9844 159.784 43.5387 159.665 43.7452C159.521 43.994 159.35 44.1864 159.232 44.3091C158.987 44.5619 158.68 44.8069 158.387 45.0257C157.786 45.4758 156.938 46.0367 155.967 46.6668C153.989 47.9512 151.337 49.6285 148.488 51.6403C142.715 55.7166 136.537 60.8968 133.805 66.3818C130.001 74.0183 128.382 81.758 127.604 87.6603C127.215 90.6102 127.038 93.0803 126.898 94.8722C126.829 95.745 126.765 96.5205 126.682 97.086C126.642 97.3565 126.584 97.6859 126.483 97.9868C126.434 98.1326 126.341 98.3766 126.168 98.6252C126.004 98.8606 125.606 99.3269 124.895 99.472C123.977 99.6595 123.334 99.1507 123.206 99.0484C122.989 98.8747 122.831 98.6824 122.74 98.5645C122.544 98.3125 122.353 98.0003 122.181 97.7019C121.825 97.0862 121.372 96.2101 120.851 95.1996C119.79 93.144 118.36 90.3567 116.58 87.3312C112.98 81.2134 108.121 74.4345 102.335 70.8653C96.8705 67.4943 89.8574 65.4683 84.035 64.1446C81.1278 63.4836 78.6056 63.0156 76.6979 62.6243C75.7705 62.4341 74.9474 62.2537 74.3364 62.0758C74.0404 61.9896 73.7058 61.8789 73.4092 61.7328C73.2628 61.6607 73.0485 61.543 72.8383 61.363C72.647 61.1991 72.2761 60.8283 72.1403 60.2187C71.9881 59.5353 72.2229 58.9872 72.3938 58.7018C72.5625 58.42 72.7659 58.2232 72.894 58.1103C73.1554 57.8799 73.4651 57.6885 73.7198 57.5421C74.2531 57.2355 74.9971 56.8764 75.818 56.4878C77.5086 55.6875 79.7762 54.6457 82.2726 53.2894C87.3066 50.5544 92.9722 46.6953 96.2576 41.4653C100.191 35.2037 101.807 27.2218 102.511 20.6175C102.86 17.3389 102.98 14.4562 103.062 12.35C103.102 11.3164 103.135 10.4174 103.185 9.77929C103.209 9.47081 103.244 9.13602 103.305 8.84783C103.333 8.71514 103.389 8.4799 103.506 8.23359C103.567 8.10738 103.944 7.30812 104.922 7.10833L105.094 7.08122Z" />
           </svg>
         </div>
 
-        {/* "Currently designing at" sticker (bottom-left) — muted green */}
-        <div className="sticker designing-green">
+        {/* Old floating designing-green sticker — moved onto the polaroid
+            as .polaroid-attached above. This copy stays hidden as a
+            fallback in case any CSS/JS still references it. */}
+        <div className="legacy-hidden" style={{ display: "none" }} aria-hidden="true">
           {/* diagonal hatching corner accent — top-left */}
           <svg
             className="sticker-hatch hatch-tl"
@@ -309,7 +387,21 @@ export default function HeroV2() {
             />
           </svg>
           <div className="d-text">
-            Currently a Product Design intern — drafting from cafes!
+            <strong>Available Summer 2026</strong>
+            <span className="d-sub">
+              Product Design · Design Engineering internships
+            </span>
+          </div>
+          {/* Purdue year sub-sticker — nested INSIDE the availability
+              sticker (mirrors the 李曦 chip nested inside the Kathleen
+              sticker) so the two paper notes overlap physically. Its
+              absolute positioning is scoped to the green sticker as its
+              containing block, so it visually sits at the sticker's
+              bottom-right corner, tilted the opposite direction. */}
+          <div className="sticker school-note">
+            <span className="school-note-text">
+              Currently completing my junior year at Purdue
+            </span>
           </div>
         </div>
 

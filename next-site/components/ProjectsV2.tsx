@@ -225,14 +225,19 @@ type Project = {
 
 const PROJECTS: Project[] = [
   {
-    tag: "inline · Product Design Intern",
+    // NDA compliance: inline's confidentiality agreement explicitly
+    // covers portfolios and requires prior written consent for use of
+    // engagement materials. Until that consent is on file, the tag
+    // shows only the employment fact (company + role + year) and the
+    // blurb speaks in scope categories only — no product name, no
+    // product concept, no findings, no artifact references.
+    tag: "inline · Product Design Intern · 2026",
     blurb: (
       <>
-        I <strong>served as sole designer and lead usability facilitator</strong>,{" "}
-        translating <strong>competitor research into a shipped prototype validated across four testing rounds{" "}</strong>
+        Contributed to an <strong>early-stage product exploration</strong> — competitive research, gap analysis, concept design, and multi-round <strong>usability testing</strong> as lead facilitator. Under active NDA; detailed materials available on request.
       </>
     ),
-    meta: ["NDA", "Product Design", "Usability Testing", "AI Prototyping", "2026"],
+    meta: ["NDA", "Product Design", "Usability Testing", "2026"],
     accent: ["#F5B8CB", "#9D9BF5"],
     // Mulled Plum — a warm wine/berry cover that sits apart from the
     // tan, teal, and slate-navy folders. Back steps a notch darker; the
@@ -243,12 +248,17 @@ const PROJECTS: Project[] = [
     readTime: "4 min read",
   },
   {
-    tag: "AI Customer Journey Management Platform · Designer", //need to update name to support NDA
+    // NDA compliance for this sponsor: the brief allows the sponsor name
+    // itself; only FEATURE SPECIFICS, personnel names, client names,
+    // metrics, and interview findings are restricted. Since the case-
+    // study URL and page already name JourneyTrack, the tag matches for
+    // consistency. The blurb stays at the high-level "process-only"
+    // description the NDA requires (agentic AI + trust framing, not
+    // feature mechanics).
+    tag: "JourneyTrack · Concept handed off 2026",
     blurb: (
       <>
-        I <strong>led concept ideation and exploration of an AI Journey Map Maintenance Agent</strong>,{" "}
-        to ensure{" "}
-        <strong> user trust and usage</strong>
+        Designed an <strong>agentic AI maintenance agent</strong> that keeps customer journey maps trustworthy over time — anchored on <strong>evidence transparency and user control</strong>
       </>
     ),
     meta: ["NDA", "UI", "Interaction", "User Research", "2026", "CONCEPTUALIZED"],
@@ -264,14 +274,13 @@ const PROJECTS: Project[] = [
     readTime: "3 min read",
   },
   {
-    tag: "Purdue Stack · Design Engineer",
+    tag: "Purdue Stack · Ships summer 2026",
     blurb: (
       <>
-        I <strong> refined the design system's UI and conducted user research </strong> for feature implementations{" "}
-        relevant to the platform users{" "}
+        Redesigned Purdue&rsquo;s <strong>student–faculty research collaboration platform</strong> — design and front-end React shipped alongside a 5-engineer team
       </>
     ),
-    meta: ["Design Systems", "UI", "User Research", "2026", "SHIPPED"],
+    meta: ["Design Systems", "UI", "Design Engineering", "User Research", "2026", "SHIPPED"],
     accent: ["#F5D967", "#F0707C"],
     // Ocean Blue — the dark teal. Shadow held one notch above pitch-
     // black so multiply doesn't drive the bottom edge to mud.
@@ -280,11 +289,10 @@ const PROJECTS: Project[] = [
     readTime: "4 min read",
   },
   {
-    tag: "Frogslayer · Co-Lead Designer",
+    tag: "Frogslayer · Shipped 2025",
     blurb: (
       <>
-        I<strong> co-led the team in research and usability testing</strong>,{" "}
-        turning <strong>research and user insights into kiosk interface guidelines{" "}</strong>
+        Shipped <strong>evidence-based design guidelines</strong> for entertainment and hospitality kiosks — validated across <strong>three rounds of usability testing</strong>
       </>
     ),
     meta: ["UI", "Interaction Design", "Usability Testing", "2025"],

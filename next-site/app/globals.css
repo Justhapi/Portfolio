@@ -87,6 +87,24 @@
   --line-soft: rgb(var(--fg-rgb) / 0.06);
   --ink-soft: #6B5D54;
 
+  /* ── Japandi palette expansion ─────────────────────────────────────
+     Supporting hues that extend the warm-neutral base with quieter
+     Japanese/Scandinavian accents. Used sparingly — the site keeps
+     terracotta (--accent) as the primary lead. See design docs for
+     role guidance:
+       --matcha    — gentle secondary green, softer than chip-green
+                     (micro-tags, hover fills, subtle emphasis)
+       --ochre     — warm ash sibling to terracotta
+                     (secondary emphasis, dividers)
+       --ink-slate — sumi-ink navy, a second dark that isn't hero-bg
+                     (annotations, serif pull-quotes)
+       --sakura    — kawaii blush, for one-off warmth pops only
+                     (never in structural chrome) */
+  --matcha: #A8B99F;
+  --ochre: #D4A574;
+  --ink-slate: #26313E;
+  --sakura: #EFD4CC;
+
   /* Dark hero stage — Deep Ink as the new ground, with a slightly
      lighter sibling for hero-bg-2 (where surfaces sit one step above
      the stage). hero-bg-deep keeps its semi-transparent role — the
@@ -125,6 +143,12 @@
   --f-cookie:  "CookieRun", var(--font-k2d, "K2D"), ui-rounded, sans-serif;
   /* K2D doubles as display + body — single superfamily keeps the palette tight. */
   --f-display: var(--font-k2d, "K2D"), ui-sans-serif, sans-serif;
+  /* Klee One — Japandi editorial voice for case-study pull-quotes only.
+     Rounded serif with a handwritten softness; feels closer to Japanese
+     "kaisho" brushwork than a Western serif. Use for the .case-pullquote
+     class exclusively — a distinct callout treatment stays distinct when
+     it's used in one specific role. */
+  --f-quote:   var(--font-klee, "Klee One"), Georgia, "Times New Roman", serif;
 
   /* easing */
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
@@ -708,12 +732,179 @@ body.on-paper .nav-pill {
 .hero-stage {
   position: relative;
   width: 100%;
-  /* 92vh instead of 100vh so the cream Projects section bg peeks
-     below the dark hero on first paint — replaces the explicit
-     "scroll to projects" cue with a visual hint that there's more
-     content below the fold. */
   height: 92vh;
-  min-height: 700px;
+  min-height: 720px;
+  /* Two-column layout — greeting on the left, polaroid on the right.
+     `justify-content: center` + `max-width: 1200px` + `margin: 0 auto`
+     centers the pair as a group and matches `.container`'s reading-
+     width envelope (max-width: 1200px, padding: 0 32px) that every
+     other section uses, so hero left/right padding lines up with
+     Projects/About/Connect. Overflow: visible so stickers attached
+     to the polaroid can hang past its corners. */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Fixed gap — no viewport reactivity. */
+  gap: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 32px;
+  overflow: visible;
+}
+@media (max-width: 980px) {
+  /* Breakpoint raised 820 → 980 so the two-column horizontal layout
+     doesn't try to fit into viewports that can't hold the polaroid +
+     Available-sticker overhang without clipping the right edge.
+     Math: greeting (~540) + gap (40) + polaroid (275) + Available
+     sticker right-overhang (60px past polaroid) + body padding (32×2)
+     ≈ 979px minimum. Below that, the two elements were overlapping
+     the browser's right edge in landscape/tablet widths. Stack
+     vertically instead — greeting on top, polaroid below. */
+  .hero-stage {
+    flex-direction: column;
+    /* Anchor content toward the LOWER half of the viewport instead of
+       true center. Uses `justify-content: flex-start` with a generous
+       `padding-top: 18vh` — larger top padding scales with viewport
+       height so the block always lands ~1/5 down the screen, regardless
+       of how tall the browser is. Small `padding-bottom` lets the
+       polaroid+sticker cluster overhang without extra bottom room. */
+    justify-content: flex-start;
+    align-items: center;
+    height: auto;
+    min-height: 100vh;
+    gap: 40px;
+    /* Top padding trimmed 20px (calc(18vh - 20px)) so the block sits
+       20px higher than the last pass. Bottom padding unchanged. */
+    padding: calc(18vh - 20px) 24px 6vh;
+  }
+  .hero-greeting {
+    max-width: none;
+    align-items: center;
+    text-align: center;
+    /* Tighten row-gap on mobile so the greeting → wordmark → focus
+       trio sits as one compact block rather than three widely-spaced
+       elements. Was inheriting 14px from base; explicit 6px on mobile. */
+    gap: 6px;
+  }
+  .hero-greet-lead {
+    justify-content: center;
+    /* Bottom margin on the sticker was 12px for the desktop overhang;
+       on mobile that adds visible padding under the greeting line. */
+    margin-bottom: 0;
+  }
+  .sticker.name-yellow.name-inline {
+    margin-bottom: 6px;
+  }
+  .ribbon-artist {
+    justify-content: center;
+    /* Nuke the legacy .ribbon-artist { width: min(86vw, 640px) } rule
+       inherited from the old absolutely-positioned wordmark era (see
+       the @media (max-width: 980px) block near the bottom of this
+       file). That width was stretching the wordmark container to
+       86vw, and the SVG inside was scaling up to fill it — inflating
+       the visible size on mobile. Constrained to content width now. */
+    width: auto;
+    max-width: 100%;
+    margin: 0;
+  }
+  .hero-focus {
+    text-align: center;
+    max-width: none;
+    margin-top: 4px;
+  }
+}
+
+/* ── Left column: handwritten greeting ────────────────────────────────
+   "Hello, I'm [Kathleen 李曦], an Artist × Designer focusing on
+    product design & design engineering." — flows top→down with the
+   Kathleen name inline as a small pill sticker within the sentence. */
+.hero-greeting {
+  /* Sizes to content (0 1 auto) rather than stretching (1 1 auto),
+     so the greeting sits close to the polaroid instead of pushing to
+     opposite viewport edges. */
+  flex: 0 1 auto;
+  max-width: 540px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  color: var(--hero-fg);
+}
+.hero-greet-lead {
+  /* Fixed px — hero text no longer reacts to viewport width. Only
+     layout reactivity is the row→column flip at ≤820px. */
+  font-family: var(--f-hand);
+  font-size: 46px;
+  font-weight: 600;
+  line-height: 1.15;
+  color: var(--hero-fg);
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+}
+/* "Hello, I'm " — left→right clip-path reveal so the text writes
+   itself in, matching the wordmark's handwriting trace vocabulary
+   (uses the same cubic-bezier as ribbonWriteIn). Once complete, the
+   Kathleen sticker + 李曦 chip slap in as the next choreography beat. */
+.hero-greet-hi {
+  display: inline-block;
+  color: rgb(var(--hero-fg-rgb) / 0.85);
+  clip-path: inset(-4% 100% -4% -2%);
+  -webkit-clip-path: inset(-4% 100% -4% -2%);
+  animation: greetHiWrite 700ms cubic-bezier(0.7, 0, 0.25, 1) 200ms both;
+}
+@keyframes greetHiWrite {
+  from {
+    clip-path: inset(-4% 100% -4% -2%);
+    -webkit-clip-path: inset(-4% 100% -4% -2%);
+  }
+  to {
+    clip-path: inset(-4% -2% -4% -2%);
+    -webkit-clip-path: inset(-4% -2% -4% -2%);
+  }
+}
+.hero-focus {
+  font-family: var(--f-mono);
+  font-weight: 500;
+  /* Fixed px — no viewport reactivity. */
+  font-size: 15px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgb(var(--hero-fg-rgb) / 0.66);
+  margin: 10px 0 0;
+  max-width: 42ch;
+  line-height: 1.55;
+  /* Fades in as the final left-column beat, after the wordmark has
+     finished tracing itself (~2200ms). */
+  opacity: 0;
+  animation: heroFocusFade 520ms var(--ease-out-quart) 2200ms forwards;
+}
+@keyframes heroFocusFade {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.hero-focus strong {
+  color: rgb(var(--hero-fg-rgb) / 0.92);
+  font-weight: 700;
+}
+.hero-an {
+  font-family: var(--f-hand);
+  /* Fixed px — no viewport reactivity. */
+  font-size: 36px;
+  font-weight: 400;
+  color: rgb(var(--hero-fg-rgb) / 0.75);
+  margin-right: 12px;
+  display: inline-block;
+  vertical-align: baseline;
+  /* Fades in between the stickers settling and the wordmark tracing —
+     the "an" bridge between the greeting phrase and the wordmark. */
+  opacity: 0;
+  animation: heroAnFade 300ms var(--ease-out-quart) 1300ms forwards;
+}
+@keyframes heroAnFade {
+  from { opacity: 0; transform: translateX(-4px); }
+  to   { opacity: 1; transform: translateX(0); }
 }
 
 /* Center polaroid — vertical position tracks viewport width so the
@@ -727,37 +918,22 @@ body.on-paper .nav-pill {
    viewports keep generous spacing without dropping the polaroid off
    the stage. */
 .hero-polaroid {
-  position: absolute;
-  /* Fixed vertical anchor — the polaroid's Y position now stays constant
-     regardless of viewport width. Previously used `calc(240px + min(12vw, 132px))`
-     so it tracked the wordmark's viewport-width-driven vertical growth,
-     but that made the polaroid slide UPWARD as the browser was narrowed,
-     which read as unwanted motion rather than adaptive layout.
-     372px matches the value the polaroid landed at on wide viewports
-     (240 + 132), keeping it vertically centered between the Kathleen Li
-     sticker (upper-right) and the green status sticker (lower-left). */
-  top: 372px;
-  left: 50%;
-  /* translateY drops to 0 because we position by the polaroid's
-     top edge, not its centre. SmoothScroll.tsx's `centred: true`
-     parallax handling has been updated to match. */
-  transform: translate(-50%, 0) rotate(-4deg);
-  /* Fixed width — polaroid keeps its size on every viewport per the
-     spec ("reactive in location, not size"). Shrunk from 320px → 220px
-     to reframe it as ONE decorative collage element rather than the
-     hero's visual centerpiece. The tilt also went from -2° to -4° so
-     the smaller frame reads more clearly as a "pinned postcard" than
-     as a photo the viewer is meant to focus on. */
-  width: 220px;
-  /* Subtle paper texture — a faint top-down gradient on the cream
-     surface suggests light catching the cardstock at the top edge. */
+  /* Now sits in the RIGHT column of the .hero-stage flex layout —
+     no more absolute positioning against the stage. `position:
+     relative` provides the containing block for the two attached
+     stickers (school-note + designing-green) that overhang its
+     corners. Slight tilt preserved for the collage character. */
+  position: relative;
+  flex: 0 0 auto;
+  transform: rotate(-4deg);
+  /* +25% width bump (was 220px, now 275px) to reduce whitespace on
+     the right column and match the larger greeting-text scale. */
+  width: 275px;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0) 30%),
     #FBF7EE;
-  /* Padding tightened proportionally to the new 220px width: 8px
-     top/sides + 34px bottom keeps the caption box's ratio to the photo
-     roughly the same as the 320px version had (10:50 ≈ 8:34). */
-  padding: 8px 8px 34px;
+  /* Padding scaled proportionally to the new 275px width. */
+  padding: 10px 10px 42px;
   /* Rounded frame — 16px on the outer cardstock for soft, modern
      corners without losing the polaroid character. */
   border-radius: 16px;
@@ -775,20 +951,21 @@ body.on-paper .nav-pill {
     0 12px 24px -8px rgba(0, 0, 0, 0.5),
     0 30px 60px -20px rgba(0, 0, 0, 0.55);
   z-index: 10;
-  /* 980ms = all letters landed (720ms) + star burst well underway, before it closes */
-  animation: polaroidPlaceIn 380ms var(--ease-out-quart) 1200ms backwards;
+  /* Polaroid entrance starts DURING the "Hello, I'm" handwriting
+     reveal (200-900ms) — delay 350ms, duration 550ms so it settles
+     right around when Kathleen's sticker slaps in on the left. The
+     two right-column stickers wait until AFTER the focus line fades
+     in on the left (~2720ms) — see their own animations below. */
+  animation: polaroidPlaceIn 550ms var(--ease-out-quart) 350ms backwards;
 }
 @keyframes polaroidPlaceIn {
   from {
     opacity: 0;
-    /* Y drift softened from -8% → -3% so the polaroid entrance reads as
-       a place-down rather than a fall-in. Rotation + scale carry the
-       gesture; the smaller Y keeps the settle tight. */
-    transform: translate(-50%, -3%) rotate(-11deg) scale(0.86);
+    transform: translateY(-8px) rotate(-11deg) scale(0.9);
   }
   to {
     opacity: 1;
-    transform: translate(-50%, 0) rotate(-4deg) scale(1);
+    transform: translateY(0) rotate(-4deg) scale(1);
   }
 }
 .hero-polaroid .photo {
@@ -1043,18 +1220,36 @@ em.it { font-style: italic; }
 
 /* Artist · Designer wordmark — single SVG with custom star/dot ligature */
 .ribbon-artist {
-  position: absolute;
-  top: 92px;
-  left: 50%;
-  transform: translateX(-50%);
+  /* Now flows inside .hero-greeting. Trace-in delayed to 1400ms so
+     the choreography reads as:
+       0–900ms   "Hello, I'm " writes
+       900–1180  Kathleen sticker slaps in
+       1080–1340 李曦 chip slaps in
+       1300–1600 "an " fades
+       1400–2300 Artist × Designer wordmark traces itself
+       2200–2720 focus line fades in
+     ribbonWriteIn is the wordmark's own clip-path reveal (defined
+     earlier in this file); the outer .ribbon-artist container just
+     positions it in the greeting column now. */
+  position: relative;
+  top: auto;
+  left: auto;
+  transform: none;
   display: flex;
-  flex-direction: column;
   align-items: center;
   z-index: 9;
-  width: min(78vw, 880px);
+  width: auto;
   color: var(--hero-fg);
-  /* Title is written out left → right via a clip-path reveal. */
-  animation: ribbonWriteIn 900ms cubic-bezier(0.7, 0, 0.25, 1) 80ms backwards;
+  margin: 4px 0;
+  animation: ribbonWriteIn 900ms cubic-bezier(0.7, 0, 0.25, 1) 1400ms backwards;
+}
+.ribbon-artist .wordmark {
+  /* Fixed px height — no viewport reactivity. */
+  width: auto;
+  height: 34px;
+  max-width: 100%;
+  flex: 0 1 auto;
+  min-width: 0;
 }
 @keyframes ribbonWriteIn {
   from {
@@ -1116,14 +1311,20 @@ em.it { font-style: italic; }
   outline-offset: 3px;
 }
 .ribbon-artist .sub {
-  margin-top: 16px;
+  margin-top: 18px;
   font-family: var(--f-mono);
   font-style: normal;
-  font-weight: 500;
-  font-size: 12px;
-  letter-spacing: 0.28em;
+  /* Bumped from weight 500 → 600 and size 12 → 13.5px so the
+     credential line ("Interaction · Product · Design Engineering")
+     reads more clearly on the recruiter's first scan. The wordmark
+     above still dominates for personality, but the practice areas
+     are no longer a whisper. Letter-spacing tightened slightly from
+     0.28em → 0.24em so the wider text doesn't feel sparse. */
+  font-weight: 600;
+  font-size: 13.5px;
+  letter-spacing: 0.24em;
   text-transform: uppercase;
-  color: rgb(var(--hero-fg-rgb) / 0.72);
+  color: rgb(var(--hero-fg-rgb) / 0.82);
   /* Gentle fade-in AFTER the wordmark trace lands (~980ms). Replaces
      the previous terminal-typed reveal — quieter, feels less like a
      demo and more like a statement that just settles into place. */
@@ -1139,75 +1340,77 @@ em.it { font-style: italic; }
   to { stroke-dashoffset: 0; }
 }
 
-/* sticker base — high-fidelity adhesive sticker treatment:
-   - 10px radius (was 6px) reads as a modern die-cut sticker rather
-     than a flat coloured rectangle
-   - Inset top-edge highlight (rgba(255,255,255,0.18) over the sticker
-     colour) suggests the sticker's surface catching ambient light
-   - Inset bottom-edge shadow grounds the sticker against the surface
-     it sits on
-   - 3-layer drop shadow: tight contact (3px) + mid lift (10px) +
-     soft ambient (28px) creates the "lifted off the page" depth
-     that signals a real sticker rather than printed colour. */
+/* sticker base — reframed as a hand-torn paper note pinned to the
+   collage (japandi restraint + kawaii warmth) instead of a vinyl
+   die-cut sticker:
+   - Asymmetric border-radius reads as slightly irregular paper edges
+     instead of a perfect die-cut curve.
+   - No inset highlights/shadows — the vinyl "plastic surface catching
+     light" look was fighting the paper metaphor.
+   - Single soft drop shadow — subtle lift, not floating high above
+     the page. Japandi favors restraint on chrome. */
 .sticker {
   position: absolute;
   z-index: 12;
   padding: 14px 18px;
-  border-radius: 10px;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.22),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.12),
-    0 2px 4px -1px rgba(0, 0, 0, 0.35),
-    0 8px 16px -6px rgba(0, 0, 0, 0.4),
-    0 22px 38px -16px rgba(0, 0, 0, 0.5);
+  border-radius: 12px 8px 14px 10px;
+  box-shadow: 0 6px 16px -8px rgba(0, 0, 0, 0.35);
   transform-origin: center center;
 }
 
-/* SVG diagonal-stripe corner — replaces the old .hatch divs */
+/* Geometric diagonal-stripe hatching hidden. It read as a hard,
+   mechanical stripe pattern that fights the japandi/sketch aesthetic
+   the rest of the page leans into. Kept the SVG in JSX so removal is
+   reversible; simply drop `display: none` here to restore it. */
 .sticker-hatch,
 .chip-zh .sticker-hatch {
-  position: absolute;
-  color: rgba(255, 255, 255, 0.85);
-  opacity: 0.7;
-  pointer-events: none;
-  mix-blend-mode: screen;
+  display: none;
 }
-.sticker-hatch.hatch-tl { top: 4px;  left: 4px;  width: 38%; height: 56%; }
-.sticker-hatch.hatch-tr { top: 4px;  right: 4px; width: 38%; height: 56%; }
-.sticker-hatch.hatch-bl { bottom: 4px; left: 4px;  width: 38%; height: 56%; }
-.sticker-hatch.hatch-br { bottom: 4px; right: 4px; width: 38%; height: 56%; }
 
 /* Kathleen Li sticker — anchored 200px to the right of viewport
    centre instead of `right: 9%` so the sticker stays a constant
    distance from the polaroid (which is 320px wide and centred) on
    every viewport width. The old percentage value drifted far from
    the polaroid on wide monitors, leaving a huge dead gap. */
-.sticker.name-yellow {
-  /* Vertical position anchored to the polaroid's top edge so the
-     sticker stays in a stable visual relationship with the polaroid
-     across every viewport. The polaroid top is `calc(180px +
-     min(12vw, 132px))`; subtracting 30px puts the Kathleen Li
-     sticker just ABOVE the polaroid top so it never drifts down
-     into the photo well as the viewport changes height. */
-  top: calc(150px + min(12vw, 132px));
-  left: calc(50% + 200px);
+/* Inline Kathleen sticker — sits WITHIN the greeting sentence flow
+   (Hello, I'm [Kathleen 李曦]) instead of floating on the hero stage.
+   The .name-inline modifier turns off absolute positioning and
+   collapses padding so the pill sits like a highlighted keyword in
+   the running Caveat script. */
+.sticker.name-yellow.name-inline {
+  position: relative;
+  top: auto;
+  left: auto;
   right: auto;
-  transform: rotate(8deg);
-  background: var(--chip-yellow);
-  color: var(--chip-yellow-ink);
-  padding: 18px 24px 16px;
-  animation: stickerNameIn 280ms var(--ease-out-quart) 1600ms backwards;
+  display: inline-flex;
+  align-items: center;
+  background: var(--ochre);
+  color: var(--fg);
+  /* +25% padding to match the larger greeting text scale. */
+  padding: 6px 18px 6px 16px;
+  transform: rotate(-2deg);
+  /* Delay bumped from 1600ms → 900ms to enter right after the
+     "Hello, I'm " handwriting reveal completes (~200 + 700 = 900). */
+  animation: stickerNameIn 280ms var(--ease-out-quart) 900ms backwards;
+  margin-right: 28px;
+  margin-bottom: 12px;
 }
 @keyframes stickerNameIn {
-  /* Y translate softened from -18px → -7px so the sticker slap reads as
-     more of a horizontal arrive-and-settle. X kept for the arc gesture. */
+  /* End-state rotation matches the .sticker.name-yellow.name-inline
+     static CSS (-2deg) — previously ended at 8deg (from the old
+     floating hero-stage version) which caused the sticker to snap
+     from 8deg → -2deg when the animation handed off to the static
+     rest state. */
   from { opacity: 0; transform: translate(48px, -7px) rotate(22deg); }
-  to   { opacity: 1; transform: rotate(8deg); }
+  to   { opacity: 1; transform: rotate(-2deg); }
 }
 .sticker.name-yellow .name-en {
-  font-family: var(--f-serif);
-  font-style: italic;
-  font-size: 36px;
+  /* Klee One editorial serif. +25% size bump for the new greeting
+     scale — was 30px, now 38px. */
+  font-family: var(--f-quote);
+  font-style: normal;
+  font-weight: 600;
+  font-size: 38px;
   line-height: 1;
 }
 .sticker.name-yellow .name-zh {
@@ -1215,15 +1418,18 @@ em.it { font-style: italic; }
   font-size: 28px;
   margin-top: 4px;
 }
-/* Elaborate 4-pointed sparkle with curls — sits above the top-left of the sticker */
+/* Restrained 4-pointed sparkle — the elaborate glowing burst was too
+   "commercial sticker" for the japandi feel. Slimmed footprint, ink-
+   slate fill instead of the yellow glow, and no drop-shadow halo.
+   Reads as a small hand-drawn punctuation mark rather than a decal. */
 .sticker.name-yellow .name-burst {
   position: absolute;
-  top: -32px;
-  left: -22px;
-  width: 56px;
-  height: 64px;
-  fill: #FFE6AC;
-  filter: drop-shadow(0 0 12px rgba(245, 217, 103, 0.45));
+  top: -22px;
+  left: -14px;
+  width: 34px;
+  height: 40px;
+  fill: var(--ink-slate);
+  opacity: 0.72;
   pointer-events: none;
   z-index: 2;
 }
@@ -1240,35 +1446,33 @@ em.it { font-style: italic; }
 .chip-zh {
   position: absolute;
   overflow: hidden;
-  /* Positioned relative to .sticker.name-yellow (its new parent in
-     the DOM). The chip is now a CHILD of the Kathleen sticker, so
-     any transform on the parent (parallax, entrance, etc.) applies
-     to the chip automatically — they share one coordinate space
-     and physically cannot drift apart.
-     - top: 50px places the chip below Kathleen's name text
-     - left: 60% places the chip off-centered to the right
-     - The chip's own rotate(-6deg) composes on top of Kathleen's
-       rotate(8deg) so the chip ends up tilted ~2deg in absolute
-       terms — a deliberate sticker-stack look. */
-  top: 50px;
-  left: 60%;
-  right: auto;
+  /* Now sits directly ON the Kathleen sticker's bottom-right edge,
+     overlapping just enough to read as an attached "sticker on a
+     sticker" pair. Previous top: 62px was calibrated for the old
+     large absolute Kathleen; the inline Kathleen is smaller so the
+     chip needs to sit tighter. */
+  top: auto;
+  bottom: -14px;
+  left: auto;
+  right: -18px;
   transform: rotate(-6deg);
-  background: #E8A765;
-  color: #FBF7EE;
-  padding: 8px 14px;
-  border-radius: 8px;
+  background: var(--accent);
+  color: var(--paper);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* Padding + font-size sized to the larger inline Kathleen sticker.
+     +25% bump (was 20px, now 25px). */
+  padding: 4px 10px 5px;
+  border-radius: 8px 5px 9px 6px;
   font-family: var(--f-hand-zh);
-  font-size: 30px;
+  font-size: 25px;
   line-height: 1;
   z-index: 13;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.24),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.14),
-    0 2px 4px -1px rgba(0, 0, 0, 0.35),
-    0 6px 12px -4px rgba(0, 0, 0, 0.42),
-    0 16px 28px -12px rgba(0, 0, 0, 0.5);
-  animation: chipZhIn 260ms var(--ease-out-quart) 1780ms backwards;
+  box-shadow: 0 4px 10px -4px rgba(0, 0, 0, 0.35);
+  /* Delay bumped from 1780ms → 1080ms so the chip slaps in ~180ms
+     after Kathleen's sticker settles — the paired-sticker beat. */
+  animation: chipZhIn 260ms var(--ease-out-quart) 1080ms backwards;
 }
 .chip-zh .chip-zh-text {
   position: relative;
@@ -1292,44 +1496,167 @@ em.it { font-style: italic; }
    constant distance from the polaroid's left edge instead of
    drifting toward the far viewport edge on wide monitors. */
 .sticker.designing-green {
-  /* Anchored below the polaroid's bottom edge with enough clearance that
-     the sticker's tilt + doodle overhang no longer visually collide with
-     the polaroid — both the base value and the vh cap moved down (+100px
-     on the base, 68vh → 80vh on the cap) so the sticker sits closer to
-     the bottom of the hero stage instead of hugging the polaroid. */
   top: min(calc(742px + min(12vw, 132px)), calc(80vh + 20px));
   bottom: auto;
   right: calc(50% + 200px);
   left: auto;
   transform: rotate(-5deg);
-  background: var(--chip-green);
-  color: var(--chip-green-ink);
+  background: var(--matcha);
+  color: var(--fg);
   width: 248px;
   padding: 16px 18px;
-  animation: stickerGreenIn 280ms var(--ease-out-quart) 2000ms backwards;
+  /* Base animation declaration removed — the entrance now lives on
+     the .polaroid-attached compound selector below so it's guaranteed
+     to fire on the actual DOM elements. */
+  animation: none;
+}
+
+/* ── Polaroid-attached sticker variants ───────────────────────────────
+   Overrides the absolute stage positioning above so the sticker sits
+   in the polaroid's local coordinate space instead. Applied via the
+   .polaroid-attached class on the sticker element.
+   Positioning:
+     - .school-note (Purdue year)  → TOP-LEFT corner of polaroid
+     - .designing-green (Available) → BOTTOM-RIGHT, pushed below caption
+   Tilts are chosen so each sticker leans AWAY from the polaroid's
+   own -4° rotation for that "casually stuck on" collage feel. */
+.sticker.school-note.polaroid-attached {
+  top: -28px;
+  left: -60px;
+  right: auto;
+  bottom: auto;
+  transform: rotate(-6deg);
+  z-index: 13;
+  /* Enters AFTER the focus line fades in on the left (2200-2720ms).
+     Delay 2820ms so the paper-note cluster arrives as the final beat
+     of the whole-hero choreography, ~100ms after "focusing on…"
+     settles. */
+  animation: stickerSchoolIn 320ms var(--ease-out-quart) 2820ms backwards;
+}
+.sticker.designing-green.polaroid-attached {
+  /* bottom pushed further down (-30 → -70) so the sticker sits below
+     the polaroid's handwritten caption line "I design solutions with
+     moments worth lingering on" — was previously clipping into it. */
+  top: auto;
+  right: -60px;
+  bottom: -70px;
+  left: auto;
+  transform: rotate(-4deg);
+  width: 236px;
+  z-index: 13;
+  /* Enters as the LAST beat of the whole-hero choreography, after
+     school-note settles (~3140ms). */
+  animation: stickerGreenIn 340ms var(--ease-out-quart) 3200ms backwards;
+}
+@media (max-width: 820px) {
+  /* On narrow screens pull both stickers in tighter so they don't
+     overflow the mobile column but still overlap the polaroid. */
+  .sticker.school-note.polaroid-attached {
+    top: -22px;
+    left: -20px;
+  }
+  .sticker.designing-green.polaroid-attached {
+    right: -20px;
+    bottom: -56px;
+    width: 210px;
+  }
 }
 @keyframes stickerGreenIn {
-  /* Mirror of stickerNameIn — slaps in from the LEFT with the same
-     up-and-over arc and rotation settle, signs flipped (the name
-     sticker arrives from the right). 280ms matches the name sticker
-     so the pair read as the same gesture from opposite sides.
-     Y translate softened from -18px → -7px in step with stickerNameIn so
-     the paired entrances stay symmetric and the up-and-over gesture stays
-     tight enough not to over-cross the polaroid mid-animation. */
-  from { opacity: 0; transform: translate(-48px, -7px) rotate(-22deg); }
-  to   { opacity: 1; transform: rotate(-5deg); }
+  /* End state matches the designing-green.polaroid-attached rotation
+     (-4deg) — was previously -5deg from the floating-hero-stage version.
+     Enters with an up-and-over arc from the bottom-right of the frame. */
+  from { opacity: 0; transform: translate(24px, 10px) rotate(-16deg); }
+  to   { opacity: 1; transform: rotate(-4deg); }
 }
 .sticker.designing-green .d-text {
-  font-family: var(--f-serif);
-  font-style: italic;
-  font-weight: 500;
+  /* Two-line composition: a strong "Available Summer 2026" headline in
+     Klee One editorial serif, and a mono sub-line naming the practice
+     areas the recruiter can slot Kathleen into. Editorial + credential
+     rather than the previous handwriting-only status update. */
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--fg);
+}
+.sticker.designing-green .d-text strong {
+  font-family: var(--f-quote);
+  font-weight: 600;
+  font-style: normal;
   font-size: 18px;
-  line-height: 1.3;
+  line-height: 1.15;
+  letter-spacing: -0.005em;
+}
+.sticker.designing-green .d-text .d-sub {
+  font-family: var(--f-mono);
+  font-weight: 500;
+  font-size: 9.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgb(var(--fg-rgb) / 0.62);
+  line-height: 1.35;
 }
 .sticker.designing-green em {
   font-style: normal;
-  letter-spacing: 0.12em;
-  color: rgba(246, 236, 216, 0.55);
+  letter-spacing: 0.08em;
+  color: rgb(var(--fg-rgb) / 0.6);
+}
+
+/* ── School-note sub-sticker (Purdue year signal) ────────────────────
+   Nested inside .sticker.designing-green so its coordinates are scoped
+   to the green sticker as its positioning context. Mirrors the 李曦
+   chip pattern (nested inside .sticker.name-yellow) — the two paper
+   notes visibly overlap at the parent sticker's bottom-right corner,
+   tilted the opposite direction for that "casually stacked" look.
+   Enters ~200ms after the availability sticker for a paired beat. */
+.sticker.school-note {
+  top: auto;
+  left: auto;
+  /* bottom bumped from -22px → -58px so the note's top edge sits
+     below the availability sticker's second text line rather than
+     overlapping its right edge. Still overlaps the parent sticker's
+     bottom-right corner for the paired-note look. */
+  bottom: -58px;
+  right: -70px;
+  transform: rotate(4deg);
+  background: var(--paper);
+  color: var(--fg-soft);
+  border: 1px solid rgb(var(--fg-rgb) / 0.14);
+  padding: 8px 12px;
+  border-radius: 8px 12px 8px 10px;
+  /* z-index above the green sticker (z:12) so the note sits on top
+     of the availability text edge — mirrors chip-zh (z:13) on top of
+     the Kathleen sticker. */
+  z-index: 13;
+  /* Base animation declaration removed — the entrance now lives on
+     the .polaroid-attached compound selector below so it's guaranteed
+     to fire on the actual DOM elements. */
+  animation: none;
+}
+.sticker.school-note .school-note-text {
+  font-family: var(--f-mono);
+  font-weight: 500;
+  font-size: 9.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  line-height: 1.35;
+  display: block;
+  max-width: 20ch;
+}
+@keyframes stickerSchoolIn {
+  /* End state matches the school-note.polaroid-attached rotation (-6deg)
+     — was previously +4deg from when the note lived on the bottom-right. */
+  from { opacity: 0; transform: translate(-14px, -6px) rotate(-16deg); }
+  to   { opacity: 1; transform: rotate(-6deg); }
+}
+@media (max-width: 980px) {
+  /* On narrow viewports the green sticker's `bottom: 3%` positioning
+     leaves less room for the school-note to overhang to the right.
+     Shift the overhang further downward so it clears the availability
+     text and still reads as an attached second card. */
+  .sticker.school-note {
+    bottom: -60px;
+    right: -20px;
+  }
 }
 .sticker.designing-green ul {
   list-style: none;
@@ -1344,26 +1671,22 @@ em.it { font-style: italic; }
   background: rgba(246, 236, 216, 0.35);
   font-size: 0;
 }
-/* Interlocked circles doodle perched above the green sticky's top-right.
-   Two-layer drop-shadow (tight contact + soft ambient) matches the
-   shadow language of the stickers + polaroid below, so the doodle
-   reads as the same physical layer of stickers stuck to the same
-   surface rather than a flat decorative graphic. */
+/* Interlocked circles doodle perched above the green sticker.
+   Simplified from vinyl-stack shadows to a single soft cast so the
+   doodle sits as an ink mark on top of the paper rather than a
+   3D-lifted vinyl decal. Color shifted to ink-slate for sumi-on-
+   paper feel. */
 .sticker.designing-green .design-doodle {
   position: absolute;
   top: -28px;
   right: 18px;
   width: 56px;
   height: 50px;
-  color: var(--chip-green-ink);
+  color: var(--ink-slate);
+  opacity: 0.7;
   transform: rotate(-12deg);
-  filter:
-    drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4))
-    drop-shadow(0 6px 10px rgba(0, 0, 0, 0.3));
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
   pointer-events: none;
-}
-.sticker.designing-green .sticker-hatch {
-  color: rgba(255, 255, 255, 0.5);
 }
 
 /* .hero-anno annotation arrow removed — no TSX references the class
@@ -2522,11 +2845,12 @@ em.it { font-style: italic; }
   height: 100vh;
   overflow: hidden;
 }
-/* Keep the pitch text anchored to the TOP of its grid row so the layout
-   stays consistent — was previously used to prevent re-centering when the
-   inline email compose form expanded, but the form is gone; the anchor
-   still helps keep vertical alignment predictable across viewports. */
-.connect-pitch { align-self: start; }
+/* Pitch text vertically centered against the links block on the right,
+   so "I am available for internships…" sits at the midline of the
+   Email / LinkedIn / Resume rows rather than pinned to the top of the
+   row. Previously anchored to `start` to prevent the removed email
+   compose form from displacing it on expand — no longer a concern. */
+.connect-pitch { align-self: center; }
 /* .container inside Connect must stretch to the full section height so
    the flex column can push the footer to the bottom edge. */
 .connect > .container {
@@ -2544,19 +2868,29 @@ em.it { font-style: italic; }
   /* Takes all vertical space above the footer */
   flex: 1;
   display: grid;
-  /* 2-column × 2-row grid: row 1 holds the heading (spanning both cols),
-     row 2 holds the pitch (left) + links (right). The grid IS the
-     "1×2 grid with heading on top" the layout calls for, and putting
-     the heading inside .connect-row means it inherits the parallax
-     transform set on this element automatically. */
-  grid-template-columns: minmax(0, 1fr) minmax(0, 480px);
+  /* 2-column × 2-row grid: row 1 = heading (spans both columns),
+     row 2 = pitch (left) + links (right).
+     Column widths + gap now MATCH the hero-stage layout constraints:
+       - hero-greeting max-width: 540px  →  left column max: 540px
+       - hero polaroid column: ~275px    →  right column max: 480px
+       - hero-stage gap: 40px            →  column-gap: 40px
+     Combined width envelope: 540 + 40 + 480 = 1060px (< 1200px
+     container max-width), max-width capped + margin: 0 auto to
+     center the pair the way the hero centers its two-column pair —
+     instead of stretching pitch across the whole 1fr as before. */
+  grid-template-columns: minmax(0, 540px) minmax(0, 480px);
   grid-template-rows: auto 1fr;
-  column-gap: 80px;
+  column-gap: 40px;
   row-gap: 40px;
   align-items: center;
   /* start = content anchored to the top of the row, hidden under About
      on first reveal, drifting into view via parallax as About slides off */
   align-content: start;
+  /* Same centering envelope as hero-stage: max-width matches the
+     content width; margin auto centers within the container. */
+  max-width: 1060px;
+  margin: 0 auto;
+  width: 100%;
 }
 /* ── Connect entrance — two-stage stagger ──────────────────────────────
    .connect-row is the IntersectionObserver trigger: it snaps visible in
@@ -2644,32 +2978,34 @@ em.it { font-style: italic; }
    across Hero ↔ Connect and the section-head pattern consistent
    across every page section. */
 .connect-head {
-  /* Span row 1 across both grid columns */
+  /* Caveat handwriting to match the hero's "Hello, I'm" greeting
+     voice — a personal invitation, not a corporate headline. Same
+     size + weight as `.hero-greet-lead` so the two sections read as
+     one hand-written thread across the site. Fixed px (matches the
+     hero's non-reactive text sizing). */
   grid-column: 1 / -1;
-  font-family: var(--f-display);
-  font-weight: 800;
-  font-size: clamp(38px, 4.8vw, 64px);
-  letter-spacing: -0.02em;
-  line-height: 0.95;
+  font-family: var(--f-hand);
+  font-weight: 600;
+  font-size: 46px;
+  letter-spacing: 0;
+  line-height: 1.15;
   text-align: center;
   color: var(--hero-fg);
   margin: 0;
 }
 
 .connect-pitch {
-  /* K2D body voice on dark — matches the designing-green sticker's
-     K2D weight 700 with italic emphasis. (The polaroid caption-line
-     used to share this; it's since moved to Caveat handwriting.)
-     Switched from CookieRun (warm cream-bg body) to keep Connect's
-     voice in the same family as the rest of the dark stage. */
-  font-family: var(--f-sans);
-  font-weight: 700;
-  font-size: clamp(26px, 3.2vw, 42px);
-  line-height: 1.2;
-  letter-spacing: -0.015em;
+  /* Klee One editorial serif — matches the Kathleen name sticker
+     (.name-en) and case-study `.case-pullquote`, giving the pitch
+     the same rounded-serif "editorial callout" voice used across the
+     site's warmth moments. Fixed px; italic <em> retained for the
+     emphasized "internships in..." phrase. */
+  font-family: var(--f-quote);
+  font-weight: 500;
+  font-size: 26px;
+  line-height: 1.35;
+  letter-spacing: 0;
   color: var(--hero-fg);
-  /* No max-width cap — the pitch fills its full grid column so the
-     text box runs all the way to the gap before the links list. */
 }
 .connect-pitch em {
   /* True italic, not synthesized — K2D is loaded with both normal and
@@ -2693,10 +3029,14 @@ em.it { font-style: italic; }
   gap: 16px;
   padding: 20px 4px;
   border-bottom: 1px solid rgb(var(--hero-fg-rgb) / 0.12);
+  /* Matches `.hero-focus` — same mono voice, size 15px, letter-spacing
+     0.22em uppercase — so the Connect link list reads as the same
+     credential-style label vocabulary used in the hero. */
   font-family: var(--f-mono);
   font-weight: 500;
-  font-size: 14.5px;
-  letter-spacing: 0.1em;
+  font-size: 15px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
   color: rgb(var(--hero-fg-rgb) / 0.9);
   transition: color 200ms, padding 280ms var(--ease-out-quart);
 }
@@ -3234,6 +3574,38 @@ em.it { font-style: italic; }
   margin-bottom: 72px;
   line-height: 1.6;
 }
+
+/* ── Case pull-quote — Klee One editorial callout ──────────────────────────
+   A single italicised sentence that anchors a case section (used sparingly
+   — one per case study, typically the takeaway or a defining insight).
+   Uses --f-quote (Klee One) as its own editorial voice so pull-quotes read
+   as a distinct register from body prose and hand-lettered accents.
+   ── Layout: an ochre left rule (Japandi accent), generous left padding
+   for the "hanging quote" feel, and asymmetric top/bottom margin so it
+   breathes as a moment rather than being packed between paragraphs. */
+.case-pullquote {
+  font-family: var(--f-quote);
+  font-weight: 400;
+  font-style: normal;
+  font-size: clamp(20px, 1.9vw, 26px);
+  line-height: 1.45;
+  color: var(--ink-slate);
+  border-left: 3px solid var(--ochre);
+  padding: 4px 0 4px 24px;
+  margin: 56px 0 48px;
+  max-width: 40ch;
+}
+.case-pullquote cite {
+  display: block;
+  margin-top: 12px;
+  font-family: var(--f-mono);
+  font-style: normal;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgb(var(--fg-rgb) / 0.55);
+}
+.case-pullquote cite::before { content: "— "; }
 
 /* ── Case body scroll-reveal ───────────────────────────────────────────────
    CaseReveal.tsx sets data-case-animate="ready" on mount, activating the
@@ -3995,10 +4367,45 @@ em.it { font-style: italic; }
   66%  { content: "."; }
 }
 
+/* splatter: hand-drawn ink blob with satellite specks (SVG child). No
+   glyph cycling — the ::before is suppressed since the splatter is a
+   real SVG element inside the .sparkle span, not a pseudo-element
+   char. Gets a subtle slow rotation so it feels "wet" rather than
+   static, plus a slightly larger footprint since the SVG carries
+   more visual mass than a single character. */
+.sparkle-splatter::before {
+  content: none;
+}
+.sparkle-splatter {
+  /* Splatter SVG is ~1.6× the visual footprint of a gem/mini glyph
+     so the ink dot reads at the same optical weight, not smaller.
+     Color is inherited from the parent .sparkle (per-section rules
+     below); dark sections keep the cream-ink look, cream sections
+     get a sumi-ink override so the splatter reads as ink on paper. */
+  font-size: 1em;
+  opacity: 0.75;
+}
+.section-sparkles .hero-spark .sparkle-splatter {
+  color: var(--ink-slate);
+  opacity: 0.5;
+}
+.sparkle-splatter-svg {
+  display: block;
+  width: 1.4em;
+  height: 1.4em;
+  animation: sparkleSplatterDrift 6s ease-in-out infinite;
+  transform-origin: 50% 50%;
+}
+@keyframes sparkleSplatterDrift {
+  0%, 100% { transform: rotate(-4deg); }
+  50%      { transform: rotate(4deg); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .sparkle::before { animation: none !important; }
   .sparkle-gem::before  { content: "✦"; }
   .sparkle-mini::before { content: "｡"; }
+  .sparkle-splatter-svg { animation: none !important; }
 }
 
 /* ===== Background sparkle scatter (Hero, sections) ===== */
@@ -4087,10 +4494,22 @@ em.it { font-style: italic; }
     grid-template-columns: 1fr;
     gap: 48px;
   }
+  /* When the connect row stacks vertically (single column at ≤980px),
+     center-align the pitch text since it no longer has a right-column
+     anchor to align against. Matches the vertical-stack pattern where
+     content re-centers to the screen's midline. */
+  .connect-pitch {
+    text-align: center;
+    align-self: center;
+  }
   .hero-stage { min-height: 720px; }
-  /* .hero-polaroid width is now driven by the fluid clamp() on the
-     base rule — no breakpoint override needed. */
-  .ribbon-artist { top: 64px; width: min(86vw, 640px); }
+  /* Legacy `.ribbon-artist { top: 64px; width: min(86vw, 640px) }`
+     removed — was inflating the wordmark to 86vw on mobile, which
+     stretched the SVG and inflated the vertical spacing between
+     the greeting line and the "an ArtisDesigner" wordmark. The
+     ribbon-artist now sizes to its 34px content in the vertical
+     stack via the @media (max-width: 820px) hero rules earlier in
+     the file. */
   /* Reset the centre-anchored desktop positions; on mobile the
      viewport is narrow enough that percentage-based anchoring to
      the viewport edge reads more natural. */
@@ -4138,7 +4557,9 @@ em.it { font-style: italic; }
 @media (max-width: 640px) {
   /* .hero-polaroid width + padding are now fluid via clamp() on the
      base rule — no breakpoint override needed. */
-  .ribbon-artist { top: 48px; width: min(92vw, 480px); }
+  /* Legacy `.ribbon-artist { top: 48px; width: min(92vw, 480px) }`
+     removed — was inflating the wordmark on very narrow viewports
+     for the same reason as the 980px legacy above. */
   .nav-mark { font-size: 18px; }
   /* Keep mark-left / toggle-right layout — don't collapse to single centered column */
   .nav-inner { grid-template-columns: 1fr auto; padding: 0 16px; }
