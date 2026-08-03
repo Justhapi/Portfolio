@@ -10,7 +10,7 @@ export const metadata = {
    see results first. Process sections (Researching → Ideating →
    Verifying) follow as the supporting story, and Takeaways closes
    with next steps, refinements, and what was learned. Section naming
-   (Outcome/Takeaways) matches JourneyTrack, ResearchHub, and inline. */
+   (Outcome/Takeaways) matches AI Journey Agent, ResearchHub, and inline. */
 const SECTIONS = [
   { id: "outcome", label: "Outcome" },
   { id: "overview", label: "Overview" },
@@ -62,7 +62,7 @@ export default function FrogslayerCaseStudy() {
 
         {/* ───── Overview ───── (Overview holds The Problem + My Role
               so it reads as scope + role — matches the subsection
-              naming used in JourneyTrack, ResearchHub, and inline.) */}
+              naming used in AI Journey Agent, ResearchHub, and inline.) */}
         <section id="overview" className="case-section">
           <h2>Overview</h2>
 
@@ -335,7 +335,7 @@ export default function FrogslayerCaseStudy() {
 
         {/* ───── Takeaways ───── (closes the case study with what was
               learned from the project. Renamed from "Reflections" to
-              match the takeaway naming used in JourneyTrack and
+              match the takeaway naming used in AI Journey Agent and
               ResearchHub. Single paragraph, no h3 — matches the
               one-paragraph takeaways pattern in the other two cases. */}
         <section id="takeaways" className="case-section">

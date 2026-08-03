@@ -248,17 +248,18 @@ const PROJECTS: Project[] = [
     readTime: "4 min read",
   },
   {
-    // NDA compliance for this sponsor: the brief allows the sponsor name
-    // itself; only FEATURE SPECIFICS, personnel names, client names,
-    // metrics, and interview findings are restricted. Since the case-
-    // study URL and page already name JourneyTrack, the tag matches for
-    // consistency. The blurb stays at the high-level "process-only"
-    // description the NDA requires (agentic AI + trust framing, not
-    // feature mechanics).
-    tag: "JourneyTrack · Concept handed off 2026",
+    // Sponsor name anonymized on the folder card + URL path per
+    // Section 6.a.iv review process — the sponsor is referred to by
+    // product category only ("customer journey management platform")
+    // while the case study is under written-approval review with the
+    // client. Content submitted to sponsor (Christin) for review per
+    // Section 6.a.iv of the Purdue UXD Studio IP/NDA Agreement. Kept at
+    // process/methodology level pending written approval; any
+    // sponsor-required modifications will be applied on receipt.
+    tag: "Customer Journey Platform (NDA) · Concept handed off 2026",
     blurb: (
       <>
-        Designed an <strong>agentic AI maintenance agent</strong> that keeps customer journey maps trustworthy over time — anchored on <strong>evidence transparency and user control</strong>
+        Designed an <strong>agentic AI maintenance agent</strong> concept for an anonymous <strong>customer journey management platform</strong> — helping teams keep journey maps trustworthy over time
       </>
     ),
     meta: ["NDA", "UI", "Interaction", "User Research", "2026", "CONCEPTUALIZED"],
@@ -270,7 +271,7 @@ const PROJECTS: Project[] = [
     // Shadow stop is held a hair below the front so the multiply
     // gradient still tilts the bottom edge without driving it to mud.
     folder: { front: "#C68D5F", back: "#9A6D45", shadow: "#5C3924" },
-    href: "/projects/journeytrack",
+    href: "/projects/ai-journey-agent",
     readTime: "3 min read",
   },
   {
