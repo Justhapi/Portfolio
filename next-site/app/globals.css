@@ -1484,9 +1484,13 @@ em.it { font-style: italic; }
   animation: ribbonWriteIn 900ms cubic-bezier(0.7, 0, 0.25, 1) 1400ms backwards;
 }
 .ribbon-artist .wordmark {
-  /* Fixed px height — no viewport reactivity. */
+  /* Sized to roughly match the greeting line's visible width ("Hello,
+     I'm Kathleen 李曦" ends around ~360px). Height 48px + viewBox
+     1170×175 renders the SVG at ~321px wide; combined with "an "
+     (~40px) the whole line lands near ~361px — reads as visually
+     matched to the greeting above without overflowing past it. */
   width: auto;
-  height: 34px;
+  height: 45px;
   max-width: 100%;
   flex: 0 1 auto;
   min-width: 0;
@@ -1788,19 +1792,11 @@ em.it { font-style: italic; }
      school-note settles (~3140ms). */
   animation: stickerGreenIn 340ms var(--ease-out-quart) 3200ms backwards;
 }
-@media (max-width: 820px) {
-  /* On narrow screens pull both stickers in tighter so they don't
-     overflow the mobile column but still overlap the polaroid. */
-  .sticker.school-note.polaroid-attached {
-    top: -22px;
-    left: -20px;
-  }
-  .sticker.designing-green.polaroid-attached {
-    right: -20px;
-    bottom: -56px;
-    width: 210px;
-  }
-}
+/* Removed the @media (max-width: 820px) sticker tightening —
+   stickers now keep their desktop offsets (top -28 / left -60 for
+   school-note, right -60 / bottom -70 for designing-green) at every
+   viewport width. If they clip horizontally on narrow screens, the
+   parent's overflow handling absorbs it rather than repositioning. */
 
 /* ── STICKER SHIFT-OUT (consolidated, defined AFTER base rules) ────
    Placed here — after both `.sticker.<name>.polaroid-attached { transform: rotate(...) }`
@@ -1816,21 +1812,27 @@ em.it { font-style: italic; }
 .sticker.school-note.polaroid-attached {
   transition: transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1) 0ms !important;
 }
-.sticker.designing-green.polaroid-attached {
-  transition: transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1) 140ms !important;
-}
+/* No transition on designing-green — the parallax scroll system writes
+   its transform inline every frame; a CSS transition would try to
+   interpolate between those frames, causing perceived lag. Instant
+   application matches how parallax expects to drive the element. */
 .hero-polaroid.is-raised .sticker.school-note.polaroid-attached {
   transform: rotate(-6deg) translate(-48px, -24px) !important;
 }
-.hero-polaroid.is-raised .sticker.designing-green.polaroid-attached {
-  transform: rotate(-4deg) translate(48px, 26px) !important;
-}
+/* Availability sticker has NO raise-state override — parallax owns its
+   transform (SmoothScroll.tsx writes inline `translateY(x) rotate(-4deg)`
+   every scroll frame). Adding an !important rule here would clobber the
+   parallax's inline transform during the raise window and produce a
+   second tilt/position state, which is exactly what we want to avoid.
+   School-note still has a raise shift above because it's not a parallax
+   target and stays at the polaroid's local coordinate. */
 
 @keyframes stickerGreenIn {
-  /* End state matches the designing-green.polaroid-attached rotation
-     (-4deg) — was previously -5deg from the floating-hero-stage version.
-     Enters with an up-and-over arc from the bottom-right of the frame. */
-  from { opacity: 0; transform: translate(24px, 10px) rotate(-16deg); }
+  /* Pure opacity fade — no translation, no rotation change. Sticker
+     appears in place at its rest -4° tilt (matches parallax baseRotate)
+     so there's no "second" positional/tilt state visible during
+     entrance or between entrance and parallax activation. */
+  from { opacity: 0; transform: rotate(-4deg); }
   to   { opacity: 1; transform: rotate(-4deg); }
 }
 .sticker.designing-green .d-text {
@@ -1984,7 +1986,11 @@ em.it { font-style: italic; }
   50%      { opacity: 0.75; transform: scale(1.1); }
 }
 
-/* hero scroll cue */
+/* hero scroll cue — slow-faded per /distill so it materializes gently
+   AFTER the primary trio (polaroid + availability + wordmark) settles,
+   and rests at a quieter opacity (0.42 vs the old 0.7). Reads as a
+   subtle hint rather than a competing focal element; hover reveals
+   full weight for anyone who lingers on it. */
 .hero-scroll {
   position: absolute;
   bottom: 32px;
@@ -1998,17 +2004,18 @@ em.it { font-style: italic; }
   font-size: 11px;
   letter-spacing: 0.28em;
   text-transform: uppercase;
-  color: rgb(var(--hero-fg-rgb) / 0.7);
+  color: rgb(var(--hero-fg-rgb) / 0.42);
   z-index: 8;
-  animation: scrollCueIn 280ms var(--ease-out-quart) 2500ms backwards;
+  transition: color 240ms ease;
+  /* Slower fade-in (900ms vs 280ms) starting later (3200ms vs 2500ms)
+     so the cue drifts in after the polaroid + stickers have landed. */
+  animation: scrollCueIn 900ms cubic-bezier(0.4, 0, 0.2, 1) 3200ms backwards;
 }
 @keyframes scrollCueIn {
-  /* Y translate softened from 14px → 5px so the scroll cue settles
-     with a light lift rather than a slide. */
-  from { opacity: 0; transform: translateX(-50%) translateY(5px); }
+  from { opacity: 0; transform: translateX(-50%) translateY(6px); }
   to   { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
-.hero-scroll:hover { color: rgb(var(--hero-fg-rgb) / 0.9); }
+.hero-scroll:hover { color: rgb(var(--hero-fg-rgb) / 0.85); }
 /* Focus ring: override global accent (terracotta) with hero-fg so the
    ring stays visible against the dark --hero-bg stage. */
 .hero-scroll:focus-visible {
@@ -4571,6 +4578,90 @@ em.it { font-style: italic; }
   background-image:
     repeating-linear-gradient(45deg, transparent 0 14px, rgba(0,0,0,0.035) 14px 15px);
 }
+
+/* ── Zoomable image (drag to pan, scroll to zoom) ─────────────────
+   Used in case studies where a full-resolution audit / synthesis board
+   needs to stay legible even when the display column is narrow. The
+   frame clips the image; the <img> inside is transformed via inline
+   translate + scale from ZoomableImage.tsx. */
+.zoomable-wrap {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.zoomable-frame {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  /* Background matches the case-study paper color so any letterboxing
+     (from object-fit: contain when the image aspect ratio doesn't
+     perfectly match the frame's) blends invisibly into the page
+     instead of showing as a dark bar under the image. */
+  background: var(--paper);
+  border-radius: 6px;
+  cursor: grab;
+  /* Prevent the browser from hijacking scroll — wheel events are
+     intercepted by the component for zoom instead. */
+  overscroll-behavior: contain;
+  touch-action: pan-y pinch-zoom;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.zoomable-frame:active,
+.zoomable-frame.is-dragging { cursor: grabbing; }
+.zoomable-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  transform-origin: 50% 50%;
+  /* No transition on the transform itself — dragging needs 1:1
+     responsiveness to cursor movement. Zoom via wheel is stepped by
+     the component's onWheel logic, not by CSS. */
+  will-change: transform;
+  pointer-events: none;
+}
+.zoomable-hint {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  padding: 4px 8px;
+  background: rgba(0, 0, 0, 0.55);
+  color: rgba(255, 255, 255, 0.82);
+  font-family: var(--f-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  border-radius: 3px;
+  pointer-events: none;
+  transition: opacity 240ms ease;
+}
+.zoomable-hint.is-hidden { opacity: 0; }
+.zoomable-reset {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #1a1a1a;
+  font-family: var(--f-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  border: 0;
+  border-radius: 3px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+  transition: background 160ms ease, transform 160ms ease;
+}
+.zoomable-reset:hover { background: #fff; transform: translateY(-1px); }
+.zoomable-reset:focus-visible {
+  outline: 2px solid var(--accent-soft);
+  outline-offset: 2px;
+}
 .case-section figcaption {
   font-family: var(--f-sans);
   font-weight: 500;
@@ -4715,6 +4806,15 @@ em.it { font-style: italic; }
 .hero-spark .sparkle {
   font-size: 18px;
   color: rgb(var(--hero-fg-rgb) / 0.55);
+}
+/* Hero-scoped opacity quiet-down (per /distill) — sparkles inside the
+   hero drop from 0.55 → 0.32 opacity and 18px → 15px so they sit
+   clearly BEHIND the primary trio (polaroid + availability sticker +
+   wordmark) as ambient atmosphere rather than competing focal points.
+   Connect's sparkle field keeps its own 0.55 in the rule further down. */
+.hero-sparkles .hero-spark .sparkle {
+  color: rgb(var(--hero-fg-rgb) / 0.32);
+  font-size: 15px;
 }
 
 /* Section-level background sparkle layer (cream sections) */

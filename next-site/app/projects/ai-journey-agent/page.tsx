@@ -1,5 +1,9 @@
 import CaseCover from "@/components/CaseCover";
 import CaseSectionNav from "@/components/CaseSectionNav";
+import ZoomableImage from "@/components/ZoomableImage";
+
+const basePath =
+  process.env.NODE_ENV === "production" ? "/Portfolio" : "";
 
 export const metadata = {
   title: "AI Journey Map Maintenance Agent — Kathleen Li",
@@ -106,41 +110,58 @@ export default function AIJourneyAgentCaseStudy() {
           </p>
 
           <p className="research-split-lead">
-            To cover both within the project window, we{" "}
-            <mark className="hl">split into two smaller teams running in parallel:</mark>
+            To cover both within the project window, we split into two sub-teams running in parallel:{" "}
+            <mark className="hl">I owned the platform audit; a partner sub-team surveyed the underlying
+            agent-component landscape.</mark> Their headline takeaways fed my synthesis, so both tracks
+            converged on the same set of design principles.
           </p>
           <div className="parallel-tracks">
             <div className="research-track">
-              <span className="track-label">Track 1</span>
+              <span className="track-label">Track 1 · Mine</span>
               <h3>Current State of Platform</h3>
               <p>
-                One track reviewed the platform as a user, logging{" "}
+                I audited the platform as a user, logging{" "}
                 <mark className="hl">what worked and where the gaps were</mark> before proposing anything new.
                 Specific findings are omitted here per the confidentiality agreement; the takeaways informed the
                 design principles we later documented.
               </p>
               <figure>
-                <div className="image-slot">current-state audit — text blurred</div>
-                <figcaption>
-                  The audit artifact with text intentionally blurred so the structure of the review reads
-                  while platform-specific content stays under confidentiality.
-                </figcaption>
+                <ZoomableImage
+                  src={`${basePath}/img/journey-agent/platform-audit.webp`}
+                  alt="Platform audit board — sticky notes on screenshots. All content anonymized for confidentiality; sponsor name and specific findings are replaced with category-level labels."
+                  aspectRatio={1556 / 2200}
+                  caption={
+                    <>
+                      The audit board I authored, with sticky-note content replaced by category-level labels
+                      and background screenshots blurred. Drag to pan; scroll to zoom into any cluster.
+                    </>
+                  }
+                />
               </figure>
             </div>
             <div className="research-track">
-              <span className="track-label">Track 2</span>
+              <span className="track-label">Track 2 · Partner sub-team</span>
               <h3>Current State of Agent Components</h3>
               <p>
-                A parallel track surveyed the AI components a maintenance agent would need to rest on:{" "}
+                A partner sub-team surveyed the AI components a maintenance agent would need to rest on:{" "}
                 <mark className="hl">the categories of AI involved, how they monitor, and what makes users
-                trust them</mark>. Specific findings from this survey are withheld pending sponsor approval.
+                trust them</mark>. I carried their headline takeaways into the shared synthesis so both tracks
+                fed the same design decisions. Specific findings from their survey are withheld pending sponsor
+                approval.
               </p>
               <figure>
-                <div className="image-slot">agent-components synthesis — text blurred</div>
-                <figcaption>
-                  The components synthesis with text blurred so the framework shape reads without exposing the
-                  filled analysis.
-                </figcaption>
+                <ZoomableImage
+                  src={`${basePath}/img/journey-agent/agent-components.webp`}
+                  alt="Agent-components synthesis board — five research-lens categories with sticker clusters. Sticker content blurred; only the framework structure and section labels are legible."
+                  aspectRatio={3000 / 2052}
+                  caption={
+                    <>
+                      The components synthesis my partner sub-team authored; I brought its takeaways forward
+                      into my own review. Sticker content blurred so the framework shape reads without
+                      exposing the filled analysis. Drag to pan; scroll to zoom.
+                    </>
+                  }
+                />
               </figure>
             </div>
           </div>
@@ -157,35 +178,46 @@ export default function AIJourneyAgentCaseStudy() {
             as the sponsor.
           </p>
           <figure>
-            <div className="image-slot">competitive analysis — text blurred</div>
-            <figcaption>
-              The competitive analysis artifact with text blurred so the framework structure is visible while
-              the filled synthesis (sponsor work product) stays under confidentiality.
-            </figcaption>
+            <ZoomableImage
+              src={`${basePath}/img/journey-agent/direct-competitor.webp`}
+              alt="Direct-competitor analysis board — three columns: Agent & User Interactions, Agent's components within platform, Agent's pain points. Screenshots blurred, sticker text kept at category level only. Competitor logo redacted."
+              aspectRatio={3000 / 741}
+              caption={
+                <>
+                  Direct-competitor breakdown across three lenses (agent interactions, components within the
+                  platform, and pain points) — my analysis of one competitor. Screenshots blurred and sticker
+                  content kept at category level so the framework reads without exposing the filled
+                  synthesis. Drag to pan; scroll to zoom.
+                </>
+              }
+            />
           </figure>
           <p>
             <strong>Indirect group.</strong> Analogous AI-driven SaaS solving parallel monitoring + insight
-            problems. Cross-group synthesis surfaced shared structural patterns; specific conclusions are
-            withheld pending sponsor approval.
+            problems — <mark className="hl">researched by a partner sub-team</mark>; I integrated their
+            headline takeaways into my direct-group synthesis so both feeds converged on the same
+            structural patterns.
           </p>
-          <figure>
-            <div className="image-slot">indirect competitor synthesis — text blurred</div>
-            <figcaption>
-              Indirect competitor synthesis with text blurred; framework structure reads without exposing the
-              filled content.
-            </figcaption>
-          </figure>
           <p>
             We then combined both groups through an{" "}
             <mark className="hl">interaction-pattern synthesis</mark> of several public knowledge-verification
             platforms — surfacing the structural moves every modern verification flow shares.
           </p>
           <figure>
-            <div className="image-slot">verification-pattern template — empty, no content</div>
-            <figcaption>
-              The verification-pattern synthesis template itself, shown empty — the structure of the framework
-              is visible without the specific platforms or filled analysis being exposed.
-            </figcaption>
+            <ZoomableImage
+              src={`${basePath}/img/journey-agent/interaction-pattern.webp`}
+              alt="Interaction-pattern synthesis: Nielsen 10-heuristic evaluation of a competitor platform + agent, paired with four user-flow diagrams categorized by content-manipulation type. All screenshots heavily blurred; sticker text at category level only."
+              aspectRatio={2567 / 3000}
+              caption={
+                <>
+                  Interaction-pattern synthesis: a Nielsen 10-heuristic evaluation of the competitor&rsquo;s
+                  platform and agent (violation + recommendation columns), paired with four user-flow diagrams
+                  categorized by content-manipulation type (creation, organization, creation-with-user-input,
+                  summarization). All screenshots heavily blurred; sticker content kept at category level.
+                  Drag to pan; scroll to zoom.
+                </>
+              }
+            />
           </figure>
 
           <h3>User Interviews</h3>

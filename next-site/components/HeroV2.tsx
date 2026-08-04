@@ -66,7 +66,12 @@ export default function HeroV2() {
   //      NEVER removed (previously toggled off when scrolling back
   //      up, which would re-hide the nav mid-session — annoying).
   useEffect(() => {
-    const HERO_ENTRANCE_END = 2900; // ms — matches scroll cue settle + a beat
+    // 2900ms lands ~600ms after the last primary-trio element (green
+    // availability sticker) settles at ~2280ms — nav appears with a
+    // clean beat after the polaroid + availability + wordmark trio.
+    // Scroll cue now drifts in later (3200ms onwards) as ambient hint;
+    // no longer used as the "settle" anchor for the nav trigger.
+    const HERO_ENTRANCE_END = 2900;
     let hasPaper = false;
     const applyPaper = () => {
       if (hasPaper) return;
@@ -197,15 +202,19 @@ export default function HeroV2() {
             <ArtistDesignerWordmark />
           </h1>
           <p className="hero-focus">
-            focusing on <strong>product design</strong>
-            {" & "}
-            <strong>design engineering</strong>
+            Focusing on <strong>Product</strong>
+            {" and "}
+            <strong>Interaction Design</strong>
           </p>
         </div>
 
-        {/* cycling-glyph sparkle field — slots respawn at fresh random positions. */}
+        {/* cycling-glyph sparkle field — quieted per /distill: fewer
+            slots (5 vs 8), slower drift (slowdown 1.6), longer life
+            (lifeScale 1.3) so the field reads as ambient atmosphere
+            rather than a competing focal element. Lets the polaroid +
+            availability sticker + wordmark hold the primary hierarchy. */}
         <div className="hero-sparkles" aria-hidden="true">
-          <SparkleField count={8} />
+          <SparkleField count={5} slowdown={1.6} lifeScale={1.3} />
         </div>
 
         {/* ── RIGHT column: polaroid + attached stickers ─────────────────
@@ -345,7 +354,7 @@ export default function HeroV2() {
             <div className="d-text">
               <strong>Available Summer 2026</strong>
               <span className="d-sub">
-                Product Design · Design Engineering internships
+                Product &amp; Interaction Design internships
               </span>
             </div>
           </div>
@@ -465,7 +474,7 @@ export default function HeroV2() {
           <div className="d-text">
             <strong>Available Summer 2026</strong>
             <span className="d-sub">
-              Product Design · Design Engineering internships
+              Product &amp; Interaction Design internships
             </span>
           </div>
           {/* Purdue year sub-sticker — nested INSIDE the availability
