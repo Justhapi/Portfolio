@@ -1142,6 +1142,27 @@ body.on-paper .nav-pill {
   background:
     repeating-linear-gradient(45deg, transparent 0 14px, rgba(255,255,255,0.025) 14px 15px);
 }
+
+/* ── polaroid photo <img> ─────────────────────────────────────────
+   The two polaroid modes (drawing / photo) render a real WebP that
+   fills the layer. Layers with `.has-image` drop the empty diagonal-
+   stripe placeholder background so the image sits on the polaroid
+   card's own paper color instead of a tinted radial + stripes. */
+.hero-polaroid .photo-layer.has-image {
+  background: none;
+}
+.hero-polaroid .photo-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* subtle inner shadow via border-image would need extra markup;
+     the polaroid frame itself already provides the border, so keep
+     the image edge-to-edge inside the frame. */
+  user-select: none;
+  -webkit-user-drag: none;
+}
 .hero-polaroid .caption-block {
   /* Fixed values — polaroid no longer scales, so all internal text
      dimensions are constant. */

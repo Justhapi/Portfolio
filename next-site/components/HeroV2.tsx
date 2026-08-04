@@ -142,6 +142,19 @@ export default function HeroV2() {
   const otherMode: PhotoMode = mode === "drawing" ? "photo" : "drawing";
   const labelFor = (m: PhotoMode) =>
     m === "drawing" ? "drop your self-doodle" : "drop a photo of you";
+  // Real polaroid assets — resolved with the project basePath so the
+  // src still works when deployed under /Portfolio on GitHub Pages
+  // (next.config sets basePath to '/Portfolio' in production, empty
+  // for local dev).
+  const basePath = process.env.NODE_ENV === "production" ? "/Portfolio" : "";
+  const srcFor = (m: PhotoMode) =>
+    m === "drawing"
+      ? `${basePath}/img/polaroid/polaroid_drawing.webp`
+      : `${basePath}/img/polaroid/polaroid_real.webp`;
+  const altFor = (m: PhotoMode) =>
+    m === "drawing"
+      ? "Kathleen — self-portrait doodle"
+      : "Kathleen — photo";
 
   return (
     <section id="hero" className="hero" data-screen-label="01 Hero">
@@ -208,16 +221,28 @@ export default function HeroV2() {
             aria-pressed={mode === "photo"}
           >
             {/* base layer — currently selected mode */}
-            <div className={`photo-layer photo-base photo-${mode}`}>
-              <div className="image-slot">{labelFor(mode)}</div>
+            <div className={`photo-layer photo-base photo-${mode} has-image`}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={srcFor(mode)}
+                alt={altFor(mode)}
+                className="photo-img"
+                draggable={false}
+              />
             </div>
             {/* peek layer — the OTHER mode, revealed inside a spotlight at the cursor.
                 On click, the spotlight expands to fill the frame, completing the swap. */}
             <div
               ref={peekLayerRef}
-              className={`photo-layer photo-peek photo-${otherMode} ${peekOn || swapping ? "is-on" : ""} ${swapping ? "is-swapping" : ""} ${hinting ? "is-hinting" : ""} ${justSwapped ? "is-just-swapped" : ""}`}
+              className={`photo-layer photo-peek photo-${otherMode} has-image ${peekOn || swapping ? "is-on" : ""} ${swapping ? "is-swapping" : ""} ${hinting ? "is-hinting" : ""} ${justSwapped ? "is-just-swapped" : ""}`}
             >
-              <div className="image-slot">{labelFor(otherMode)}</div>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={srcFor(otherMode)}
+                alt={altFor(otherMode)}
+                className="photo-img"
+                draggable={false}
+              />
             </div>
 
           </button>
