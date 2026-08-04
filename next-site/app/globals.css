@@ -1170,19 +1170,44 @@ body.on-paper .nav-pill {
    we set on .hero-polaroid.is-raised would get clobbered the moment the
    parallax system activates. .polaroid-lift has no inline style, so its
    transform is free to animate and it composes with the parallax offset
-   via the standard CSS transform chain. */
+   via the standard CSS transform chain. preserve-3d so the 3D flip scene
+   propagates from .hero-polaroid's perspective down through the flipper. */
 .polaroid-lift {
   position: relative;
-  transition: transform 320ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  transition: transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .polaroid-lift.is-raised {
   transform: scale(1.12) translateY(-14px);
 }
 
-/* The flipper — a <button> that wraps both faces. preserve-3d keeps
-   the faces in the 3D scene set up by .hero-polaroid's perspective.
-   Native button reset so the flip container looks like a card, not
-   a UA-styled button. */
+/* Hover-tilt wrapper — sits between .polaroid-lift and .polaroid-card.
+   Its transform is written INLINE by handleHoverMove in HeroV2 (React
+   mousemove) so it tracks the cursor. preserve-3d so the flip scene
+   set up by .hero-polaroid's perspective chains through. Base transition
+   value is set inline by the JS too (so the mouseleave-vs-mousemove
+   easing can differ). Skipped/idle while a flip animation is running. */
+.polaroid-hover {
+  position: relative;
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* The flipper — a <button> that wraps both faces.
+   The card's TRANSFORM is driven two ways depending on state:
+   1. RESTING:   .is-flipped absent → rotateY(0), rotate(0) (front face,
+                 no tilt); .is-flipped present → rotateY(180) rotate(-8)
+                 (back face, rotate(-8) reads as +8° from viewer because
+                 rotateY(180) mirrors Z-axis rotation direction).
+   2. ANIMATING: .is-anim-fwd / .is-anim-bwd applied → keyframe drives
+                 transform for the flip duration. Keyframe includes a
+                 rotateX arc (top corners rise first, then bottom rise
+                 as top drops) plus interpolated rotateY and tilt so the
+                 flip feels like a malleable card rather than a rigid
+                 rotation. Keyframes end at exactly the resting-state
+                 transform so the class swap at animation end is seamless. */
 .polaroid-card {
   position: relative;
   display: block;
@@ -1197,11 +1222,16 @@ body.on-paper .nav-pill {
   -webkit-appearance: none;
   transform-style: preserve-3d;
   -webkit-transform-style: preserve-3d;
-  /* Explicit initial value so the transition has a defined start.
-     Flip fires after a 300ms delay so it starts once the rise is
-     mostly settled; 500ms rotation lands at 800ms total. */
-  transform: rotateY(0deg);
-  transition: transform 500ms cubic-bezier(0.6, 0.02, 0.4, 1.02) 300ms;
+  transform: rotateX(0deg) rotateY(0deg) rotate(0deg);
+}
+/* Kill the browser's default focus outline entirely on mouse click.
+   Some browsers (esp. Safari) briefly paint a focus ring on <button>
+   click that was reading as the "random outline" appearing during
+   flips. :focus-visible is a scoped re-add for keyboard focus only. */
+.polaroid-card,
+.polaroid-card:focus {
+  outline: 0;
+  outline-offset: 0;
 }
 .polaroid-card:focus-visible {
   outline: 3px solid var(--accent-soft);
@@ -1209,7 +1239,37 @@ body.on-paper .nav-pill {
   border-radius: 20px;
 }
 .polaroid-card.is-flipped {
-  transform: rotateY(180deg);
+  /* Rest state for doodle side — tilted right visually (see comment
+     above about rotate direction inversion under rotateY(180)). */
+  transform: rotateX(0deg) rotateY(180deg) rotate(-8deg);
+}
+.polaroid-card.is-anim-fwd {
+  animation: flipMalleableFwd 250ms cubic-bezier(0.45, 0.05, 0.55, 0.95) 80ms;
+}
+.polaroid-card.is-anim-bwd {
+  animation: flipMalleableBwd 250ms cubic-bezier(0.45, 0.05, 0.55, 0.95) 80ms;
+}
+
+/* Malleable flip keyframes — the card doesn't rotate as a rigid plane.
+   Instead the top edge tilts forward first (rotateX negative → top
+   corners rise toward viewer), the card rotates on Y-axis through the
+   flip, then the bottom edge rises (rotateX positive) as the top
+   settles back — giving a wave-like "malleable card" feel. The Z-axis
+   rotation (rotate) interpolates from 0 → -8deg so the tilt lands on
+   the right when the doodle side is up. */
+@keyframes flipMalleableFwd {
+  0%   { transform: rotateX(0deg)   rotateY(0deg)   rotate(0deg); }
+  22%  { transform: rotateX(-12deg) rotateY(30deg)  rotate(-1.5deg); }
+  50%  { transform: rotateX(0deg)   rotateY(90deg)  rotate(-4deg); }
+  78%  { transform: rotateX(10deg)  rotateY(150deg) rotate(-6.5deg); }
+  100% { transform: rotateX(0deg)   rotateY(180deg) rotate(-8deg); }
+}
+@keyframes flipMalleableBwd {
+  0%   { transform: rotateX(0deg)   rotateY(180deg) rotate(-8deg); }
+  22%  { transform: rotateX(-12deg) rotateY(150deg) rotate(-6.5deg); }
+  50%  { transform: rotateX(0deg)   rotateY(90deg)  rotate(-4deg); }
+  78%  { transform: rotateX(10deg)  rotateY(30deg)  rotate(-1.5deg); }
+  100% { transform: rotateX(0deg)   rotateY(0deg)   rotate(0deg); }
 }
 
 /* Faces — each face is a full polaroid card (paper look). Front is
@@ -1228,6 +1288,12 @@ body.on-paper .nav-pill {
     #FBF7EE;
   padding: 10px 10px 42px;
   border-radius: 16px;
+  /* Force GPU compositing + explicit outline reset so no browser paints
+     a subpixel line at the transformed edge (the "random outline"
+     appearing during the flip). */
+  outline: 0;
+  will-change: transform;
+  -webkit-font-smoothing: antialiased;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.7),
     inset 0 -1px 0 rgb(var(--fg-rgb) / 0.06),
@@ -1239,11 +1305,46 @@ body.on-paper .nav-pill {
 .polaroid-face-front {
   position: relative;
   z-index: 1;
+  /* Push forward 1px in Z so it never Z-fights with the back face
+     during the flip animation. Invisible at rest, prevents the
+     "outline flash" some browsers paint when two 3D-transformed
+     coplanar elements land on identical Z. */
+  transform: translateZ(1px);
 }
 .polaroid-face-back {
   position: absolute;
   inset: 0;
-  transform: rotateY(180deg);
+  /* Match front's translateZ(1px) offset then apply the 180° flip,
+     so both faces sit 1px forward in their own local Z — Z-fighting
+     avoided from both angles. */
+  transform: translateZ(1px) rotateY(180deg);
+  /* SYMMETRIC padding (overrides base .polaroid-face's 10px/10px/42px
+     which was asymmetric to leave caption room on the front). With
+     equal top+bottom padding, the doodle centers in the full card
+     height instead of sitting up top with dead space below. */
+  padding: 10px;
+  /* Center the photo well vertically inside the padded area. */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
+}
+/* Drop the dark background AND the recessed inset shadow from the base
+   .photo rule on the back — the inset shadow was reading as a hard
+   "frame outline" around the doodle when the back is upright. Without
+   it, the doodle sits directly on the polaroid paper (like a drawing
+   on a paper card, not a photo in a recessed well). */
+.polaroid-face-back .photo {
+  background: transparent;
+  box-shadow: none;
+}
+/* Show the FULL drawing (contain) so its whole vertical extent reads.
+   Base .photo-img uses object-fit: cover which crops the drawing when
+   its aspect doesn't match the 1:1 photo well; override to contain so
+   the doodle's natural aspect is preserved and it fits fully inside
+   the framed well. */
+.polaroid-face-back .photo-img {
+  object-fit: contain;
 }
 /* Amplified shadow while the card is raised — applied to both faces
    so the depth reads on whichever side is currently visible. */
@@ -1256,20 +1357,15 @@ body.on-paper .nav-pill {
     0 60px 100px -20px rgba(0, 0, 0, 0.7);
 }
 
-/* Sticker shift-out — each polaroid-attached sticker pushes AWAY from
-   the polaroid's center during the raised phase. school-note lives at
-   top-left of the polaroid so it drifts up-and-left; designing-green
-   lives at bottom-right so it drifts down-and-right. Transform keeps
-   the sticker's existing tilt so only its translation animates. */
-.sticker.polaroid-attached {
-  transition: transform 320ms cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.hero-polaroid.is-raised .sticker.school-note.polaroid-attached {
-  transform: rotate(-6deg) translate(-32px, -14px);
-}
-.hero-polaroid.is-raised .sticker.designing-green.polaroid-attached {
-  transform: rotate(-4deg) translate(32px, 16px);
-}
+/* Sticker shift-out on rise — see block after the base sticker rules
+   (~line 1770+) where the actual push-out is defined WITH !important to
+   beat the entrance-animation `to` state (`animation: stickerSchoolIn`
+   ends holding `transform: rotate(-6deg)` and — depending on whether
+   the browser is currently reading the animation's implicit final
+   value vs the static rule — can shadow our .is-raised transform).
+   Consolidating the shift there also puts it AFTER the base .sticker
+   rules in the cascade, so any same-specificity ties resolve in favor
+   of the shift. */
 
 @media (prefers-reduced-motion: reduce) {
   /* Skip the choreography — click still toggles the visible face
@@ -1705,6 +1801,31 @@ em.it { font-style: italic; }
     width: 210px;
   }
 }
+
+/* ── STICKER SHIFT-OUT (consolidated, defined AFTER base rules) ────
+   Placed here — after both `.sticker.<name>.polaroid-attached { transform: rotate(...) }`
+   base rules and the mobile media query — so cascade order ties resolve
+   in favor of the shift. !important on transform beats any lingering
+   animation `to`-state that would otherwise shadow our value.
+   Staggered timing: TOP sticker (school-note) shifts immediately (t=0)
+   to react to the top corners lifting first; BOTTOM sticker (designing-
+   green) waits 140ms so it responds when the bottom corners rise later
+   in the flip arc. transition-delay applies both ways, so on unraise
+   the top slides back first and the bottom follows — same wave, reverse.
+   Values bumped from ±36 → ±48 for a more visible read. */
+.sticker.school-note.polaroid-attached {
+  transition: transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1) 0ms !important;
+}
+.sticker.designing-green.polaroid-attached {
+  transition: transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1) 140ms !important;
+}
+.hero-polaroid.is-raised .sticker.school-note.polaroid-attached {
+  transform: rotate(-6deg) translate(-48px, -24px) !important;
+}
+.hero-polaroid.is-raised .sticker.designing-green.polaroid-attached {
+  transform: rotate(-4deg) translate(48px, 26px) !important;
+}
+
 @keyframes stickerGreenIn {
   /* End state matches the designing-green.polaroid-attached rotation
      (-4deg) — was previously -5deg from the floating-hero-stage version.

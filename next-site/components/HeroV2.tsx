@@ -29,11 +29,33 @@ export default function HeroV2() {
      raised phase (school-note pushes up-left, designing-green pushes
      down-right — each away from the polaroid's center) and drift back
      as the polaroid settles. */
-  const [flipped, setFlipped] = useState(false);       // which face is showing
-  const [isRaised, setIsRaised] = useState(false);     // t=0..800ms
-  const [isAnimating, setIsAnimating] = useState(false); // click lock, t=0..1100ms
+  /* State model
+     ----------------------------------------------------------------
+     - `flipped`   — LOGICAL face (front vs back). Drives the rest
+                     transform via .is-flipped on .polaroid-card.
+                     Toggled at ANIMATION END so it holds the final
+                     pose after the keyframe finishes.
+     - `animDir`   — 'fwd' | 'bwd' | null. Applied as .is-anim-fwd /
+                     .is-anim-bwd during the flip so the malleable
+                     keyframe drives transform. Cleared at anim end.
+     - `isRaised`  — .is-raised on .hero-polaroid + .polaroid-lift.
+                     Rises the card and pushes stickers outward.
+     - `isAnimating` — click lock while the whole cycle runs.
+  */
+  const [flipped, setFlipped] = useState(false);
+  const [animDir, setAnimDir] = useState<"fwd" | "bwd" | null>(null);
+  const [isRaised, setIsRaised] = useState(false);
+  // Target flip state as a REF so rapid clicks stay in sync without
+  // waiting for React to commit the setFlipped update. Every click
+  // toggles this ref immediately; the visible `flipped` state syncs
+  // at animation end. Prevents the "click didn't register" feel that
+  // came from the previous isAnimating lock.
+  const targetRef = useRef(false);
   const riseTimerRef = useRef<number | null>(null);
-  const unlockTimerRef = useRef<number | null>(null);
+  const animEndTimerRef = useRef<number | null>(null);
+  // Hover wrapper — receives an inline rotateY on mouseenter for a
+  // clear sideways tilt cue that hints clickability.
+  const hoverRef = useRef<HTMLDivElement | null>(null);
 
   // body class for nav theming + scrolled state.
   // Two triggers add `on-paper`:
@@ -64,34 +86,71 @@ export default function HeroV2() {
     };
   }, []);
 
-  // Rise → flip → rest choreography.
-  //   t=0     click → raise + start flip (with 300ms transition delay)
-  //   t=800   drop the raise (sticker shift-back begins, scale-down begins)
-  //   t=1100  full cycle complete, unlock for next click
-  const handlePhotoClick = () => {
-    if (isAnimating) return;
-    setIsAnimating(true);
-    setIsRaised(true);
-    setFlipped((f) => !f);
+  /* Choreography (no click lock — every click fires):
+       t=0    click → cancel in-flight timers, toggle targetRef, apply
+              .is-raised + .is-anim-fwd|bwd. If a rapid click comes in
+              during a running flip, the previous timers are cancelled
+              and this click's dir wins.
+       t=260  .is-raised removed → unraise begins
+       t=330  flip keyframe ends → sync `flipped` to targetRef, clear animDir
+  */
+  const RISE_HOLD_MS = 260;
+  const ANIM_END_MS = 330;
 
+  const handlePhotoClick = () => {
+    // Cancel any in-flight timers from a previous click. Prevents a
+    // stale timer from stomping on this click's target state.
     if (riseTimerRef.current) window.clearTimeout(riseTimerRef.current);
-    if (unlockTimerRef.current) window.clearTimeout(unlockTimerRef.current);
+    if (animEndTimerRef.current) window.clearTimeout(animEndTimerRef.current);
+
+    // Toggle the target ref IMMEDIATELY (no React state async delay).
+    // Direction is derived from the new target so the animation always
+    // reflects the click that just happened.
+    targetRef.current = !targetRef.current;
+    const dir: "fwd" | "bwd" = targetRef.current ? "fwd" : "bwd";
+
+    setIsRaised(true);
+    setAnimDir(dir);
+
     riseTimerRef.current = window.setTimeout(() => {
       setIsRaised(false);
       riseTimerRef.current = null;
-    }, 800);
-    unlockTimerRef.current = window.setTimeout(() => {
-      setIsAnimating(false);
-      unlockTimerRef.current = null;
-    }, 1100);
+    }, RISE_HOLD_MS);
+    animEndTimerRef.current = window.setTimeout(() => {
+      setFlipped(targetRef.current);
+      setAnimDir(null);
+      animEndTimerRef.current = null;
+    }, ANIM_END_MS);
   };
 
   useEffect(() => {
     return () => {
       if (riseTimerRef.current) window.clearTimeout(riseTimerRef.current);
-      if (unlockTimerRef.current) window.clearTimeout(unlockTimerRef.current);
+      if (animEndTimerRef.current) window.clearTimeout(animEndTimerRef.current);
     };
   }, []);
+
+  /* Hover tilt — a 2D rotation (rotate on Z-axis) so the polaroid
+     appears to pivot on a flat surface, like a photo card being
+     nudged on a tabletop. Different from the folder-card tilt which
+     rotates the card in 3D space (rotateX/Y). Applied inline to the
+     hover wrapper so it composes with the parent's parallax translate
+     and the child's flip keyframe without CSS specificity fights.
+     +6° gives a clear visible swing (composes with the -4° parallax
+     base rotation on .hero-polaroid → net +2° right when hovered vs
+     -4° at rest). */
+  const handleHoverEnter = () => {
+    const el = hoverRef.current;
+    if (!el) return;
+    el.style.transition = "transform 340ms cubic-bezier(0.34, 1.56, 0.64, 1)";
+    el.style.transform = "rotate(6deg)";
+  };
+  const handleHoverLeave = () => {
+    const el = hoverRef.current;
+    if (!el) return;
+    el.style.transition = "transform 440ms cubic-bezier(0.34, 1.56, 0.64, 1)";
+    el.style.transform = "rotate(0deg)";
+  };
 
   // Real polaroid assets — resolved with the project basePath so the
   // src still works when deployed under /Portfolio on GitHub Pages
@@ -167,6 +226,17 @@ export default function HeroV2() {
               element lets the two transforms compose via the CSS
               transform chain instead of clobbering each other. */}
           <div className={`polaroid-lift${isRaised ? " is-raised" : ""}`}>
+            {/* Hover-tilt wrapper — mouse tracking rotates this element
+                on X/Y to follow the cursor. Wraps the flipper button so
+                the click choreography (which owns .polaroid-card's
+                transform via keyframes) doesn't conflict with the hover
+                transform (which owns .polaroid-hover's inline transform). */}
+            <div
+              className="polaroid-hover"
+              ref={hoverRef}
+              onMouseEnter={handleHoverEnter}
+              onMouseLeave={handleHoverLeave}
+            >
             {/* Full-card flipper — the WHOLE polaroid (paper + photo well +
                 caption) is the front face; the back face is a same-sized
                 paper card with the drawing and NO caption text. Clicking
@@ -176,7 +246,13 @@ export default function HeroV2() {
                 the raised phase — see .polaroid-attached rules in CSS). */}
             <button
               type="button"
-              className={`polaroid-card${flipped ? " is-flipped" : ""}`}
+              className={[
+                "polaroid-card",
+                flipped ? "is-flipped" : "",
+                animDir ? `is-anim-${animDir}` : "",
+              ]
+                .filter(Boolean)
+                .join(" ")}
               ref={photoRef}
               onClick={handlePhotoClick}
               aria-label={`${flipped ? "Self-portrait doodle" : "Photo"} currently shown. Click to flip the polaroid.`}
@@ -224,6 +300,8 @@ export default function HeroV2() {
                   drawing to match a real polaroid's un-labeled back. */}
             </div>
             </button>
+            </div>
+            {/* End .polaroid-hover */}
           </div>
           {/* End .polaroid-lift — stickers below live OUTSIDE the lift
               wrapper so they don't scale/translate WITH the polaroid;
