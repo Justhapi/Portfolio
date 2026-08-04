@@ -918,39 +918,25 @@ body.on-paper .nav-pill {
    viewports keep generous spacing without dropping the polaroid off
    the stage. */
 .hero-polaroid {
-  /* Now sits in the RIGHT column of the .hero-stage flex layout —
-     no more absolute positioning against the stage. `position:
-     relative` provides the containing block for the two attached
-     stickers (school-note + designing-green) that overhang its
-     corners. Slight tilt preserved for the collage character. */
+  /* Positioning container for the flipper + attached stickers. The
+     PAPER card look (background, padding, box-shadow, border-radius)
+     now lives on .polaroid-face so both sides of the flip carry the
+     paper — otherwise the card would appear translucent at the flip
+     midpoint. This element just holds the tilt, entrance animation,
+     perspective for the 3D flip, and the sticker attachment corners.
+     Slight tilt preserved for the collage character. */
   position: relative;
   flex: 0 0 auto;
   transform: rotate(-4deg);
   /* +25% width bump (was 220px, now 275px) to reduce whitespace on
      the right column and match the larger greeting-text scale. */
   width: 275px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0) 30%),
-    #FBF7EE;
-  /* Padding scaled proportionally to the new 275px width. */
-  padding: 10px 10px 42px;
-  /* Rounded frame — 16px on the outer cardstock for soft, modern
-     corners without losing the polaroid character. */
-  border-radius: 16px;
-  /* Four-layer shadow for high-fidelity lift:
-     1. Inset top — paper edge catching ambient light (1px hairline)
-     2. Inset bottom — paper edge in shadow at the bottom
-     3. Tight contact shadow — grounds the polaroid on the surface
-     4. Soft ambient cast — depth from the hero stage backdrop
-     The shadow stack reads as a physical print sitting on a dark
-     surface, not as a flat rectangle with a generic drop shadow. */
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.7),
-    inset 0 -1px 0 rgb(var(--fg-rgb) / 0.06),
-    0 2px 4px -1px rgba(0, 0, 0, 0.35),
-    0 12px 24px -8px rgba(0, 0, 0, 0.5),
-    0 30px 60px -20px rgba(0, 0, 0, 0.55);
   z-index: 10;
+  /* Perspective for the 3D card flip inside .polaroid-card. Applied
+     here (on the parent of the flipper) so the perspective view is
+     stable across the whole rise choreography. */
+  perspective: 1400px;
+  -webkit-perspective: 1400px;
   /* Polaroid entrance starts DURING the "Hello, I'm" handwriting
      reveal (200-900ms) — delay 350ms, duration 550ms so it settles
      right around when Kathleen's sticker slaps in on the left. The
@@ -1162,6 +1148,143 @@ body.on-paper .nav-pill {
      the image edge-to-edge inside the frame. */
   user-select: none;
   -webkit-user-drag: none;
+}
+
+/* ── polaroid rise → flip → rest choreography ─────────────────────
+   The WHOLE polaroid card physically flips over — the button is the
+   flipper container, and each face (.polaroid-face-front /-back) is
+   a full paper card with its own paper background + shadow. Front
+   holds the photo + caption; back holds only the drawing.
+
+   Timing (matches JS timers in HeroV2):
+     0ms      .is-raised   → card scales up (320ms) + stickers shift out
+     0ms      .is-flipped  → flipper rotateY starts after 300ms delay,
+                             lands at 800ms
+     800ms    .is-raised off → card scales down + stickers shift back
+     1100ms   next click allowed
+*/
+/* Rise transform lives on .polaroid-lift (a wrapper inside .hero-polaroid)
+   NOT on .hero-polaroid itself, because SmoothScroll.tsx writes an inline
+   `transform: translateY(x) rotate(-4deg)` to .hero-polaroid on every
+   scroll frame — inline styles beat CSS rules on specificity, so anything
+   we set on .hero-polaroid.is-raised would get clobbered the moment the
+   parallax system activates. .polaroid-lift has no inline style, so its
+   transform is free to animate and it composes with the parallax offset
+   via the standard CSS transform chain. */
+.polaroid-lift {
+  position: relative;
+  transition: transform 320ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.polaroid-lift.is-raised {
+  transform: scale(1.12) translateY(-14px);
+}
+
+/* The flipper — a <button> that wraps both faces. preserve-3d keeps
+   the faces in the 3D scene set up by .hero-polaroid's perspective.
+   Native button reset so the flip container looks like a card, not
+   a UA-styled button. */
+.polaroid-card {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  /* Explicit initial value so the transition has a defined start.
+     Flip fires after a 300ms delay so it starts once the rise is
+     mostly settled; 500ms rotation lands at 800ms total. */
+  transform: rotateY(0deg);
+  transition: transform 500ms cubic-bezier(0.6, 0.02, 0.4, 1.02) 300ms;
+}
+.polaroid-card:focus-visible {
+  outline: 3px solid var(--accent-soft);
+  outline-offset: 6px;
+  border-radius: 20px;
+}
+.polaroid-card.is-flipped {
+  transform: rotateY(180deg);
+}
+
+/* Faces — each face is a full polaroid card (paper look). Front is
+   position:relative so it sizes the flipper. Back is absolutely
+   overlaid so it matches the front's size exactly, then pre-rotated
+   180° so its content sits on the "other side" of the card.
+   backface-visibility hidden ensures only one face is visible at a
+   time as the flipper rotates. */
+.polaroid-face {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  /* Paper card look — moved from .hero-polaroid so both sides of the
+     flip carry the paper background/shadow. */
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0) 30%),
+    #FBF7EE;
+  padding: 10px 10px 42px;
+  border-radius: 16px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    inset 0 -1px 0 rgb(var(--fg-rgb) / 0.06),
+    0 2px 4px -1px rgba(0, 0, 0, 0.35),
+    0 12px 24px -8px rgba(0, 0, 0, 0.5),
+    0 30px 60px -20px rgba(0, 0, 0, 0.55);
+  transition: box-shadow 320ms var(--ease-out-quart);
+}
+.polaroid-face-front {
+  position: relative;
+  z-index: 1;
+}
+.polaroid-face-back {
+  position: absolute;
+  inset: 0;
+  transform: rotateY(180deg);
+}
+/* Amplified shadow while the card is raised — applied to both faces
+   so the depth reads on whichever side is currently visible. */
+.hero-polaroid.is-raised .polaroid-face {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    inset 0 -1px 0 rgb(var(--fg-rgb) / 0.06),
+    0 6px 12px -2px rgba(0, 0, 0, 0.45),
+    0 28px 44px -10px rgba(0, 0, 0, 0.6),
+    0 60px 100px -20px rgba(0, 0, 0, 0.7);
+}
+
+/* Sticker shift-out — each polaroid-attached sticker pushes AWAY from
+   the polaroid's center during the raised phase. school-note lives at
+   top-left of the polaroid so it drifts up-and-left; designing-green
+   lives at bottom-right so it drifts down-and-right. Transform keeps
+   the sticker's existing tilt so only its translation animates. */
+.sticker.polaroid-attached {
+  transition: transform 320ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.hero-polaroid.is-raised .sticker.school-note.polaroid-attached {
+  transform: rotate(-6deg) translate(-32px, -14px);
+}
+.hero-polaroid.is-raised .sticker.designing-green.polaroid-attached {
+  transform: rotate(-4deg) translate(32px, 16px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Skip the choreography — click still toggles the visible face
+     (via .is-flipped) but the rotation snaps and the card doesn't
+     rise or push stickers around. */
+  .hero-polaroid,
+  .polaroid-lift,
+  .polaroid-card,
+  .polaroid-face,
+  .sticker.polaroid-attached {
+    transition: none !important;
+  }
+  .polaroid-lift.is-raised {
+    transform: none;
+  }
 }
 .hero-polaroid .caption-block {
   /* Fixed values — polaroid no longer scales, so all internal text

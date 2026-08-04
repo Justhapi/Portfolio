@@ -14,26 +14,26 @@ import ArtistDesignerWordmark from "@/components/ArtistDesignerWordmark";
  *   - Faint strings/luggage tags from polaroid corners to stickers
  *   - Muted, paper-feel palette
  */
-type PhotoMode = "drawing" | "photo";
-
 export default function HeroV2() {
   const stageRef = useRef<HTMLDivElement | null>(null);
   const photoRef = useRef<HTMLButtonElement | null>(null);
-  const peekLayerRef = useRef<HTMLDivElement | null>(null);
 
-  // which photo is currently the "front" — toggles on click
-  const [mode, setMode] = useState<PhotoMode>("drawing");
-  // peek visibility only (position is driven via direct DOM for zero lag)
-  const [peekOn, setPeekOn] = useState(false);
-  // when true, the spotlight is expanding out to reveal the other image
-  const [swapping, setSwapping] = useState(false);
-  // first-load hint: fades the OTHER image in at 50% over the polaroid
-  const [hinting, setHinting] = useState(false);
-  // immediately-post-swap suppression. Blocks the peek layer from being
-  // visible at ALL for a short window after the swap completes — the
-  // clip-path snap-back from 140% to 16px was leaving a lingering
-  // spotlight of the previously-hidden image at cursor position.
-  const [justSwapped, setJustSwapped] = useState(false);
+  /* Polaroid interaction — rise → flip → rest choreography
+     -------------------------------------------------------
+     Replaces the earlier "peek spotlight + hover reveal" system with a
+     3D flip. On click the whole polaroid RISES toward the viewer for
+     300ms, then FLIPS on its Y-axis for 500ms to reveal the opposite
+     face (photo ↔ drawing), then RESTS back down for 300ms — total
+     1100ms. Additional clicks during that window are ignored.
+     The attached stickers shift outward from the polaroid during the
+     raised phase (school-note pushes up-left, designing-green pushes
+     down-right — each away from the polaroid's center) and drift back
+     as the polaroid settles. */
+  const [flipped, setFlipped] = useState(false);       // which face is showing
+  const [isRaised, setIsRaised] = useState(false);     // t=0..800ms
+  const [isAnimating, setIsAnimating] = useState(false); // click lock, t=0..1100ms
+  const riseTimerRef = useRef<number | null>(null);
+  const unlockTimerRef = useRef<number | null>(null);
 
   // body class for nav theming + scrolled state.
   // Two triggers add `on-paper`:
@@ -64,97 +64,42 @@ export default function HeroV2() {
     };
   }, []);
 
-  // first-load polaroid hint: after the entrance choreography lands (~1.8s),
-  // do a quick swap → settle → swap back so the viewer notices it's interactive.
+  // Rise → flip → rest choreography.
+  //   t=0     click → raise + start flip (with 300ms transition delay)
+  //   t=800   drop the raise (sticker shift-back begins, scale-down begins)
+  //   t=1100  full cycle complete, unlock for next click
+  const handlePhotoClick = () => {
+    if (isAnimating) return;
+    setIsAnimating(true);
+    setIsRaised(true);
+    setFlipped((f) => !f);
+
+    if (riseTimerRef.current) window.clearTimeout(riseTimerRef.current);
+    if (unlockTimerRef.current) window.clearTimeout(unlockTimerRef.current);
+    riseTimerRef.current = window.setTimeout(() => {
+      setIsRaised(false);
+      riseTimerRef.current = null;
+    }, 800);
+    unlockTimerRef.current = window.setTimeout(() => {
+      setIsAnimating(false);
+      unlockTimerRef.current = null;
+    }, 1100);
+  };
+
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-    const timers: number[] = [];
-
-    // make sure the peek spotlight expands from the polaroid center
-    const layer = peekLayerRef.current;
-    if (layer) {
-      layer.style.setProperty("--peek-x", "50%");
-      layer.style.setProperty("--peek-y", "50%");
-    }
-
-    // Hero entrance choreography (polish pass — trimmed from ~5s → ~2.8s
-    // for a gentler, less-theatrical arrival modeled on emmiwu.com /
-    // jackiezhang.co.za):
-    //   location strip : 300–820ms (small, arrives first as grounding)
-    //   wordmark trace : 80–980ms
-    //   subtitle fade  : 1100–1620ms (was terminal-typed to 3950ms)
-    //   polaroid lands : 1200–1580ms
-    //   Kathleen sticker: 1600–1880ms
-    //   李曦 chip       : 1780–2040ms
-    //   green sticker   : 2000–2280ms
-    //   scroll cue      : 2500–2780ms
-    // Fire the polaroid swap-hint AFTER the last sticker settles + a beat
-    // of breathing room.
-    const HINT_START = 2900;
-    const HINT_HOLD = 850;
-
-    timers.push(window.setTimeout(() => setHinting(true), HINT_START));
-    timers.push(window.setTimeout(() => setHinting(false), HINT_START + HINT_HOLD));
-
     return () => {
-      timers.forEach((t) => window.clearTimeout(t));
+      if (riseTimerRef.current) window.clearTimeout(riseTimerRef.current);
+      if (unlockTimerRef.current) window.clearTimeout(unlockTimerRef.current);
     };
   }, []);
 
-  const handlePhotoMove = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (swapping) return; // don't drift the spotlight mid-expansion
-    if (justSwapped) return; // suppress peek during the post-swap window
-    const rect = photoRef.current?.getBoundingClientRect();
-    const layer = peekLayerRef.current;
-    if (!rect || !layer) return;
-    // drive the spotlight position directly via CSS variables — no React re-render
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
-    layer.style.setProperty("--peek-x", `${x}%`);
-    layer.style.setProperty("--peek-y", `${y}%`);
-    if (!peekOn) setPeekOn(true);
-  };
-  const handlePhotoLeave = () => {
-    if (swapping) return;
-    setPeekOn(false);
-  };
-  const handlePhotoClick = () => {
-    if (swapping) return;
-    setSwapping(true);
-    // After the 700ms expansion animation:
-    // 1. commit the mode swap
-    // 2. clear peekOn so the peek layer's `is-on` class drops
-    // 3. flip on `justSwapped` for 500ms so the peek layer is
-    //    HARD-hidden (opacity 0, no transitions) during that window —
-    //    otherwise the fade-out + clip-path snap left a lingering
-    //    spotlight of the previous image at cursor position.
-    window.setTimeout(() => {
-      setMode((m) => (m === "drawing" ? "photo" : "drawing"));
-      setSwapping(false);
-      setPeekOn(false);
-      setJustSwapped(true);
-      window.setTimeout(() => setJustSwapped(false), 500);
-    }, 700);
-  };
-
-  const otherMode: PhotoMode = mode === "drawing" ? "photo" : "drawing";
-  const labelFor = (m: PhotoMode) =>
-    m === "drawing" ? "drop your self-doodle" : "drop a photo of you";
   // Real polaroid assets — resolved with the project basePath so the
   // src still works when deployed under /Portfolio on GitHub Pages
   // (next.config sets basePath to '/Portfolio' in production, empty
   // for local dev).
   const basePath = process.env.NODE_ENV === "production" ? "/Portfolio" : "";
-  const srcFor = (m: PhotoMode) =>
-    m === "drawing"
-      ? `${basePath}/img/polaroid/polaroid_drawing.webp`
-      : `${basePath}/img/polaroid/polaroid_real.webp`;
-  const altFor = (m: PhotoMode) =>
-    m === "drawing"
-      ? "Kathleen — self-portrait doodle"
-      : "Kathleen — photo";
+  const photoSrc = `${basePath}/img/polaroid/polaroid_real.webp`;
+  const drawingSrc = `${basePath}/img/polaroid/polaroid_drawing.webp`;
 
   return (
     <section id="hero" className="hero" data-screen-label="01 Hero">
@@ -209,52 +154,80 @@ export default function HeroV2() {
             (Purdue year at top-right, availability at bottom-right)
             instead of them floating as separate elements on the stage.
         */}
-        <div className="hero-polaroid" data-cursor="polaroid">
-          <button
-            type="button"
-            className="photo photo-swap"
-            ref={photoRef}
-            onMouseMove={handlePhotoMove}
-            onMouseLeave={handlePhotoLeave}
-            onClick={handlePhotoClick}
-            aria-label={`Currently showing ${mode}. Click to swap between drawing and photo.`}
-            aria-pressed={mode === "photo"}
-          >
-            {/* base layer — currently selected mode */}
-            <div className={`photo-layer photo-base photo-${mode} has-image`}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={srcFor(mode)}
-                alt={altFor(mode)}
-                className="photo-img"
-                draggable={false}
-              />
-            </div>
-            {/* peek layer — the OTHER mode, revealed inside a spotlight at the cursor.
-                On click, the spotlight expands to fill the frame, completing the swap. */}
-            <div
-              ref={peekLayerRef}
-              className={`photo-layer photo-peek photo-${otherMode} has-image ${peekOn || swapping ? "is-on" : ""} ${swapping ? "is-swapping" : ""} ${hinting ? "is-hinting" : ""} ${justSwapped ? "is-just-swapped" : ""}`}
+        <div
+          className={`hero-polaroid${isRaised ? " is-raised" : ""}`}
+          data-cursor="polaroid"
+        >
+          {/* .polaroid-lift wrapper carries the RISE / REST transform.
+              The parallax scroll system (SmoothScroll.tsx) writes an
+              inline `transform: translateY(x) rotate(-4deg)` directly
+              onto .hero-polaroid every scroll frame — putting the rise
+              transform there too would be immediately overridden by
+              inline-style specificity. Moving the rise to this inner
+              element lets the two transforms compose via the CSS
+              transform chain instead of clobbering each other. */}
+          <div className={`polaroid-lift${isRaised ? " is-raised" : ""}`}>
+            {/* Full-card flipper — the WHOLE polaroid (paper + photo well +
+                caption) is the front face; the back face is a same-sized
+                paper card with the drawing and NO caption text. Clicking
+                anywhere on the card triggers the rise → flip → rest
+                choreography. Stickers stay OUTSIDE the flipper so they
+                don't rotate with the card (they only slide outward during
+                the raised phase — see .polaroid-attached rules in CSS). */}
+            <button
+              type="button"
+              className={`polaroid-card${flipped ? " is-flipped" : ""}`}
+              ref={photoRef}
+              onClick={handlePhotoClick}
+              aria-label={`${flipped ? "Self-portrait doodle" : "Photo"} currently shown. Click to flip the polaroid.`}
+              aria-pressed={flipped}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={srcFor(otherMode)}
-                alt={altFor(otherMode)}
-                className="photo-img"
-                draggable={false}
-              />
+            {/* FRONT — photo + caption. position: relative so it sizes
+                the card; the back face overlays it absolutely. */}
+            <div className="polaroid-face polaroid-face-front">
+              <div className="photo has-image">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={photoSrc}
+                  alt="Kathleen — photo"
+                  className="photo-img"
+                  draggable={false}
+                />
+              </div>
+              <div className="caption-block">
+                <div className="caption-meta">Last Updated · 05/07/26</div>
+                {/* Two explicit line spans (.cap-write) — each wipes in
+                    left→right like being written, line 1 then line 2. */}
+                <div className="caption-line">
+                  <span className="cap-write">I design <strong>solutions</strong> with</span>
+                  <span className="cap-write">moments worth <strong>lingering</strong> on</span>
+                </div>
+              </div>
             </div>
 
-          </button>
-          <div className="caption-block">
-            <div className="caption-meta">Last Updated · 05/07/26</div>
-            {/* Two explicit line spans (.cap-write) — each wipes in
-                left→right like being written, line 1 then line 2. */}
-            <div className="caption-line">
-              <span className="cap-write">I design <strong>solutions</strong> with</span>
-              <span className="cap-write">moments worth <strong>lingering</strong> on</span>
+            {/* BACK — drawing only, no caption. Absolute overlay same
+                dimensions as front. Pre-rotated 180° on Y so when the
+                flipper turns 180° the back's world rotation is 0 and
+                its content displays as authored. */}
+            <div className="polaroid-face polaroid-face-back">
+              <div className="photo has-image">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={drawingSrc}
+                  alt="Kathleen — self-portrait doodle (drawn mirrored for
+                       the back-of-polaroid immersion effect)"
+                  className="photo-img"
+                  draggable={false}
+                />
+              </div>
+              {/* No caption on the back — leaves blank paper below the
+                  drawing to match a real polaroid's un-labeled back. */}
             </div>
+            </button>
           </div>
+          {/* End .polaroid-lift — stickers below live OUTSIDE the lift
+              wrapper so they don't scale/translate WITH the polaroid;
+              instead they shift OUTWARD from it via their own transitions. */}
 
           {/* Purdue year sticker — attached to the polaroid's TOP-RIGHT
               corner, overlapping it. Was previously nested inside the
