@@ -4593,6 +4593,14 @@ em.it { font-style: italic; }
 .zoomable-frame {
   position: relative;
   width: 100%;
+  /* Cap the vertical footprint. Without this, portrait aspect-ratio
+     images (audit / interaction-pattern at aspect ~0.7) would render
+     ~1130px tall inside the case-body column and dominate the viewport.
+     max-height + margin-inline: auto keeps the frame reasonable on tall
+     images while still using full width for landscape ones. */
+  max-height: 62vh;
+  max-width: 100%;
+  margin-inline: auto;
   overflow: hidden;
   /* Background matches the case-study paper color so any letterboxing
      (from object-fit: contain when the image aspect ratio doesn't
@@ -4618,9 +4626,10 @@ em.it { font-style: italic; }
   object-fit: contain;
   display: block;
   transform-origin: 50% 50%;
-  /* No transition on the transform itself — dragging needs 1:1
-     responsiveness to cursor movement. Zoom via wheel is stepped by
-     the component's onWheel logic, not by CSS. */
+  /* No CSS transition — the rAF loop in ZoomableImage.tsx drives the
+     transform at 60fps, so any interpolation here would fight the
+     continuous auto-pan and introduce visible lag. Explicit drag and
+     zoom also need 1:1 responsiveness. */
   will-change: transform;
   pointer-events: none;
 }

@@ -256,13 +256,13 @@ const PROJECTS: Project[] = [
     // Section 6.a.iv of the Purdue UXD Studio IP/NDA Agreement. Kept at
     // process/methodology level pending written approval; any
     // sponsor-required modifications will be applied on receipt.
-    tag: "Customer Journey Platform (NDA) · Concept handed off 2026",
+    tag: "Customer Journey Platform (NDA) · Concept shipped to beta 2026",
     blurb: (
       <>
-        Designed an <strong>agentic AI maintenance agent</strong> concept for an anonymous <strong>customer journey management platform</strong> — helping teams keep journey maps trustworthy over time
+        Designed an <strong>agentic AI maintenance agent</strong> concept for an anonymous <strong>customer journey management platform</strong> — <strong>shipped to beta</strong> a month after handoff with designs closely mirroring the concept we delivered
       </>
     ),
-    meta: ["NDA", "UI", "Interaction", "User Research", "2026", "CONCEPTUALIZED"],
+    meta: ["NDA", "UI", "Interaction", "User Research", "2026", "SHIPPED TO BETA"],
     accent: ["#D59B6E", "#E8C77C"],
     // Deep Ink — near-black with a navy cast. The back layer steps a
     // notch LIGHTER (inverted from the usual darker-back pattern)

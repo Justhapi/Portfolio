@@ -36,7 +36,7 @@ export default function AIJourneyAgentCaseStudy() {
       <CaseSectionNav sections={SECTIONS} />
       <CaseCover
         title="Designing an AI Maintenance Agent for Customer Journey Maps"
-        meta="Spring 2026 · 14 weeks · UX Designer & Researcher"
+        meta="Spring 2026 · 14 weeks · UX Designer & Researcher · Concept shipped to beta"
         subtitle="An agentic AI concept for keeping customer journey maps accurate and trustworthy over time"
         imageLabel="AI maintenance agent · cover image"
       />
@@ -56,6 +56,11 @@ export default function AIJourneyAgentCaseStudy() {
             <mark className="hl">keep a class of living documents accurate and trustworthy over time</mark> —
             grounded in a set of trust principles the research surfaced, and validated through usability testing at
             the concept level.
+          </p>
+          <p>
+            <mark className="hl">Roughly a month after handoff (late April → mid-May 2026), the sponsor
+            announced the AI agent going live in beta</mark> — with designs and features that closely mirror
+            the concept our team delivered.
           </p>
         </section>
 
@@ -132,8 +137,8 @@ export default function AIJourneyAgentCaseStudy() {
                   aspectRatio={1556 / 2200}
                   caption={
                     <>
-                      The audit board I authored, with sticky-note content replaced by category-level labels
-                      and background screenshots blurred. Drag to pan; scroll to zoom into any cluster.
+                      My platform audit board — sticky notes on blurred platform screenshots, organized
+                      by category labels.
                     </>
                   }
                 />
@@ -156,9 +161,8 @@ export default function AIJourneyAgentCaseStudy() {
                   aspectRatio={3000 / 2052}
                   caption={
                     <>
-                      The components synthesis my partner sub-team authored; I brought its takeaways forward
-                      into my own review. Sticker content blurred so the framework shape reads without
-                      exposing the filled analysis. Drag to pan; scroll to zoom.
+                      The agent-components synthesis my partner sub-team authored — five research-lens
+                      columns with blurred sticker clusters.
                     </>
                   }
                 />
@@ -170,34 +174,44 @@ export default function AIJourneyAgentCaseStudy() {
           <p>
             A competitive analysis across two groups — <mark className="hl">direct competitors</mark> in
             the journey-management category and <mark className="hl">indirect competitors</mark> from analogous
-            AI-driven SaaS — then triangulated through an interaction-pattern synthesis of several
-            verification-focused platforms.
+            AI-driven SaaS — <mark className="hl">run concurrently</mark> by two sub-teams and later
+            triangulated through an interaction-pattern synthesis of several verification-focused platforms.
           </p>
-          <p>
-            <strong>Direct group.</strong> Public products competing in the same journey-management space
-            as the sponsor.
-          </p>
-          <figure>
-            <ZoomableImage
-              src={`${basePath}/img/journey-agent/direct-competitor.webp`}
-              alt="Direct-competitor analysis board — three columns: Agent & User Interactions, Agent's components within platform, Agent's pain points. Screenshots blurred, sticker text kept at category level only. Competitor logo redacted."
-              aspectRatio={3000 / 741}
-              caption={
-                <>
-                  Direct-competitor breakdown across three lenses (agent interactions, components within the
-                  platform, and pain points) — my analysis of one competitor. Screenshots blurred and sticker
-                  content kept at category level so the framework reads without exposing the filled
-                  synthesis. Drag to pan; scroll to zoom.
-                </>
-              }
-            />
-          </figure>
-          <p>
-            <strong>Indirect group.</strong> Analogous AI-driven SaaS solving parallel monitoring + insight
-            problems — <mark className="hl">researched by a partner sub-team</mark>; I integrated their
-            headline takeaways into my direct-group synthesis so both feeds converged on the same
-            structural patterns.
-          </p>
+          <div className="parallel-tracks">
+            <div className="research-track">
+              <span className="track-label">Direct · Mine</span>
+              <h3>Journey-management competitors</h3>
+              <p>
+                Public products competing in the same journey-management space as the sponsor. My analysis
+                of one competitor across three lenses (agent interactions, components within the platform,
+                and pain points).
+              </p>
+              <figure>
+                <ZoomableImage
+                  src={`${basePath}/img/journey-agent/direct-competitor.webp`}
+                  alt="Direct-competitor analysis board — three columns: Agent & User Interactions, Agent's components within platform, Agent's pain points. Screenshots blurred, sticker text kept at category level only. Competitor logo redacted."
+                  aspectRatio={3000 / 741}
+                  caption={
+                    <>
+                      My direct-competitor analysis — three columns (Agent &amp; User Interactions,
+                      Agent&rsquo;s Components within Platform, Agent&rsquo;s Pain Points) with blurred
+                      screenshots and category-labeled stickers.
+                    </>
+                  }
+                />
+              </figure>
+            </div>
+            <div className="research-track">
+              <span className="track-label">Indirect · Partner sub-team</span>
+              <h3>Analogous AI-driven SaaS</h3>
+              <p>
+                Products solving parallel monitoring + insight problems outside the journey-management
+                category. <mark className="hl">Researched by a partner sub-team</mark>; I integrated their
+                headline takeaways into my direct-group synthesis so both feeds converged on the same
+                structural patterns.
+              </p>
+            </div>
+          </div>
           <p>
             We then combined both groups through an{" "}
             <mark className="hl">interaction-pattern synthesis</mark> of several public knowledge-verification
@@ -210,11 +224,10 @@ export default function AIJourneyAgentCaseStudy() {
               aspectRatio={2567 / 3000}
               caption={
                 <>
-                  Interaction-pattern synthesis: a Nielsen 10-heuristic evaluation of the competitor&rsquo;s
-                  platform and agent (violation + recommendation columns), paired with four user-flow diagrams
-                  categorized by content-manipulation type (creation, organization, creation-with-user-input,
-                  summarization). All screenshots heavily blurred; sticker content kept at category level.
-                  Drag to pan; scroll to zoom.
+                  Interaction-pattern synthesis — Nielsen 10-heuristic evaluation (violation +
+                  recommendation columns) paired with four user-flow diagrams categorized by
+                  content-manipulation type (creation, organization, creation-with-user-input,
+                  summarization).
                 </>
               }
             />
@@ -222,17 +235,42 @@ export default function AIJourneyAgentCaseStudy() {
 
           <h3>User Interviews</h3>
           <p>
-            Interviews with current CX strategists and UX researchers (affinity-diagrammed) confirmed the
-            desk research&rsquo;s direction. Specific participant findings and interview counts are held
-            under confidentiality pending sponsor approval.
+            The team ran <mark className="hl">six interviews with current users of the sponsor&rsquo;s
+            platform</mark>. The purpose was to <mark className="hl">check that the direction the desk
+            research pointed toward would match what platform users needed from an AI agent maintaining
+            journey-map health</mark>.
+          </p>
+          <p>
+            I <mark className="hl">participated in three of the six one-hour sessions</mark>, rotating
+            between interviewer and note-taker roles with my partner within each session so neither of us
+            burned out. Notes below are from the sessions I was in; the affinity synthesis draws from all
+            six.
           </p>
           <figure>
-            <div className="image-slot">interview affinity diagram — finding text blurred, categorization visible</div>
-            <figcaption>
-              Interview synthesis shown as clusters of findings — the individual sticky-note content is blurred,
-              but the categorization labels above each cluster remain clearly readable so the synthesis
-              structure is legible without exposing the specific findings.
-            </figcaption>
+            <ZoomableImage
+              src={`${basePath}/img/journey-agent/interview-notes.webp`}
+              alt="Session notes from the three interviews I participated in — text blurred throughout so note-taking structure and volume read without exposing participant-level findings."
+              aspectRatio={3000 / 2121}
+              caption={
+                <>
+                  My session notes from the three interviews I participated in — blurred sticky notes on
+                  a paper background.
+                </>
+              }
+            />
+          </figure>
+          <figure>
+            <ZoomableImage
+              src={`${basePath}/img/journey-agent/interview-affinity.webp`}
+              alt="Cross-session affinity diagram — nine themed clusters with headers visible, individual sticky-note content blurred. Draws from all six interviews."
+              aspectRatio={3000 / 1555}
+              caption={
+                <>
+                  Team affinity synthesis across all six interviews — nine themed clusters with visible
+                  headers and blurred sticky content.
+                </>
+              }
+            />
           </figure>
         </section>
 
@@ -249,47 +287,53 @@ export default function AIJourneyAgentCaseStudy() {
           <p>
             Each designer started with <mark className="hl">Crazy 8&rsquo;s</mark>, then we walked through
             everyone&rsquo;s sheets together and combined the strongest threads through{" "}
-            <mark className="hl">group whiteboarding</mark>.
+            <mark className="hl">group whiteboarding</mark>. <mark className="hl">I led one of the
+            whiteboarded directions</mark> — a rules-based approach that was ultimately not selected as the
+            final concept, though elements of the thinking informed the direction that was.
           </p>
           <figure>
-            <div className="image-slot">Crazy 8&rsquo;s + group whiteboarding — shown unblurred</div>
-            <figcaption>
-              Individual ideation into a collaborative whiteboarding session, shown without any blur or
-              redaction — hand sketches are inherently low-fidelity and don&rsquo;t reveal platform specifics.
-            </figcaption>
+            <ZoomableImage
+              src={`${basePath}/img/journey-agent/crazy-eight-sketch.webp`}
+              alt="My Crazy 8's sketch sheet — hand-drawn low-fidelity ideation quadrants exploring AI-agent feature concepts."
+              aspectRatio={3000 / 2110}
+              caption={
+                <>
+                  My Crazy 8&rsquo;s — hand-drawn quadrants of AI-agent feature sketches.
+                </>
+              }
+            />
+          </figure>
+          <figure>
+            <ZoomableImage
+              src={`${basePath}/img/journey-agent/whiteboard-concept.webp`}
+              alt="Whiteboarding session I led on a rules-based direction that was ultimately not selected. Shown at full content pending sponsor review."
+              aspectRatio={3000 / 2035}
+              caption={
+                <>
+                  A whiteboarding session I led on a rules-based direction that was not selected as the
+                  final concept. Elements of the human-in-the-loop rule editing informed the direction
+                  the sponsor did select.
+                </>
+              }
+            />
           </figure>
 
           <h3>Concept Proposals</h3>
           <p>
-            We presented <mark className="hl">a set of mid-fidelity concept directions</mark> to the sponsor
-            with the research evidence behind each. The sponsor selected two complementary directions to move
-            forward with. Specifics of the concepts, the exact count, and the two selected are withheld per
-            the confidentiality agreement.
+            We presented <mark className="hl">six concept proposals</mark> to the sponsor — including the
+            rules-based whiteboarded direction I led (shown above) — each paired with the research evidence
+            behind it. The sponsor selected two complementary directions to move forward with. Specifics of
+            the concepts and the two selected are withheld per the confidentiality agreement.
           </p>
-          <figure>
-            <div className="image-slot">six concept proposals — 4 direction + 2 exploratory + composite</div>
-            <figcaption>
-              The six concept proposals presented to the sponsor — four core directions alongside two slightly
-              more exploratory concepts — with a companion visual showing how elements from all six informed
-              the two directions the sponsor ultimately selected to move forward with.
-            </figcaption>
-          </figure>
 
           <h3>Wireframing &amp; Merging into One System</h3>
           <p>
             Wireframing both selected concepts in parallel revealed <mark className="hl">heavy overlap</mark>{" "}
             — they relied on the same context and evidence. Rather than shipping two parallel surfaces, we{" "}
-            <mark className="hl">merged them into a single agentic system</mark>. The specific interaction
-            mechanics of that unified system are withheld pending sponsor approval.
+            <mark className="hl">merged them into a single agentic system</mark>. Wireframes are not shown
+            because the prototype was built directly on top of the sponsor&rsquo;s platform surface;
+            interaction mechanics are withheld pending sponsor approval.
           </p>
-          <figure>
-            <div className="image-slot">two conceptions combining into one — blurred wireframes, focus text visible</div>
-            <figcaption>
-              Blurred wireframes of the two selected concepts merging into one — the wireframe content is
-              blurred to protect product mechanics, but each frame&rsquo;s main focus label stays clearly
-              readable so the merge logic is legible.
-            </figcaption>
-          </figure>
         </section>
 
         {/* ───── Verifying ───── */}
@@ -307,31 +351,33 @@ export default function AIJourneyAgentCaseStudy() {
           <p>
             We built an interactive Figma prototype that expressed the unified concept end-to-end, applying the
             <mark className="hl"> trust principles the research had surfaced</mark>. Every design move traced
-            back to one of those principles. The specific principles and how they were expressed in the UI are
-            withheld pending sponsor approval.
+            back to one of those principles. Prototype screens are not shown because the concept was
+            constructed directly on the sponsor&rsquo;s platform surface; the specific principles and how they
+            were expressed in the UI are withheld pending sponsor approval.
           </p>
-          <figure>
-            <div className="image-slot">anonymized wireframe · component-anatomy diagram (lorem-ipsum content)</div>
-            <figcaption>
-              An anonymized wireframe showing the anatomy of one component — content replaced with lorem
-              ipsum, sponsor branding and navigation removed.
-            </figcaption>
-          </figure>
 
           <h3>Usability Testing</h3>
           <p>
-            Participants experienced in journey mapping ran through a set of tasks comparing entry-point
-            navigations and probing whether users found the AI&rsquo;s evidence trustworthy. Testing surfaced
-            friction points which we addressed in iteration. Specific findings and participant counts are
-            held under confidentiality pending sponsor approval.
+            The sponsor asked us <mark className="hl">not to test the prototype on their current customers or
+            our earlier interviewees</mark> — to avoid setting false expectations about features they might not
+            actually implement. As substitutes we recruited <mark className="hl">UX Design major classmates
+            familiar with journey mapping</mark>, running each participant through{" "}
+            <mark className="hl">three tasks</mark> that probed navigating and using the concept
+            prototype&rsquo;s features, followed by a reflection round.
           </p>
           <figure>
-            <div className="image-slot">usability-testing affinity diagram — finding text blurred, categorization visible</div>
-            <figcaption>
-              Session findings shown as clusters — the individual sticky-note content is blurred, but the
-              categorization labels above each cluster remain clearly readable so the synthesis structure is
-              legible without exposing the specific findings.
-            </figcaption>
+            <ZoomableImage
+              src={`${basePath}/img/journey-agent/usability-testing.webp`}
+              alt="Usability-testing feedback affinity — four rows: Task 1 (Initial Navigation), Task 2 (Informed Map Modifications / Updating), Task 3 (Further AI Agent Interactions), Reflections (General Thoughts of Concept and User Flow). Individual sticky-note content blurred; row labels legible."
+              aspectRatio={3000 / 2178}
+              caption={
+                <>
+                  Usability testing findings clustered by task — Task 1 (Initial Navigation), Task 2
+                  (Informed Map Modifications / Updating), Task 3 (Further AI Agent Interactions), and
+                  Reflections. Blurred sticky notes with visible row labels.
+                </>
+              }
+            />
           </figure>
 
           <h3>Iterations</h3>
@@ -339,19 +385,13 @@ export default function AIJourneyAgentCaseStudy() {
             Iterations focused on clarifying interactable affordances, restructuring information density, and
             simplifying flow between related agent capabilities. Each iteration was traceable back to a specific
             usability finding — we shipped an <em>insight → reasoning → proposed iteration</em>{" "}
-            table so the closed-loop reasoning was visible on one page.
+            table so the closed-loop reasoning was visible on one page. The iteration artifacts themselves are
+            not shown because they render on the sponsor&rsquo;s platform surface.
           </p>
           <p>
-            Honest handoff notes flagged what we couldn&rsquo;t verify in time, along with recommended next steps
-            for onboarding and real-user validation.
+            Honest handoff notes flagged what we couldn&rsquo;t verify in time, along with recommended next
+            steps for onboarding and real-user validation.
           </p>
-          <figure>
-            <div className="image-slot">insight → iteration table (generic wording, non-proprietary)</div>
-            <figcaption>
-              A generic-worded rewrite of the iteration table — describes reasoning, not proprietary
-              functionality.
-            </figcaption>
-          </figure>
         </section>
 
         {/* ───── Takeaways ───── */}
