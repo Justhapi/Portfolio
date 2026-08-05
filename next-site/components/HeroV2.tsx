@@ -202,9 +202,9 @@ export default function HeroV2() {
             <ArtistDesignerWordmark />
           </h1>
           <p className="hero-focus">
-            Focusing on <strong>Product</strong>
-            {" and "}
-            <strong>Interaction Design</strong>
+            Focusing on <strong>Product Design</strong>,{" "}
+            <strong>Research</strong>, and{" "}
+            <strong>Cross-Functional Work</strong>
           </p>
         </div>
 
@@ -354,7 +354,7 @@ export default function HeroV2() {
             <div className="d-text">
               <strong>Available Summer 2026</strong>
               <span className="d-sub">
-                Product &amp; Interaction Design internships
+                Product, Design, and PM/Producer internships
               </span>
             </div>
           </div>
