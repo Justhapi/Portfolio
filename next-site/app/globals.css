@@ -4618,6 +4618,16 @@ em.it { font-style: italic; }
 }
 .zoomable-frame:active,
 .zoomable-frame.is-dragging { cursor: grabbing; }
+/* Static variant — no drag/zoom, no grab cursor, no transform on the
+   image. Same visual frame (paper background, border-radius, max-height)
+   as the interactive frame so both variants live coherently in the same
+   case study without visual mismatch. */
+.zoomable-frame.is-static { cursor: default; }
+.zoomable-img.is-static {
+  position: absolute;
+  transition: none;
+  will-change: auto;
+}
 .zoomable-img {
   position: absolute;
   inset: 0;

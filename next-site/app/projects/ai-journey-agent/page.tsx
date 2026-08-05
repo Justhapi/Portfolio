@@ -1,6 +1,7 @@
 import CaseCover from "@/components/CaseCover";
 import CaseSectionNav from "@/components/CaseSectionNav";
 import ZoomableImage from "@/components/ZoomableImage";
+import StaticImage from "@/components/StaticImage";
 
 const basePath =
   process.env.NODE_ENV === "production" ? "/Portfolio" : "";
@@ -131,9 +132,9 @@ export default function AIJourneyAgentCaseStudy() {
                 design principles we later documented.
               </p>
               <figure>
-                <ZoomableImage
+                <StaticImage
                   src={`${basePath}/img/journey-agent/platform-audit.webp`}
-                  alt="Platform audit board — sticky notes on screenshots. All content anonymized for confidentiality; sponsor name and specific findings are replaced with category-level labels."
+                  alt="Platform audit board — sticky notes on screenshots. All content anonymized; sponsor name and specific findings replaced with category-level labels."
                   aspectRatio={1556 / 2200}
                   caption={
                     <>
@@ -155,9 +156,9 @@ export default function AIJourneyAgentCaseStudy() {
                 approval.
               </p>
               <figure>
-                <ZoomableImage
+                <StaticImage
                   src={`${basePath}/img/journey-agent/agent-components.webp`}
-                  alt="Agent-components synthesis board — five research-lens categories with sticker clusters. Sticker content blurred; only the framework structure and section labels are legible."
+                  alt="Agent-components synthesis board — five research-lens categories with sticker clusters. Sticker content blurred; framework structure and section labels legible."
                   aspectRatio={3000 / 2052}
                   caption={
                     <>
@@ -187,9 +188,9 @@ export default function AIJourneyAgentCaseStudy() {
                 and pain points).
               </p>
               <figure>
-                <ZoomableImage
+                <StaticImage
                   src={`${basePath}/img/journey-agent/direct-competitor.webp`}
-                  alt="Direct-competitor analysis board — three columns: Agent & User Interactions, Agent's components within platform, Agent's pain points. Screenshots blurred, sticker text kept at category level only. Competitor logo redacted."
+                  alt="Direct-competitor analysis board — three columns: Agent & User Interactions, Agent's Components within Platform, Agent's Pain Points. Screenshots blurred, sticker text category-level only. Competitor logo redacted."
                   aspectRatio={3000 / 741}
                   caption={
                     <>
@@ -218,9 +219,9 @@ export default function AIJourneyAgentCaseStudy() {
             platforms — surfacing the structural moves every modern verification flow shares.
           </p>
           <figure>
-            <ZoomableImage
+            <StaticImage
               src={`${basePath}/img/journey-agent/interaction-pattern.webp`}
-              alt="Interaction-pattern synthesis: Nielsen 10-heuristic evaluation of a competitor platform + agent, paired with four user-flow diagrams categorized by content-manipulation type. All screenshots heavily blurred; sticker text at category level only."
+              alt="Interaction-pattern synthesis: Nielsen 10-heuristic evaluation of a competitor platform + agent, paired with four user-flow diagrams categorized by content-manipulation type. Screenshots blurred; sticker text category-level only."
               aspectRatio={2567 / 3000}
               caption={
                 <>
@@ -247,9 +248,9 @@ export default function AIJourneyAgentCaseStudy() {
             six.
           </p>
           <figure>
-            <ZoomableImage
+            <StaticImage
               src={`${basePath}/img/journey-agent/interview-notes.webp`}
-              alt="Session notes from the three interviews I participated in — text blurred throughout so note-taking structure and volume read without exposing participant-level findings."
+              alt="Session notes from the three interviews I participated in — text blurred so note-taking structure and volume read without exposing participant-level findings."
               aspectRatio={3000 / 2121}
               caption={
                 <>
@@ -260,7 +261,7 @@ export default function AIJourneyAgentCaseStudy() {
             />
           </figure>
           <figure>
-            <ZoomableImage
+            <StaticImage
               src={`${basePath}/img/journey-agent/interview-affinity.webp`}
               alt="Cross-session affinity diagram — nine themed clusters with headers visible, individual sticky-note content blurred. Draws from all six interviews."
               aspectRatio={3000 / 1555}
@@ -366,9 +367,9 @@ export default function AIJourneyAgentCaseStudy() {
             prototype&rsquo;s features, followed by a reflection round.
           </p>
           <figure>
-            <ZoomableImage
+            <StaticImage
               src={`${basePath}/img/journey-agent/usability-testing.webp`}
-              alt="Usability-testing feedback affinity — four rows: Task 1 (Initial Navigation), Task 2 (Informed Map Modifications / Updating), Task 3 (Further AI Agent Interactions), Reflections (General Thoughts of Concept and User Flow). Individual sticky-note content blurred; row labels legible."
+              alt="Usability-testing feedback affinity — four rows: Task 1 (Initial Navigation), Task 2 (Informed Map Modifications / Updating), Task 3 (Further AI Agent Interactions), Reflections (General Thoughts of Concept and User Flow). Sticky-note content blurred; row labels legible."
               aspectRatio={3000 / 2178}
               caption={
                 <>
