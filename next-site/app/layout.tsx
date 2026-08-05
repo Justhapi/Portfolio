@@ -1,37 +1,58 @@
 import type { Metadata } from "next";
-import { K2D, JetBrains_Mono, Caveat, Klee_One } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import CursorFollower from "@/components/CursorFollower";
 import SmoothScroll from "@/components/SmoothScroll";
 import ClickSound from "@/components/ClickSound";
 
-/* ── Google Fonts via next/font ────────────────────────────────────────────
-   Self-hosted at build time — no render-blocking @import, no Google DNS
-   round-trip, automatic size-adjust fallbacks to minimise layout shift.
+/* ── Self-hosted fonts via next/font/local ─────────────────────────────
+   All four typefaces are shipped with the site under /public/fonts/,
+   eliminating the runtime dependency on Google Fonts. No CDN round-trip,
+   no `Failed to fetch from Google Fonts` errors, offline-safe builds.
    Each font exposes a CSS variable on <html> that the :root token
-   definitions in globals.css reference via var(--font-*). */
+   definitions in globals.css reference via var(--font-*).
+
+   K2D dropped weight 300 (Light) — confirmed unused via grep. Italics
+   retained (used by `.connect-pitch em`, `.rq-question`, `.about-prose
+   em.it`, etc.). */
 
 /** K2D — Thai-Latin geometric sans. Handles headings AND body text. */
-const k2d = K2D({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800"],
-  style: ["normal", "italic"],
+const k2d = localFont({
+  src: [
+    { path: "../public/fonts/K2D/K2D-Regular.ttf",         weight: "400", style: "normal" },
+    { path: "../public/fonts/K2D/K2D-Italic.ttf",          weight: "400", style: "italic" },
+    { path: "../public/fonts/K2D/K2D-Medium.ttf",          weight: "500", style: "normal" },
+    { path: "../public/fonts/K2D/K2D-MediumItalic.ttf",    weight: "500", style: "italic" },
+    { path: "../public/fonts/K2D/K2D-SemiBold.ttf",        weight: "600", style: "normal" },
+    { path: "../public/fonts/K2D/K2D-SemiBoldItalic.ttf",  weight: "600", style: "italic" },
+    { path: "../public/fonts/K2D/K2D-Bold.ttf",            weight: "700", style: "normal" },
+    { path: "../public/fonts/K2D/K2D-BoldItalic.ttf",      weight: "700", style: "italic" },
+    { path: "../public/fonts/K2D/K2D-ExtraBold.ttf",       weight: "800", style: "normal" },
+    { path: "../public/fonts/K2D/K2D-ExtraBoldItalic.ttf", weight: "800", style: "italic" },
+  ],
   variable: "--font-k2d",
   display: "swap",
 });
 
-/** JetBrains Mono — code-flavored labels and metadata. */
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  weight: ["400", "500"],
+/** JetBrains Mono — code-flavored labels and metadata. Weights 400 + 500
+ *  cover every mono usage in the site (chips, meta, disclaimers). */
+const jetbrainsMono = localFont({
+  src: [
+    { path: "../public/fonts/JetBrains_Mono/static/JetBrainsMono-Regular.ttf", weight: "400", style: "normal" },
+    { path: "../public/fonts/JetBrains_Mono/static/JetBrainsMono-Medium.ttf",  weight: "500", style: "normal" },
+  ],
   variable: "--font-mono",
   display: "swap",
 });
 
-/** Caveat — handwriting accents (hero subtitle, design notes). */
-const caveat = Caveat({
-  subsets: ["latin"],
-  weight: ["400", "600"],
+/** Caveat — handwriting accents (hero subtitle, design notes). Loaded
+ *  from the static ttf files rather than the variable font, matching
+ *  the original weight list (400 + 600). */
+const caveat = localFont({
+  src: [
+    { path: "../public/fonts/Caveat/static/Caveat-Regular.ttf",  weight: "400", style: "normal" },
+    { path: "../public/fonts/Caveat/static/Caveat-SemiBold.ttf", weight: "600", style: "normal" },
+  ],
   variable: "--font-caveat",
   display: "swap",
 });
@@ -40,9 +61,11 @@ const caveat = Caveat({
  *  Restricted to editorial callouts (case-study takeaways, opening
  *  pull-quotes) so it stays a distinct editorial voice rather than
  *  competing with the site's other display faces. */
-const kleeOne = Klee_One({
-  subsets: ["latin"],
-  weight: ["400", "600"],
+const kleeOne = localFont({
+  src: [
+    { path: "../public/fonts/Klee_One/KleeOne-Regular.ttf",  weight: "400", style: "normal" },
+    { path: "../public/fonts/Klee_One/KleeOne-SemiBold.ttf", weight: "600", style: "normal" },
+  ],
   variable: "--font-klee",
   display: "swap",
 });
