@@ -17,10 +17,15 @@ import React, { Children, useEffect, useRef, useState } from "react";
 export default function UsabilityRound({
   title,
   meta,
+  focus,
   children,
 }: {
   title: string;
   meta: string;
+  /** Round-focus paragraph — shown BELOW the round header (title +
+   *  meta) and ABOVE the insight-card carousel. Names what this round
+   *  was deliberately testing. */
+  focus?: React.ReactNode;
   children: React.ReactNode;
 }) {
   const total = Children.count(children);
@@ -70,9 +75,15 @@ export default function UsabilityRound({
 
   return (
     <section className="ur-round-block">
+      {/* Round header — title + meta only. Dots have moved DOWN into
+          the carousel wrapper below so they sit at the top-right of
+          the actual card viewport. */}
       <header className="ur-round-header">
         <h4>{title}</h4>
         <p>{meta}</p>
+      </header>
+      {focus && <p className="ur-round-focus">{focus}</p>}
+      <div className="ur-carousel-wrapper">
         {total > 1 && (
           <nav className="ur-progress" aria-label={`${title} insight progress`}>
             {Array.from({ length: total }).map((_, i) => (
@@ -87,9 +98,9 @@ export default function UsabilityRound({
             ))}
           </nav>
         )}
-      </header>
-      <div className="ur-insight-cards" ref={carouselRef}>
-        {children}
+        <div className="ur-insight-cards" ref={carouselRef}>
+          {children}
+        </div>
       </div>
     </section>
   );

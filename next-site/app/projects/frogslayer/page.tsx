@@ -1,6 +1,7 @@
 import CaseCover from "@/components/CaseCover";
 import CaseSectionNav from "@/components/CaseSectionNav";
 import UsabilityRound, { InsightCard } from "@/components/UsabilityRound";
+import ResearchCarousel from "@/components/ResearchCarousel";
 
 export const metadata = {
   title: "Kiosk Interface Design Guidelines — Kathleen Li",
@@ -107,81 +108,181 @@ export default function FrogslayerCaseStudy() {
           </p>
           <h3>Understanding the Current State Internally and Externally</h3>
           <p>
-            After determining our focuses, we then built our foundation through four guiding questions.
+            After determining our focuses, we built our foundation through <mark className="hl">four
+            guiding questions</mark> — the first three grounded in secondary research on the kiosk
+            industry (folded into the first carousel below), and the fourth grounded in firsthand
+            user interviews AND field observations, which we ran as two separate activities with
+            different participants (second carousel).
           </p>
 
-          {/* Each research row reads as an equation:
-              Question + Method = Findings.
-              Five columns: question (italic, muted) → "+" → method
-              artefact card → "=" → findings list (display weight,
-              foreground colour). The +/= operators visually frame the
-              research as a structured pipeline, making it easy for a
-              recruiter to scan "what was asked, what was done, what
-              came out" as one cohesive line. */}
-          <div className="research-questions">
-            <div className="rq-row">
-              <p className="rq-question">&ldquo;What are the gaps of kiosks?&rdquo;</p>
-              <span className="rq-op" aria-hidden="true">+</span>
-              <figure>
-                <div className="image-slot rq-method-slot">Secondary Research</div>
-                <figcaption className="rq-method-caption">Secondary Research</figcaption>
-              </figure>
-              <span className="rq-op" aria-hidden="true">=</span>
-              <ul className="rq-findings" aria-label="Findings">
-                <li>External environmental factors act as stresses</li>
-                <li>Inconsistency of user expectations</li>
-                <li>Focus of general functionality without discoverability</li>
-                <li>Need of reduction in cogntiive load</li>
-                <li>Seamless a user-friendly integration of loyalty program</li>
-              </ul>
-            </div>
-            <div className="rq-row">
-              <p className="rq-question">&ldquo;Why is a kiosk preferable?&rdquo;</p>
-              <span className="rq-op" aria-hidden="true">+</span>
-              <figure>
-                <div className="image-slot rq-method-slot">Secondary Research</div>
-                <figcaption className="rq-method-caption">Secondary Research</figcaption>
-              </figure>
-              <span className="rq-op" aria-hidden="true">=</span>
-              <ul className="rq-findings" aria-label="Findings">
-                <li>User independence without human assistance</li>
-                <li>Applicability to indoor and outdoor environment</li>
-                <li>Business financial profits</li>
-              </ul>
-            </div>
-            <div className="rq-row">
-              <p className="rq-question">&ldquo;How are companies designing kiosk interfaces?&rdquo;</p>
-              <span className="rq-op" aria-hidden="true">+</span>
-              <figure>
-                <div className="image-slot rq-method-slot">Secondary Research</div>
-                <figcaption className="rq-method-caption">Secondary Research</figcaption>
-              </figure>
-              <span className="rq-op" aria-hidden="true">=</span>
-              <ul className="rq-findings" aria-label="Findings">
-                <li>Labeling of interface purpose</li>
-                <li>Centered placement of interactable elements</li>
-                <li>Trend of element naming to 1-2 words</li>
-                <li>Lack of elements outside of screen's center</li>
-              </ul>
-            </div>
-            <div className="rq-row">
-              <p className="rq-question">&ldquo;How do users feel about using kiosks?&rdquo;</p>
-              <span className="rq-op" aria-hidden="true">+</span>
-              <figure>
-                <div className="image-slot rq-method-slot">User Interviews &amp; Observations</div>
-                <figcaption className="rq-method-caption">User Interviews &amp; Observations</figcaption>
-              </figure>
-              <span className="rq-op" aria-hidden="true">=</span>
-              <ul className="rq-findings" aria-label="Findings">
-                <li>Confidence from familiarity with technology</li>
-                <li>Confusion through poorly labeled or over-abundant options</li>
-                <li>Varying level of effects from environment</li>
-                <li>Hesitance in loyalty programs requiring effort</li>
-              </ul>
-            </div>
-          </div>
+          {/* Three secondary-research activities folded into a carousel so
+              recruiter reads "3 activities" as one unit instead of scrolling
+              past 3 stacked rq-blocks. Field Observations + User Interviews
+              live in a SECOND carousel below (they were run as two separate
+              activities with different participants — observations watched
+              behavior, interviews asked questions). */}
+          <ResearchCarousel
+            title="Secondary Research"
+            slides={[
+              {
+                key: "gaps",
+                content: (
+                  <div className="rq-block">
+                    <div className="rq-block__body">
+                      <span className="rq-method-chip">Secondary Research</span>
+                      <h4 className="rq-heading">&ldquo;What are the gaps of kiosks?&rdquo;</h4>
+                      <p className="rq-lead">
+                        A survey of kiosk-industry literature and design critiques revealed a{" "}
+                        <mark className="hl">fragmented, inconsistent design landscape</mark> —
+                        businesses repeating the same usability mistakes because no evidence-based
+                        standards exist for the category.
+                      </p>
+                      <p className="rq-findings-lead"><strong>What we found:</strong></p>
+                      <ul className="rq-findings-list">
+                        <li>External environmental factors (light, noise, crowds) act as compounding stresses</li>
+                        <li>Inconsistent user expectations across venues and kiosk types</li>
+                        <li>Focus on general functionality without discoverability of specific features</li>
+                        <li>Need to reduce cognitive load — especially at moments of decision-making</li>
+                        <li>Loyalty programs consistently under-integrated with the core flow</li>
+                      </ul>
+                    </div>
+                    <figure className="rq-block__visual">
+                      <div className="image-slot">visual placeholder · research artifact</div>
+                    </figure>
+                  </div>
+                ),
+              },
+              {
+                key: "preferable",
+                content: (
+                  <div className="rq-block">
+                    <div className="rq-block__body">
+                      <span className="rq-method-chip">Secondary Research</span>
+                      <h4 className="rq-heading">&ldquo;Why is a kiosk preferable to alternatives?&rdquo;</h4>
+                      <p className="rq-lead">
+                        Understanding why businesses and users choose kiosks over staffed counters
+                        helped us identify the <mark className="hl">value users implicitly expect</mark>
+                        {" "}to retain — and what our design couldn&rsquo;t break without breaking the
+                        appeal.
+                      </p>
+                      <p className="rq-findings-lead"><strong>What we found:</strong></p>
+                      <ul className="rq-findings-list">
+                        <li>User independence without needing human assistance</li>
+                        <li>Applicability across indoor and outdoor environments</li>
+                        <li>Operational cost savings + financial upside for businesses</li>
+                      </ul>
+                    </div>
+                    <figure className="rq-block__visual">
+                      <div className="image-slot">visual placeholder · research artifact</div>
+                    </figure>
+                  </div>
+                ),
+              },
+              {
+                key: "conventions",
+                content: (
+                  <div className="rq-block">
+                    <div className="rq-block__body">
+                      <span className="rq-method-chip">Secondary Research</span>
+                      <h4 className="rq-heading">&ldquo;How are companies designing kiosk interfaces today?&rdquo;</h4>
+                      <p className="rq-lead">
+                        A competitive analysis of kiosk-industry companies mapped{" "}
+                        <mark className="hl">current design conventions</mark> — the patterns
+                        established by incumbents that our guidelines would need to either build on or
+                        deliberately contradict.
+                      </p>
+                      <p className="rq-findings-lead"><strong>What we found:</strong></p>
+                      <ul className="rq-findings-list">
+                        <li>Consistent labeling of interface purpose (menu, payment, help) at the screen level</li>
+                        <li>Centered placement of interactable elements</li>
+                        <li>Element naming trends toward 1&ndash;2 words</li>
+                        <li>Lack of elements outside the screen&rsquo;s center — significant unused real estate</li>
+                      </ul>
+                    </div>
+                    <figure className="rq-block__visual">
+                      <div className="image-slot">visual placeholder · competitive analysis</div>
+                    </figure>
+                  </div>
+                ),
+              },
+            ]}
+          />
+
+          {/* Interviews and Field Observations were run as two DIFFERENT
+              activities with different participants — observations
+              watched people complete real kiosk tasks in an entertainment
+              center, interviews asked separate participants questions.
+              Folded into a second carousel so each activity gets its own
+              card instead of being conflated into one block. */}
+          <ResearchCarousel
+            title="User Interviews & Field Observations"
+            slides={[
+              {
+                key: "observations",
+                content: (
+                  <div className="rq-block">
+                    <div className="rq-block__body">
+                      <span className="rq-method-chip">Field Observations</span>
+                      <h4 className="rq-heading">
+                        &ldquo;How do users actually behave on kiosks in context?&rdquo;
+                      </h4>
+                      <p className="rq-lead">
+                        We observed participants completing <mark className="hl">real tasks —
+                        purchasing and reloading play cards</mark> — on kiosks at an indoor
+                        entertainment center, converting each session into a journey map. Behavior
+                        in the actual environment surfaced friction that self-report could never
+                        catch.
+                      </p>
+                      <p className="rq-findings-lead"><strong>What we found:</strong></p>
+                      <ul className="rq-findings-list">
+                        <li><mark className="hl">Payment interactions were the biggest point of confusion</mark> — tap vs. swipe vs. insert, which reader to use</li>
+                        <li>Screen real estate was poorly utilized — most content clustered mid-screen</li>
+                        <li><mark className="hl">Stressful auditory countdown cues damaged user confidence</mark> mid-task</li>
+                        <li>External environmental factors (noise, crowd pressure, glare) affected users unevenly</li>
+                      </ul>
+                    </div>
+                    <figure className="rq-block__visual">
+                      <div className="image-slot">visual placeholder · field-observation journey map</div>
+                    </figure>
+                  </div>
+                ),
+              },
+              {
+                key: "interviews",
+                content: (
+                  <div className="rq-block">
+                    <div className="rq-block__body">
+                      <span className="rq-method-chip">User Interviews</span>
+                      <h4 className="rq-heading">
+                        &ldquo;How do users feel about using kiosks?&rdquo;
+                      </h4>
+                      <p className="rq-lead">
+                        A separate cohort of participants was interviewed (with a companion survey)
+                        for the firsthand perception context observations couldn&rsquo;t reach:{" "}
+                        <mark className="hl">users are confident with kiosks until options become
+                        overwhelming or poorly labeled</mark>, and loyalty programs are rarely used
+                        because sign-up feels annoying or effortful.
+                      </p>
+                      <p className="rq-findings-lead"><strong>What we found:</strong></p>
+                      <ul className="rq-findings-list">
+                        <li>Confidence stems from familiarity with touch-screen technology</li>
+                        <li>Confusion arises from poorly labeled or over-abundant options at decision points</li>
+                        <li>Hesitance around loyalty programs that require effort or perceived commitment</li>
+                        <li>Users skim before reading — assumptions form before instructions register</li>
+                      </ul>
+                    </div>
+                    <figure className="rq-block__visual">
+                      <div className="image-slot">visual placeholder · interview insights board</div>
+                    </figure>
+                  </div>
+                ),
+              },
+            ]}
+          />
+
           <p>
-            After successfully building a knowledge foundation, we were then ready to ideate the user flow.
+            After successfully building this knowledge foundation, we were ready to ideate the user
+            flow.
           </p>
         </section>
 
@@ -231,13 +332,36 @@ export default function FrogslayerCaseStudy() {
             Field observations before testing had already surfaced the highest-friction moments: <mark className="hl">payment interactions were the biggest point of confusion</mark> (tap vs. swipe vs. insert), and <mark className="hl">stressful auditory countdown cues damaged user confidence</mark>.
           </p>
 
+          {/* User flow anchor — the FIRST version, as it existed before
+              any of the three testing rounds. Recruiter sees the
+              starting-state artifact at a glance; the three round
+              blocks below describe what changed and why; the final
+              flow at the bottom shows the shipped result. */}
+          <figure className="usability-flow-anchor">
+            <div className="image-slot">initial user flow · pre-testing</div>
+            <figcaption>
+              The initial user flow taken into Round 1 — built from field observations of real kiosk
+              use, before any iteration.
+            </figcaption>
+          </figure>
+
           {/* Each round is its own block with a header naming the round
               and a stack of insight cards beneath. Each card pairs one
               user insight with the change it produced, alongside small
               before/after thumbnails. Replaces the previous wide
               equation row layout that didn't scale to 11 insights. */}
           <div className="usability-rounds">
-            <UsabilityRound title="Round 1" meta="7 users · PMU">
+            <UsabilityRound
+              title="Round 1"
+              meta="7 users · PMU"
+              focus={
+                <>
+                  <strong>Round 1 focus:</strong> validating the{" "}
+                  <mark className="hl">general UI of the flow</mark> — is the sequence intuitive at
+                  first contact, and where does cognitive overload emerge?
+                </>
+              }
+            >
               <InsightCard
                 insight="“Cognitive overload from too many options at once”"
                 change="Simplified card-loading page"
@@ -264,7 +388,18 @@ export default function FrogslayerCaseStudy() {
               />
             </UsabilityRound>
 
-            <UsabilityRound title="Round 2" meta="7 users · PMU · A/B test">
+            <UsabilityRound
+              title="Round 2"
+              meta="7 users · PMU · A/B test"
+              focus={
+                <>
+                  <strong>Round 2 focus:</strong> an{" "}
+                  <mark className="hl">A/B test of the two candidate loyalty-program models</mark> —
+                  tier-based (upgrade for perks) vs. upsell-based (spend $20, play with $25). Which
+                  one actually gets hesitant users to consider joining?
+                </>
+              }
+            >
               <InsightCard
                 insight="“Upsells engaged hesitant users far more than tiers”"
                 change="Selected upsells over tiers as the loyalty model"
@@ -291,7 +426,19 @@ export default function FrogslayerCaseStudy() {
               />
             </UsabilityRound>
 
-            <UsabilityRound title="Round 3" meta="5 users · PMU · final prototype">
+            <UsabilityRound
+              title="Round 3"
+              meta="5 users · PMU · final prototype"
+              focus={
+                <>
+                  <strong>Round 3 focus:</strong> refining the{" "}
+                  <mark className="hl">user&rsquo;s introduction to the membership</mark> —
+                  surfacing &ldquo;Join for Free&rdquo; prominently and making cost transparency
+                  impossible to miss, because skimming users habitually assume membership costs
+                  money.
+                </>
+              }
+            >
               <InsightCard
                 insight="“Skimming users miss ‘Join for Free’ entirely”"
                 change="Surfaced “Join for Free” at the top of the pop-up"
@@ -315,6 +462,19 @@ export default function FrogslayerCaseStudy() {
               />
             </UsabilityRound>
           </div>
+
+          {/* Final flow anchor — the shipped-to-Frogslayer version
+              after all three rounds. Pairs with the initial-flow anchor
+              above so recruiters get a clean before/after read without
+              having to reconstruct the delta from intermediate images. */}
+          <figure className="usability-flow-anchor">
+            <div className="image-slot">final user flow · after Round 3</div>
+            <figcaption>
+              The final user flow after three rounds of testing — upsell-based loyalty prominent,
+              &ldquo;Join for Free&rdquo; surfaced at the top of the pop-up, cash-payment flow
+              dedicated, buttons unified.
+            </figcaption>
+          </figure>
 
           <p>
             By round 3 the loyalty program — initially the biggest source of friction — had been reshaped into a
