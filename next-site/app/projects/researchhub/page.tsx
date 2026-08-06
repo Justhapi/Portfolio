@@ -5,10 +5,6 @@ export const metadata = {
   title: "ResearchHub — Kathleen Li",
 };
 
-/* Outcome leads so recruiters see results first. Process is broken
-   into its three actual phases (Researching, Designing, Implementing)
-   so the nav exposes the work rather than collapsing it under a
-   single "Process" label — matches the structure used in Frogslayer. */
 const SECTIONS = [
   { id: "outcome", label: "Outcome" },
   { id: "overview", label: "Overview" },
@@ -33,11 +29,6 @@ export default function ResearchHubCaseStudy() {
         {/* ───── Outcome ───── (moved to top: recruiters see outcome first) */}
         <section id="outcome" className="case-section">
           <h2>Outcome</h2>
-
-          {/* Outcome callout — matches the JT/Frogslayer pattern. The
-              killer stat is that the redesign ships to real students +
-              faculty the semester after handoff, and that some new
-              features were surfaced by my own research (not the brief). */}
           <aside className="outcome-callout" aria-label="Project outcome">
             <p className="outcome-callout__stat">
               <strong>Planned to ship summer 2026</strong> — the redesign + new features go live
@@ -188,9 +179,6 @@ export default function ResearchHubCaseStudy() {
           </figure>
         </section>
 
-        {/* ───── Takeaways ───── (two h3s mirror the JT/Frogslayer
-              takeaway pattern — each lesson gets its own heading so a
-              recruiter reads them as distinct rather than merged.) */}
         <section id="takeaways" className="case-section">
           <h2>Takeaways</h2>
 

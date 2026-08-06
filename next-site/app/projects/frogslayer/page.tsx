@@ -2,6 +2,12 @@ import CaseCover from "@/components/CaseCover";
 import CaseSectionNav from "@/components/CaseSectionNav";
 import UsabilityRound, { InsightCard } from "@/components/UsabilityRound";
 import ResearchCarousel from "@/components/ResearchCarousel";
+import ZoomableImage from "@/components/ZoomableImage";
+
+/* GitHub Pages serves under /Portfolio in production; empty in dev so
+   images resolve from localhost. Same pattern as JT case study. */
+const basePath =
+  process.env.NODE_ENV === "production" ? "/Portfolio" : "";
 
 export const metadata = {
   title: "Kiosk Interface Design Guidelines — Kathleen Li",
@@ -33,17 +39,8 @@ export default function FrogslayerCaseStudy() {
       />
 
       <main id="main" className="case-body">
-        {/* ───── Outcome ───── (deliverables + impact summary up front
-              so a recruiter reads the outcome in the first viewport;
-              naming matches the other three case studies) */}
         <section id="outcome" className="case-section">
           <h2>Outcome</h2>
-
-          {/* Outcome callout — mirrors the JT case study's elevated
-              impact stat so the two case pages read as siblings. The
-              killer fact is the continued sponsor collaboration AFTER
-              the semester, which validates the guidelines held up
-              beyond the deliverable window. */}
           <aside className="outcome-callout" aria-label="Project outcome">
             <p className="outcome-callout__stat">
               <strong>Continued Collaboration Beyond Semester</strong> — Frogslayer continued
@@ -62,26 +59,30 @@ export default function FrogslayerCaseStudy() {
             continuation of the guidelines to Frogslayer.
           </p>
           <div className="case-image-row">
-            <figure>
-              <div className="image-slot">design guidelines deck</div>
-              <figcaption>
-                A set of design guidelines for hospitality and entertainment kiosks, formatted after NN/g&rsquo;s
-                heuristics and verified across three rounds of testing.
-              </figcaption>
-            </figure>
-            <figure>
-              <div className="image-slot">user journey map</div>
-              <figcaption>
-                A journey map of the project&rsquo;s final validated user flow, capturing emotion dips and reference
-                insights for the guidelines.
-              </figcaption>
-            </figure>
+            <ZoomableImage
+              src={`${basePath}/img/frogslayer/Guidelines.Webp`}
+              alt="Kiosk design guidelines deck — NN/g-style heuristics for hospitality and entertainment kiosks."
+              aspectRatio={8820 / 4766}
+              caption={
+                <>
+                  A set of design guidelines for hospitality and entertainment kiosks, formatted
+                  after NN/g&rsquo;s heuristics and verified across three rounds of testing.
+                </>
+              }
+            />
+            <ZoomableImage
+              src={`${basePath}/img/frogslayer/Journey_Map.Webp.png`}
+              alt="User journey map of the final validated kiosk flow with emotion dips flagged."
+              aspectRatio={5024 / 2366}
+              caption={
+                <>
+                  A journey map of the project&rsquo;s final validated user flow, capturing emotion
+                  dips and reference insights for the guidelines.
+                </>
+              }
+            />
           </div>
         </section>
-
-        {/* ───── Overview ───── (Overview holds The Problem + My Role
-              so it reads as scope + role — matches the subsection
-              naming used in AI Journey Agent, ResearchHub, and inline.) */}
         <section id="overview" className="case-section">
           <h2>Overview</h2>
           <p>
@@ -113,12 +114,6 @@ export default function FrogslayerCaseStudy() {
             project&rsquo;s progression to accomplishing the intended goal.
           </p>
         </section>
-
-        {/* ───── Researching ───── (three top-level h3s mirror the JT
-              case study's Researching rhythm: framing / evidence base /
-              user voice. Visual components — focus-list, both
-              carousels — stay identical; only the h3 structure shifts
-              so each research activity gets its own clear heading.) */}
         <section id="researching" className="case-section">
           <h2>Researching</h2>
 
@@ -172,9 +167,14 @@ export default function FrogslayerCaseStudy() {
                         <li>Operational cost savings + financial upside for businesses</li>
                       </ul>
                     </div>
-                    <figure className="rq-block__visual">
-                      <div className="image-slot">visual placeholder · research artifact</div>
-                    </figure>
+                    <div className="rq-block__visual">
+                      <ZoomableImage
+                        src={`${basePath}/img/frogslayer/Kiosk_Benefits.Webp`}
+                        alt="Secondary-research synthesis on why businesses and users choose kiosks over staffed counters."
+                        aspectRatio={13205 / 7607}
+                        noDrag
+                      />
+                    </div>
                   </div>
                 ),
               },
@@ -199,9 +199,14 @@ export default function FrogslayerCaseStudy() {
                         <li>Lack of elements outside the screen&rsquo;s center — significant unused real estate</li>
                       </ul>
                     </div>
-                    <figure className="rq-block__visual">
-                      <div className="image-slot">visual placeholder · competitive analysis</div>
-                    </figure>
+                    <div className="rq-block__visual">
+                      <ZoomableImage
+                        src={`${basePath}/img/frogslayer/Competitor_Analysis_Visual.Webp`}
+                        alt="Competitive analysis of kiosk-industry companies — current design conventions and patterns."
+                        aspectRatio={9126 / 4145}
+                        noDrag
+                      />
+                    </div>
                   </div>
                 ),
               },
@@ -239,9 +244,14 @@ export default function FrogslayerCaseStudy() {
                         <li>Loyalty programs consistently under-integrated with the core flow</li>
                       </ul>
                     </div>
-                    <figure className="rq-block__visual">
-                      <div className="image-slot">visual placeholder · research artifact</div>
-                    </figure>
+                    <div className="rq-block__visual">
+                      <ZoomableImage
+                        src={`${basePath}/img/frogslayer/Components_Of_Kiosk_Interfaces_Visual.Webp`}
+                        alt="Secondary-research synthesis of gaps in current kiosk-interface components across the industry."
+                        aspectRatio={5239 / 3374}
+                        noDrag
+                      />
+                    </div>
                   </div>
                 ),
               },
@@ -269,9 +279,14 @@ export default function FrogslayerCaseStudy() {
                         <li>External environmental factors (noise, crowd pressure, glare) affected users unevenly</li>
                       </ul>
                     </div>
-                    <figure className="rq-block__visual">
-                      <div className="image-slot">visual placeholder · field-observation journey map</div>
-                    </figure>
+                    <div className="rq-block__visual">
+                      <ZoomableImage
+                        src={`${basePath}/img/frogslayer/User_Observation_Visual.png`}
+                        alt="Field observation journey map from participants completing real card-purchase/reload tasks at an entertainment center."
+                        aspectRatio={9745 / 6599}
+                        noDrag
+                      />
+                    </div>
                   </div>
                 ),
               },
@@ -299,9 +314,14 @@ export default function FrogslayerCaseStudy() {
                         <li>Users skim before reading — assumptions form before instructions register</li>
                       </ul>
                     </div>
-                    <figure className="rq-block__visual">
-                      <div className="image-slot">visual placeholder · interview insights board</div>
-                    </figure>
+                    <div className="rq-block__visual">
+                      <ZoomableImage
+                        src={`${basePath}/img/frogslayer/User_Interview_Visual.png`}
+                        alt="User interview insights board — how users feel about using kiosks, clustered by theme."
+                        aspectRatio={8272 / 4613}
+                        noDrag
+                      />
+                    </div>
                   </div>
                 ),
               },
@@ -313,11 +333,6 @@ export default function FrogslayerCaseStudy() {
             flow.
           </p>
         </section>
-
-        {/* ───── Ideating ───── (h3 subdivision matches JT's Ideating
-              pattern: framing h3 opens the section, then sub-h3s
-              mark each pass of the concept development. Content and
-              visual components — figure + case-image-row — unchanged.) */}
         <section id="ideating" className="case-section">
           <h2>Ideating</h2>
           <h3>From Individual Sketching to a Testable User Flow</h3>
@@ -334,10 +349,14 @@ export default function FrogslayerCaseStudy() {
             After discussing and assessing each other&rsquo;s individual feature ideas, we
             ultimately decided which features to include in the usability test flow.
           </p>
-          <figure>
-            <div className="image-slot">ideated arcade kiosk flow</div>
-            <figcaption>My ideated arcade kiosk user flow</figcaption>
-          </figure>
+          <div className="visual-compact">
+            <ZoomableImage
+              src={`${basePath}/img/frogslayer/Crazy_Eights.png`}
+              alt="My Crazy 8's sketch sheet — individual ideation quadrants of arcade kiosk feature concepts before team walkthrough."
+              aspectRatio={8446 / 4981}
+              caption={<>My ideated arcade kiosk user flow</>}
+            />
+          </div>
 
           <h3>Wireframing on the Observed Base Flow</h3>
           <p>
@@ -347,15 +366,19 @@ export default function FrogslayerCaseStudy() {
             interactive prototype.
           </p>
           <div className="case-image-row with-arrow">
-            <figure>
-              <div className="image-slot">initial flow</div>
-              <figcaption>Initial user flow based on field-observation flow</figcaption>
-            </figure>
+            <ZoomableImage
+              src={`${basePath}/img/frogslayer/Observation_User_Flow.png`}
+              alt="Initial user flow based directly on the field-observation kiosk flow, before any feature additions."
+              aspectRatio={3654 / 4120}
+              caption={<>Initial user flow based on field-observation flow</>}
+            />
             <span className="arrow-sep">→</span>
-            <figure>
-              <div className="image-slot">iterated flow</div>
-              <figcaption>Iterated user flow consisting of ideated features</figcaption>
-            </figure>
+            <ZoomableImage
+              src={`${basePath}/img/frogslayer/Base_Wireframes.png`}
+              alt="Iterated user flow with ideated features integrated into the base kiosk arcade flow."
+              aspectRatio={5591 / 4716}
+              caption={<>Iterated user flow consisting of ideated features</>}
+            />
           </div>
         </section>
 
@@ -376,25 +399,19 @@ export default function FrogslayerCaseStudy() {
             (tap vs. swipe vs. insert), and stressful auditory countdown cues damaged user
             confidence.
           </p>
-
-          {/* User flow anchor — the FIRST version, as it existed before
-              any of the three testing rounds. Recruiter sees the
-              starting-state artifact at a glance; the three round
-              blocks below describe what changed and why; the final
-              flow at the bottom shows the shipped result. */}
-          <figure className="usability-flow-anchor">
-            <div className="image-slot">initial user flow · pre-testing</div>
-            <figcaption>
-              The initial user flow taken into Round 1 — built from field observations of real kiosk
-              use, before any iteration.
-            </figcaption>
-          </figure>
-
-          {/* Each round is its own block with a header naming the round
-              and a stack of insight cards beneath. Each card pairs one
-              user insight with the change it produced, alongside small
-              before/after thumbnails. Replaces the previous wide
-              equation row layout that didn't scale to 11 insights. */}
+          <div className="usability-flow-anchor">
+            <ZoomableImage
+              src={`${basePath}/img/frogslayer/Initial_Prototype.png`}
+              alt="Initial user flow prototype taken into Round 1 — built from field observations, before any iteration."
+              aspectRatio={7016 / 3306}
+              caption={
+                <>
+                  The initial user flow taken into Round 1 — built from field observations of real
+                  kiosk use, before any iteration.
+                </>
+              }
+            />
+          </div>
           <div className="usability-rounds">
             <UsabilityRound
               title="Round 1"
@@ -507,20 +524,6 @@ export default function FrogslayerCaseStudy() {
               />
             </UsabilityRound>
           </div>
-
-          {/* Final flow anchor — the shipped-to-Frogslayer version
-              after all three rounds. Pairs with the initial-flow anchor
-              above so recruiters get a clean before/after read without
-              having to reconstruct the delta from intermediate images. */}
-          <figure className="usability-flow-anchor">
-            <div className="image-slot">final user flow · after Round 3</div>
-            <figcaption>
-              The final user flow after three rounds of testing — upsell-based loyalty prominent,
-              &ldquo;Join for Free&rdquo; surfaced at the top of the pop-up, cash-payment flow
-              dedicated, buttons unified.
-            </figcaption>
-          </figure>
-
           <p>
             By round 3 the loyalty program — initially the biggest source of friction — had been
             reshaped into a{" "}
@@ -528,7 +531,20 @@ export default function FrogslayerCaseStudy() {
             the interface itself was validated as intuitive at first contact. With both confirmed,
             the team moved into guideline synthesis.
           </p>
-
+          <div className="usability-flow-anchor">
+            <ZoomableImage
+              src={`${basePath}/img/frogslayer/Final_Prototype.png`}
+              alt="Final user flow prototype after three rounds of testing — Join-for-Free surfaced, cash-payment flow dedicated, buttons unified."
+              aspectRatio={4634 / 3514}
+              caption={
+                <>
+                  The final user flow after three rounds of testing — upsell-based loyalty
+                  prominent, &ldquo;Join for Free&rdquo; surfaced at the top of the pop-up,
+                  cash-payment flow dedicated, buttons unified.
+                </>
+              }
+            />
+          </div>
           <h3>Synthesizing into Guidelines</h3>
           <p>
             We compiled findings into a final journey map demonstrating the validated flow, then
@@ -540,19 +556,8 @@ export default function FrogslayerCaseStudy() {
             demographic beyond college students, and validating with real purchase stakes.
           </p>
         </section>
-
-        {/* ───── Takeaways ───── (two h3 subsections mirror the JT
-              case study's two-takeaway pattern. Editorial pullquote is
-              kept as the visual anchor above the first takeaway. Each
-              paragraph's content is unchanged; the h3s just make each
-              lesson scannable on its own instead of merged into one
-              dense paragraph.) */}
         <section id="takeaways" className="case-section">
           <h2>Takeaways</h2>
-
-          {/* Editorial pull-quote — Klee One (Japandi editorial voice)
-              with an ochre left rule. Used sparingly, one per case
-              study, to anchor a defining line. */}
           <blockquote className="case-pullquote">
             &ldquo;Is it pretty?&rdquo; mattered less than &ldquo;what will this teach us?&rdquo;
             <cite>Frogslayer · design guideline project</cite>

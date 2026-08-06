@@ -26,6 +26,11 @@ type Props = {
   aspectRatio?: number;
   /** Caption to render below (also used for aria-describedby if provided). */
   caption?: React.ReactNode;
+  /** If true, disables mouse/touch drag-to-pan (wheel zoom, hover
+   *  auto-pan, and reset button all still work). Use when nesting
+   *  inside a horizontally-swipable parent (e.g. a carousel) so the
+   *  parent's drag gesture isn't intercepted by the image. */
+  noDrag?: boolean;
 };
 
 const MIN_SCALE = 1;
@@ -37,6 +42,7 @@ export default function ZoomableImage({
   alt,
   aspectRatio = 4 / 3,
   caption,
+  noDrag = false,
 }: Props) {
   const frameRef = useRef<HTMLDivElement | null>(null);
   const [scale, setScale] = useState(1);
@@ -96,6 +102,12 @@ export default function ZoomableImage({
      const frame = frameRef.current;
      if (!frame) return;
      const onWheel = (e: WheelEvent) => {
+       // Horizontal-dominant wheel = trackpad horizontal gesture. Let
+       // it bubble to a parent handler (e.g. a carousel's slide-nav
+       // wheel listener) instead of hijacking it for zoom, which only
+       // reacts to deltaY anyway. Prevents this component from
+       // silently swallowing horizontal trackpad swipes when nested.
+       if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
        // First wheel event = interaction; hide the hint permanently.
        setHasInteracted(true);
        // ── Release-to-scroll at min zoom ─────────────────────────────
@@ -159,6 +171,11 @@ export default function ZoomableImage({
    }, [clampTranslation]);
 
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    // noDrag: skip drag initiation entirely so a nesting carousel's
+    // horizontal-swipe gesture can consume the mouse event instead.
+    // The image can still be zoomed (wheel) and panned (hover auto-pan
+    // once zoomed).
+    if (noDrag) return;
     // Only start a drag on primary button
     if (e.button !== 0) return;
     draggingRef.current = true;
@@ -256,6 +273,8 @@ export default function ZoomableImage({
   // while dragging within the frame.
   const touchLastRef = useRef({ x: 0, y: 0 });
   const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    // noDrag: skip touch drag so parent-carousel touch swipe still works.
+    if (noDrag) return;
     if (e.touches.length !== 1) return;
     touchLastRef.current = {
       x: e.touches[0].clientX,
@@ -264,6 +283,7 @@ export default function ZoomableImage({
     setHasInteracted(true);
   };
   const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (noDrag) return;
     if (e.touches.length !== 1) return;
     e.preventDefault();
     const dx = e.touches[0].clientX - touchLastRef.current.x;
