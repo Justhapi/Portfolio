@@ -1,75 +1,176 @@
 # Portfolio Handover
 
-**Project:** Kathleen Li — personal and professional UX Design portfolio  
-**Stack:** Next.js 14 (TypeScript, App Router, static export) · Lenis v1.3.23 smooth scroll · Google Fonts via `next/font`  
-**Repo root:** `/Users/kathleenli/Desktop/Portfolio/next-site/`  
-**Live deploy:** GitHub Pages via `.github/workflows/static.yml`
+**Project:** Kathleen Li — personal and professional UX Design portfolio
+**Stack:** Next.js 16 (TypeScript, App Router, static export) · Lenis smooth scroll · self-hosted fonts via `next/font/local`
+**Repo root:** `/Users/kathleenli/Desktop/Portfolio/next-site/`
+**Live deploy:** GitHub Pages at `https://justhapi.github.io/Portfolio/` via `.github/workflows/static.yml`
 
 ---
 
 ## Goals, audience & design intent
 
 ### Who this is for
-Recruiters and hiring managers at **design-forward tech companies** — primarily Apple, Google, Microsoft, and Riot Games. These are people who review dozens of portfolios a day and have a sharp eye for craft. The site needs to clear their bar for visual polish *and* signal that Kathleen can build what she designs (design-engineering crossover).
+Recruiters and hiring managers at **design-forward tech companies** — primarily targeting UX Design, Product Design, and PM/Producer roles (Riot Game Producer, Microsoft APM, and similar). These are people who review dozens of portfolios a day and have a sharp eye for craft. The site needs to clear their bar for visual polish *and* signal that Kathleen can build what she designs (design-engineering crossover) AND that she works well in a team (Point-of-Communication, cross-functional coordination).
 
 ### What it needs to communicate
-- **Credibility fast.** Role, school, and strongest projects should land within the first scroll without reading a word.  
-- **Taste, not just skill.** The interactions, motion, and typography should feel intentional and personal — not a template. A recruiter at Apple or Riot should sense that this person has opinions about craft.  
-- **Personality alongside professionalism.** The site is allowed to be warm, a little playful, and distinctly Kathleen's — the illustrated stickers, hand-lettered accents, food-list easter egg, and the artist-before-designer framing all serve this. It should feel like meeting a person, not reading a résumé.
+- **Credibility fast.** Role, school, and strongest projects should land within the first scroll without reading a word.
+- **Taste, not just skill.** The interactions, motion, and typography should feel intentional and personal — not a template.
+- **Personality alongside professionalism.** Illustrated stickers, hand-lettered accents, and the artist-before-designer framing serve this. It should feel like meeting a person, not reading a résumé.
+- **Both individual design thinking AND teammate ability.** Each case study should let recruiters see her personal design decisions AND how she coordinated with teammates + sponsors.
 
 ### Tone
-Professional but not corporate. Precise but not cold. The copy uses first person, avoids buzzwords, and names real outcomes ("Frogslayer adopted as their internal reference", "lead UI at Purdue Stack"). Humor and softness are welcome where they fit; they should never undermine competence.
+Professional but not corporate. Precise but not cold. Copy uses first person, avoids buzzwords, and names concrete outcomes ("~30 days after handoff, the sponsor announced the AI agent going live in beta", "continued collaboration beyond the semester").
 
 ### Visual direction
-- High contrast, dark-on-cream palette with warm amber accents — approachable, not sterile.  
-- Motion is purposeful: parallax, magnetic hover, and scroll reveals add depth without being distracting. Every animation has a mechanical reason (shows where things live in z-space, confirms interactivity).  
-- Typography mixes a geometric sans (K2D) with a handwriting face (Caveat) to balance the engineered and the drawn — echoing the design-engineering duality. The About section body copy uses **CookieRun** (the "Cookie Kingdom" font) for a warm, distinctly personal feel that separates it from the rest of the site's cleaner type stack. This is a deliberate personality marker — don't replace or homogenise it.  
-- Folder metaphor in Projects: playful and tactile, differentiates from the card-grid default without sacrificing scannability.
+- High contrast, dark-on-cream palette with warm amber accents.
+- Motion is purposeful: parallax, magnetic hover, and scroll reveals add depth without being distracting.
+- Typography stack: **K2D** (geometric sans — headings + body), **JetBrains Mono** (metadata + tracked labels), **Caveat** (handwriting accents — hero subtitle only), **Klee One** (case-study pull-quotes), **CookieRun** (About section body — warm and personal, self-hosted from `/public/fonts/`), **Long Cang** (李曦 glyph only, targeted `<link>` load).
+- Folder metaphor in Projects: playful and tactile.
 
 ### What to avoid
-- Generic "AI portfolio" aesthetics: gradient text, glassmorphism, hero metrics grids, neon glow.  
-- Anything that reads as trying too hard or over-explaining. Let the work carry the weight.  
-- Cluttering interactions — if a motion doesn't add information or delight, cut it.
-- **Don't restructure the case-study skeleton** (`Outcome → Overview → Process phases → Takeaways`) or the JT parallel-tracks / Frogslayer one-card-at-a-time carousel layouts without an explicit ask. Each was an intentional decision arrived at through iteration.
+- Generic "AI portfolio" aesthetics: gradient text, glassmorphism, hero metrics grids, neon glow.
+- **Don't restructure the case-study skeleton** (Outcome → Overview → Process phases → Takeaways) without an explicit ask. All four case studies now share this shape, and consistency is a real recruiter signal.
 
 ---
 
-## Architecture overview
+## Case-study information architecture
+
+**All four case studies share the same shape.** A recruiter opening any one after reading another finds the same navigation rhythm and skims faster. When editing any case, preserve this pattern.
 
 ```
-app/
-  layout.tsx        — root layout: fonts, <CursorFollower />, <SmoothScroll />, <ClickSound />
-  globals.css       — single CSS file for the entire site (~3 200 lines)
-  page.tsx          — home: HeroV2 · ProjectsV2 · [.ac-scene] · RevealOnScroll
-  projects/
-    frogslayer/page.tsx    — Co-Lead Designer · kiosk system · NDA · 6 designers
-    journeytrack/page.tsx  — Designer on 9-designer team · 14 weeks · AI maintenance agent
-    researchhub/page.tsx   — Sole UI Designer → Design Engineer · 5 engineers + me
+<CaseCover />                              cover: title · meta · subtitle
+<main id="main" className="case-body">
+  <p className="case-disclaimer">…</p>     NDA / confidentiality note (top of page)
+  <section id="outcome">
+    <h2>Outcome</h2>
+    <aside className="outcome-callout">    elevated impact stat (see pattern below)
+    <p>…</p>                               supporting body copy
+    [optional figures]
+  <section id="overview">
+    <h2>Overview</h2>
+    <p>…</p>                               intro paragraph (sponsor + team's task)
+    <h3>The Problem</h3>
+    <p>…</p>
+    <h3>My Role</h3>
+    <p>…</p>                               paragraph 1: design contributions
+    <p>…</p>                               paragraph 2: team coordination / mentoring
+  <section id="researching">
+    <h2>Researching</h2>
+    <h3>…framing h3…</h3>                  opens the section with an angle
+    [multiple sub-h3s for each research activity]
+  <section id="ideating|designing">
+    <h2>Ideating (or Designing)</h2>
+    <h3>…framing h3…</h3>
+    [sub-h3s: Sketching / Concept Proposals / Wireframing, or equivalent]
+  <section id="verifying|implementing|testing">
+    <h2>Verifying (or Testing / Implementing)</h2>
+    <h3>…framing h3…</h3>
+    [sub-h3s per process pass]
+  <section id="iterating">                 (Inline2 only — closed-loop rounds)
+  <section id="takeaways">
+    <h2>Takeaways</h2>
+    <h3>…lesson 1 title…</h3>
+    <p>…</p>
+    <h3>…lesson 2 title…</h3>
+    <p>…</p>
+  </section>
+</main>
+```
 
+**Case studies + shipped patterns:**
+
+- **Frogslayer** (`/projects/frogslayer/`) — Fall 2025 · 16 weeks · 6-person team · UX Designer & Researcher, Point of Communication · kiosk design guidelines. Uses `<ResearchCarousel>` × 2 (Producer + Consumer views), `<UsabilityRound>` × 3 (round-based testing insights), flow-anchor figures, real images wired from `/public/img/frogslayer/`. Outcome callout: "Continued Collaboration Beyond Semester."
+- **AI Journey Agent / JT** (`/projects/ai-journey-agent/`) — Spring 2026 · 14 weeks · UX Designer & Researcher · agentic AI concept for JourneyTrack platform. Uses `<StaticImage>` (7 anonymized process artifacts) + `<ZoomableImage>` (2 for sketching + whiteboarding), `.parallel-tracks` grid (Track 1 · Mine / Track 2 · Partner sub-team). Outcome callout: "~30 days after handoff, the sponsor announced the AI agent going live in beta."
+- **ResearchHub** (`/projects/researchhub/`) — Spring 2026 · 16 weeks · 5 engineers + me · Sole UI Designer → Design Engineer · Purdue Stack platform. Outcome callout: "Planned to ship summer 2026." Currently placeholder image slots (real assets pending).
+- **inline** (`/projects/inline/`) — Summer 2026 · Product Design Intern · **NDA-locked**. Public route shows only the role, scope categories, and a "contact for materials" gate.
+- **Pop by inline** (`/projects/inline2/`) — DRAFT / PRIVATE route (`robots: noindex/nofollow`, not linked from home). Full detailed case for private review; **do not link or share until sponsor written consent is on file**. Uses ~10 outcome-callout / body highlights, 4-round testing narrative, cohort-consolidation subsection.
+
+### Outcome callout pattern (used across all 4 cases)
+
+```jsx
+<aside className="outcome-callout" aria-label="Project outcome">
+  <p className="outcome-callout__stat">
+    <strong>Key stat / claim</strong> — supporting fact.
+  </p>
+  <p className="outcome-callout__meta">
+    Semester · sponsor/platform · handoff → outcome
+  </p>
+</aside>
+```
+
+CSS lives at `.outcome-callout` in `globals.css` — warm accent bg (`#F6EEE6`-adjacent tint), left border in accent, K2D display type. Purpose: single-strongest claim gets elevated above body copy so 30-second skimmers get the killer fact.
+
+### Highlight discipline
+
+`<mark className="hl">` gets 1 highlight per paragraph (2 max for outcome-critical). If every important phrase is highlighted, none of them are. Enforce this on new copy.
+
+### Research-Carousel + UsabilityRound components (Frogslayer)
+
+- **`<ResearchCarousel slides={[...]} />`** — infinite-loop swipeable carousel. Slides array of `{key, content}`. Phantom-slide architecture: track is `[phantomLast, ...slides, phantomFirst]`, so forward-past-last smoothly scrolls onto phantomFirst then silently resets to real first (no snap visible). Same in reverse. Interactions: touch swipe, mouse drag, trackpad two-finger horizontal, dot click, keyboard arrows. Vertical wheel passes through to Lenis for page scroll. Nested `<ZoomableImage noDrag>` handles its own pointerdown stopPropagation so the carousel drag doesn't fight image interaction.
+- **`<UsabilityRound title meta focus>`** with `<InsightCard>` children. Header (title + meta) + focus paragraph + dot tracker (top-right of the carousel) + horizontal scroll-snap of insight cards. Round-focus paragraph names what THAT round was deliberately testing.
+
+### rq-block layout (research cards inside carousels)
+
+Text left (40%) + visual right (60%) side-by-side by default. `@media (max-width: 720px)` flips to vertical stack. Card `.rq-block__visual .zoomable-frame` capped at 32vh so a carousel card never exceeds viewport (leaves room for section h3 + intro paragraph to stay visible above).
+
+---
+
+## Fonts — self-hosted via next/font/local
+
+All four Google-Fonts-origin faces (K2D, JetBrains Mono, Caveat, Klee One) are shipped as woff/ttf files in `/public/fonts/[Family]/` and loaded via `next/font/local` in `app/layout.tsx`. This eliminates runtime dependency on Google Fonts — no `Failed to fetch from Google Fonts` errors, offline-safe builds. **Do NOT switch back to `next/font/google`** — that's what caused the multi-hour Caveat-rendering-as-Arial-fallback issue we already debugged.
+
+CookieRun is self-hosted from `/public/fonts/CookieRun-*.woff2` via native `@font-face` in `globals.css`.
+
+Long Cang loads a targeted 2-glyph subset (`text=李曦`) via `<link>` in `layout.tsx <head>` — only ~2 KB.
+
+Token variables in `globals.css :root`:
+- `--f-sans` / `--f-serif` / `--f-display` → K2D (all three point at same font — single superfamily)
+- `--f-mono` → JetBrains Mono
+- `--f-hand` → Caveat (hero "Hello I'm", section subtitles, `.hero-an`)
+- `--f-quote` → Klee One (case-pullquote only)
+- `--f-cookie` → CookieRun (About body, case-section p, case-subtitle)
+- `--f-hand-zh` → Long Cang (李曦 only)
+
+---
+
+## Components directory
+
+```
 components/
-  HeroV2.tsx        — hero section
-  ArtistDesignerWordmark.tsx — t→D X-ligature SVG with handwriting trace
-  ProjectsV2.tsx    — folder cards + 3-D tilt hover effect
-  AboutV2.tsx       — About section with HoverWord magnetic keywords
-  ConnectV2.tsx     — Connect section (sticky behind About)
-  SiteNavV2.tsx     — fixed nav with active-section tracking
-  CaseSectionNav.tsx — case-study nav (Back to projects + section pill)
-  CaseCover.tsx     — case-study hero cover
-  UsabilityRound.tsx — Frogslayer Verifying carousel (client component)
-  SmoothScroll.tsx  — Lenis init + parallax + About/Connect scene height
-  RevealOnScroll.tsx — IntersectionObserver scroll-reveal (.reveal → .in)
-  SparkleField.tsx  — animated sparkle canvas
-  CursorFollower.tsx — custom cursor ring (desktop only, pointer-events:none)
-  ClickSound.tsx    — global click sound
-  ScrollRestore.tsx — scroll-to-anchor restoration
-  StatusCheck.tsx   — status bars section (currently unused; available)
+  HeroV2.tsx                  hero section
+  ArtistDesignerWordmark.tsx  t→D X-ligature SVG with handwriting trace
+  ProjectsV2.tsx              folder cards + 3-D tilt hover effect
+  AboutV2.tsx                 About section with HoverWord magnetic keywords
+  ConnectV2.tsx               Connect section (sticky behind About)
+  SiteNavV2.tsx               fixed nav with active-section tracking
+  CaseSectionNav.tsx          case-study nav (Back to projects + section pill)
+  CaseCover.tsx               case-study hero cover
+  CaseReveal.tsx              case-body scroll-reveal wrapper
+  SmoothScroll.tsx            Lenis init + parallax + About/Connect scene height
+  RevealOnScroll.tsx          IntersectionObserver scroll-reveal (.reveal → .in)
+  SparkleField.tsx            animated sparkle canvas
+  SparkleText.tsx             glyph-cycling sparkle-text
+  CursorFollower.tsx          custom cursor ring (desktop only, pointer-events:none)
+  ClickSound.tsx              global click sound
+  ScrollRestore.tsx           scroll-to-anchor restoration
+
+  ResearchCarousel.tsx        infinite-loop carousel with phantom-slide smooth wrap (Frogslayer)
+  UsabilityRound.tsx          round header + insight-card carousel (Frogslayer)
+  StaticImage.tsx             frame-styled non-interactive image (JT process artifacts)
+  ZoomableImage.tsx           frame with click-drag pan + wheel zoom + hover auto-pan + reset
 ```
+
+**ZoomableImage props:**
+- `src`, `alt` (required)
+- `aspectRatio?: number` (default 4/3) — frame w/h
+- `caption?: React.ReactNode` — rendered as `<figcaption>` below
+- `noDrag?: boolean` — skips mouse/touch drag; wheel zoom + hover auto-pan + reset still work. Use when nested inside a carousel so parent slide-nav gesture isn't intercepted. Component also `stopPropagation`s pointerdown so the enclosing carousel doesn't treat image drags as slide-nav swipes.
 
 ---
 
 ## About / Connect sticky reveal
 
-This is the most complex layout mechanic on the page.
+Most complex layout mechanic on the page — unchanged from earlier iterations.
 
 ```
 <div class="ac-scene">       position:relative; height set by JS
@@ -78,11 +179,11 @@ This is the most complex layout mechanic on the page.
 </div>
 ```
 
-- **How it works:** About sits on top of Connect. As the user scrolls through `.ac-scene`, About slides off revealing Connect behind it.  
-- **JS (SmoothScroll.tsx):** `sceneEl.style.height = aboutEl.offsetHeight + connectEl.offsetHeight` — gives the sticky element a valid scroll range. A `ResizeObserver` keeps it in sync.  
-- **Nav "Connect" link** (`SiteNavV2.tsx → smoothScrollTo`): scrolls to `scene.offsetTop + about.offsetHeight` — NOT `#connect` directly, because `getBoundingClientRect().top` on a sticky element is always ~0 while in range.  
-- **Active-section detection** (`useActiveSection`): Connect is only marked active once `aboutEl.getBoundingClientRect().bottom <= 0` — About has fully exited the viewport.  
-- **Peek strip** (`AboutV2.tsx → handlePeekClick`): the "Connect ↓" bar at About's bottom uses `window.scrollTo({ top: scene.offsetTop + about.offsetHeight })`.
+- **How it works:** About sits on top of Connect. As user scrolls through `.ac-scene`, About slides off revealing Connect behind it.
+- **JS (SmoothScroll.tsx):** `sceneEl.style.height = aboutEl.offsetHeight + connectEl.offsetHeight`. A `ResizeObserver` keeps it in sync.
+- **Nav "Connect" link** (`SiteNavV2.tsx → smoothScrollTo`): scrolls to `scene.offsetTop + about.offsetHeight` — NOT `#connect` directly (getBoundingClientRect on sticky element = ~0 while in range).
+- **Active-section detection:** Connect is only marked active once `aboutEl.getBoundingClientRect().bottom <= 0`.
+- **Peek strip** (`AboutV2.tsx → handlePeekClick`): jumps to `scene.offsetTop + about.offsetHeight`.
 
 ---
 
@@ -94,188 +195,112 @@ Lenis fires `onScroll({ scroll })` on every RAF. Each registered element gets `e
 |---|---|---|
 | `.ribbon-artist` | −0.13 | `centredX:true` preserves `translateX(-50%)` |
 | `.sticker.name-yellow` | −0.18 | `baseRotate:"8deg"` |
-| `.sticker.designing-green` | −0.18 | `baseRotate:"-5deg"` — matched to Kathleen so both stickers drift in lockstep. Previously was −0.22 (too aggressive — sticker drifted noticeably faster than its siblings and read as "minimising"); briefly removed entirely, then re-added at −0.18. |
+| `.sticker.designing-green` | −0.18 | `baseRotate:"-5deg"` — matched to Kathleen so both drift in lockstep |
 | `.hero-polaroid` | −0.12 | `centred:true` preserves `translate(-50%,-50%)` |
 | `.case-hero-image` | −0.18 | project cover image |
 | `.connect-row` | −0.18 | `relativeToScene:true` — delta from ac-scene top, not page top |
 
-The `.chip-zh` (李曦) lives inside `.sticker.name-yellow` as a DOM child, so it inherits Kathleen's parallax transform automatically. **Do NOT register it separately** in `PARALLAX_TARGETS` — it'll get double-transformed.
+The `.chip-zh` (李曦) lives inside `.sticker.name-yellow` as a DOM child, so it inherits Kathleen's parallax transform automatically. **Do NOT register it separately.**
 
 **Sign convention (empirically confirmed):** negative speed = element drifts **downward** as the user scrolls down.
 
-`buildEntries()` fires after 2 400 ms (all entrance animations done) and sets `el.style.animation = "none"` to clear CSS fill-mode locks. Parallax is skipped on `pointer:coarse` / touch devices (Lenis still runs for smooth scroll).
+`buildEntries()` fires after 2 400 ms (entrance animations done) and clears CSS animation fill-mode locks. Parallax skipped on `pointer:coarse` / touch devices (Lenis still runs).
 
 ---
 
 ## Hero composition (HeroV2.tsx)
 
-The hero is intentionally rich. **Don't simplify it without explicit direction** — it's how the personality is sold.
+The hero is intentionally rich — **don't simplify it without explicit direction.**
 
-- **Wordmark:** "Artist · Designer" with the `t→D` forming an X-ligature. Handwriting traces in via `ArtistDesignerWordmark`. Subtitle below in JetBrains Mono: "From one scene to multiple scenarios".
-- **Polaroid:** centered, fixed-width 320 px, rotated −2°. Click to swap drawing ↔ photo; hover to peek at the other inside a spotlight. First-load hint plays once at ~1 900 ms (a swap → settle → swap-back so the viewer notices it's interactive). Caption: `Last Updated · 05/07/26` + "I design solutions with moments worth lingering on".
-- **Kathleen Li sticker** (top-right, olive yellow, rotated +8°). Carries the 李曦 chip as a DOM child so the two move as one element. Sparkle burst SVG. Hatching corner accents.
-- **Currently designing green sticker** (rotated −5°): "Currently a Product Design intern — drafting from cafes!". Interlocked-circles doodle perched above-right of the sticker. Anchored via `top: min(calc(642px + min(12vw, 132px)), calc(68vh + 20px))`. The `68vh + 20px` cap keeps it visible on common laptop viewports (1080–1136 px) — the previous hard-pixel anchor was pushing it below the fold.
-- **Entrance choreography:** wordmark letters trace in (760 ms total) → polaroid lands at 980–1360 ms → Kathleen sticker settles ~1 440 ms → green sticker settles ~1 700 ms → polaroid hint plays at 1 900 ms.
+- **Wordmark:** "Artist · Designer" with the `t→D` forming an X-ligature. Handwriting traces in via `ArtistDesignerWordmark`.
+- **Polaroid:** centred, fixed-width 320 px, rotated −2°. Click flips card (rise → flip → shrink); hover peeks. Photo shows Kathleen; back shows doodle version.
+- **Kathleen Li sticker** (top-right, olive yellow, rotated +8°). Carries the 李曦 chip as a DOM child. Sparkle burst SVG. Hatching corner accents.
+- **Currently designing green sticker** (rotated −5°). Anchored via `top: min(calc(642px + min(12vw, 132px)), calc(68vh + 20px))` — the `68vh + 20px` cap keeps it visible on common laptop viewports.
+- **Availability sticker** with sub-line "Product, Design, and PM/Producer internships".
+- **Hero focus text:** "Focusing on Product Design, Research, and Cross-Functional Work" (Caveat display size).
 
 ### Hero quirks to remember
-
-- `.hero` is `position: sticky`, `top: 0` — so `el.scrollIntoView()` on `#hero` no-ops when scrolled (the element is "already in view"). Use `window.scrollTo({ top: 0, behavior: "smooth" })` instead. Already handled inside `smoothScrollTo("hero")` in `SiteNavV2.tsx`.
-- The `.read-pill` (cursor-following "3 MIN READ" pill on folder hover) has `white-space: nowrap; width: max-content; max-width: none` to prevent it from wrapping into a near-circle when the cursor approaches the right viewport edge.
+- `.hero` is `position: sticky; top: 0` — `el.scrollIntoView()` on `#hero` no-ops. Use `window.scrollTo({ top: 0, behavior: "smooth" })`. Already handled in `smoothScrollTo("hero")`.
+- `.read-pill` has `white-space: nowrap; width: max-content; max-width: none` to prevent it wrapping into a near-circle at right viewport edge.
 
 ---
 
-## Case-study pattern
+## Frogslayer image handling
 
-Every case study uses the same outer skeleton — **don't restructure it**:
-
-```
-<CaseCover />
-<main id="main" className="case-body">
-  <p className="case-disclaimer">…</p>  ← NDA notice (Frogslayer only)
-  <section id="outcome|results">  ← lead with the result
-  <section id="overview">          ← problem + role
-  <section id="researching">       ← named process phase 1
-  <section id="ideating|designing">← named process phase 2
-  <section id="verifying|implementing"> ← named process phase 3
-  <section id="takeaways">         ← what was learned + next steps
-</main>
-```
-
-Inside each section: `<h2>` then `<h3>` subheads then prose with `<mark className="hl">` for key-phrase emphasis. Image placeholders use `<figure><div className="image-slot">…</div><figcaption>…</figcaption></figure>`.
-
-The case nav (`CaseSectionNav.tsx`) auto-scrolls the active label into view; the pill's corner radius collapses from 999 px to 10 px on whichever side has overflow — visual affordance that there's more out of frame.
-
-### Project facts (for filling deliverables)
-
-- **Frogslayer** · section id is `results` (not `outcome` — only one that uses that label) · 16 weeks · 6 designers · Co-Lead Designer + Point of Communication · Hospitality/entertainment kiosk system · NDA · Adopted as Frogslayer's internal reference.
-- **JourneyTrack** · 14 weeks · 9 designers · Designer (UI & Interaction) · AI customer-journey maintenance agent · Delivered hi-fi prototype + design-principles doc to client leadership.
-- **ResearchHub** · 16 weeks · 5 engineers + me · Sole UI Designer → Design Engineer · Purdue student-faculty research platform · Shipping summer 2026.
-
-### JT Researching — parallel-tracks layout (don't touch without direction)
-
-The JT Researching section is intentionally structured to show the parallel-team move:
-
-```
-<h2>Researching</h2>
-<h3>Understanding what would make a journey maintenance agent effective</h3>
-<p>intro — 4 lenses</p>
-
-<p className="research-split-lead">"split into two smaller teams running in parallel:"</p>
-<div className="parallel-tracks">                ← 2-col grid, faint divider down middle
-  <div className="research-track">
-    <span className="track-label">Track 1</span>
-    <h3>Current state of platform</h3>
-    …
-  </div>
-  <div className="research-track">
-    <span className="track-label">Track 2</span>
-    <h3>Current state of agent components</h3>
-    …
-  </div>
-</div>
-
-<h3>Industry & interaction patterns</h3>  ← grouped together (same material)
-  Direct competitors + image
-  Indirect competitors + image
-  Interaction-pattern-synthesis paragraph + image
-
-<h3>User interviews</h3>  ← 6 JT users, affinity diagramming + image
-
-<p>Throughline: maintenance today is reactive, manual, tied to milestones…</p>
-```
-
-CSS: `.parallel-tracks` (in `globals.css`, search for "Parallel research tracks") + `.research-track`, `.track-label`. Stacks to single column under 760 px.
-
-### Frogslayer Verifying — one-card carousel (don't touch without direction)
-
-Three Round headers (`<UsabilityRound>` client component), each containing 3–4 `<InsightCard>` children. **One card visible at a time** via `scroll-snap-type: x mandatory` + `flex: 0 0 100%`. Progress dots in the round header track scroll position and let the user click-jump. Files: `components/UsabilityRound.tsx`, CSS at `.usability-rounds .ur-*` blocks in `globals.css`.
+- **Source of truth:** `/public/fonts/frogslayer/*.png|.Webp` (17 images, ~72 MB).
+- **App-folder duplicate** (`/app/projects/frogslayer/images/`) was removed — Next.js only serves from `/public/`, so images placed anywhere else are inaccessible. If more images land, drop them straight into `/public/img/frogslayer/`.
+- **Wired containers (12 of 17 images):**
+  - Outcome (2): Guidelines + Journey_Map — ZoomableImage
+  - Producer carousel (2): Kiosk_Benefits + Competitor_Analysis — ZoomableImage `noDrag`
+  - Consumer carousel (3): Components_Of_Kiosk_Interfaces + User_Observation + User_Interview — ZoomableImage `noDrag`
+  - Ideating (3): Crazy_Eights (wrapped in `.visual-compact`) + Observation_User_Flow + Base_Wireframes — ZoomableImage
+  - Verifying flow anchors (2): Initial_Prototype + Final_Prototype — ZoomableImage
+- **5 iteration images unused** (Card_Loading, Membership_Free, Payment_Button, Reformat, Tier). These are for InsightCard thumbnails. `InsightCard.tsx` currently accepts text labels only — needs `originalSrc` + `iteratedSrc` optional props added to wire these.
+- **Visual container bg:** `#F6EEE6` (warmer cream than `--paper`) so images blend with their frame. Applied to `.rq-block__visual .image-slot`, `.case-section figure .image-slot`, and `.zoomable-frame`.
+- **Non-carousel visual containers** get `max-height: 44vh` via `.case-image-row .zoomable-frame`, `.usability-flow-anchor .zoomable-frame`, `.visual-compact .zoomable-frame` (down from the global 62vh cap on `.zoomable-frame`). Prevents wide landscape mockups from leaving huge empty bands.
 
 ---
 
 ## Projects — folder cards (ProjectsV2.tsx)
 
-- **Open/close morph:** `phases[id]` state → `.folder-art--hovered` / `.folder-art--leaving` CSS classes → keyframe animations (`closedExit`, `openEnter`, `closedReturn`, `openExit`) at 460 ms.  
-- **3-D magnetic tilt:** `handleTiltMove` writes `perspective(800px) translateX/Y rotateX/Y` to `.folder-tilt-wrap` ref on every `mousemove`. `handleTiltLeave` springs back with 700 ms spring ease. No React re-renders — direct DOM writes.  
-- **Entrance:** per-folder `IntersectionObserver` adds `.in` when each card enters the viewport individually.  
+- **Open/close morph:** `phases[id]` state → `.folder-art--hovered` / `.folder-art--leaving` CSS classes → keyframe animations (`closedExit`, `openEnter`, `closedReturn`, `openExit`) at 460 ms.
+- **3-D magnetic tilt:** `handleTiltMove` writes `perspective(800px) translateX/Y rotateX/Y` to `.folder-tilt-wrap` on every `mousemove`. No React re-renders.
+- **Entrance:** per-folder `IntersectionObserver` adds `.in` when each card enters the viewport individually.
 - **Read-time pill:** `position:fixed` cursor-follower div, `pointer-events:none`.
 
 ---
 
 ## About — HoverWord (AboutV2.tsx)
 
-Inline keywords (`iPad`, `Purdue Stack`, `drawing…`, `SASE`, `next trip`) that do three things simultaneously:
+Inline keywords (`iPad`, `Purdue Stack`, `drawing…`, `SASE`, `next trip`) that do three things:
 
-1. **Floating pill image card** on hover — `.hw-pill` is `position:fixed`, follows cursor via direct DOM writes to `pillRef.current.style.left/top` on every `mousemove`.  
-2. **Magnetic 3-D tilt** on the keyword label — `applyTilt` writes `perspective(400px) translateX/Y rotateX/Y` to `labelRef.current` on `mousemove`. Resets on `mouseleave`/`blur` with 600 ms spring. Values scaled down vs folders (±5 px translate, ±8°/5° rotate).  
-3. **Touch support** — pill appears above finger on `touchstart`, auto-hides 1.4 s after `touchend`.  
+1. **Floating pill image card** on hover — `.hw-pill` is `position:fixed`, follows cursor via direct DOM writes.
+2. **Magnetic 3-D tilt** on the keyword label.
+3. **Touch support** — pill appears above finger on `touchstart`, auto-hides 1.4 s after `touchend`.
 4. **Keyboard/focus** — pill centred above the word's bounding rect on focus.
 
-Image slots are **placeholders** — replace `<div class="image-slot">` with `<img src="…">` when photos are ready. Views: `stack` (Purdue Stack screenshot), `mentor` (SASE mentoring photo), `illos` (illustration), `food` (Beli screenshot), `sketch` (iPad/sketchbook).
-
----
-
-## Connect section (ConnectV2.tsx)
-
-- **Layout:** `.connect > .container` is `height:100%; display:flex; flex-direction:column`. `.connect-row` has `flex:1`. `.foot` has `margin-top:auto` (pinned to bottom).  
-- **connect-row** starts at `padding-top:180px` (hidden under About on first reveal), then parallax drifts it down into view.  
-- **Links:** Email (mailto + copy-to-clipboard toggle), LinkedIn (pending), Resume (pending). `.c-link:first-child { border-top:none }` and `.c-link:last-child { border-bottom:none }` remove outer separator lines.  
-- **Sparkle field:** `count=7, scale=1.5, slowdown=2.2` — fewer/larger/slower than hero.
-
----
-
-## Nav (SiteNavV2.tsx)
-
-- Sliding highlight pill: `useLayoutEffect` + `ResizeObserver` measures active `.nav-link` and translates a background `<span>` to it.  
-- Mobile: hamburger toggle (`.nav-menu-toggle`), closes on Escape / scroll / outside click.  
-- `smoothScrollTo("connect")` special-cases the sticky element (see About / Connect section).
-- `smoothScrollTo("hero")` uses `window.scrollTo({ top: 0 })` instead of `scrollIntoView` because `.hero` is sticky-pinned. Without this, clicking the Kathleen Li mark while scrolled was a no-op.
+Image slots are **placeholders** — replace `<div class="image-slot">` with `<img src="…">` when photos are ready.
 
 ---
 
 ## CSS conventions (globals.css)
 
-- Font tokens: `--f-sans` (K2D), `--f-mono` (JetBrains Mono), `--f-display` (K2D 800), `--f-hand` (Caveat), `--f-hand-zh` (Long Cang — loaded via targeted `<link text="李曦">` for just those 2 glyphs), `--f-cookie` (CookieRun — warm body on cream surfaces, About section).  
-- Color tokens: `--accent: #C68D5F`, `--accent-soft: #D9A983`, `--hero-bg` / `--hero-fg` (dark bg, cream fg used in Connect + peek strip).  
-- `.reveal` / `.reveal-stagger` → `.in` driven by `RevealOnScroll.tsx` (IntersectionObserver).  
-- `.connect-row.reveal` is pre-marked `.in` at page load — it is always "in viewport" since Connect is sticky, so the parallax scroll is the reveal instead of an IO callback.
-- Case-study selectors: prefix with `.case-section` (e.g. `.case-section h2`, `.case-section .hl`). Highlight pattern: `<mark className="hl">phrase</mark>` → accent-color text, no background fill.
-- Mobile breakpoints used consistently: `@media (max-width: 820px)` for layout shifts, `@media (max-width: 640px)` for hero-specific simplification, `@media (max-width: 760px)` for the JT `.parallel-tracks` stack.
+- Font tokens: see Fonts section above.
+- Color tokens: `--accent: #C68D5F`, `--accent-soft: #D9A983`, `--hero-bg` / `--hero-fg` (dark bg, cream fg used in Connect + peek strip). Visual containers use `#F6EEE6` (hardcoded — warmer than `--paper`).
+- `.reveal` / `.reveal-stagger` → `.in` driven by `RevealOnScroll.tsx` (IntersectionObserver).
+- `.connect-row.reveal` is pre-marked `.in` at page load (sticky, always in viewport).
+- Highlight pattern: `<mark className="hl">phrase</mark>` → accent-color text, no background fill. Cap 1 per paragraph.
+- Focus list: `<ul className="focus-list"><li>…</li></ul>` — accent-colored disc markers, K2D body. **Never nest `<ul>` inside `<p>`** (hydration error).
+
+Mobile breakpoints:
+- `@media (max-width: 820px)` — hero layout shifts
+- `@media (max-width: 760px)` — JT `.parallel-tracks` stacks
+- `@media (max-width: 720px)` — `.rq-block` flips to vertical
+- `@media (max-width: 640px)` — hero-specific simplification + `.rq-block` padding tighter
 
 ---
 
-## Recent session log
+## GitHub Pages / basePath
 
-### Surviving changes
-- **Green status sticker raised.** Top: `min(calc(642px + min(12vw, 132px)), calc(68vh + 20px))`. The `68vh + 20px` cap keeps it visible on common laptop viewports — without the cap it dropped below the fold on anything shorter than ~1 100 px.
-- **Green status sticker parallax restored** at speed `-0.18` (not `-0.22`) so it drifts in lockstep with the Kathleen Li sticker.
-- **`.read-pill` no-wrap fix.** `white-space: nowrap; width: max-content; max-width: none`. The cursor-following "3 MIN READ" pill was deforming into a near-circle when the cursor approached the right viewport edge.
-- **`smoothScrollTo("hero")` fix.** Uses `window.scrollTo({ top: 0 })` because the hero is sticky-pinned and `scrollIntoView` no-ops.
-- **JT Researching restructured** into a parallel-tracks grid + Industry & interaction patterns + User interviews + throughline. The text was deliberately sparsed (≈60% shorter than first attempt) to match ResearchHub's skim-rhythm.
-- **Frogslayer Verifying rebuilt** as a one-card-at-a-time scroll-snap carousel with progress dots in the round header.
+`next.config.mjs`: `basePath: isProd ? "/Portfolio" : ""`. All internal image references use:
 
-### Reverted (DO NOT re-add without explicit ask)
-A `/critique`-driven pass added "recruiter mode" affordances and was fully reverted because it made the site feel cluttered:
-- "For recruiters ↓" chip on the hero
-- "Selected work" rail under the polaroid
-- `<RecruiterSummary />` section between Hero and Projects
-- Outcome-chip grids on each case study (`<div class="outcome-chips">`)
-- `.subsection-gist` lines on JT Researching
-- Résumé + Email chips in both site nav (`.nav-actions`) and case nav (`.case-nav-actions`)
-- Sub-positioning line under the wordmark (`.sub-id` — "Kathleen Li · UX undergrad…")
+```ts
+const basePath = process.env.NODE_ENV === "production" ? "/Portfolio" : "";
+<img src={`${basePath}/img/frogslayer/…`} />
+```
 
-Three orphan files exist in `next-site/` that the sandbox couldn't `rm` — safe to delete manually:
-- `components/RecruiterSummary.tsx` (stubbed to `export {};`)
-- `HANDOVER.md` (stubbed to a pointer comment)
-- `handoff.md` (stubbed to a pointer comment)
+Static export runs `next build` → writes to `out/`. GitHub Actions workflow at `.github/workflows/static.yml`.
 
 ---
 
 ## Known pending items
 
-- **HoverWord images:** all five pill views still show placeholder text. Swap `<div class="image-slot">` with `<img src="…">` when assets are ready.  
-- **LinkedIn / Resume links:** both `.c-link.is-pending` in ConnectV2 — add real `href` values when ready. (`next-site/public/resume.pdf` is on disk; not yet wired to UI.)  
-- **Case-study image placeholders:** every `<div className="image-slot">` is intentional — real artwork is still being produced. Don't replace with stock or AI imagery.
-- **Git lock:** if `A lock file already exists` blocks a commit, delete `.git/index.lock` in the repo root then retry.
+- **Frogslayer InsightCard images.** 5 iteration images (Card_Loading, Membership_Free, Payment_Button, Reformat, Tier) sit unused. Wiring requires adding `originalSrc?` + `iteratedSrc?` optional props to `InsightCard` in `UsabilityRound.tsx` and rendering `<img>` inside the `.ur-thumb` divs when srcs are provided.
+- **ResearchHub image placeholders.** All `<div className="image-slot">` are intentional — assets not yet produced.
+- **HoverWord images.** All five pill views still show placeholder text.
+- **LinkedIn / Resume links.** Both `.c-link.is-pending` in ConnectV2. `next-site/public/resume.pdf` is on disk; not wired.
+- **inline case study.** Public route (`/projects/inline`) is deliberately NDA-locked. Full detailed version lives at `/projects/inline2` (private / unlinked). When sponsor written consent is on file, swap the public route to inline2's content.
+- **Baked-in image whitespace.** Several Frogslayer PNGs (Initial_Prototype, Final_Prototype) have ~30% vertical background baked into the source. Non-carousel container cap (44vh) reduces total footprint but same proportion of whitespace scales in. Full fix is source-image cropping; not yet done.
 
 ---
 
@@ -284,15 +309,57 @@ Three orphan files exist in `next-site/` that the sandbox couldn't `rm` — safe
 ```bash
 cd next-site
 npm run dev          # dev server → http://localhost:3000
+npm run dev --webpack  # if Turbopack errors (Next 16 default is Turbopack)
 npx tsc --noEmit     # type-check without building
 npm run build        # static export → out/
 ```
+
+**If fonts start rendering as Arial fallback** after a build change: nuke `.next` and `node_modules/.cache`, restart dev server. If that doesn't fix it, run `npm uninstall next && npm install next`. The `next/font/local` self-hosting we set up should prevent this entirely — but if you ever swap back to `next/font/google`, this whole failure mode returns.
+
+---
+
+## Recent session log (Aug 2026)
+
+### Landed
+- **Self-hosted fonts.** Moved all 4 Google Fonts from `next/font/google` → `next/font/local` (files in `/public/fonts/[Family]/`). Ends the intermittent "Failed to fetch from Google Fonts" build failures.
+- **Case-study info-architecture unified.** All 4 case studies (Frogslayer, JT, ResearchHub, Inline2) now share the same section-and-h3 skeleton. Recruiters skimming across pages find identical structure.
+- **Outcome callout added to all 4 cases.** Elevated killer-stat above body copy.
+- **Frogslayer producer/consumer framing (Option C).** Two carousels grouped by whose POV they investigate. Framing lives in intro paragraphs; h3s stay methodological.
+- **Highlight density trimmed** to ~1 per paragraph across Frogslayer + JT (was 3-4 in some paragraphs).
+- **Frogslayer real images wired.** 12 of 17 images placed in interactive containers. 5 iteration images remain unwired pending `InsightCard` component modification.
+- **ZoomableImage `noDrag` prop.** Nested inside carousel cards without gesture conflict. Also `stopPropagation`s pointerdown so image-container drags don't trigger carousel navigation.
+- **ResearchCarousel phantom-slide smooth wrap.** Last-to-first (and first-to-last) transitions now scroll smoothly through a phantom duplicate then silently reset. No visible snap.
+- **rq-block horizontal layout.** Text left (40%) + visual right (60%) with 720px vertical-stack fallback.
+- **Visual container bg** changed to `#F6EEE6` so images blend with their frame.
+- **Non-carousel zoomable frames capped at 44vh** so wide landscape mockups don't dominate the viewport.
+- **Grammar/typo cleanup pass** on JT and Frogslayer copy.
+
+### Reverted (DO NOT re-add without explicit ask)
+Historical revert list from earlier iterations — a `/critique`-driven "recruiter mode" pass:
+- "For recruiters ↓" chip on the hero
+- "Selected work" rail under the polaroid
+- `<RecruiterSummary />` section between Hero and Projects
+- Outcome-chip grids on each case study (`<div class="outcome-chips">`)
+- Résumé + Email chips in both site nav and case nav
+- Sub-positioning line under the wordmark (`.sub-id`)
+
+Ephemeral takeaways added and then reverted:
+- "Trust is the Feature" JT takeaway added → removed → re-added (final state = kept).
+- JT "throughline" paragraph in Researching added → removed (final state = removed).
+
+### Files removed in this cleanup pass
+- `components/FooterConnect.tsx`, `GlassShapes.tsx`, `MenuNav.tsx`, `RecruiterSummary.tsx`, `StageBand.tsx`, `StatusCheck.tsx` (0 references anywhere)
+- `components/_orig_carousel.tsx.bak` (backup file)
+- `lib/useInView.ts` + `lib/` folder (0 references)
+- Root orphans: `main.jsx`, `wordmark.jsx`, `NEW-artist-designer-handwriting.html` (ported into `components/ArtistDesignerWordmark.tsx` a while back)
+- `app/projects/frogslayer/images/` (72 MB duplicate — Next.js can't serve from `/app/`; canonical copy lives at `/public/img/frogslayer/`)
 
 ---
 
 ## How the user works
 
-- Concise, direct feedback. They notice spacing, alignment, motion. They iterate fast — one change per turn is normal.
-- They'll ask for a revert if a change feels off. Don't re-litigate, just roll back cleanly.
-- When they share a screenshot, the issue is almost always at the highlighted region — read the image carefully before responding.
-- They appreciate explanations of *why* a change works (mechanism + downstream implication), not a recap of obvious facts.
+- Concise, direct feedback. She notices spacing, alignment, motion. Iterates fast — one change per turn is normal.
+- She'll ask for a revert if a change feels off. Don't re-litigate; roll back cleanly.
+- When she shares a screenshot, the issue is almost always at the highlighted region — read the image carefully before responding.
+- She appreciates explanations of *why* a change works (mechanism + downstream implication), not a recap of obvious facts.
+- She sometimes hand-edits files between turns. If your context says a file is one thing and the file has changed, re-read before editing.
