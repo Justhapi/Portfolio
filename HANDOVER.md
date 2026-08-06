@@ -227,8 +227,10 @@ The hero is intentionally rich — **don't simplify it without explicit directio
 
 ## Frogslayer image handling
 
-- **Source of truth:** `/public/fonts/frogslayer/*.png|.Webp` (17 images, ~72 MB).
-- **App-folder duplicate** (`/app/projects/frogslayer/images/`) was removed — Next.js only serves from `/public/`, so images placed anywhere else are inaccessible. If more images land, drop them straight into `/public/img/frogslayer/`.
+- **Source of truth:** `/app/projects/frogslayer/images/*.png|.webp` — 17 files (~72 MB), co-located with the route so images live next to the page that references them.
+- **How they're served:** ES module imports at the top of `frogslayer/page.tsx` — Webpack bundles them into `/_next/static/media/` with hashed filenames at build time. basePath (`/Portfolio` in prod) is applied automatically by Next.js, so no manual prefixing needed inside the JSX.
+- **Do NOT put these in `/public/`.** Kathleen wants the images co-located with the route. If you add more images, drop them into `/app/projects/frogslayer/images/` and add another `import` at the top of the file.
+- **Filenames use lowercase `.webp`** (not `.Webp`) so Next's built-in image-types TypeScript declarations recognize them without a custom module declaration. Rename any new `.Webp` files to `.webp` before importing.
 - **Wired containers (12 of 17 images):**
   - Outcome (2): Guidelines + Journey_Map — ZoomableImage
   - Producer carousel (2): Kiosk_Benefits + Competitor_Analysis — ZoomableImage `noDrag`
@@ -352,7 +354,7 @@ Ephemeral takeaways added and then reverted:
 - `components/_orig_carousel.tsx.bak` (backup file)
 - `lib/useInView.ts` + `lib/` folder (0 references)
 - Root orphans: `main.jsx`, `wordmark.jsx`, `NEW-artist-designer-handwriting.html` (ported into `components/ArtistDesignerWordmark.tsx` a while back)
-- `app/projects/frogslayer/images/` (72 MB duplicate — Next.js can't serve from `/app/`; canonical copy lives at `/public/img/frogslayer/`)
+- `public/img/frogslayer/` — the WRONG-location duplicate. Canonical images live at `/app/projects/frogslayer/images/` (co-located with the route) and are ES-module-imported in `page.tsx`. Do not resurrect the `/public/img/frogslayer/` copy.
 
 ---
 

@@ -4,10 +4,22 @@ import UsabilityRound, { InsightCard } from "@/components/UsabilityRound";
 import ResearchCarousel from "@/components/ResearchCarousel";
 import ZoomableImage from "@/components/ZoomableImage";
 
-/* GitHub Pages serves under /Portfolio in production; empty in dev so
-   images resolve from localhost. Same pattern as JT case study. */
-const basePath =
-  process.env.NODE_ENV === "production" ? "/Portfolio" : "";
+/* Case-study images are co-located with the route — imported as ES
+   modules so Webpack bundles them into /_next/static/media/ at build
+   time with hashed filenames. basePath is applied automatically by
+   Next.js, so no manual /Portfolio prefixing needed. */
+import outcomeGuidelines from "./images/Guidelines.webp";
+import outcomeJourneyMap from "./images/Journey_Map.png";
+import producerKioskBenefits from "./images/Kiosk_Benefits.webp";
+import producerCompetitorAnalysis from "./images/Competitor_Analysis_Visual.webp";
+import consumerKioskComponents from "./images/Components_Of_Kiosk_Interfaces_Visual.webp";
+import consumerUserObservation from "./images/User_Observation_Visual.png";
+import consumerUserInterview from "./images/User_Interview_Visual.png";
+import ideatingCrazyEights from "./images/Crazy_Eights.png";
+import ideatingObservationFlow from "./images/Observation_User_Flow.png";
+import ideatingBaseWireframes from "./images/Base_Wireframes.png";
+import verifyingInitialPrototype from "./images/Initial_Prototype.png";
+import verifyingFinalPrototype from "./images/Final_Prototype.png";
 
 export const metadata = {
   title: "Kiosk Interface Design Guidelines — Kathleen Li",
@@ -60,7 +72,7 @@ export default function FrogslayerCaseStudy() {
           </p>
           <div className="case-image-row">
             <ZoomableImage
-              src={`${basePath}/img/frogslayer/Guidelines.Webp`}
+              src={outcomeGuidelines.src}
               alt="Kiosk design guidelines deck — NN/g-style heuristics for hospitality and entertainment kiosks."
               aspectRatio={8820 / 4766}
               caption={
@@ -71,7 +83,7 @@ export default function FrogslayerCaseStudy() {
               }
             />
             <ZoomableImage
-              src={`${basePath}/img/frogslayer/Journey_Map.Webp.png`}
+              src={outcomeJourneyMap.src}
               alt="User journey map of the final validated kiosk flow with emotion dips flagged."
               aspectRatio={5024 / 2366}
               caption={
@@ -169,7 +181,7 @@ export default function FrogslayerCaseStudy() {
                     </div>
                     <div className="rq-block__visual">
                       <ZoomableImage
-                        src={`${basePath}/img/frogslayer/Kiosk_Benefits.Webp`}
+                        src={producerKioskBenefits.src}
                         alt="Secondary-research synthesis on why businesses and users choose kiosks over staffed counters."
                         aspectRatio={13205 / 7607}
                         noDrag
@@ -201,7 +213,7 @@ export default function FrogslayerCaseStudy() {
                     </div>
                     <div className="rq-block__visual">
                       <ZoomableImage
-                        src={`${basePath}/img/frogslayer/Competitor_Analysis_Visual.Webp`}
+                        src={producerCompetitorAnalysis.src}
                         alt="Competitive analysis of kiosk-industry companies — current design conventions and patterns."
                         aspectRatio={9126 / 4145}
                         noDrag
@@ -246,7 +258,7 @@ export default function FrogslayerCaseStudy() {
                     </div>
                     <div className="rq-block__visual">
                       <ZoomableImage
-                        src={`${basePath}/img/frogslayer/Components_Of_Kiosk_Interfaces_Visual.Webp`}
+                        src={consumerKioskComponents.src}
                         alt="Secondary-research synthesis of gaps in current kiosk-interface components across the industry."
                         aspectRatio={5239 / 3374}
                         noDrag
@@ -281,7 +293,7 @@ export default function FrogslayerCaseStudy() {
                     </div>
                     <div className="rq-block__visual">
                       <ZoomableImage
-                        src={`${basePath}/img/frogslayer/User_Observation_Visual.png`}
+                        src={consumerUserObservation.src}
                         alt="Field observation journey map from participants completing real card-purchase/reload tasks at an entertainment center."
                         aspectRatio={9745 / 6599}
                         noDrag
@@ -316,7 +328,7 @@ export default function FrogslayerCaseStudy() {
                     </div>
                     <div className="rq-block__visual">
                       <ZoomableImage
-                        src={`${basePath}/img/frogslayer/User_Interview_Visual.png`}
+                        src={consumerUserInterview.src}
                         alt="User interview insights board — how users feel about using kiosks, clustered by theme."
                         aspectRatio={8272 / 4613}
                         noDrag
@@ -351,7 +363,7 @@ export default function FrogslayerCaseStudy() {
           </p>
           <div className="visual-compact">
             <ZoomableImage
-              src={`${basePath}/img/frogslayer/Crazy_Eights.png`}
+              src={ideatingCrazyEights.src}
               alt="My Crazy 8's sketch sheet — individual ideation quadrants of arcade kiosk feature concepts before team walkthrough."
               aspectRatio={8446 / 4981}
               caption={<>My ideated arcade kiosk user flow</>}
@@ -367,14 +379,14 @@ export default function FrogslayerCaseStudy() {
           </p>
           <div className="case-image-row with-arrow">
             <ZoomableImage
-              src={`${basePath}/img/frogslayer/Observation_User_Flow.png`}
+              src={ideatingObservationFlow.src}
               alt="Initial user flow based directly on the field-observation kiosk flow, before any feature additions."
               aspectRatio={3654 / 4120}
               caption={<>Initial user flow based on field-observation flow</>}
             />
             <span className="arrow-sep">→</span>
             <ZoomableImage
-              src={`${basePath}/img/frogslayer/Base_Wireframes.png`}
+              src={ideatingBaseWireframes.src}
               alt="Iterated user flow with ideated features integrated into the base kiosk arcade flow."
               aspectRatio={5591 / 4716}
               caption={<>Iterated user flow consisting of ideated features</>}
@@ -401,7 +413,7 @@ export default function FrogslayerCaseStudy() {
           </p>
           <div className="usability-flow-anchor">
             <ZoomableImage
-              src={`${basePath}/img/frogslayer/Initial_Prototype.png`}
+              src={verifyingInitialPrototype.src}
               alt="Initial user flow prototype taken into Round 1 — built from field observations, before any iteration."
               aspectRatio={7016 / 3306}
               caption={
@@ -533,7 +545,7 @@ export default function FrogslayerCaseStudy() {
           </p>
           <div className="usability-flow-anchor">
             <ZoomableImage
-              src={`${basePath}/img/frogslayer/Final_Prototype.png`}
+              src={verifyingFinalPrototype.src}
               alt="Final user flow prototype after three rounds of testing — Join-for-Free surfaced, cash-payment flow dedicated, buttons unified."
               aspectRatio={4634 / 3514}
               caption={

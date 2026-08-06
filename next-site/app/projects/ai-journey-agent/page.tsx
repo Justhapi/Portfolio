@@ -3,8 +3,19 @@ import CaseSectionNav from "@/components/CaseSectionNav";
 import ZoomableImage from "@/components/ZoomableImage";
 import StaticImage from "@/components/StaticImage";
 
-const basePath =
-  process.env.NODE_ENV === "production" ? "/Portfolio" : "";
+/* Case-study images are co-located with the route — imported as ES
+   modules so Webpack bundles them into /_next/static/media/ at build
+   time with hashed filenames. basePath (/Portfolio in prod) is
+   applied automatically by Next.js, so no manual prefixing needed. */
+import platformAudit from "./images/Platform_Audit_Visual.webp";
+import agentComponents from "./images/Ai_Agent_Components_Visual.webp";
+import directCompetitor from "./images/Direct_Competitor_Visual.webp";
+import interactionPattern from "./images/Interaction_Pattern_Visual.webp";
+import interviewNotes from "./images/Interviews_Visuals.webp";
+import interviewAffinity from "./images/Interview_Affinity_Diagramming.webp";
+import crazyEightSketch from "./images/Crazy_Eight_Sketch.webp";
+import whiteboardConcept from "./images/Whiteboard_Concept.webp";
+import usabilityTesting from "./images/Usability_Test_Feedback_Visual.png";
 
 export const metadata = {
   title: "AI Journey Map Maintenance Agent — Kathleen Li",
@@ -135,7 +146,7 @@ export default function AIJourneyAgentCaseStudy() {
               </p>
               <figure>
                 <StaticImage
-                  src={`${basePath}/img/journey-agent/platform-audit.webp`}
+                  src={platformAudit.src}
                   alt="Platform audit board — sticky notes on screenshots. All content anonymized; sponsor name and specific findings replaced with category-level labels."
                   aspectRatio={1556 / 2200}
                   caption={
@@ -157,7 +168,7 @@ export default function AIJourneyAgentCaseStudy() {
               </p>
               <figure>
                 <StaticImage
-                  src={`${basePath}/img/journey-agent/agent-components.webp`}
+                  src={agentComponents.src}
                   alt="Agent-components synthesis board — five research-lens categories with sticker clusters. Sticker content blurred; framework structure and section labels legible."
                   aspectRatio={3000 / 2052}
                   caption={
@@ -186,7 +197,7 @@ export default function AIJourneyAgentCaseStudy() {
               </p>
               <figure>
                 <StaticImage
-                  src={`${basePath}/img/journey-agent/direct-competitor.webp`}
+                  src={directCompetitor.src}
                   alt="Direct-competitor analysis board — three columns: Agent & User Interactions, Agent's Components within Platform, Agent's Pain Points. Screenshots blurred, sticker text category-level only. Competitor logo redacted."
                   aspectRatio={3000 / 741}
                   caption={
@@ -214,7 +225,7 @@ export default function AIJourneyAgentCaseStudy() {
           </p>
           <figure>
             <StaticImage
-              src={`${basePath}/img/journey-agent/interaction-pattern.webp`}
+              src={interactionPattern.src}
               alt="Interaction-pattern synthesis: Nielsen 10-heuristic evaluation of a competitor platform + agent, paired with four user-flow diagrams categorized by content-manipulation type. Screenshots blurred; sticker text category-level only."
               aspectRatio={2567 / 3000}
               caption={
@@ -242,7 +253,7 @@ export default function AIJourneyAgentCaseStudy() {
           </p>
           <figure>
             <StaticImage
-              src={`${basePath}/img/journey-agent/interview-notes.webp`}
+              src={interviewNotes.src}
               alt="Session notes from the three interviews I participated in — text blurred so note-taking structure and volume read without exposing participant-level findings."
               aspectRatio={3000 / 2121}
               caption={
@@ -255,7 +266,7 @@ export default function AIJourneyAgentCaseStudy() {
           </figure>
           <figure>
             <StaticImage
-              src={`${basePath}/img/journey-agent/interview-affinity.webp`}
+              src={interviewAffinity.src}
               alt="Cross-session affinity diagram — nine themed clusters with headers visible, individual sticky-note content blurred. Draws from all six interviews."
               aspectRatio={3000 / 1555}
               caption={
@@ -284,7 +295,7 @@ export default function AIJourneyAgentCaseStudy() {
           </p>
           <figure>
             <ZoomableImage
-              src={`${basePath}/img/journey-agent/crazy-eight-sketch.webp`}
+              src={crazyEightSketch.src}
               alt="My Crazy 8's sketch sheet — hand-drawn low-fidelity ideation quadrants exploring AI-agent feature concepts."
               aspectRatio={3000 / 2110}
               caption={
@@ -304,7 +315,7 @@ export default function AIJourneyAgentCaseStudy() {
           </p>
           <figure>
             <ZoomableImage
-              src={`${basePath}/img/journey-agent/whiteboard-concept.webp`}
+              src={whiteboardConcept.src}
               alt="Whiteboarding session I led on a rules-based direction that was ultimately not selected. Shown at full content pending sponsor review."
               aspectRatio={3000 / 2035}
               caption={
@@ -367,7 +378,7 @@ export default function AIJourneyAgentCaseStudy() {
           </p>
           <figure>
             <StaticImage
-              src={`${basePath}/img/journey-agent/usability-testing.webp`}
+              src={usabilityTesting.src}
               alt="Usability-testing feedback affinity — four rows: Task 1 (Initial Navigation), Task 2 (Informed Map Modifications / Updating), Task 3 (Further AI Agent Interactions), Reflections (General Thoughts of Concept and User Flow). Sticky-note content blurred; row labels legible."
               aspectRatio={3000 / 2178}
               caption={
