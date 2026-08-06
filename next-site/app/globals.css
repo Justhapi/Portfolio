@@ -3879,6 +3879,66 @@ em.it { font-style: italic; }
 }
 .case-pullquote cite::before { content: "— "; }
 
+/* Focus list — used in Frogslayer > Researching > Aligning with the
+   Sponsor to enumerate the three research focuses. Simple bullet list
+   with a slightly warmed marker so it reads as intentional summary
+   (not generic browser bullets). Kept minimal because it's a 3-item
+   inline block inside body prose, not a standalone data list. */
+.case-section ul.focus-list {
+  list-style: disc outside;
+  margin: 0 0 24px 0;
+  padding-left: 26px;
+  font-family: var(--f-cookie);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--fg);
+}
+.case-section ul.focus-list li {
+  margin-bottom: 4px;
+}
+.case-section ul.focus-list li::marker {
+  color: var(--accent-on-cream);
+}
+
+/* ── Outcome callout ─────────────────────────────────────────────────────
+   Elevated banner for the single strongest outcome claim in a case study
+   (used in JT Outcome — sponsor shipped a matching concept to beta ~30
+   days after handoff). Distinct from .case-pullquote (Klee One editorial
+   quote) — the callout is a factual claim, not a quote, so it uses the
+   display face (K2D) and a warmer accent surface. Positioned above the
+   body-copy Outcome paragraph so a 30-second skimmer gets the killer
+   fact before diving into narrative. */
+.outcome-callout {
+  margin: 8px 0 40px;
+  padding: 22px 26px 20px;
+  background: rgb(var(--accent-rgb, 154 109 76) / 0.08);
+  border-left: 4px solid var(--accent-on-cream);
+  border-radius: 4px;
+  max-width: 640px;
+}
+.outcome-callout__stat {
+  margin: 0;
+  font-family: var(--f-display);
+  font-weight: 500;
+  font-size: clamp(17px, 1.55vw, 20px);
+  line-height: 1.4;
+  color: var(--fg);
+  letter-spacing: -0.005em;
+}
+.outcome-callout__stat strong {
+  color: var(--accent-on-cream);
+  font-weight: 800;
+}
+.outcome-callout__meta {
+  margin: 12px 0 0;
+  font-family: var(--f-mono);
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgb(var(--fg-rgb) / 0.6);
+}
+
 /* ── Case body scroll-reveal ───────────────────────────────────────────────
    CaseReveal.tsx sets data-case-animate="ready" on mount, activating the
    hidden state below. Each .case-section > * and .case-disclaimer get

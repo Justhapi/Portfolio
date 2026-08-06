@@ -41,7 +41,7 @@ export default function FrogslayerCaseStudy() {
           <p>
             The semester resulted in a <mark className="hl">validated set of best-practice design guidelines for entertainment and hospitality kiosk interfaces</mark>, modeled after Nielsen Norman Group&rsquo;s design heuristics and handed off to Frogslayer alongside a final journey map and recommended next steps.
             <br></br><br></br>
-            Rather than shipping a single polished product, we <mark className="hl">used a mid-fidelity prototype as a research instrument</mark> — three rounds of usability testing (including an A/B test of two loyalty program models) grounded every guideline in observed user behavior rather than assumption. A key applied finding: <mark className="hl">an upsell-based loyalty model outperformed a tier-based one for arcade kiosks</mark>, and surfacing &ldquo;Join for Free&rdquo; prominently was the single biggest conversion driver.
+            Rather than shipping a single polished product, we used a mid-fidelity prototype as a research instrument — three rounds of usability testing (including an A/B test of two loyalty program models) grounded every guideline in observed user behavior rather than assumption. A key applied finding: <mark className="hl">an upsell-based loyalty model outperformed a tier-based one for arcade kiosks</mark>, and surfacing &ldquo;Join for Free&rdquo; prominently was the single biggest conversion driver.
           </p>
           <div className="case-image-row">
             <figure>
@@ -73,18 +73,15 @@ export default function FrogslayerCaseStudy() {
             <br></br><br></br>
             Interactive kiosks in public hospitality and entertainment venues consistently create <mark className="hl">user frustration, anxiety, and privacy concerns</mark> — driven by confusing navigation, inefficient use of screen real estate, and designs that ignore the public, high-traffic context they live in.
             <br></br><br></br>
-            Kiosks are a <mark className="hl">billion-dollar industry</mark>, yet their design is fragmented and inconsistent: businesses keep repeating the same usability mistakes because <mark className="hl">no evidence-based, standardized guidelines exist</mark> for designers to build against. Frogslayer wanted a guideline set that could <mark className="hl">apply across future kiosk projects</mark> to resolve that gap.
+            Kiosks are a billion-dollar industry, yet their design is fragmented and inconsistent: businesses keep repeating the same usability mistakes because <mark className="hl">no evidence-based, standardized guidelines exist</mark> for designers to build against. Frogslayer wanted a guideline set that could apply across future kiosk projects to resolve that gap.
           </p>
           <h3>My Role</h3>
           <p>
             During the project, I was the team&rsquo;s <mark className="hl">primary point of contact</mark> with
-            Frogslayer&rsquo;s product team, maintaining <mark className="hl">both sides' mutual understanding of the project's progression</mark>, 
-            and <mark className="hl">co-led through internal planning and defining of
-            specific actions</mark> for the project's success. 
+            Frogslayer&rsquo;s product team, maintaining both sides&rsquo; mutual understanding of the project&rsquo;s progression, and co-led through internal planning and defining of specific actions for the project&rsquo;s success.
             <br></br>
             <br></br>
-            Regarding design, I also contributed through <mark className="hl">researching the current state of kiosk design, building the base low-fi user flow, constructed the usability testing prototypes, and iterated on the
-            prototypes to address user insights.</mark>
+            Regarding design, I contributed through researching the current state of kiosk design, building the base low-fi user flow, constructing the usability testing prototypes, and iterating on them to address user insights.
           </p>
         </section>
 
@@ -93,25 +90,25 @@ export default function FrogslayerCaseStudy() {
           <h2>Researching</h2>
           <h3>Aligning with the Sponsor</h3>
           <p>
-            Due to the <mark className="hl">problem scope initially being vague</mark> with &ldquo;Design kiosk interface guidelines verified through
-            research&rdquo;, we understood the need to <mark className="hl">immediately narrow down the broad scope for tangible results.</mark>
+            The problem scope initially arrived vague — &ldquo;design kiosk interface guidelines verified through research&rdquo; — so we understood the need to <mark className="hl">immediately narrow down the broad scope for tangible results.</mark>
             <br></br><br></br>
-            We began with a <mark className="hl">content audit of Frogslayer&rsquo;s prior internal research</mark>, including an existing Figma prototype. This revealed the sponsor&rsquo;s previous focus on <mark className="hl">interface ergonomics</mark> — and clarified that they wanted us to research <mark className="hl">in the opposite, externally oriented direction</mark>: how a consumer&rsquo;s environment affects kiosk use. It also confirmed <mark className="hl">loyalty programs as a secondary focus</mark> of the deliverable.
-            <br></br><br></br>
-            The audit ultimately pointed us toward the following focuses:
-            <br></br><br></br>
-            <strong>
-            <ul>Hospitality &amp; entertainment industry</ul>
-            <ul>Loyalty programs</ul>
-            <ul>External environment (not internal ergonomics)</ul>
-            </strong>
+            We began with a content audit of Frogslayer&rsquo;s prior internal research, including an existing Figma prototype. This revealed the sponsor&rsquo;s previous focus on interface ergonomics — and clarified that they wanted us to research <mark className="hl">in the opposite, externally oriented direction</mark>: how a consumer&rsquo;s environment affects kiosk use. It also confirmed loyalty programs as a secondary focus of the deliverable.
           </p>
+          <p>The audit ultimately pointed us toward the following focuses:</p>
+          {/* Focus list — pulled OUT of the <p> above; nesting <ul> inside
+              <p> is invalid HTML and was triggering a Next.js hydration
+              error (browsers auto-close <p> when they encounter <ul>). */}
+          <ul className="focus-list">
+            <li><strong>Hospitality &amp; entertainment industry</strong></li>
+            <li><strong>Loyalty programs</strong></li>
+            <li><strong>External environment (not internal ergonomics)</strong></li>
+          </ul>
           <h3>Understanding the Current State Internally and Externally</h3>
           <p>
             After determining our focuses, we built our foundation through <mark className="hl">four
             guiding questions</mark> — the first three grounded in secondary research on the kiosk
             industry (folded into the first carousel below), and the fourth grounded in firsthand
-            user interviews AND field observations, which we ran as two separate activities with
+            user interviews and field observations, which we ran as two separate activities with
             different participants (second carousel).
           </p>
 
@@ -162,8 +159,8 @@ export default function FrogslayerCaseStudy() {
                       <p className="rq-lead">
                         Understanding why businesses and users choose kiosks over staffed counters
                         helped us identify the <mark className="hl">value users implicitly expect</mark>
-                        {" "}to retain — and what our design couldn&rsquo;t break without breaking the
-                        appeal.
+                        {" "}to retain — and what our design couldn&rsquo;t break without breaking
+                        the appeal.
                       </p>
                       <p className="rq-findings-lead"><strong>What we found:</strong></p>
                       <ul className="rq-findings-list">
@@ -227,17 +224,16 @@ export default function FrogslayerCaseStudy() {
                         &ldquo;How do users actually behave on kiosks in context?&rdquo;
                       </h4>
                       <p className="rq-lead">
-                        We observed participants completing <mark className="hl">real tasks —
-                        purchasing and reloading play cards</mark> — on kiosks at an indoor
-                        entertainment center, converting each session into a journey map. Behavior
-                        in the actual environment surfaced friction that self-report could never
-                        catch.
+                        We observed participants completing real tasks — purchasing and reloading
+                        play cards — on kiosks at an indoor entertainment center, converting each
+                        session into a journey map. Behavior in the actual environment surfaced
+                        friction that self-report could never catch.
                       </p>
                       <p className="rq-findings-lead"><strong>What we found:</strong></p>
                       <ul className="rq-findings-list">
                         <li><mark className="hl">Payment interactions were the biggest point of confusion</mark> — tap vs. swipe vs. insert, which reader to use</li>
                         <li>Screen real estate was poorly utilized — most content clustered mid-screen</li>
-                        <li><mark className="hl">Stressful auditory countdown cues damaged user confidence</mark> mid-task</li>
+                        <li>Stressful auditory countdown cues damaged user confidence mid-task</li>
                         <li>External environmental factors (noise, crowd pressure, glare) affected users unevenly</li>
                       </ul>
                     </div>
@@ -295,16 +291,19 @@ export default function FrogslayerCaseStudy() {
             through quick sketching arcade kiosk user flows before reconvening.</mark>
           </p>
           <p>
-            After <mark className="hl">discussing and assessing each other's indivdual feature ideas</mark>, we ultimately decided to include the 
-            following features into the usability test flow for testing:
+            After discussing and assessing each other&rsquo;s individual feature ideas, we
+            ultimately decided to include the following features into the usability test flow for
+            testing:
           </p>
           <figure>
             <div className="image-slot">ideated arcade kiosk flow</div>
             <figcaption>My ideated arcade kiosk user flow</figcaption>
           </figure>
           <p>
-            To focus more on the features' implementation, we <mark className="hl">imported a base kiosk arcade user flow copied from user observations </mark>
-            to <mark className="hl">quickly finish designing the wireframes</mark> into an interactive prototype.
+            To focus more on the features&rsquo; implementation, we imported a base kiosk arcade
+            user flow copied from user observations to{" "}
+            <mark className="hl">quickly finish designing the wireframes</mark> into an interactive
+            prototype.
           </p>
           <div className="case-image-row with-arrow">
             <figure>
@@ -324,12 +323,17 @@ export default function FrogslayerCaseStudy() {
           <h2>Verifying</h2>
           <h3>Validating and Retesting with User Insights</h3>
           <p>
-            We ran <mark className="hl">three rounds of moderated usability testing</mark> at the Purdue Memorial
-            Union (PMU), chosen to <mark className="hl">simulate the busy, distracting atmosphere of a real arcade</mark>. The prototype was <mark className="hl">used as a research instrument, not a shippable product</mark> — between
-            rounds it was iterated against the recorded friction points, not our own opinions, so every change
-            was small, defensible, and directly traceable to a user behavior.
+            We ran <mark className="hl">three rounds of moderated usability testing</mark> at the
+            Purdue Memorial Union (PMU), chosen to simulate the busy, distracting atmosphere of a
+            real arcade. The prototype was used as a research instrument, not a shippable product —
+            between rounds it was iterated against the recorded friction points, not our own
+            opinions, so every change was small, defensible, and directly traceable to a user
+            behavior.
             <br></br><br></br>
-            Field observations before testing had already surfaced the highest-friction moments: <mark className="hl">payment interactions were the biggest point of confusion</mark> (tap vs. swipe vs. insert), and <mark className="hl">stressful auditory countdown cues damaged user confidence</mark>.
+            Field observations before testing had already surfaced the highest-friction moments:{" "}
+            <mark className="hl">payment interactions were the biggest point of confusion</mark>{" "}
+            (tap vs. swipe vs. insert), and stressful auditory countdown cues damaged user
+            confidence.
           </p>
 
           {/* User flow anchor — the FIRST version, as it existed before
@@ -477,19 +481,20 @@ export default function FrogslayerCaseStudy() {
           </figure>
 
           <p>
-            By round 3 the loyalty program — initially the biggest source of friction — had been reshaped into a
-            <mark className="hl"> &ldquo;Join for Free&rdquo; upsell with clear pricing</mark>, and the interface
-            itself was validated as intuitive at first contact. With both confirmed, the team moved into guideline
-            synthesis.
+            By round 3 the loyalty program — initially the biggest source of friction — had been
+            reshaped into a{" "}
+            <mark className="hl">&ldquo;Join for Free&rdquo; upsell with clear pricing</mark>, and
+            the interface itself was validated as intuitive at first contact. With both confirmed,
+            the team moved into guideline synthesis.
           </p>
           <p>
-            We compiled findings into a final journey map demonstrating the validated flow, then ran a
-            <mark className="hl"> guideline workshop</mark> with our project owner to categorize insights into
-            <mark className="hl"> Marketing/Loyalty Programs, UX/UI, and Social Implications/Physical Placement</mark>{" "}
-            — formatted after NN/g&rsquo;s design heuristics as the most comprehensive yet minimal model. Handoff
-            included honest limitations and next steps: testing loyalty models beyond tiers/upsells, diversifying
-            venues beyond arcades, widening the tester demographic beyond college students, and validating with
-            real purchase stakes.
+            We compiled findings into a final journey map demonstrating the validated flow, then
+            ran a guideline workshop with our project owner to categorize insights into{" "}
+            <mark className="hl">Marketing/Loyalty Programs, UX/UI, and Social Implications/Physical Placement</mark>{" "}
+            — formatted after NN/g&rsquo;s design heuristics as the most comprehensive yet minimal
+            model. Handoff included honest limitations and next steps: testing loyalty models
+            beyond tiers/upsells, diversifying venues beyond arcades, widening the tester
+            demographic beyond college students, and validating with real purchase stakes.
           </p>
         </section>
 
@@ -510,7 +515,7 @@ export default function FrogslayerCaseStudy() {
           <p>
             Designing a prototype <mark className="hl">as a tool for generating evidence, not as a product</mark>, changed how I evaluated every screen — each element existed to test a hypothesis, and the pull-quote above became the working rule for every review.
             <br></br><br></br>
-            The project also showed me how much <mark className="hl">environment is a design material</mark>: testing in a deliberately busy student union surfaced behaviors — skimming, rushing, tunnel vision on the screen — that a quiet lab never would have. User actions are shaped as much by <mark className="hl">habits and prior experiences with similar stimuli</mark> (phones, ads, familiar interfaces) as by the interface itself, so designing against those mental models is a losing battle; the guidelines work by leaning on them.
+            The project also showed me how much <mark className="hl">environment is a design material</mark>: testing in a deliberately busy student union surfaced behaviors — skimming, rushing, tunnel vision on the screen — that a quiet lab never would have. User actions are shaped as much by habits and prior experiences with similar stimuli (phones, ads, familiar interfaces) as by the interface itself, so designing against those mental models is a losing battle; the guidelines work by leaning on them.
           </p>
         </section>
       </main>
