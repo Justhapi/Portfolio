@@ -4285,27 +4285,39 @@ em.it { font-style: italic; }
    method is a small chip; prose gives context; findings are a
    clean bulleted list. */
 .rq-block {
-  margin: 32px 0 40px;
+  /* Bottom margin was 40px, contained inside .rc-viewport
+     (overflow: hidden) which added ~40px of dead space INSIDE the
+     card. Dropped to 8px so the carousel's viewport height hugs the
+     card content, and let the surrounding .research-carousel +
+     next-h3 top-margin handle the gap to the next section. */
+  margin: 32px 0 8px;
   padding: 24px 28px;
   background: rgba(0, 0, 0, 0.02);
   border-left: 3px solid rgb(var(--accent-rgb, 154 109 76) / 0.55);
   border-radius: 4px;
-  /* Always vertical — text block on top, visual below. Simpler
-     scannability than the previous two-column layout, and works
-     uniformly inside carousel slides + standalone. */
+  /* Horizontal by default — text block on the LEFT, visual on the
+     RIGHT — so a carousel card fits more comfortably inside a
+     laptop viewport height. Falls back to vertical stacking below
+     720px (see @media at the bottom of this block) so narrow windows
+     and tablet-portrait viewports don't crush either column. */
   display: flex;
-  flex-direction: column;
-  gap: 20px;
+  flex-direction: row;
+  align-items: center;
+  gap: 28px;
 }
 .rq-block + .rq-block {
   margin-top: 24px;
 }
 .rq-block__body {
   min-width: 0;
+  /* Text column gets slightly more room than the visual — the
+     text is the primary content, the visual is the reference. */
+  flex: 1 1 55%;
 }
 .rq-block__visual {
   min-width: 0;
   margin: 0;
+  flex: 0 1 45%;
 }
 .rq-block__visual .image-slot {
   width: 100%;
@@ -4378,6 +4390,22 @@ em.it { font-style: italic; }
 .rq-findings-list li {
   margin-bottom: 4px;
 }
+/* Narrow-window fallback — flip the rq-block from horizontal (text
+   left, visual right) back to vertical stacking. 720px is the
+   threshold where the text column would start feeling cramped
+   (~7-word lines) at the 55% split; below it, vertical stacking
+   gives both text and visual full-width breathing room. */
+@media (max-width: 720px) {
+  .rq-block {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 20px;
+  }
+  .rq-block__body,
+  .rq-block__visual {
+    flex: 1 1 auto;
+  }
+}
 @media (max-width: 640px) {
   .rq-block {
     padding: 20px 20px;
@@ -4395,7 +4423,11 @@ em.it { font-style: italic; }
    Dot styling intentionally mirrors .ur-dot so both carousels feel
    like part of the same interaction system across the case study. */
 .research-carousel {
-  margin: 32px 0 40px;
+  /* Bottom margin was 40px — halved to 20px since the h3 that follows
+     already carries its own 44px top-margin (see .case-section h3),
+     and margin collapse hands the larger of the two to the browser.
+     Keeps a small buffer if the next element ISN'T an h3. */
+  margin: 32px 0 20px;
   outline: none;
 }
 .rc-header {
@@ -4403,9 +4435,11 @@ em.it { font-style: italic; }
   align-items: baseline;
   flex-wrap: wrap;
   gap: 16px;
-  padding-bottom: 14px;
-  border-bottom: 1px solid var(--line);
-  margin-bottom: 16px;
+  /* No border-bottom + tighter bottom spacing — the dot tracker now
+     sits closer to the card viewport below, reinforcing the read that
+     the dots CONTROL the cards rather than sitting in a separate
+     header band. Was: padding-bottom 14px + border-bottom + margin-bottom 16px. */
+  margin-bottom: 8px;
 }
 .rc-title {
   font-family: var(--f-display);

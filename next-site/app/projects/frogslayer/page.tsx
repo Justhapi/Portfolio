@@ -141,16 +141,16 @@ export default function FrogslayerCaseStudy() {
 
           <h3>Establishing the Evidence Base</h3>
           <p>
-            With the scope determined, we then researched to answer <mark className="hl"> the following three guiding questions</mark> to
-            build a strong foundation regarding the producer aspect of kiosk design:
+            With scope locked, we built our foundation through five guiding questions — split
+            across the two perspectives our guidelines needed to serve:{" "}
+            <mark className="hl">the producer side (how businesses build kiosks) and the consumer side (how users experience them)</mark>.
+            Starting with the producer side, two industry-literature-grounded questions:
           </p>
           <ul className="focus-list">
-            <li><strong>What are the gaps of kiosks?</strong></li>
             <li><strong>Why is a kiosk preferable to alternatives?</strong></li>
             <li><strong>How are companies designing kiosk interfaces today?</strong></li>
           </ul>
           <ResearchCarousel
-            title="Secondary Research"
             slides={[
               {
                 key: "preferable",
@@ -183,7 +183,7 @@ export default function FrogslayerCaseStudy() {
                 content: (
                   <div className="rq-block">
                     <div className="rq-block__body">
-                      <span className="rq-method-chip">Secondary Research</span>
+                      <span className="rq-method-chip">Competitive Analysis</span>
                       <h4 className="rq-heading">&ldquo;How are companies designing kiosk interfaces today?&rdquo;</h4>
                       <p className="rq-lead">
                         A competitive analysis of kiosk-industry companies mapped{" "}
@@ -207,14 +207,15 @@ export default function FrogslayerCaseStudy() {
               },
             ]}
           />
-
           <h3>Gathering Firsthand User Insight</h3>
           <p>
-            After examining the business side of kiosks <mark className="hl">direct user insights</mark> that we gained through field 
-            observations for user interactions and interviews for user perspectives.
+            Then we shifted to the{" "}
+            <mark className="hl">consumer side — how users actually experience kiosks</mark>. Three
+            questions total: one framed by industry literature on kiosk-user gaps, and two
+            grounded in firsthand user contact (field observations and interviews, run with
+            separate participant cohorts).
           </p>
           <ResearchCarousel
-            title="User Interviews & Field Observations"
             slides={[
               {
                 key: "gaps",
