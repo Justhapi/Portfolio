@@ -67,7 +67,7 @@ export default function AIJourneyAgentCaseStudy() {
           </aside>
 
           <p>
-            We delivered a <mark className="hl"> concept condensed into a high-fidelity interactive prototype and 
+            We delivered a <mark className="hl"> concept expressed through a high-fidelity interactive prototype and 
             design-principle documentation </mark>{" "} to the sponsor&rsquo;s leadership. The deliverables defined
             <mark className="hl"> an AI maintenance agent</mark> that could keep customer journey maps accurate and trustworthy over time.
           </p>
@@ -111,9 +111,9 @@ export default function AIJourneyAgentCaseStudy() {
         {/* ───── Researching ───── */}
         <section id="researching" className="case-section">
           <h2>Researching</h2>
-          <h3>Understanding What Makes an AI Maintenance Agent Effective in Exisiting Platform</h3>
+          <h3>Understanding What Makes an AI Maintenance Agent Effective in Existing Platform</h3>
           <p>
-            To understand how to effectively ideate an AI maintenance agent, we explored four research focuses: the platform&rsquo;s current state,
+            To effeciently conceptualize an AI maintenance agent, we explored four research focuses: the platform&rsquo;s current state,
             the agent&rsquo;s required components, the current industry, and the current user
             needs.
           </p>
@@ -349,8 +349,7 @@ export default function AIJourneyAgentCaseStudy() {
           <h3>Hi-Fi Prototyping</h3>
           <p>
             We built an interactive Figma prototype that expressed the unified concept end-to-end
-            through user flows, applying the{" "}
-            <mark className="hl">trust principles the research had surfaced</mark>.
+            through user flows, applying the{" "} <mark className="hl">insights the research had surfaced</mark>.
             <br></br><br></br>
             Because the prototype was constructed directly on the sponsor&rsquo;s platform
             surface, the screens themselves aren&rsquo;t shown here.
@@ -389,6 +388,15 @@ export default function AIJourneyAgentCaseStudy() {
         {/* ───── Takeaways ───── */}
         <section id="takeaways" className="case-section">
           <h2>Takeaways</h2>
+
+          <h3>Trust is the Feature</h3>
+          <p>
+            The core design lesson from this project: for AI that edits people&rsquo;s work,{" "}
+            <mark className="hl">trust is the feature</mark>. Every mechanism that tested well was
+            a trust mechanism first and an interaction second — earned attention, not demanded
+            attention.
+          </p>
+
           <h3>Design Decision-Making Related to Platform</h3>
           <p>
             This project was my first time{" "}
