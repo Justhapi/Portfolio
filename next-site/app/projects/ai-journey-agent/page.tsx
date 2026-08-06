@@ -394,8 +394,8 @@ export default function AIJourneyAgentCaseStudy() {
             This project was my first time{" "}
             <mark className="hl">designing within an existing product context and design system</mark>.
             The first half was exploratory and general regarding takeaways, but the second half
-            focused heavily on the platform&rsquo;s own needs — which made it natural to narrow
-            down which findings to apply to the final product later in the project.
+            focused heavily on the platform&rsquo;s own needs, making it natural to narrow
+            down findings to apply to the final product later on.
             <br></br><br></br>
             <mark className="hl">Narrowing down scope was a challenge I had previously addressed early</mark> on when
             constructing the first set of guidelines for Frogslayer. I now understand that
