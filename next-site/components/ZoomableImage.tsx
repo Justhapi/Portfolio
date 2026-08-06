@@ -336,6 +336,12 @@ export default function ZoomableImage({
            page scroll via JS — preventDefault alone can't stop that
            because Lenis isn't using the browser's native scroll. */
         data-lenis-prevent
+        /* Stop pointerdown from bubbling to any parent-carousel drag
+           handler. This makes the image container a "safe zone" — the
+           user can interact inside it (drag to explore, click reset,
+           hover to auto-pan) without the enclosing carousel treating
+           the same gesture as a slide-nav swipe. */
+        onPointerDown={(e) => e.stopPropagation()}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={endDrag}

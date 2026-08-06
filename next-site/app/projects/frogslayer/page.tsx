@@ -545,16 +545,6 @@ export default function FrogslayerCaseStudy() {
               }
             />
           </div>
-          <h3>Synthesizing into Guidelines</h3>
-          <p>
-            We compiled findings into a final journey map demonstrating the validated flow, then
-            ran a guideline workshop with our project owner to categorize insights into{" "}
-            <mark className="hl">Marketing/Loyalty Programs, UX/UI, and Social Implications/Physical Placement</mark>{" "}
-            — formatted after NN/g&rsquo;s design heuristics as the most comprehensive yet minimal
-            model. Handoff included honest limitations and next steps: testing loyalty models
-            beyond tiers/upsells, diversifying venues beyond arcades, widening the tester
-            demographic beyond college students, and validating with real purchase stakes.
-          </p>
         </section>
         <section id="takeaways" className="case-section">
           <h2>Takeaways</h2>
