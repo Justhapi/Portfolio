@@ -4310,6 +4310,14 @@ em.it { font-style: italic; }
 .rq-block__visual .image-slot {
   width: 100%;
   aspect-ratio: 16 / 9;
+  /* Cap the visual's height so a carousel card never exceeds the
+     viewport — otherwise the section h3 + intro paragraph above the
+     carousel get pushed off-screen whenever a card is centered. 32vh
+     leaves room for the ~150px of text above the visual + carousel
+     chrome, keeping the whole card comfortably inside a laptop
+     viewport. Width stays 100%; when max-height clamps in, the visual
+     just reads as a wider-than-16:9 band rather than a tall block. */
+  max-height: 32vh;
   background: var(--paper);
   border-radius: 4px;
   display: flex;

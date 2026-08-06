@@ -33,12 +33,31 @@ export default function ResearchHubCaseStudy() {
         {/* ───── Outcome ───── (moved to top: recruiters see outcome first) */}
         <section id="outcome" className="case-section">
           <h2>Outcome</h2>
+
+          {/* Outcome callout — matches the JT/Frogslayer pattern. The
+              killer stat is that the redesign ships to real students +
+              faculty the semester after handoff, and that some new
+              features were surfaced by my own research (not the brief). */}
+          <aside className="outcome-callout" aria-label="Project outcome">
+            <p className="outcome-callout__stat">
+              <strong>Planned to ship summer 2026</strong> — the redesign + new features go live
+              for the next semester&rsquo;s cohort of Purdue students and faculty.
+            </p>
+            <p className="outcome-callout__meta">
+              Spring 2026 · Purdue Stack · design + build → summer ship
+            </p>
+          </aside>
+
           <p>
-            The semester-long project resulted in a <mark className="hl">redesign of ResearchHub</mark>, a Purdue-specific research collaboration platform, <mark className="hl">with new additional features,</mark>{" "}
-            planned to ship in summer 2026 for students and faculty to use the
-            following semester.
+            The semester-long project resulted in a{" "}
+            <mark className="hl">redesign of ResearchHub</mark>, a Purdue-specific research
+            collaboration platform, with new additional features planned to ship in summer 2026 for
+            students and faculty to use the following semester.
             <br></br><br></br>
-            Some of the new features were <mark className="hl">directly requested by our client, Professor Reese</mark> (a professor from the stats department); others were made to <mark className="hl">address student needs, specifically around communication and maintenance</mark> — needs that surfaced through my own user research rather than the original brief.
+            Some of the new features were directly requested by our client, Professor Reese (a
+            professor from the stats department); others were made to{" "}
+            <mark className="hl">address student needs, specifically around communication and maintenance</mark>
+            {" "}— needs that surfaced through my own user research rather than the original brief.
           </p>
         </section>
 
@@ -60,15 +79,28 @@ export default function ResearchHubCaseStudy() {
 
           <h3>My Role</h3>
           <p>
-            During the project I was the <mark className="hl">sole UI designer, later a Design Engineer,</mark> in the 6-person Purdue Stack team alongside 5 full-stack developers. I <mark className="hl">owned all UX and UI decisions and also wrote front-end React code</mark> during stagnated project progression.
+            I was the <mark className="hl">sole UI designer, later a Design Engineer</mark>, in
+            the 6-person Purdue Stack team alongside 5 full-stack developers. I owned all UX and
+            UI decisions and also wrote front-end React code during stagnated project progression.
             <br></br><br></br>
-            While designing and coding for professor and student needs, I also <mark className="hl">maintained discussions with my teammates to ensure alignment and feasibility of conceptualized features.</mark> This wasn&rsquo;t a formality — designing and developing happened concurrently all semester, so every design decision I made had to survive a feasibility conversation before it was worth pixels. That constraint kept my specs pragmatic: I designed knowing someone (possibly me) had to build it within the semester.
+            While designing and coding for professor and student needs, I also{" "}
+            <mark className="hl">maintained discussions with my teammates to ensure alignment and feasibility of conceptualized features</mark>. This wasn&rsquo;t a formality — designing
+            and developing happened concurrently all semester, so every design decision I made had
+            to survive a feasibility conversation before it was worth pixels. That constraint kept
+            my specs pragmatic: I designed knowing someone (possibly me) had to build it within
+            the semester.
           </p>
         </section>
 
         {/* ───── Researching ───── */}
         <section id="researching" className="case-section">
           <h2>Researching</h2>
+          <h3>Understanding the Platform &amp; the Two User Groups</h3>
+          <p>
+            Researching ran in three concurrent moves:{" "}
+            <mark className="hl">setting scope against the timeline, auditing the platform&rsquo;s current state, and closing the student-side user-need gap</mark>.
+          </p>
+
           <h3>Context</h3>
           <p>
             I inherited a functional but <mark className="hl">visually basic, AI-generated</mark> prototype. Core features existed — student signup, project postings, application submission — but the experience felt unfinished and inconsistent.
@@ -106,6 +138,13 @@ export default function ResearchHubCaseStudy() {
         {/* ───── Designing ───── */}
         <section id="designing" className="case-section">
           <h2>Designing</h2>
+          <h3>From Existing Base to Handoff-Ready Prototypes</h3>
+          <p>
+            The design pass ran in two moves:{" "}
+            <mark className="hl">refining the existing design system around Purdue&rsquo;s identity</mark>, then
+            using prototypes as the explaining medium for developers.
+          </p>
+
           <h3>Constructing a More Attractive Design System</h3>
           <p>
             With me designing and my teammates developing concurrently throughout the semester, building <mark className="hl">a complex design system completely from scratch was not realistic</mark> — every week I spent on foundations was a week developers built without guidance.
@@ -149,13 +188,32 @@ export default function ResearchHubCaseStudy() {
           </figure>
         </section>
 
-        {/* ───── Takeaways ───── */}
+        {/* ───── Takeaways ───── (two h3s mirror the JT/Frogslayer
+              takeaway pattern — each lesson gets its own heading so a
+              recruiter reads them as distinct rather than merged.) */}
         <section id="takeaways" className="case-section">
           <h2>Takeaways</h2>
+
+          <h3>Design With the Cost of Building in Mind</h3>
           <p>
-            <mark className="hl">Directly building my own ideas has definitely modified my factoring of limitations.</mark> Sometimes I would half-angrily think, &ldquo;Jeez, who is the designer who designed and thought of all these (details)&rdquo; — and the designer was me. Working as both designer and engineer emphasized the need to ideate as a <em>partner</em> instead of simply an <em>ideater or documenter</em>: a design&rsquo;s worth includes the cost of building it, and the designer who knows that cost makes better designs.
-            <br></br><br></br>
-            Due to needing conceptualization finalized early in the semester, I was <mark className="hl">unable to conduct user research on professors as in-depth as I did with students</mark>, since the two user groups offered very different access — I had one professor (our client) readily available and an entire campus of students. Despite that, I was still able to make design decisions addressing both user groups&rsquo; needs by <mark className="hl">effectively utilizing what I had immediate access to within the small window given</mark>: deep client conversations on the professor side, structured interviews and affinity synthesis on the student side, and the audit findings as a shared foundation for both.
+            <mark className="hl">Directly building my own ideas modified my factoring of limitations</mark>. Sometimes I would half-angrily think, &ldquo;Jeez, who is the
+            designer who designed and thought of all these (details)&rdquo; — and the designer was
+            me. Working as both designer and engineer emphasized the need to ideate as a{" "}
+            <em>partner</em> instead of simply an <em>ideater or documenter</em>: a design&rsquo;s
+            worth includes the cost of building it, and the designer who knows that cost makes
+            better designs.
+          </p>
+
+          <h3>Working Well With Uneven User-Group Access</h3>
+          <p>
+            Due to needing conceptualization finalized early in the semester, I was{" "}
+            <mark className="hl">unable to conduct user research on professors as in-depth as I did with students</mark>, since the two user groups offered very different access — I had
+            one professor (our client) readily available and an entire campus of students. Despite
+            that, I was still able to make design decisions addressing both user groups&rsquo;
+            needs by effectively utilizing what I had immediate access to within the small window
+            given: deep client conversations on the professor side, structured interviews and
+            affinity synthesis on the student side, and the audit findings as a shared foundation
+            for both.
           </p>
         </section>
       </main>

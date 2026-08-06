@@ -45,10 +45,27 @@ export default function InlineCaseStudy() {
 
         <section id="outcome" className="case-section">
           <h2>Overview</h2>
+
+          {/* Outcome-callout keeps the sibling case-study pages visually
+              consistent even under NDA lockdown. The stat here is the
+              NDA status itself — that's the honest headline for this
+              page today. Once sponsor written approval is on file, swap
+              this callout for the real outcome from /projects/inline2. */}
+          <aside className="outcome-callout" aria-label="Project outcome">
+            <p className="outcome-callout__stat">
+              <strong>Under active confidentiality agreement</strong> — engagement artifacts and
+              specific outcomes cannot be published until sponsor written approval is received.
+              Approval is being pursued.
+            </p>
+            <p className="outcome-callout__meta">
+              Summer 2026 · inline · Product Design Intern · detailed materials on request
+            </p>
+          </aside>
+
           <p>
-            Interned as a <mark className="hl">Product Design Intern</mark> at{" "}
-            <mark className="hl">inline</mark>, a restaurant-technology company based in the Asia-Pacific
-            region. Contributed to an early-stage product exploration over a{" "}
+            Interned as a <mark className="hl">Product Design Intern</mark> at inline, a
+            restaurant-technology company based in the Asia-Pacific region. Contributed to an
+            early-stage product exploration over a{" "}
             <mark className="hl">3-month remote internship</mark> across a ~12-hour time-zone gap.
           </p>
         </section>

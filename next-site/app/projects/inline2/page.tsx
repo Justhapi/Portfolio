@@ -48,22 +48,37 @@ export default function PopByInlineCaseStudy() {
         {/* ───── Outcome ───── */}
         <section id="outcome" className="case-section">
           <h2>Outcome</h2>
+
+          {/* Outcome callout — mirrors JT/Frogslayer/ResearchHub. The
+              strongest measurable outcome is the closed loop: all 7
+              interim-review feedback items shipped before final review,
+              AND the 4-round test-priority arc went from red-heavy to
+              zero reds. Two independent evidence chains of the work
+              landing. */}
+          <aside className="outcome-callout" aria-label="Project outcome">
+            <p className="outcome-callout__stat">
+              <strong>All 7 interim-review feedback items shipped</strong> as prototype changes
+              before the CEO-attended final review — and the 4-round test-priority arc went from{" "}
+              red-heavy → mostly-blue with zero reds.
+            </p>
+            <p className="outcome-callout__meta">
+              Summer 2026 · Pop by inline · 3-month remote internship · 4 test rounds
+            </p>
+          </aside>
+
           <p>
             Delivered a <mark className="hl">comparable competitive audit across six event-coordination products</mark>,
-            a <mark className="hl">gap analysis</mark> that surfaced two genuine category-independent strategic gaps,
+            a gap analysis that surfaced two genuine category-independent strategic gaps,
             and an <mark className="hl">end-to-end interactive prototype of the product&rsquo;s first scenario</mark>{" "}
             — covering both host and guest flows — accepted by my manager with no critical pushback. Then ran{" "}
             <mark className="hl">four rounds of usability testing as lead facilitator</mark>, closing each
-            round&rsquo;s findings as shipped iterations before the next round began. The four-round arc —{" "}
-            <mark className="hl">red-heavy → mostly-yellow with one red → mostly-blue with no red</mark> — is
-            the strongest single piece of evidence that the shipped iterations actually landed.
+            round&rsquo;s findings as shipped iterations before the next round began.
           </p>
           <p>
             Following the interim stakeholder presentation on July 2, contributed to a{" "}
             <mark className="hl">cohort-wide consolidation step</mark> aggregating findings across all interns&rsquo;
             testers to drive threshold-based structural decisions ahead of the July 16 CEO-attended final review.
-            Every one of the seven tactical feedback items from the interim review was addressed in the prototype
-            before final review. Four candidate features were solidified for the July 16 review and the written
+            Four candidate features were solidified for the July 16 review and the written
             July 23 Product Direction Summary: <mark className="hl">Questionnaire, Interest + Finalized RSVP,
             Notifications, and Archive</mark> — each grounded in a distinct evidence chain spanning multiple rounds.
           </p>
@@ -99,6 +114,13 @@ export default function PopByInlineCaseStudy() {
         {/* ───── Researching ───── */}
         <section id="researching" className="case-section">
           <h2>Researching</h2>
+
+          <h3>Mapping Competitive Landscape &amp; Locating Gaps</h3>
+          <p>
+            Researching ran in two passes:{" "}
+            <mark className="hl">one reusable competitive-audit framework applied across six products</mark>, then a gap analysis that cross-referenced their weaknesses against the
+            team&rsquo;s proposed feature set with category discipline.
+          </p>
 
           <h3>Competitive Audits with One Reusable Framework</h3>
           <p>
@@ -143,6 +165,13 @@ export default function PopByInlineCaseStudy() {
         {/* ───── Designing ───── */}
         <section id="designing" className="case-section">
           <h2>Designing</h2>
+
+          <h3>From Brief Questions to Prototyped Answers</h3>
+          <p>
+            The design pass ran in two moves:{" "}
+            <mark className="hl">designing the first-scenario flow from FigJam through interactive prototype</mark>, then developing a working approach for AI-assisted
+            prototyping as a repeatable practice.
+          </p>
 
           <h3>Scenario 1: An Evolving Event</h3>
           <p>
@@ -199,6 +228,7 @@ export default function PopByInlineCaseStudy() {
         {/* ───── Testing ───── */}
         <section id="testing" className="case-section">
           <h2>Testing</h2>
+          <h3>Facilitating Four Rounds of Usability Testing</h3>
           <p>
             Served as <mark className="hl">lead facilitator across three back-to-back usability sessions in a
             two-hour window</mark> — first time proctoring after months of preparing as the researcher. Same-day,
@@ -300,6 +330,7 @@ export default function PopByInlineCaseStudy() {
         {/* ───── Iterating ───── */}
         <section id="iterating" className="case-section">
           <h2>Iterating</h2>
+          <h3>Closing Loops on Every Round&rsquo;s Findings</h3>
           <p>
             Within days of Round 1 synthesis, built a new prototype iteration that closed the most-leveraged
             findings.
@@ -362,9 +393,15 @@ export default function PopByInlineCaseStudy() {
           </p>
         </section>
 
-        {/* ───── Takeaways ───── */}
+        {/* ───── Takeaways ───── (four h3s mirror the JT/Frogslayer
+              takeaway pattern — each lesson gets its own heading so
+              recruiters can skim the arc of what was learned. Each
+              paragraph's content is unchanged; only the h3 skeleton is
+              new.) */}
         <section id="takeaways" className="case-section">
           <h2>Takeaways</h2>
+
+          <h3>Synthesis Over Listing, Crux First Over Polish First</h3>
           <p>
             The biggest analytical lesson was <mark className="hl">synthesis over listing</mark> — collecting
             observations is the input; the value comes from comparing across them and committing to a
@@ -374,6 +411,8 @@ export default function PopByInlineCaseStudy() {
             exactly what the brief hinged on. Designing the crux first, polish second, is the discipline
             I&rsquo;m carrying forward.
           </p>
+
+          <h3>Research Quality Has an Energy Ceiling</h3>
           <p>
             Round 1 of testing added a third:{" "}
             <mark className="hl">research output has a quality ceiling set by energy, not skill</mark>. When
@@ -381,12 +420,16 @@ export default function PopByInlineCaseStudy() {
             sessions, the same instinct produces marginal returns at high cognitive cost. Knowing when to stop
             is itself a research discipline — and one that protects the quality of the <em>next</em> round.
           </p>
+
+          <h3>Priority Distribution as Diagnostic</h3>
           <p>
             Round 2 taught that the <mark className="hl">priority distribution of a usability synthesis is
             itself a diagnostic</mark> about whether the previous iteration landed. Before reading individual
             findings, a maturing prototype shows up as a shift in the document&rsquo;s color distribution.
             Future synthesis reviews start with the shape and then read the content.
           </p>
+
+          <h3>Blues Are Earned; Individual and Cohort Docs Serve Different Jobs</h3>
           <p>
             Rounds 3 &amp; 4 taught that <mark className="hl">blue findings are the reward of shipping
             successful red and yellow fixes</mark> — a tester&rsquo;s brain only reaches feature-idea territory
