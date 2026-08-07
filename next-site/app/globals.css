@@ -3534,17 +3534,23 @@ em.it { font-style: italic; }
 .case-nav-inner {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 0 40px;
+  /* Fluid horizontal padding + gap — scale continuously with viewport
+     so there are no visible jumps between wide/narrow. clamp floors
+     at 16px / 10px so the layout doesn't collapse to zero on tiny
+     screens; caps at desktop values (40px / 24px) at wide viewports. */
+  padding: 0 clamp(16px, 3vw, 40px);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
+  gap: clamp(10px, 2vw, 24px);
 }
 .case-nav .case-back {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  padding: 6px 18px;
+  /* Fluid horizontal padding — slightly tighter on narrower viewports
+     without a hard breakpoint. */
+  padding: 6px clamp(10px, 1.6vw, 18px);
   border: 1px solid rgb(var(--hero-fg-rgb) / 0.22);
   border-radius: 999px;
   font-family: var(--f-mono);
@@ -3575,6 +3581,20 @@ em.it { font-style: italic; }
   display: inline-flex;
   gap: 2px;
   padding: 4px;
+  /* Fluid max-width — scales with viewport so the visible slice of
+     the pill (how many section labels fit at once) shrinks smoothly
+     as the browser narrows, instead of jumping at a breakpoint.
+        - calc(100vw - 260px) reserves ~260px of the viewport for
+          the back button + nav padding + gap
+        - min(…, 900px) caps at 900px so on very wide viewports the
+          pill doesn't exceed a reasonable line-length
+        - max(180px, …) floors at 180px so on very narrow viewports
+          at least ~1.5 labels remain visible before the horizontal-
+          scroll pill takes over.
+     Once the pill has hit its 180px floor AND the viewport is still
+     shrinking, the back-button LABEL is hidden (see @media below) to
+     reclaim the extra space and give the pill more room. */
+  max-width: max(180px, min(900px, calc(100vw - 260px)));
   border-radius: 999px;
   border: 1px solid rgb(var(--hero-fg-rgb) / 0.18);
   /* Allow horizontal scrolling when section count exceeds available
@@ -3715,6 +3735,32 @@ em.it { font-style: italic; }
   .case-subtitle,
   .case-hero-image {
     animation: none !important;
+  }
+}
+
+/* ── Case-nav narrow-viewport back-label collapse ──────────────────────
+   Everything else in the case-nav (inner padding, pill max-width, back
+   button padding) scales fluidly with viewport via clamp() / calc()
+   values on the base rules above — no discrete jumps.
+
+   The ONLY discrete step happens here at 440px: once the pill has hit
+   its 180px min-width floor AND the viewport is narrow enough that the
+   back-button label starts crowding the pill, the label collapses to
+   just the ← arrow. Reclaiming that ~90px of space lets the pill grow
+   again (since its max-width is `calc(100vw - 260px)`, the freed space
+   flows straight into the pill).
+
+   Threshold math: at 440px viewport, pill max-width = calc(440-260) = 180
+   → exactly at the floor. Below 440px, hiding the label reclaims space
+   and the pill's fluid formula lets it use the newly-available width. */
+@media (max-width: 440px) {
+  .case-nav .case-back {
+    gap: 0;
+  }
+  .case-nav .case-back .case-back-label {
+    /* Hidden but still readable to screen readers via aria-label on
+       the parent Link; the arrow alone carries the visual affordance. */
+    display: none;
   }
 }
 
@@ -3898,6 +3944,36 @@ em.it { font-style: italic; }
 }
 .case-section ul.focus-list li::marker {
   color: var(--accent-on-cream);
+}
+
+/* ── JT User Interviews split layout ────────────────────────────────────
+   Text on the left, interview-notes figure on the right (side-by-side)
+   at wide viewports. The affinity diagram that follows sits below both
+   as a full-width figure — it's the team-wide synthesis, deserves the
+   wider footprint. Stacks to a single column at ≤820px so neither
+   column gets crushed. */
+.interview-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: 32px;
+  align-items: start;
+  margin: 16px 0 24px;
+}
+.interview-split__text {
+  min-width: 0;
+}
+.interview-split__text > p:first-child {
+  margin-top: 0;
+}
+.interview-split__notes {
+  min-width: 0;
+  margin: 0;
+}
+@media (max-width: 820px) {
+  .interview-split {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
 }
 
 /* ── Outcome callout ─────────────────────────────────────────────────────

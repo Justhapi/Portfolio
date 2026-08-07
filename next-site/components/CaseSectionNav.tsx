@@ -103,9 +103,9 @@ export default function CaseSectionNav({ sections }: { sections: Section[] }) {
   return (
     <nav className={`case-nav ${scrolled ? "scrolled" : ""}`} aria-label="Section navigation">
       <div className="case-nav-inner">
-        <Link href="/#work" className="case-back">
+        <Link href="/#work" className="case-back" aria-label="Back to projects">
           <span className="arrow">←</span>
-          <span>Back to projects</span>
+          <span className="case-back-label">Back to projects</span>
         </Link>
         {/* Horizontal-scroll pill — Arrow Left/Right on the pill itself
             scroll it programmatically so keyboard-only users can reveal

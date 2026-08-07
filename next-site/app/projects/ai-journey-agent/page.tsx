@@ -240,30 +240,39 @@ export default function AIJourneyAgentCaseStudy() {
           </figure>
 
           <h3>User Interviews</h3>
-          <p>
-            To verify that the direction the desk research pointed toward matched what platform
-            users needed from an AI agent focused on journey-map maintenance, the team ran{" "}
-            <mark className="hl">six interviews with current users of the sponsor&rsquo;s platform</mark>.
-          </p>
-          <p>
-            I <mark className="hl">participated in three of the six one-hour sessions</mark>,
-            rotating between interviewer and note-taker with my partner during each session. After
-            all six interviews were completed, we categorized the insights to determine the
-            platform-relevant user needs the AI agent had to address.
-          </p>
-          <figure>
-            <StaticImage
-              src={interviewNotes.src}
-              alt="Session notes from the three interviews I participated in — text blurred so note-taking structure and volume read without exposing participant-level findings."
-              aspectRatio={3000 / 2121}
-              caption={
-                <>
-                  My session notes from the three interviews I participated in — blurred sticky notes on
-                  a paper background.
-                </>
-              }
-            />
-          </figure>
+          {/* Wide viewport: two text paragraphs on the LEFT + interview
+              notes figure on the RIGHT (side by side). Affinity diagram
+              below spans full width — it's team synthesis across all six
+              interviews and deserves the wider footprint. On narrow
+              viewports (≤820px) the split stacks to a single column. */}
+          <div className="interview-split">
+            <div className="interview-split__text">
+              <p>
+                To verify that the direction the desk research pointed toward matched what platform
+                users needed from an AI agent focused on journey-map maintenance, the team ran{" "}
+                <mark className="hl">six interviews with current users of the sponsor&rsquo;s platform</mark>.
+              </p>
+              <p>
+                I <mark className="hl">participated in three of the six one-hour sessions</mark>,
+                rotating between interviewer and note-taker with my partner during each session.
+                After all six interviews were completed, we categorized the insights to determine
+                the platform-relevant user needs the AI agent had to address.
+              </p>
+            </div>
+            <figure className="interview-split__notes">
+              <StaticImage
+                src={interviewNotes.src}
+                alt="Session notes from the three interviews I participated in — text blurred so note-taking structure and volume read without exposing participant-level findings."
+                aspectRatio={3000 / 2121}
+                caption={
+                  <>
+                    My session notes from the three interviews I participated in — blurred sticky
+                    notes on a paper background.
+                  </>
+                }
+              />
+            </figure>
+          </div>
           <figure>
             <StaticImage
               src={interviewAffinity.src}

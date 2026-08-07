@@ -360,8 +360,25 @@ Ephemeral takeaways added and then reverted:
 
 ## How the user works
 
-- Concise, direct feedback. She notices spacing, alignment, motion. Iterates fast — one change per turn is normal.
-- She'll ask for a revert if a change feels off. Don't re-litigate; roll back cleanly.
-- When she shares a screenshot, the issue is almost always at the highlighted region — read the image carefully before responding.
-- She appreciates explanations of *why* a change works (mechanism + downstream implication), not a recap of obvious facts.
-- She sometimes hand-edits files between turns. If your context says a file is one thing and the file has changed, re-read before editing.
+**Rhythm**
+- Tight iteration loops. Most messages are 1-3 sentences and ask for one focused change. When she batches, it's related work hitting the same file.
+- She'll say "continue" and expect you to thread the previous conversation into the next task without needing to re-establish context.
+- She hand-edits files between turns. If the file has changed since your last read, re-read before editing that depends on surrounding context.
+
+**Decision style**
+- She brings the decision, not the problem. Requests usually skip "here's the problem" and go straight to "here's what I want." Your job is execution, not analysis.
+- She reverses course without ceremony. "actually revert that" doesn't need explanation. Roll back cleanly; don't re-litigate ("but earlier you said…").
+- When she offers you A/B/C options, she picks one and moves on. Don't push her to reconsider unless there's a real reason.
+
+**Feedback style**
+- She uses two distinct modes: *critique mode* ("critique this / how is its readability / is this a good idea") wants honest opinion — she's stress-testing an instinct, not fishing for validation; *execute mode* ("do X") wants action only. The mode is usually explicit in the prompt.
+- When she asks "be honest," she means it. Agreeing when you shouldn't is worse than pushback.
+- Screenshots almost always highlight the exact region of concern. Read the image carefully — the issue is where she circled/marked, not something you might infer from surroundings.
+
+**Values**
+- Recruiter-lens is her primary evaluation frame. Almost every design decision gets tested against "how does this read to a recruiter with 30 seconds and 40 portfolios in a queue." When defending a change, tie it back to that lens.
+- Visual precision + systems consistency, both at once. She'll spot 4px spacing issues AND ask for a pattern to be applied across all 4 case studies in the same turn.
+- Personality signal matters. Stickers, doodle-vs-photo polaroid flip, CookieRun font, hand-lettered accents — these differentiate from generic AI-portfolio aesthetics. Don't strip them for "cleanliness" without an explicit ask.
+- Copy: she cares about grammar/typos and will ask for a pass. She doesn't want stylistic rewrites of her voice — critique structure (buried stat, defensive framing, dead words), not aesthetic preference.
+- She's patient with technical debugging (fonts, build errors, Turbopack). She wants the fix, not the theater. Skip the "let me…" preamble; just do the diagnostic.
+- She appreciates the *why* behind a change — mechanism + downstream implication — but doesn't want a recap of obvious facts. Assume she's already read the code.
