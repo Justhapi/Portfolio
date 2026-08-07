@@ -50,7 +50,7 @@ export default function FrogslayerCaseStudy() {
           <h2>Outcome</h2>
           <aside className="outcome-callout" aria-label="Project outcome">
             <p className="outcome-callout__stat">
-              <strong>Continued Collaboration Beyond Semester of Guideline Expansion</strong> — Frogslayer continued
+              <strong>Continued Collaboration of Guideline Expansion</strong> — Frogslayer continued
               their collaboration with the Purdue UXD Experience Studio to expand the guideline set past
               our initial handoff.
             </p>
@@ -62,7 +62,7 @@ export default function FrogslayerCaseStudy() {
           <p>
             From the project, we handed off a{" "}
             <mark className="hl">validated set of best-practice design guidelines for entertainment and hospitality kiosk interfaces</mark>
-            {" "}alongside a <mark className="hl">journey map that exemplify the findings</mark> and recommended next steps regarding the
+            {" "}alongside a <mark className="hl">journey map that exemplifies the findings</mark> and recommended next steps regarding the
             continuation of guidelines to Frogslayer.
           </p>
           <div className="case-image-row">
@@ -95,14 +95,14 @@ export default function FrogslayerCaseStudy() {
           <p>
             The sponsor was Frogslayer, <mark className="hl">a custom software development firm who partners with food and
             entertainment brands to build guest-facing digital products.</mark> Our team was asked to explore and construct a{" "}
-            <mark className="hl">standardized set of evidence-based design guidelines</mark> that would
-            help <mark className="hl">assist in future kiosk-related projects by avoiding usability pitfalls.</mark>
+            <mark className="hl">standardized set of evidence-based design guidelines</mark> that would<mark className="hl"> assist in 
+            future kiosk-related projects by avoiding usability pitfalls.</mark>
           </p>
 
           <h3>The Problem</h3>
           <p>
             <mark className="hl">Kiosks are becoming increasingly common in various industries</mark> due to their convenience and cost-efficiency for 
-            businesses, however their design continues to cause <mark className="hl">users to consistently experience moments of frustration. </mark>
+            businesses; however, their design continues to cause <mark className="hl">users to consistently experience moments of frustration. </mark>
             <br></br><br></br>
             <mark className="hl">Unlike older and more common digital products</mark> such as mobile or web apps, <mark className="hl">kiosks lack a standard 
             practice design framework focusing on the user comfort,</mark> leading to continuation of recurring usability pain points.
@@ -116,7 +116,7 @@ export default function FrogslayerCaseStudy() {
             <br></br><br></br>
             In addition to design work, I was the team&rsquo;s{" "} <mark className="hl">primary point of contact</mark> with Frogslayer&rsquo;s product
             team, maintaining both sides&rsquo; mutual understanding of the project&rsquo;s progression, and also <mark className="hl">co-led internal 
-            planning and defined specific actions </mark>for the project&rsquo;s progression to accomplishing the intended goal.
+            planning and defined specific actions </mark>to accomplish the project&rsquo;s intended goal.
           </p>
         </section>
         <section id="researching" className="case-section">
@@ -141,10 +141,10 @@ export default function FrogslayerCaseStudy() {
 
           <h3>Establishing the Evidence Base</h3>
           <p>
-            With the scope focuses determined, we built then our foundation focusing on two perspectives of stakeholders related to our guidelines:
+            With the scope focuses determined, we then built our foundation focusing on two perspectives of stakeholders related to our guidelines:
             <mark className="hl"> the producer side (how businesses build kiosks) and the consumer side (how users experience them). </mark>
             <br></br><br></br>
-            Starting with the producer side, we focused on answering two questions:
+            Starting with the producer side, we focused on answering the following questions:
           </p>
           <ul className="focus-list">
             <li><strong>Why is a kiosk preferable to alternatives?</strong></li>
@@ -341,7 +341,8 @@ export default function FrogslayerCaseStudy() {
             After building a sufficient foundation and familiarity with the current state of kiosk interfaces, we moved on to develop the user flow in two passes:{" "}
             <mark className="hl">individual sketching and feature selection</mark>, then wireframing the features into an interactive prototype.
             <br></br><br></br>
-            This is to conduct usability tests <mark className="hl">applying our findings to a real-world flow for users to verify their authenticity.</mark>
+            This is to conduct usability tests <mark className="hl">applying our findings to a interactive flow for users to verify their authenticity 
+            in real world scenarios.</mark>
           </p>
 
           <h3>Individual Sketching &amp; Feature Selection</h3>
@@ -561,21 +562,16 @@ export default function FrogslayerCaseStudy() {
 
           <h3>Prototype as Research Instrument</h3>
           <p>
-            Designing a prototype{" "}
-            <mark className="hl">as a tool for generating evidence, not as a product</mark>,
-            changed how I evaluated every screen — each element existed to test a hypothesis, and
-            the pull-quote above became the working rule for every review.
+            Designing a prototype{" "} <mark className="hl">as a tool and not as a product</mark> heavily differed from my previous projects, 
+            where the end goal was to construct a prototype for developers to implement. As a result, I prioritize reserch verification over design aesthetics when
+            desigining the prototype. 
           </p>
 
           <h3>Environment as Design Material</h3>
           <p>
-            The project also showed me how much{" "}
-            <mark className="hl">environment is a design material</mark>: testing in a
-            deliberately busy student union surfaced behaviors — skimming, rushing, tunnel vision
-            on the screen — that a quiet lab never would have. User actions are shaped as much by
-            habits and prior experiences with similar stimuli (phones, ads, familiar interfaces)
-            as by the interface itself, so designing against those mental models is a losing
-            battle; the guidelines work by leaning on them.
+            Due to the project's scope being primarily the entertainment industry, the team and I needed to consider the appropriate environment 
+            for testing, leading us to use a nearby campus building known for its consistently busy atmosphere. From this project, I find that it is 
+            important to <mark className="hl">heavily assess user feedback in the context of the environment as a factor </mark> of a user's experience with a product.
           </p>
         </section>
       </main>
