@@ -5186,6 +5186,10 @@ em.it { font-style: italic; }
   line-height: 1.5;
   color: var(--muted);
   letter-spacing: 0.005em;
+  /* Center-aligned so captions sit visually under the middle of their
+     visual, matching the pattern used by usability-flow-anchor and
+     zoomable-wrap frames across all case-study pages. */
+  text-align: center;
 }
 
 @media (max-width: 720px) {

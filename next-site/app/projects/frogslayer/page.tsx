@@ -25,11 +25,6 @@ export const metadata = {
   title: "Kiosk Interface Design Guidelines — Kathleen Li",
 };
 
-/* Section order leads with Outcome (deliverables + impact) so recruiters
-   see results first. Process sections (Researching → Ideating →
-   Verifying) follow as the supporting story, and Takeaways closes
-   with next steps, refinements, and what was learned. Section naming
-   (Outcome/Takeaways) matches AI Journey Agent, ResearchHub, and inline. */
 const SECTIONS = [
   { id: "outcome", label: "Outcome" },
   { id: "overview", label: "Overview" },
@@ -55,8 +50,8 @@ export default function FrogslayerCaseStudy() {
           <h2>Outcome</h2>
           <aside className="outcome-callout" aria-label="Project outcome">
             <p className="outcome-callout__stat">
-              <strong>Continued Collaboration Beyond Semester</strong> — Frogslayer continued
-              partnering with the Purdue UXD Experience Studio to expand the guideline set past
+              <strong>Continued Collaboration Beyond Semester of Guideline Expansion</strong> — Frogslayer continued
+              their collaboration with the Purdue UXD Experience Studio to expand the guideline set past
               our initial handoff.
             </p>
             <p className="outcome-callout__meta">
@@ -67,8 +62,8 @@ export default function FrogslayerCaseStudy() {
           <p>
             From the project, we handed off a{" "}
             <mark className="hl">validated set of best-practice design guidelines for entertainment and hospitality kiosk interfaces</mark>
-            {" "}alongside a <mark className="hl">journey map exemplifying the findings</mark> and recommended next steps for
-            continuation of the guidelines to Frogslayer.
+            {" "}alongside a <mark className="hl">journey map that exemplify the findings</mark> and recommended next steps regarding the
+            continuation of guidelines to Frogslayer.
           </p>
           <div className="case-image-row">
             <ZoomableImage
@@ -101,16 +96,16 @@ export default function FrogslayerCaseStudy() {
             The sponsor was Frogslayer, <mark className="hl">a custom software development firm who partners with food and
             entertainment brands to build guest-facing digital products.</mark> Our team was asked to explore and construct a{" "}
             <mark className="hl">standardized set of evidence-based design guidelines</mark> that would
-            help assist in future kiosk-related projects by avoiding the industry&rsquo;s usability pitfalls.
+            help <mark className="hl">assist in future kiosk-related projects by avoiding usability pitfalls.</mark>
           </p>
 
           <h3>The Problem</h3>
           <p>
-            Kiosks are becoming increasingly common in various industries due to their convenience and cost-efficiency for businesses, however their design 
-            continues to cause users to consistently experience moments of frustration. 
+            <mark className="hl">Kiosks are becoming increasingly common in various industries</mark> due to their convenience and cost-efficiency for 
+            businesses, however their design continues to cause <mark className="hl">users to consistently experience moments of frustration. </mark>
             <br></br><br></br>
-            Unlike older and more common digital products such as mobile or web apps, kiosks lack a standard practice design framework, leading to 
-            continuation of recurring usability pain points.
+            <mark className="hl">Unlike older and more common digital products</mark> such as mobile or web apps, <mark className="hl">kiosks lack a standard 
+            practice design framework focusing on the user comfort,</mark> leading to continuation of recurring usability pain points.
 
           </p>
           <h3>My Role</h3>
@@ -119,11 +114,9 @@ export default function FrogslayerCaseStudy() {
             <mark className="hl">researching the current state of kiosk design, building the base low-fi user flow, constructing the usability testing prototypes,
             and iterating upon insights</mark> {" "} across three rounds of testing.
             <br></br><br></br>
-            In addition to design work, I was the team&rsquo;s{" "}
-            <mark className="hl">primary point of contact</mark> with Frogslayer&rsquo;s product
-            team, maintaining both sides&rsquo; mutual understanding of the project&rsquo;s
-            progression, and also <mark className="hl">co-led internal planning and defined specific actions </mark>for the
-            project&rsquo;s progression to accomplishing the intended goal.
+            In addition to design work, I was the team&rsquo;s{" "} <mark className="hl">primary point of contact</mark> with Frogslayer&rsquo;s product
+            team, maintaining both sides&rsquo; mutual understanding of the project&rsquo;s progression, and also <mark className="hl">co-led internal 
+            planning and defined specific actions </mark>for the project&rsquo;s progression to accomplishing the intended goal.
           </p>
         </section>
         <section id="researching" className="case-section">
@@ -148,10 +141,10 @@ export default function FrogslayerCaseStudy() {
 
           <h3>Establishing the Evidence Base</h3>
           <p>
-            With scope locked, we built our foundation through five guiding questions — split
-            across the two perspectives our guidelines needed to serve:{" "}
-            <mark className="hl">the producer side (how businesses build kiosks) and the consumer side (how users experience them)</mark>.
-            Starting with the producer side, two industry-literature-grounded questions:
+            With the scope focuses determined, we built then our foundation focusing on two perspectives of stakeholders related to our guidelines:
+            <mark className="hl"> the producer side (how businesses build kiosks) and the consumer side (how users experience them). </mark>
+            <br></br><br></br>
+            Starting with the producer side, we focused on answering two questions:
           </p>
           <ul className="focus-list">
             <li><strong>Why is a kiosk preferable to alternatives?</strong></li>
@@ -226,12 +219,13 @@ export default function FrogslayerCaseStudy() {
           />
           <h3>Gathering Firsthand User Insight</h3>
           <p>
-            Then we shifted to the{" "}
-            <mark className="hl">consumer side — how users actually experience kiosks</mark>. Three
-            questions total: one framed by industry literature on kiosk-user gaps, and two
-            grounded in firsthand user contact (field observations and interviews, run with
-            separate participant cohorts).
+            After understanding the producer's side, we shifted to the{" "}
+            <mark className="hl">consumer's perspective</mark> to answer the following questions:
           </p>
+          <ul className="focus-list">
+            <li><strong>What are the gaps of kiosks?</strong></li>
+            <li><strong>How do users actually behave on kiosks in context?</strong></li>
+          </ul>
           <ResearchCarousel
             slides={[
               {
@@ -339,28 +333,38 @@ export default function FrogslayerCaseStudy() {
               },
             ]}
           />
-
-          <p>
-            After successfully building this knowledge foundation, we were ready to ideate the user
-            flow.
-          </p>
         </section>
         <section id="ideating" className="case-section">
           <h2>Ideating</h2>
           <h3>From Individual Sketching to a Testable User Flow</h3>
           <p>
-            We developed the user flow in two passes:{" "}
-            <mark className="hl">individual sketching + feature selection</mark>, then wireframing
-            on a real observed flow.
+            After building a sufficient foundation and familiarity with the current state of kiosk interfaces, we moved on to develop the user flow in two passes:{" "}
+            <mark className="hl">individual sketching and feature selection</mark>, then wireframing the features into an interactive prototype.
+            <br></br><br></br>
+            This is to conduct usability tests <mark className="hl">applying our findings to a real-world flow for users to verify their authenticity.</mark>
           </p>
 
           <h3>Individual Sketching &amp; Feature Selection</h3>
           <p>
             To ideate in extensive detail, we first{" "}
             <mark className="hl">individually brainstormed through quick sketching arcade kiosk user flows before reconvening</mark>.
-            After discussing and assessing each other&rsquo;s individual feature ideas, we
-            ultimately decided which features to include in the usability test flow.
+            After discussing and assessing each other&rsquo;s individual feature ideas, we voted
+            on each other's works to decide which features to include in the usability test flow.
           </p>
+          <p>Field observations had previously surfaced the significant pain-point themes:</p>
+          <ul className="focus-list">
+            <li><strong>Payment-related interactions due to instructions being only textual</strong></li>
+            <li><strong>Auditory countdown cues that prompt action due to the threat of returning to the beginning of the flow</strong></li>
+          </ul>
+          <p>
+            As a result, we noted ideation of features that would address those pain points in
+            addition to other features that could improve the overall usability of the flow.
+          </p>
+          <p>The selected feature themes included:</p>
+          <ul className="focus-list">
+            <li><strong>Onboarding assistance</strong></li>
+            <li><strong>Clarity of affordances to reduce moments of hesitation through consistent UI designs</strong></li>
+          </ul>
           <div className="visual-compact">
             <ZoomableImage
               src={ideatingCrazyEights.src}
@@ -372,10 +376,8 @@ export default function FrogslayerCaseStudy() {
 
           <h3>Wireframing on the Observed Base Flow</h3>
           <p>
-            To focus more on the features&rsquo; implementation, we imported a base kiosk arcade
-            user flow copied from user observations to{" "}
-            <mark className="hl">quickly finish designing the wireframes</mark> into an
-            interactive prototype.
+            To focus more on the features&rsquo; implementation, we imported a base kiosk arcade user flow based on the one utilized during user observations 
+            to <mark className="hl">quickly expand the wireframe into an interactive prototype ready for use.</mark>
           </p>
           <div className="case-image-row with-arrow">
             <ZoomableImage
@@ -400,16 +402,10 @@ export default function FrogslayerCaseStudy() {
           <h3>Validating and Retesting with User Insights</h3>
           <p>
             We ran <mark className="hl">three rounds of moderated usability testing</mark> at the
-            Purdue Memorial Union (PMU), chosen to simulate the busy, distracting atmosphere of a
-            real arcade. The prototype was used as a research instrument, not a shippable product —
-            between rounds it was iterated against the recorded friction points, not our own
-            opinions, so every change was small, defensible, and directly traceable to a user
-            behavior.
-            <br></br><br></br>
-            Field observations before testing had already surfaced the highest-friction moments:{" "}
-            <mark className="hl">payment interactions were the biggest point of confusion</mark>{" "}
-            (tap vs. swipe vs. insert), and stressful auditory countdown cues damaged user
-            confidence.
+            Purdue Memorial Union (PMU) to simulate the busy atmosphere of a real arcade. The
+            prototype was used as a research instrument,{" "}
+            <mark className="hl">iterated between rounds to address recorded friction points</mark>{" "}
+            and <mark className="hl">modified to assess user feedback on a specific finding</mark>.
           </p>
           <div className="usability-flow-anchor">
             <ZoomableImage
@@ -537,11 +533,9 @@ export default function FrogslayerCaseStudy() {
             </UsabilityRound>
           </div>
           <p>
-            By round 3 the loyalty program — initially the biggest source of friction — had been
-            reshaped into a{" "}
-            <mark className="hl">&ldquo;Join for Free&rdquo; upsell with clear pricing</mark>, and
-            the interface itself was validated as intuitive at first contact. With both confirmed,
-            the team moved into guideline synthesis.
+            By round 3, multiple features have been iterated, however, the feature that received the most changes was the loyalty program, through 
+            specifically <mark className="hl">iterations for clarity of its labelling of the &ldquo;Join for Free&rdquo; upsell with pricing, </mark>
+            as we needed to <mark className="hl">actively combat users' habitual suspicion</mark> of the membership requiring monetary cost.
           </p>
           <div className="usability-flow-anchor">
             <ZoomableImage
