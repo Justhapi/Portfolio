@@ -3976,6 +3976,36 @@ em.it { font-style: italic; }
   }
 }
 
+/* ── ResearchHub Auditing split layout ─────────────────────────────────
+   Visual container on the LEFT, three-category takeaway text on the
+   RIGHT. Mirror of .interview-split (which is text-left / visual-right).
+   Text gets slightly more room (1.15fr vs 1fr for the visual) because
+   the three prose items are the primary content and the visual is
+   reference. Stacks to a single column at ≤820px. */
+.audit-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  gap: 32px;
+  align-items: start;
+  margin: 16px 0 24px;
+}
+.audit-split__visual {
+  min-width: 0;
+  margin: 0;
+}
+.audit-split__text {
+  min-width: 0;
+}
+.audit-split__text > p:first-child {
+  margin-top: 0;
+}
+@media (max-width: 820px) {
+  .audit-split {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
 /* ── Outcome callout ─────────────────────────────────────────────────────
    Elevated banner for the single strongest outcome claim in a case study
    (used in JT Outcome — sponsor shipped a matching concept to beta ~30

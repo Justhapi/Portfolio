@@ -20,7 +20,7 @@ export default function ResearchHubCaseStudy() {
       <CaseSectionNav sections={SECTIONS} />
       <CaseCover
         title="ResearchHub — Connecting Students with Faculty Research"
-        meta="Spring 2026 · 16 weeks · 5 engineers + me · Design Engineer (sole designer)"
+        meta="Spring 2026 · 9 weeks · 5 engineers + me · Design Engineer (sole designer)"
         subtitle="A redesigned student–faculty research platform, planned to ship summer 2026"
         imageLabel="ResearchHub · cover image"
       />
@@ -85,80 +85,97 @@ export default function ResearchHubCaseStudy() {
             in the 6-person Purdue Stack team with 5 full-stack developers. During the project, I <mark className="hl">determined all
             UX and UI decisions and also contributed front-end React code</mark> to maintain project progression.
             <br></br><br></br>
-            While designing and coding to address professor and student needs, I also maintained
-            regular discussions with my teammates to ensure alignment and feasibility of
-            conceptualized features. Designing and development were happening concurrently
-            throughout the semester, so every design decision needed to survive a feasibility
-            conversation before being worth committing to. As a result, this kept my
-            specifications pragmatic, since I designed with the understanding that someone
-            (potentially me) needed to build it within the semester&rsquo;s timeframe.
+            While designing and coding, I also maintained weekly discussions with my teammates 
+            to ensure alignment and feasibility of conceptualized features.
           </p>
         </section>
 
         {/* ───── Researching ───── */}
         <section id="researching" className="case-section">
           <h2>Researching</h2>
-          <h3>Understanding the Platform &amp; the Two User Groups</h3>
+          <h3>Understanding the Platform &amp; the Two User Groups Under Time Constraints</h3>
           <p>
-            Researching ran through three concurrent moves:{" "}
-            <mark className="hl">setting the scope against the timeline, auditing the platform&rsquo;s current state, and closing the student-side user-need gap through interviews</mark>.
-          </p>
-
-          <h3>Context</h3>
-          <p>
-            I inherited a functional but{" "}
-            <mark className="hl">visually basic, AI-generated</mark> prototype. Core features such
-            as student signup, project postings, and application submission were already existing,
-            however the overall experience felt unfinished and inconsistent.
+            Due to the project being a continuation of prior work, I recognized the need to understand the platform's current state and its two user groups. The 
+            <mark className="hl"> researching also needed to be completed within a span of 1.5 weeks</mark> for me to <mark className="hl">also ideate the redesign 
+            and features</mark> in time for <mark className="hl">development of the implementations into the platform to be completed on time.</mark>
             <br></br><br></br>
-            The main constraint was time, as I needed to build a plan of redesign and feature
-            implementation within a span of 1.5 weeks so my teammates could effectively continue
-            the platform&rsquo;s development over the semester. Due to developers being ready to
-            build from week two, conceptualization needed to be finalized early on, which
-            consequently shaped every research decision that followed.
+            Considering these factors, I decided to{" "}
+            <mark className="hl">utilize my existing access to the platform and the user groups to conduct a quick research sprint</mark>{" "}
+            containing the following:
           </p>
+          <ul className="focus-list">
+            <li><strong>Audit of the Platform</strong></li>
+            <li><strong>Interviews with Purdue students and staff</strong></li>
+          </ul>
 
-          <h3>Auditing the Current State of the Platform</h3>
+          <h3>Understanding the Platform's Current State</h3>
           <p>
+            The <mark className="hl">core features (account creation and logins, project postings, and application submission) were functioning</mark>,
+            however the overall experience focused solely on functionality. This was due to
+            recognizing the state of the platform&rsquo;s UI as{" "}
+            <mark className="hl">visually basic and obviously AI-generated</mark>.
+            <br></br><br></br>
             I <mark className="hl">explored the platform as both a student and a professor</mark>,
             walking through each role&rsquo;s flow end-to-end while logging redundancies and
-            opportunity gaps for new features. Focusing on friction rather than bugs, I found that
-            the issues clustered into three categories:
-            <br></br><br></br>
-            <strong>Redundancy and inconsistency.</strong> Duplicate buttons that performed the
-            same action, visual styling that varied inconsistently, and unclear information
-            hierarchy across pages that should have felt related to each other.
-            <br></br><br></br>
-            <strong>Broken trust moments.</strong> Saves that did not visibly persist, application
-            statuses that did not clearly distinguish pending from accepted from rejected, and
-            state changes such as loading, success, and error that did not register on screen.
-            <br></br><br></br>
-            <strong>Opportunity gaps.</strong> Profile information that was collected but never
-            utilized, project listings that showed logistics but nothing about the professor or
-            team, no communication channel within the platform, and no shared workspace for
-            accepted students. These gaps later became the basis for the new features I proposed.
+            opportunity gaps for new features. Focusing on friction rather than bugs, I found
+            that the issues clustered into three categories:
           </p>
+
+          <div className="audit-split">
+            <figure className="audit-split__visual">
+              <div className="image-slot">audit board · redundancy, trust, opportunity clusters</div>
+            </figure>
+            <div className="audit-split__text">
+              <p>
+                <strong>Redundancy and Technical Issues</strong> Although the platform has a mostly functioning base, there 
+                are instances of elements with the same affordances being implemented in the same page or technical
+                issues of data modifications not being saved that I either noted or reported to the development team to quickly resolve.
+              </p>
+              <p>
+                <strong>Hinted but not fufilled features</strong> The platform introduces the existence of
+                various features such as profiles, project listings, and instances of communication. However,
+                those features have not been fully utilized, leaving gaps that need to be addressed.
+              </p>
+              <p>
+                <strong>Design System Components Needed</strong> While exploring the platform, I was able to interact with and track
+                various elements such as buttons, cards, and navigation labels that needed to be accounted for when constructing the 
+                design system later on.
+              </p>
+            </div>
+          </div>
 
           <h3>Understanding User Needs</h3>
           <p>
-            While I understood the professor&rsquo;s needs through our client, Professor Reese, I
-            did not have similar access to student needs. As a result, I{" "}
-            <mark className="hl">conducted 4 student interviews and synthesized them through affinity diagramming</mark>.
-            <br></br><br></br>
-            The interviews covered how students discovered their research positions, what
-            information drove their decision to join, what surprised them within the first few
-            weeks, and how they coordinated with their professor once inside a lab. Affinity
-            diagramming then clustered the observations into themes around discovery, evaluation,
-            communication, and ongoing maintenance of the working relationship.
-            <br></br><br></br>
+            Due to being informed of future meetings with our client, Professor Reese, that guaranteed insights for professor needs, I focused on 
+            personally reaching out to interview for student needs. Specifically, I <mark className="hl">conducted 4 student interviews and 
+            synthesized them through affinity diagramming.</mark>
+          </p>
+          <div className="audit-split">
+
+            <div className="audit-split__text">
+              <p>
+                During the interviews, I learned about Purdue students' current experiences with 
+                research projects by probbing for the following information:
+              </p>
+              <ul className="focus-list">
+                <li><strong>Discovery of Research Project</strong></li>
+                <li><strong>Process of Applying</strong></li>
+                <li><strong>Progress Meeting Logistics</strong></li>
+                <li><strong>Research Deliverables (If Applicable)</strong></li>
+                <li><strong>Current State Views</strong></li>
+              </ul>
+            </div>
+          </div>
+          <p>
             The most significant insight was that the platform surfaced{" "}
             <mark className="hl">logistics well, but not <em>fit</em></mark>. Fit, however, is
             what students genuinely decided on, including factors such as supervision style, lab
-            culture, and the actual nature of the work. A student could find ten projects matching
-            their availability and coursework, yet still have no way to determine which lab they
-            would thrive in. This insight consequently guided every decision that followed,
-            including what information project listings needed to surface, what the student
-            profile asked, and why communication features mattered as much as discovery features.
+            culture, and the actual nature of the work. A student could find ten projects
+            matching their availability and coursework, yet still have no way to determine which
+            lab they would thrive in. This insight consequently guided every decision that
+            followed, including what information project listings needed to surface, what the
+            student profile asked, and why communication features mattered as much as discovery
+            features.
           </p>
           <figure>
             <div className="image-slot">research synthesis</div>
@@ -166,17 +183,6 @@ export default function ResearchHubCaseStudy() {
               Affinity diagramming 4 student interviews into the core insight: students decide on fit, not logistics.
             </figcaption>
           </figure>
-
-          <p>
-            On the professor side, Professor Reese&rsquo;s teaching schedule frequently limited
-            the interview windows I could arrange with him. Due to the tight timeline requiring
-            conceptualization to be finalized early, I{" "}
-            <mark className="hl">made the decision to proceed with the professor requirements he had already shared textually</mark>{" "}
-            at the project&rsquo;s start, along with the feature requests submitted during our
-            early discussions. As a result, the professor-side needs I designed around came from
-            his direct written input rather than from in-depth interviews, while the student side
-            was covered through the interviews and affinity synthesis outlined above.
-          </p>
         </section>
 
         {/* ───── Designing ───── */}
@@ -292,6 +298,14 @@ export default function ResearchHubCaseStudy() {
             small window given. This included deep client conversations on the professor side,
             structured interviews and affinity synthesis on the student side, and the audit
             findings serving as a shared foundation for both.
+
+
+
+            Designing and development 
+            were happening concurrently throughout the semester, so every design decision needed to survive a feasibility
+            conversation before being worth committing to. As a result, this kept my
+            specifications pragmatic, since I designed with the understanding that someone
+            (potentially me) needed to build it within the semester&rsquo;s timeframe.
           </p>
         </section>
       </main>
