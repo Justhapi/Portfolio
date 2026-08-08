@@ -31,24 +31,23 @@ export default function ResearchHubCaseStudy() {
           <h2>Outcome</h2>
           <aside className="outcome-callout" aria-label="Project outcome">
             <p className="outcome-callout__stat">
-              <strong>Planned to ship summer 2026</strong>, so the redesign and new features
-              would go live for the next semester&rsquo;s cohort of Purdue students and faculty.
+              <strong>Planned to ship fall 2026</strong>, so the redesign and expansion
+              would go live for the fall semester&rsquo;s cohort of Purdue students and faculty.
             </p>
             <p className="outcome-callout__meta">
-              Spring 2026 · Purdue Stack · design + build → summer ship
+              Spring 2026 · Purdue Stack · design + build → fall ship
             </p>
           </aside>
 
           <p>
             The semester-long project resulted in a{" "}
-            <mark className="hl">redesign of ResearchHub</mark>, a Purdue-specific research
-            collaboration platform, with new features planned to ship in summer 2026 for use by
-            students and faculty the following semester.
+            <mark className="hl">redesign and expansion of ResearchHub</mark>, a Purdue-specific research
+            collaboration platform, to address its lack of a design system and to improve usability by Purdue students and staff.
             <br></br><br></br>
             Some of these features were directly requested by our client, Professor Reese from the
-            statistics department. Others were constructed to{" "}
-            <mark className="hl">address student-side needs around communication and project maintenance</mark>,
-            needs that surfaced through my own user research rather than through the original brief.
+            statistics department. Others were constructed {" "}
+            <mark className="hl"> around communication and project maintenance</mark>,
+            needs surfaced through my own user research to address student-side needs.
           </p>
         </section>
 
@@ -62,33 +61,29 @@ export default function ResearchHubCaseStudy() {
             professors in finding and onboarding the right students. Instead of replacing existing
             methods such as cold emails and departmental postings, it consolidates them into a
             single system where both parties are able to view the same information.
+            <br></br><br></br>
+            <mark className="hl">Prior projects on the platform focused solely on functionality</mark> in logins, project postings, and application 
+            submissions. As a result, it contained base functionality but <mark className="hl">lacked a coherent design system and additional 
+            features</mark> to address its intended users of students and staff.
           </p>
 
           <h3>The Problem</h3>
           <p>
             Currently at Purdue, research opportunities are{" "}
-            <mark className="hl">plentiful but scattered</mark> across department pages, faculty
-            sites, listings, and word-of-mouth references. As a result, there is no consistent,
-            canonical place for students to look.
-            <br></br><br></br>
-            Additionally, the professor-student relationship itself lacks proper infrastructure.
-            Students need an adequate method of connecting with professors during and after the
-            research project, however initial contact is typically conducted over
-            anxiously-drafted cold emails, and ongoing coordination scatters across email, chat,
-            and shared documents.
+            <mark className="hl">plentiful but are also scattered across various sources </mark>such as department pages, faculty
+            sites, listings, and word-of-mouth references. As a result, there is no consistent and cnetralized place for project discovery for students.
             <br></br><br></br>
             Professors, similarly, have{" "}
             <mark className="hl">no consistent workspace to coordinate and maintain project workload across their students</mark>,
             meaning there is no shared view of responsibilities, blocked tasks, or items that need
-            follow-up.
+            follow-up. As a result, project progression can be inconsistent due to delays.
           </p>
 
           <h3>My Role</h3>
           <p>
-            I was the <mark className="hl">sole UI designer, later transitioning into a Design Engineer role</mark>,
-            within the 6-person Purdue Stack team alongside 5 full-stack developers. I owned all
-            UX and UI decisions and also contributed front-end React code during stagnated periods
-            of project progression.
+            I was the <mark className="hl">sole UI designer and later a Design Engineer role</mark>
+            in the 6-person Purdue Stack team with 5 full-stack developers. During the project, I <mark className="hl">determined all
+            UX and UI decisions and also contributed front-end React code</mark> to maintain project progression.
             <br></br><br></br>
             While designing and coding to address professor and student needs, I also maintained
             regular discussions with my teammates to ensure alignment and feasibility of
@@ -171,6 +166,17 @@ export default function ResearchHubCaseStudy() {
               Affinity diagramming 4 student interviews into the core insight: students decide on fit, not logistics.
             </figcaption>
           </figure>
+
+          <p>
+            On the professor side, Professor Reese&rsquo;s teaching schedule frequently limited
+            the interview windows I could arrange with him. Due to the tight timeline requiring
+            conceptualization to be finalized early, I{" "}
+            <mark className="hl">made the decision to proceed with the professor requirements he had already shared textually</mark>{" "}
+            at the project&rsquo;s start, along with the feature requests submitted during our
+            early discussions. As a result, the professor-side needs I designed around came from
+            his direct written input rather than from in-depth interviews, while the student side
+            was covered through the interviews and affinity synthesis outlined above.
+          </p>
         </section>
 
         {/* ───── Designing ───── */}

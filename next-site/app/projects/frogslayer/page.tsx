@@ -427,9 +427,8 @@ export default function FrogslayerCaseStudy() {
               meta="7 users · PMU"
               focus={
                 <>
-                  <strong>Round 1 focus:</strong> validating the{" "}
-                  <mark className="hl">general UI of the flow</mark> — is the sequence intuitive at
-                  first contact, and where does cognitive overload emerge?
+                  <strong>Round 1 focus:</strong> Validating the{" "}
+                  <mark className="hl">general UI of the flow</mark> regarding user comfort and appearances of cognitive overload
                 </>
               }
             >
@@ -465,9 +464,8 @@ export default function FrogslayerCaseStudy() {
               focus={
                 <>
                   <strong>Round 2 focus:</strong> an{" "}
-                  <mark className="hl">A/B test of the two candidate loyalty-program models</mark> —
-                  tier-based (upgrade for perks) vs. upsell-based (spend $20, play with $25). Which
-                  one actually gets hesitant users to consider joining?
+                  <mark className="hl">A/B test guaging the effectiveness of two candidate loyalty-program models, </mark>
+                  tier-based (upgrade for perks) vs. upsell-based (spend $20, play with $25), in context of the entertainment industry
                 </>
               }
             >
@@ -502,11 +500,10 @@ export default function FrogslayerCaseStudy() {
               meta="5 users · PMU · final prototype"
               focus={
                 <>
-                  <strong>Round 3 focus:</strong> refining the{" "}
-                  <mark className="hl">user&rsquo;s introduction to the membership</mark> —
+                  <strong>Round 3 focus:</strong> Guaging user reception to refinement of the{" "}
+                  <mark className="hl">introduction to the membership</mark> by
                   surfacing &ldquo;Join for Free&rdquo; prominently and making cost transparency
-                  impossible to miss, because skimming users habitually assume membership costs
-                  money.
+                  impossible to miss
                 </>
               }
             >
