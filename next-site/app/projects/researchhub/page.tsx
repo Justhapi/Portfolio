@@ -191,8 +191,9 @@ export default function ResearchHubCaseStudy() {
             relationship depended heavily on{" "}
             <mark className="hl">the clarity of intention from both sides</mark>, which then
             determined whether interactions felt productive or minimal. Alongside this, students
-            often mentioned taking on research due to the requirements of their major, and
-            highlighted that consistent weekly meetings with to-do lists and progress tracking
+            often mentioned taking on research due to the requirements of their major. 
+            <br></br><br></br>
+            There were also repeated instances of consistent weekly meetings with to-do lists and progress tracking
             (similar to patterns in familiar productivity tools such as the Microsoft suite,
             Gmail, and Zoom) were common when the relationship worked well. As a result, features
             around communication, file attachments with previews, and structured progress tracking
@@ -209,6 +210,16 @@ export default function ResearchHubCaseStudy() {
               </>
             }
           />
+
+          <p>
+            On the professor side, I was later informed that Professor Reese&rsquo;s schedule had
+            shifted and prevented the meeting I had counted on for in-depth professor-side
+            insights. Due to the tight timeline, I decided to work from the features Professor
+            Reese had requested during an earlier meeting with my project lead. I then{" "}
+            <mark className="hl">filtered those requests through the student-side needs surfaced through the interviews above</mark>,
+            carrying forward only the ones that served both sides. As a result, the professor-side
+            features I integrated were each directly grounded in a documented student need.
+          </p>
         </section>
 
         {/* ───── Designing ───── */}
@@ -226,22 +237,9 @@ export default function ResearchHubCaseStudy() {
             Due to the goal of the project's completion being that the platform can be utilized for real-world research collaborations next semester, 
             the implementation of a complex design system was noted as a goal secondary to the primary goal of developing features that expand upon 
             the platform's usability.
-            Due to me designing and my teammates developing concurrently throughout the semester,
-            constructing{" "}
-            <mark className="hl">a complex design system completely from scratch was not realistic</mark>,
-            as every week spent on foundational elements would be a week developers built without
-            design guidance.
             <br></br><br></br>
-            As a result, I worked within the existing base, refining the UI and components with a
-            stronger focus on Purdue University&rsquo;s color scheme to highlight the
-            platform&rsquo;s identity as a Purdue research tool. The refinement pass standardized
-            spacing, typography hierarchy, button and card patterns, and state styling such as
-            loading, empty, error, and success, so that student-facing and professor-facing flows,
-            which present very different content, would still read as one coherent product.
-            <br></br><br></br>
-            The practical measure of the system&rsquo;s effectiveness was whether a developer
-            could build a screen I had not explicitly mocked up and still have it land on-brand.
-            As a result, components and patterns were documented to that standard.
+            As a result, I focused on refining the existing UI and components to be more reminescent of Purdue University
+            through color scheme and text to highlight the platform&rsquo;s identity as primarily a Purdue research platform.
           </p>
           <ZoomableImage
             src={referencesImg.src}
