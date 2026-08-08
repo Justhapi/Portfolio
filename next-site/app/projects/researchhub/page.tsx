@@ -10,6 +10,7 @@ import interviewNotesImg from "./images/interview_notes.webp";
 import affinityDiagrammingImg from "./images/affinity_diagraming.png";
 import referencesImg from "./images/references.png";
 import sketchesImg from "./images/sketches.png";
+import colorSchemeImg from "./images/color_scheme.webp";
 
 export const metadata = {
   title: "ResearchHub — Kathleen Li",
@@ -187,38 +188,43 @@ export default function ResearchHubCaseStudy() {
             </div>
           </div>
           <p>
-            The most significant insight was that the quality of the student-professor working
-            relationship depended heavily on{" "}
-            <mark className="hl">the clarity of intention from both sides</mark>, which then
-            determined whether interactions felt productive or minimal. Alongside this, students
-            often mentioned taking on research due to the requirements of their major. 
-            <br></br><br></br>
-            There were also repeated instances of consistent weekly meetings with to-do lists and progress tracking
-            (similar to patterns in familiar productivity tools such as the Microsoft suite,
-            Gmail, and Zoom) were common when the relationship worked well. As a result, features
-            around communication, file attachments with previews, and structured progress tracking
-            became just as important as the initial discovery of research projects.
+            After finishing all the interviews, I then synthesized the findings through affinity diagramming, allowing me to
+            cluster the findings into the following themes:
           </p>
-          <ZoomableImage
-            src={affinityDiagrammingImg.src}
-            alt="Cross-interview affinity diagram — clustering 4 student interview observations into themes around discovery, evaluation, communication, and ongoing maintenance."
-            aspectRatio={9366 / 6144}
-            caption={
-              <>
-                Affinity diagramming the 4 student interviews into themes around intention
-                clarity, communication features, and consistent meeting rhythms.
-              </>
-            }
-          />
+          <ul className="focus-list">
+            <li><strong>Communication</strong></li>
+            <li><strong>Maintenance</strong></li>
+            <li><strong>Project Details</strong></li>
+          </ul>
+          <div className="audit-split">
+            <div className="audit-split__visual">
+              <ZoomableImage
+                src={affinityDiagrammingImg.src}
+                alt="Cross-interview affinity diagram — clustering 4 student interview observations into themes around discovery, evaluation, communication, and ongoing maintenance."
+                aspectRatio={9366 / 6144}
+                caption={
+                  <>
+                    Affinity diagramming the 4 student interviews into themes around intention
+                    clarity, communication features, and consistent meeting rhythms.
+                  </>
+                }
+              />
+            </div>
+            <div className="audit-split__text">
+              <p>
+                From the synethesized findings, I was able to recognize the main student needs that the new features needed address,
+                specifically regarding <mark className="hl">ease of communication with professorsand project maintenance of files organization.</mark>
+              </p>
+            </div>
+          </div>
 
           <p>
-            On the professor side, I was later informed that Professor Reese&rsquo;s schedule had
-            shifted and prevented the meeting I had counted on for in-depth professor-side
-            insights. Due to the tight timeline, I decided to work from the features Professor
-            Reese had requested during an earlier meeting with my project lead. I then{" "}
-            <mark className="hl">filtered those requests through the student-side needs surfaced through the interviews above</mark>,
-            carrying forward only the ones that served both sides. As a result, the professor-side
-            features I integrated were each directly grounded in a documented student need.
+            On the professor side, I was later informed that Professor Reese&rsquo;s schedule had unexpectedly prevented the 
+            meeting for in-depth professor-side insights. 
+            <br></br><br></br>
+            Due to the tight timeline, I decided to <mark className="hl">base 
+            the professor needs from the features Professor Reese had requested during an earlier meeting</mark> with my project lead. I then{" "}
+            <mark className="hl">filtered through those requests, continuing development of only features that served both user groups.</mark>
           </p>
         </section>
 
@@ -227,31 +233,61 @@ export default function ResearchHubCaseStudy() {
           <h2>Designing</h2>
           <h3>From Existing Base to Handoff-Ready Prototypes</h3>
           <p>
-            The design pass ran through two moves:{" "}
-            <mark className="hl">refining the existing design system around Purdue&rsquo;s identity</mark>,
-            then using prototypes as the primary explaining medium for developers.
+            The design process ran through brainstorming to handing off three stages:
           </p>
+          <ul className="focus-list">
+            <li><strong>Identifying UI patterns from familiar platforms</strong></li>
+            <li><strong>Ideating new platform UI</strong></li>
+            <li><strong>Refining the existing design system</strong></li>
+            <li><strong>Wireframing for development handoff</strong></li>
+          </ul>
 
-          <h3>Constructing a More Attractive Design System</h3>
+          <h3>Referencing UI Patterns from Familiar Platforms</h3>
           <p>
-            Due to the goal of the project's completion being that the platform can be utilized for real-world research collaborations next semester, 
-            the implementation of a complex design system was noted as a goal secondary to the primary goal of developing features that expand upon 
-            the platform's usability.
+            Due to students frequently mentioning platforms such as the Microsoft suite, Outlook,
+            and Gmail as the tools they currently used to communicate with professors, I decided
+            to{" "} <mark className="hl">reference the same platforms when designing the UI for ResearchHub</mark>.
             <br></br><br></br>
-            As a result, I focused on refining the existing UI and components to be more reminescent of Purdue University
-            through color scheme and text to highlight the platform&rsquo;s identity as primarily a Purdue research platform.
+            As a result, <mark className="hl">interaction patterns from those platforms were utilized as the base design</mark>
+            for the platform components with <mark className="hl">modifications to better fit the platform's focus on
+            organization through projects instead of individuals .</mark>
           </p>
           <ZoomableImage
             src={referencesImg.src}
-            alt="Design system references — refined UI components anchored on Purdue's color scheme, standardizing spacing, typography, buttons, cards, and state styling."
+            alt="Screenshots of Microsoft Suite, Outlook, and Gmail — the familiar communication platforms students referenced as tools they already used with professors."
             aspectRatio={8634 / 6674}
             caption={
               <>
-                Refining the existing component library around the Purdue palette to keep
-                student and professor flows visually coherent.
+                Screenshots of Microsoft Suite, Outlook, and Gmail, referenced as the familiar
+                communication platforms students already used with professors.
               </>
             }
           />
+
+          <h3>Constructing a More Attractive Design System</h3>
+          <div className="audit-split">
+            <div className="audit-split__visual">
+              <ZoomableImage
+                src={colorSchemeImg.src}
+                alt="ResearchHub color scheme anchored on Purdue University's identity — refined component palette applied across student and professor flows."
+                aspectRatio={2568 / 2406}
+              />
+            </div>
+            <div className="audit-split__text">
+              <p>
+                Due to the goal of the project&rsquo;s completion being that the <mark className="hl">platform can be
+                utilized for real-world research collaborations next semester,</mark> the implementation
+                of <mark className="hl">a complex design system was noted as a goal secondary</mark> to the primary goal of
+                developing features that expand upon the platform&rsquo;s usability.
+              </p>
+              <p>
+                As a result, I focused on refining the existing UI and components to be more
+                reminiscent of Purdue University through{" "}
+                <mark className="hl">color scheme and text</mark> to highlight the
+                platform&rsquo;s <mark className="hl">identity as primarily a Purdue research platform.</mark>
+              </p>
+            </div>
+          </div>
 
           <h3>Prototyping to Describe to Developers Better</h3>
           <p>
