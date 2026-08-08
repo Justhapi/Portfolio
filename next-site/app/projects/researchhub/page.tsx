@@ -1,5 +1,15 @@
 import CaseCover from "@/components/CaseCover";
 import CaseSectionNav from "@/components/CaseSectionNav";
+import ZoomableImage from "@/components/ZoomableImage";
+
+/* Case-study images are co-located with the route — imported as ES
+   modules so Webpack bundles them into /_next/static/media/ at build
+   time with hashed filenames. Same pattern as Frogslayer + JT. */
+import auditImg from "./images/audit.webp";
+import interviewNotesImg from "./images/interview_notes.webp";
+import affinityDiagrammingImg from "./images/affinity_diagraming.png";
+import referencesImg from "./images/references.png";
+import sketchesImg from "./images/sketches.png";
 
 export const metadata = {
   title: "ResearchHub — Kathleen Li",
@@ -122,9 +132,13 @@ export default function ResearchHubCaseStudy() {
           </p>
 
           <div className="audit-split">
-            <figure className="audit-split__visual">
-              <div className="image-slot">audit board · redundancy, trust, opportunity clusters</div>
-            </figure>
+            <div className="audit-split__visual">
+              <ZoomableImage
+                src={auditImg.src}
+                alt="Platform audit board — walking through student and professor flows end-to-end, logging redundancies, broken trust moments, and opportunity gaps."
+                aspectRatio={6214 / 5021}
+              />
+            </div>
             <div className="audit-split__text">
               <p>
                 <strong>Redundancy and Technical Issues</strong> Although the platform has a mostly functioning base, there 
@@ -151,11 +165,17 @@ export default function ResearchHubCaseStudy() {
             synthesized them through affinity diagramming.</mark>
           </p>
           <div className="audit-split">
-
+            <div className="audit-split__visual">
+              <ZoomableImage
+                src={interviewNotesImg.src}
+                alt="Session notes from the 4 student interviews — capturing responses across the five probing categories."
+                aspectRatio={5806 / 3812}
+              />
+            </div>
             <div className="audit-split__text">
               <p>
-                During the interviews, I learned about Purdue students' current experiences with 
-                research projects by probbing for the following information:
+                During the interviews, I learned about Purdue students&rsquo; current experiences
+                with research projects by probing for the following information:
               </p>
               <ul className="focus-list">
                 <li><strong>Discovery of Research Project</strong></li>
@@ -167,22 +187,28 @@ export default function ResearchHubCaseStudy() {
             </div>
           </div>
           <p>
-            The most significant insight was that the platform surfaced{" "}
-            <mark className="hl">logistics well, but not <em>fit</em></mark>. Fit, however, is
-            what students genuinely decided on, including factors such as supervision style, lab
-            culture, and the actual nature of the work. A student could find ten projects
-            matching their availability and coursework, yet still have no way to determine which
-            lab they would thrive in. This insight consequently guided every decision that
-            followed, including what information project listings needed to surface, what the
-            student profile asked, and why communication features mattered as much as discovery
-            features.
+            The most significant insight was that the quality of the student-professor working
+            relationship depended heavily on{" "}
+            <mark className="hl">the clarity of intention from both sides</mark>, which then
+            determined whether interactions felt productive or minimal. Alongside this, students
+            often mentioned taking on research due to the requirements of their major, and
+            highlighted that consistent weekly meetings with to-do lists and progress tracking
+            (similar to patterns in familiar productivity tools such as the Microsoft suite,
+            Gmail, and Zoom) were common when the relationship worked well. As a result, features
+            around communication, file attachments with previews, and structured progress tracking
+            became just as important as the initial discovery of research projects.
           </p>
-          <figure>
-            <div className="image-slot">research synthesis</div>
-            <figcaption>
-              Affinity diagramming 4 student interviews into the core insight: students decide on fit, not logistics.
-            </figcaption>
-          </figure>
+          <ZoomableImage
+            src={affinityDiagrammingImg.src}
+            alt="Cross-interview affinity diagram — clustering 4 student interview observations into themes around discovery, evaluation, communication, and ongoing maintenance."
+            aspectRatio={9366 / 6144}
+            caption={
+              <>
+                Affinity diagramming the 4 student interviews into themes around intention
+                clarity, communication features, and consistent meeting rhythms.
+              </>
+            }
+          />
         </section>
 
         {/* ───── Designing ───── */}
@@ -197,6 +223,9 @@ export default function ResearchHubCaseStudy() {
 
           <h3>Constructing a More Attractive Design System</h3>
           <p>
+            Due to the goal of the project's completion being that the platform can be utilized for real-world research collaborations next semester, 
+            the implementation of a complex design system was noted as a goal secondary to the primary goal of developing features that expand upon 
+            the platform's usability.
             Due to me designing and my teammates developing concurrently throughout the semester,
             constructing{" "}
             <mark className="hl">a complex design system completely from scratch was not realistic</mark>,
@@ -214,13 +243,17 @@ export default function ResearchHubCaseStudy() {
             could build a screen I had not explicitly mocked up and still have it land on-brand.
             As a result, components and patterns were documented to that standard.
           </p>
-          <figure>
-            <div className="image-slot">design system</div>
-            <figcaption>
-              Refining the existing component library around the Purdue palette to keep student and professor flows
-              visually coherent.
-            </figcaption>
-          </figure>
+          <ZoomableImage
+            src={referencesImg.src}
+            alt="Design system references — refined UI components anchored on Purdue's color scheme, standardizing spacing, typography, buttons, cards, and state styling."
+            aspectRatio={8634 / 6674}
+            caption={
+              <>
+                Refining the existing component library around the Purdue palette to keep
+                student and professor flows visually coherent.
+              </>
+            }
+          />
 
           <h3>Prototyping to Describe to Developers Better</h3>
           <p>
@@ -264,12 +297,17 @@ export default function ResearchHubCaseStudy() {
             &ldquo;would this be easier if the structure changed?&rdquo; with enough technical
             context for the question to be productive.
           </p>
-          <figure>
-            <div className="image-slot">spec vs shipped</div>
-            <figcaption>
-              A spec-vs-shipped side-by-side of a component I designed and then implemented in React.
-            </figcaption>
-          </figure>
+          <ZoomableImage
+            src={sketchesImg.src}
+            alt="Design sketches showing the spec-vs-shipped comparison of components I designed and then implemented in React."
+            aspectRatio={5333 / 2131}
+            caption={
+              <>
+                A spec-vs-shipped side-by-side of a component I designed and then implemented in
+                React.
+              </>
+            }
+          />
         </section>
 
         <section id="takeaways" className="case-section">
