@@ -12,7 +12,6 @@ import outcomeGuidelines from "./images/Guidelines.webp";
 import outcomeJourneyMap from "./images/Journey_Map.png";
 import producerKioskBenefits from "./images/Kiosk_Benefits.webp";
 import producerCompetitorAnalysis from "./images/Competitor_Analysis_Visual.webp";
-import consumerKioskComponents from "./images/Components_Of_Kiosk_Interfaces_Visual.webp";
 import consumerUserObservation from "./images/User_Observation_Visual.png";
 import consumerUserInterview from "./images/User_Interview_Visual.png";
 import ideatingCrazyEights from "./images/Crazy_Eights.png";
@@ -223,44 +222,11 @@ export default function FrogslayerCaseStudy() {
             <mark className="hl">consumer's perspective</mark> to answer the following questions:
           </p>
           <ul className="focus-list">
-            <li><strong>What are the gaps of kiosks?</strong></li>
+            <li><strong>How do users currently interact with kiosks?</strong></li>
             <li><strong>How do users actually behave on kiosks in context?</strong></li>
           </ul>
           <ResearchCarousel
             slides={[
-              {
-                key: "gaps",
-                content: (
-                  <div className="rq-block">
-                    <div className="rq-block__body">
-                      <span className="rq-method-chip">Secondary Research</span>
-                      <h4 className="rq-heading">&ldquo;What are the gaps of kiosks?&rdquo;</h4>
-                      <p className="rq-lead">
-                        A survey of kiosk-industry literature and design critiques revealed a{" "}
-                        <mark className="hl">fragmented, inconsistent design landscape</mark> —
-                        businesses repeating the same usability mistakes because no evidence-based
-                        standards exist for the category.
-                      </p>
-                      <p className="rq-findings-lead"><strong>What we found:</strong></p>
-                      <ul className="rq-findings-list">
-                        <li>External environmental factors (light, noise, crowds) act as compounding stresses</li>
-                        <li>Inconsistent user expectations across venues and kiosk types</li>
-                        <li>Focus on general functionality without discoverability of specific features</li>
-                        <li>Need to reduce cognitive load — especially at moments of decision-making</li>
-                        <li>Loyalty programs consistently under-integrated with the core flow</li>
-                      </ul>
-                    </div>
-                    <div className="rq-block__visual">
-                      <ZoomableImage
-                        src={consumerKioskComponents.src}
-                        alt="Secondary-research synthesis of gaps in current kiosk-interface components across the industry."
-                        aspectRatio={5239 / 3374}
-                        noDrag
-                      />
-                    </div>
-                  </div>
-                ),
-              },
               {
                 key: "observations",
                 content: (

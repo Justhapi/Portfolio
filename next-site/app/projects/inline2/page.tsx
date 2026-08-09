@@ -269,36 +269,40 @@ export default function PopByInlineCaseStudy() {
         <section id="takeaways" className="case-section">
           <h2>Takeaways</h2>
 
-          <h3>Synthesis Over Listing, Crux First Over Polish First</h3>
+          <h3>Prioritizing Synthesis Over Listing</h3>
           <p>
-            The biggest analytical lesson from this project was{" "}
-            <mark className="hl">synthesis over listing</mark>. Collecting observations is only
-            the input; the actual value comes from comparing across them and committing to a
-            recommendation. On a personal iteration-habits level, I also noticed that I tended
-            to polish the parts I was already confident about while avoiding the harder parts,
-            yet the harder parts were exactly what the brief hinged on. As a result, I find that
-            designing the crux first and polishing second is the discipline I am carrying
-            forward.
+            The biggest analytical lesson from this project was that{" "}
+            <mark className="hl">collecting observations is only the input, not the actual value</mark>.
+            What is useful comes from comparing across the observations and committing to a
+            recommendation based on them.
+            <br></br><br></br>
+            On the same note, I also noticed that I tended to polish the parts I was already
+            confident about while avoiding the harder parts, even though the harder parts were
+            what the brief was actually asking about. Because of that, I am now more deliberate
+            about tackling the least-confident parts first so that the remaining time goes to
+            refining instead of stalling.
           </p>
 
-          <h3>Research Quality Has an Energy Ceiling</h3>
+          <h3>Recognizing When to Stop</h3>
           <p>
-            Round 1 of testing added an additional lesson, which was that{" "}
-            <mark className="hl">research output has a quality ceiling set by energy, not skill</mark>.
-            When fresh, &ldquo;one more polish pass&rdquo; usually improves the work; when tired
-            after running sessions, the same instinct produces marginal returns at high
-            cognitive cost. As a result, I find that knowing when to stop is itself a research
-            discipline, and one that consequently protects the quality of the <em>next</em>{" "}
-            round.
+            Round 1 of testing also taught me that{" "}
+            <mark className="hl">research output has a quality ceiling set by energy rather than skill</mark>.
+            When I was fresh, one more polish pass would usually improve the work. However, when
+            I was tired after running sessions, the same instinct produced marginal returns at a
+            high cognitive cost.
+            <br></br><br></br>
+            From this, I now recognize that knowing when to stop is itself a research skill,
+            since stopping at the right point protects the quality of the following round.
           </p>
 
-          <h3>Individual and Cohort Docs Serve Different Jobs</h3>
+          <h3>Individual and Cohort Synthesis Serve Different Purposes</h3>
           <p>
             The cohort-consolidation step taught me that{" "}
-            <mark className="hl">individual synthesis and cohort aggregation serve different jobs</mark>:
-            the individual document tells the closed-loop story of the specific project, while
-            the by-feature aggregation across all testers drives structural decisions. Both
-            formats are valid, and neither replaces the other.
+            <mark className="hl">individual synthesis and cohort aggregation are used differently</mark>.
+            The individual document tells the closed-loop story of a specific project, while the
+            aggregation across all testers drives structural decisions across the product.
+            Recognizing that both formats have their own role changed how I think about which
+            one to reach for at each stage.
           </p>
         </section>
       </main>

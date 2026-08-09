@@ -34,7 +34,7 @@ export default function ResearchHubCaseStudy() {
       <CaseCover
         title="ResearchHub — Connecting Students with Faculty Research"
         meta="Spring 2026 · 9 weeks · 5 engineers + me · Design Engineer (sole designer)"
-        subtitle="A redesigned student–faculty research platform, planned to ship summer 2026"
+        subtitle="A redesigned student–faculty research platform, planned to ship fall 2026"
         imageLabel="ResearchHub · cover image"
       />
 
@@ -462,7 +462,7 @@ export default function ResearchHubCaseStudy() {
             <mark className="hl">unable to conduct user research on professors as in-depth as I did with students</mark>,
             since the two user groups offered very different levels of access. I had only one
             professor (our client) available and an entire campus of students readily available.
-            As a result, I accounted for prioritized the features Professor Reese had requested based on how
+            As a result, I prioritized the features Professor Reese had requested based on how
             those features would also serve students.
             <br></br><br></br>
             From adapting to this differing-access obstacle, I now recognize that working

@@ -22,14 +22,32 @@ function useActiveSection(): SectionId {
 
       for (const id of SECTIONS) {
         if (id === "connect") {
-          // #connect is position:sticky so its rect.top is always 0 while
-          // it's in the ac-scene — it would register as active the moment
-          // the ac-scene enters the viewport, even while About still covers
-          // it. Only mark Connect active once About has fully scrolled off
-          // (About's bottom edge is above the viewport).
+          // #connect is position:sticky inside .ac-scene, so its rect.top
+          // reads as 0 the moment .ac-scene enters the viewport — even
+          // while About is still fully covering Connect. Rather than
+          // measuring About's rect (which can misbehave once About has
+          // scrolled far off-screen — some browsers clamp offscreen
+          // rects unpredictably), compute the exact scroll position at
+          // which Connect covers ≥ 60% of the viewport and compare
+          // against window.scrollY directly.
+          //
+          //   scrollY = sceneTop            → About fills viewport (0% Connect)
+          //   scrollY = sceneTop + aboutH   → About fully off-screen (100% Connect)
+          //   Connect visible fraction = (scrollY - sceneTop) / aboutH
+          //   Threshold: (scrollY - sceneTop) / aboutH >= 0.6
+          //     → scrollY >= sceneTop + aboutH * 0.6
+          //
+          // Once scroll passes the sticky range entirely (scrollY beyond
+          // sceneTop + aboutH), the >= comparison still holds so Connect
+          // stays active for the whole footer view.
+          const scene = document.querySelector<HTMLElement>(".ac-scene");
           const aboutEl = document.querySelector<HTMLElement>(".about");
-          if (aboutEl && aboutEl.getBoundingClientRect().bottom <= 0) {
-            current = "connect";
+          if (scene && aboutEl) {
+            const threshold =
+              scene.offsetTop + aboutEl.offsetHeight * 0.5;
+            if (window.scrollY >= threshold) {
+              current = "connect";
+            }
           }
           continue;
         }
@@ -65,6 +83,19 @@ function smoothScrollTo(id: string) {
     window.scrollTo({ top: 0, behavior: "smooth" });
     return;
   }
+  if (id === "about") {
+    // #about is position:absolute inside .ac-scene, so its offsetTop is
+    // 0 relative to ac-scene rather than an absolute page Y. Using
+    // offsetTop directly would send the user back to the very top of
+    // the page. The "About" moment is when ac-scene enters the viewport
+    // (About covers Connect from the top of the scene), so scroll to
+    // ac-scene's offsetTop instead.
+    const scene = document.querySelector<HTMLElement>(".ac-scene");
+    if (scene) {
+      window.scrollTo({ top: scene.offsetTop, behavior: "smooth" });
+      return;
+    }
+  }
   if (id === "connect") {
     // #connect is sticky behind About — scrollIntoView lands at the top of
     // .ac-scene (About still covering it). We need to scroll past About's
@@ -78,7 +109,12 @@ function smoothScrollTo(id: string) {
   }
   const el = document.getElementById(id);
   if (!el) return;
-  el.scrollIntoView({ behavior: "smooth", block: "start" });
+  // Prefer window.scrollTo over scrollIntoView so Lenis's smooth-scroll
+  // wrapper reliably picks up the scroll intent — scrollIntoView can
+  // race against Lenis's own RAF loop on some browsers. offsetTop is
+  // relative to the offsetParent (usually body), so it maps directly
+  // to the absolute Y position we need.
+  window.scrollTo({ top: el.offsetTop, behavior: "smooth" });
 }
 
 /** 4-pointed sparkle SVG used as the bullet on each nav option. */
@@ -255,17 +291,17 @@ export default function SiteNavV2() {
               className={`nav-link ${active === id ? "active" : ""}`}
               aria-current={active === id ? "page" : undefined}
               onClick={(e) => {
-                // #connect is sticky behind About — the browser's native
-                // anchor jump lands on ac-scene's top (About still covers
-                // Connect), so we intercept and scroll past About's height
-                // manually. history.pushState keeps the URL hash so Back/
-                // Forward and share-links still work. Other section links
-                // let the browser handle the anchor + hash natively.
-                if (id === "connect") {
-                  e.preventDefault();
-                  smoothScrollTo(id);
-                  history.pushState(null, "", `#${id}`);
-                }
+                // Intercept the browser's native anchor jump for every
+                // section link so scrolling flows through smoothScrollTo,
+                // which uses window.scrollTo(smooth) — Lenis-friendly and
+                // consistent across links. #connect needs a bespoke jump
+                // target (past About's height), and other sections need
+                // window.scrollTo instead of scrollIntoView to avoid
+                // racing Lenis. history.pushState preserves the URL hash
+                // so Back / Forward and share-links still work.
+                e.preventDefault();
+                smoothScrollTo(id);
+                history.pushState(null, "", `#${id}`);
                 setMenuOpen(false);
               }}
             >

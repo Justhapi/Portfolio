@@ -4330,6 +4330,22 @@ em.it { font-style: italic; }
 .case-section .parallel-tracks .research-track figure {
   margin-bottom: 0;
 }
+/* Normalize both track frames to an identical size regardless of the
+   underlying image's aspect ratio. Without this, a portrait image on
+   one side + a landscape image on the other leave the shorter column
+   with a large empty band below its figure (and the vertical divider
+   runs uneven). Forcing a shared 4:3 aspect via !important beats the
+   inline aspectRatio style set by ZoomableImage/StaticImage; the
+   image inside continues to object-fit: contain, and any letterboxing
+   blends invisibly into the cream frame bg. max-height caps the
+   frames tighter than the standalone 62vh default so the two-column
+   pair reads as a compact reference block rather than dominating the
+   scroll length. */
+.case-section .parallel-tracks .zoomable-frame {
+  aspect-ratio: 4 / 3 !important;
+  max-height: 40vh;
+  max-width: 100% !important;
+}
 
 @media (max-width: 760px) {
   .case-section .parallel-tracks {
@@ -4337,6 +4353,13 @@ em.it { font-style: italic; }
     gap: 28px;
   }
   .case-section .parallel-tracks::before { display: none; }
+  /* Stacked single-column layout — keep the shared 4:3 aspect (still
+     invisibly letterboxed against the cream frame bg) but relax the
+     height cap so each figure has a bit more room to breathe when
+     it's the only figure on screen. */
+  .case-section .parallel-tracks .zoomable-frame {
+    max-height: 55vh;
+  }
 }
 .case-section p {
   font-family: var(--f-cookie);
@@ -5165,6 +5188,28 @@ em.it { font-style: italic; }
 .usability-flow-anchor .zoomable-frame,
 .visual-compact .zoomable-frame {
   max-height: 44vh;
+}
+
+/* Wide-visual variant — breaks the figure out beyond the case-body's
+   1080px max-width so an extremely wide-aspect artifact (e.g. the AI
+   Journey Agent interaction-pattern synthesis at ~3:1) renders large
+   enough to be recruiter-skimmable without requiring a zoom.
+   Uses the negative-margin full-bleed pattern (margin-inline calc(50%
+   - 50vw) pulls both edges out to the viewport regardless of the
+   containing case-body's 1080px cap). The frame inside then re-caps
+   at 1400px and centers via its existing margin-inline: auto, so on
+   ultrawide viewports the image stays readable and on narrow
+   viewports (where 50% ≈ 50vw) the margins collapse to ~0 and the
+   figure gracefully falls back to normal in-flow width. */
+.case-section .visual-wide {
+  margin-inline: calc(50% - 50vw);
+  margin-block: 24px 32px;
+}
+.case-section .visual-wide .zoomable-frame {
+  /* Beat the ZoomableImage inline maxWidth trick (min(100%, 62vh*ar))
+     so the wide-aspect frame can grow past its default cap. */
+  max-width: min(100%, 1400px) !important;
+  max-height: 60vh;
 }
 /* Static variant — no drag/zoom, no grab cursor, no transform on the
    image. Same visual frame (paper background, border-radius, max-height)

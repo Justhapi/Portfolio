@@ -234,7 +234,7 @@ const PROJECTS: Project[] = [
     tag: "inline · Product Design Intern · 2026",
     blurb: (
       <>
-        Contributed to an <strong>early-stage product exploration</strong> — competitive research, gap analysis, concept design, and multi-round <strong>usability testing</strong> as lead facilitator. Under active NDA; detailed materials available on request.
+        Contributed to an <strong>early-stage consumer product exploration</strong> — led <strong>multiple rounds of usability testing</strong> alongside competitive research, gap analysis, and concept design. Under active NDA; detailed materials available on request.
       </>
     ),
     meta: ["NDA", "Product Design", "Usability Testing", "2026"],
@@ -275,13 +275,13 @@ const PROJECTS: Project[] = [
     readTime: "3 min read",
   },
   {
-    tag: "Purdue Stack · Ships summer 2026",
+    tag: "Purdue Stack · Ships fall 2026",
     blurb: (
       <>
-        Redesigned Purdue&rsquo;s <strong>student–faculty research collaboration platform</strong> — design and front-end React shipped alongside a 5-engineer team
+        Redesigned Purdue&rsquo;s <strong>student–faculty research collaboration platform</strong> — owned design and contributed <strong>front-end React</strong> alongside a 5-engineer team, planned to ship fall 2026
       </>
     ),
-    meta: ["Design Systems", "UI", "Design Engineering", "User Research", "2026", "SHIPPED"],
+    meta: ["Design Systems", "UI", "Design Engineering", "User Research", "2026", "SHIPS FALL 2026"],
     accent: ["#F5D967", "#F0707C"],
     // Ocean Blue — the dark teal. Shadow held one notch above pitch-
     // black so multiply doesn't drive the bottom edge to mud.

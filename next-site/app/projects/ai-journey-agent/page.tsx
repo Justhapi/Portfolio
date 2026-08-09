@@ -1,7 +1,6 @@
 import CaseCover from "@/components/CaseCover";
 import CaseSectionNav from "@/components/CaseSectionNav";
 import ZoomableImage from "@/components/ZoomableImage";
-import StaticImage from "@/components/StaticImage";
 
 /* Case-study images are co-located with the route — imported as ES
    modules so Webpack bundles them into /_next/static/media/ at build
@@ -10,29 +9,17 @@ import StaticImage from "@/components/StaticImage";
 import platformAudit from "./images/Platform_Audit_Visual.webp";
 import agentComponents from "./images/Ai_Agent_Components_Visual.webp";
 import directCompetitor from "./images/Direct_Competitor_Visual.webp";
+import indirectCompetitor from "./images/Indirect_Competitor_Visual.webp";
 import interactionPattern from "./images/Interaction_Pattern_Visual.webp";
-import interviewNotes from "./images/Interviews_Visuals.webp";
+import interviewNotes from "./images/Interview_Notes_Visual.webp";
 import interviewAffinity from "./images/Interview_Affinity_Diagramming.webp";
 import crazyEightSketch from "./images/Crazy_Eight_Sketch.webp";
 import whiteboardConcept from "./images/Whiteboard_Concept.webp";
-import usabilityTesting from "./images/Usability_Test_Feedback_Visual.png";
+import usabilityTesting from "./images/Usability_Test_Feedback_Visual.webp";
 
 export const metadata = {
   title: "AI Journey Map Maintenance Agent — Kathleen Li",
 };
-
-/* Outcome leads so recruiters see results first. Process is broken
-   into its three actual phases (Researching, Ideating, Verifying) so
-   the nav exposes the work rather than collapsing it under a single
-   "Process" label — matches the structure used in Frogslayer.
-
-   NDA note: this case study operates under the Purdue UXD Studio
-   Student IP/NDA Agreement. Content submitted to the sponsor for
-   review per Section 6.a.iv approval process; while review is
-   pending, product-specific mechanics, UI details, proprietary
-   terminology, and identifying research findings have been kept at
-   a process/methodology level. The sponsor may require modifications
-   per Section 6.a.iv, which will be applied on receipt. */
 const SECTIONS = [
   { id: "outcome", label: "Outcome" },
   { id: "overview", label: "Overview" },
@@ -61,11 +48,6 @@ export default function AIJourneyAgentCaseStudy() {
         {/* ───── Outcome ───── */}
         <section id="outcome" className="case-section">
           <h2>Outcome</h2>
-
-          {/* Outcome callout — the single strongest claim in the case
-              study, elevated so it earns its own moment above the
-              body-copy Outcome paragraph. A skimmer who reads nothing
-              else on this page still leaves with this fact. */}
           <aside className="outcome-callout" aria-label="Project outcome">
             <p className="outcome-callout__stat">
               <strong>~30 days after handoff</strong>, the sponsor announced the AI agent going
@@ -141,18 +123,18 @@ export default function AIJourneyAgentCaseStudy() {
               <p>
                 I audited the platform as a user, exploring{" "}
                 <mark className="hl">its features across functionality and placement</mark> to
-                better ideate aspects of the agent — such as its placement within the existing UI
-                and its integration with related features.
+                better ideate aspects of the agent such as its <mark className="hl">placement within the existing UI
+                and integration with related features.</mark>
               </p>
               <figure>
-                <StaticImage
+                <ZoomableImage
                   src={platformAudit.src}
                   alt="Platform audit board — sticky notes on screenshots. All content anonymized; sponsor name and specific findings replaced with category-level labels."
-                  aspectRatio={1556 / 2200}
+                  aspectRatio={3975 / 2922}
                   caption={
                     <>
-                      My platform audit board — sticky notes on blurred platform screenshots, organized
-                      by category labels.
+                      My platform audit board containing sticky notes on blurred platform screenshots, color-coded
+                      by category.
                     </>
                   }
                 />
@@ -167,10 +149,10 @@ export default function AIJourneyAgentCaseStudy() {
                 {" "}
               </p>
               <figure>
-                <StaticImage
+                <ZoomableImage
                   src={agentComponents.src}
                   alt="Agent-components synthesis board — five research-lens categories with sticker clusters. Sticker content blurred; framework structure and section labels legible."
-                  aspectRatio={3000 / 2052}
+                  aspectRatio={5128 / 3458}
                   caption={
                     <>
                       The agent-components synthesis the partner team authored — five research-lens
@@ -192,17 +174,17 @@ export default function AIJourneyAgentCaseStudy() {
               <span className="track-label">Direct · My team</span>
               <h3>4 Direct Journey-management Competitors</h3>
               <p>
-                I explored a competitor platform, focusing on 3 <mark className="hl">components related to their AI agent functionality: user interactions, reach within the platform,
-                and user flow pain points.</mark>
+                I audited one of the four direct competitors hands-on, focusing on three aspects of the platform's AI: {" "}
+                <mark className="hl">user interactions, reach within the platform, and user flow pain points.</mark>{" "}
               </p>
               <figure>
-                <StaticImage
+                <ZoomableImage
                   src={directCompetitor.src}
                   alt="Direct-competitor analysis board — three columns: Agent & User Interactions, Agent's Components within Platform, Agent's Pain Points. Screenshots blurred, sticker text category-level only. Competitor logo redacted."
-                  aspectRatio={3000 / 741}
+                  aspectRatio={7696 / 2260}
                   caption={
                     <>
-                      My direct-competitor analysis — three columns (Agent &amp; User Interactions,
+                      My direct-competitor analysis focused on three columns (Agent &amp; User Interactions,
                       Agent&rsquo;s Components within Platform, Agent&rsquo;s Pain Points) with blurred
                       screenshots and category-labeled stickers.
                     </>
@@ -214,9 +196,21 @@ export default function AIJourneyAgentCaseStudy() {
               <span className="track-label">Indirect · Partner team</span>
               <h3>3 Indirect Analogous AI-driven SaaS Competitors</h3>
               <p>
-                The partner team focused on products handling data management through parallel
-                monitoring and insight generation outside of journey-management.
+                The partner team focused on auditing products that utilize AI to analyze customer data for feedback and insights.
               </p>
+              <figure>
+                <ZoomableImage
+                  src={indirectCompetitor.src}
+                  alt="Indirect-competitor analysis board — analogous AI-driven SaaS platforms audited for cross-domain pattern references. Screenshots blurred; sticker text category-level only."
+                  aspectRatio={3380 / 2204}
+                  caption={
+                    <>
+                      The partner team&rsquo;s indirect-competitor analysis of analogous AI-driven
+                      SaaS platforms, feeding cross-domain pattern references into our synthesis.
+                    </>
+                  }
+                />
+              </figure>
             </div>
           </div>
           <p>
@@ -224,10 +218,10 @@ export default function AIJourneyAgentCaseStudy() {
             moves every modern verification flow currently shares.
           </p>
           <figure>
-            <StaticImage
+            <ZoomableImage
               src={interactionPattern.src}
               alt="Interaction-pattern synthesis: Nielsen 10-heuristic evaluation of a competitor platform + agent, paired with four user-flow diagrams categorized by content-manipulation type. Screenshots blurred; sticker text category-level only."
-              aspectRatio={2567 / 3000}
+              aspectRatio={4727 / 1576}
               caption={
                 <>
                   Interaction-pattern synthesis — Nielsen 10-heuristic evaluation (violation +
@@ -240,44 +234,35 @@ export default function AIJourneyAgentCaseStudy() {
           </figure>
 
           <h3>User Interviews</h3>
-          {/* Wide viewport: two text paragraphs on the LEFT + interview
-              notes figure on the RIGHT (side by side). Affinity diagram
-              below spans full width — it's team synthesis across all six
-              interviews and deserves the wider footprint. On narrow
-              viewports (≤820px) the split stacks to a single column. */}
-          <div className="interview-split">
-            <div className="interview-split__text">
-              <p>
-                To verify that the direction the desk research pointed toward matched what platform
-                users needed from an AI agent focused on journey-map maintenance, the team ran{" "}
-                <mark className="hl">six interviews with current users of the sponsor&rsquo;s platform</mark>.
-              </p>
-              <p>
-                I <mark className="hl">participated in three of the six one-hour sessions</mark>,
-                rotating between interviewer and note-taker with my partner during each session.
-                After all six interviews were completed, we categorized the insights to determine
-                the platform-relevant user needs the AI agent had to address.
-              </p>
-            </div>
-            <figure className="interview-split__notes">
-              <StaticImage
-                src={interviewNotes.src}
-                alt="Session notes from the three interviews I participated in — text blurred so note-taking structure and volume read without exposing participant-level findings."
-                aspectRatio={3000 / 2121}
-                caption={
-                  <>
-                    My session notes from the three interviews I participated in — blurred sticky
-                    notes on a paper background.
-                  </>
-                }
-              />
-            </figure>
-          </div>
+          <p>
+            To verify that the direction the desk research pointed toward matched what platform
+            users needed from an AI agent focused on journey-map maintenance, the team ran{" "}
+            <mark className="hl">six interviews with current users of the sponsor&rsquo;s platform</mark>.
+          </p>
+          <p>
+            I <mark className="hl">participated in three of the six one-hour sessions</mark>,
+            rotating between interviewer and note-taker with my partner during each session. After
+            all six interviews were completed, we categorized the insights to determine the
+            platform-relevant user needs the AI agent had to address.
+          </p>
           <figure>
-            <StaticImage
+            <ZoomableImage
+              src={interviewNotes.src}
+              alt="Session notes from the three interviews I participated in — text blurred so note-taking structure and volume read without exposing participant-level findings."
+              aspectRatio={4746 / 1517}
+              caption={
+                <>
+                  My session notes from the three interviews I participated in — blurred sticky notes on
+                  a paper background.
+                </>
+              }
+            />
+          </figure>
+          <figure>
+            <ZoomableImage
               src={interviewAffinity.src}
               alt="Cross-session affinity diagram — nine themed clusters with headers visible, individual sticky-note content blurred. Draws from all six interviews."
-              aspectRatio={3000 / 1555}
+              aspectRatio={3996 / 2413}
               caption={
                 <>
                   Team affinity synthesis across all six interviews — nine themed clusters with visible
@@ -306,7 +291,7 @@ export default function AIJourneyAgentCaseStudy() {
             <ZoomableImage
               src={crazyEightSketch.src}
               alt="My Crazy 8's sketch sheet — hand-drawn low-fidelity ideation quadrants exploring AI-agent feature concepts."
-              aspectRatio={3000 / 2110}
+              aspectRatio={2453 / 1664}
               caption={
                 <>
                   My Crazy 8&rsquo;s — hand-drawn quadrants of AI-agent feature sketches.
@@ -326,7 +311,7 @@ export default function AIJourneyAgentCaseStudy() {
             <ZoomableImage
               src={whiteboardConcept.src}
               alt="Whiteboarding session I led on a rules-based direction that was ultimately not selected. Shown at full content pending sponsor review."
-              aspectRatio={3000 / 2035}
+              aspectRatio={5290 / 3588}
               caption={
                 <>
                   A whiteboarding session I led on a rules-based direction that was not selected as the
@@ -385,11 +370,11 @@ export default function AIJourneyAgentCaseStudy() {
             navigating and using the concept prototype&rsquo;s features, followed by a reflection
             round.
           </p>
-          <figure>
-            <StaticImage
+          <figure className="visual-compact">
+            <ZoomableImage
               src={usabilityTesting.src}
               alt="Usability-testing feedback affinity — four rows: Task 1 (Initial Navigation), Task 2 (Informed Map Modifications / Updating), Task 3 (Further AI Agent Interactions), Reflections (General Thoughts of Concept and User Flow). Sticky-note content blurred; row labels legible."
-              aspectRatio={3000 / 2178}
+              aspectRatio={1980 / 1291}
               caption={
                 <>
                   Notes from the usability test I conducted.
@@ -408,15 +393,6 @@ export default function AIJourneyAgentCaseStudy() {
         {/* ───── Takeaways ───── */}
         <section id="takeaways" className="case-section">
           <h2>Takeaways</h2>
-
-          <h3>Trust is the Feature</h3>
-          <p>
-            The core design lesson from this project: for AI that edits people&rsquo;s work,{" "}
-            <mark className="hl">trust is the feature</mark>. Every mechanism that tested well was
-            a trust mechanism first and an interaction second — earned attention, not demanded
-            attention.
-          </p>
-
           <h3>Design Decision-Making Related to Platform</h3>
           <p>
             This project was my first time{" "}
