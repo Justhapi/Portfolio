@@ -1819,13 +1819,28 @@ em.it { font-style: italic; }
 .hero-polaroid.is-raised .sticker.school-note.polaroid-attached {
   transform: rotate(-6deg) translate(-48px, -24px) !important;
 }
-/* Availability sticker has NO raise-state override — parallax owns its
-   transform (SmoothScroll.tsx writes inline `translateY(x) rotate(-4deg)`
-   every scroll frame). Adding an !important rule here would clobber the
-   parallax's inline transform during the raise window and produce a
-   second tilt/position state, which is exactly what we want to avoid.
-   School-note still has a raise shift above because it's not a parallax
-   target and stays at the polaroid's local coordinate. */
+/* Availability sticker composes parallax + raise-shift via CSS custom
+   properties. SmoothScroll.tsx writes `--parallax-y` (the vertical
+   drift each scroll frame). The transform below composes that with
+   `--raise-x` and `--raise-y` (both default 0, overridden in the
+   .is-raised state below) plus the -4deg base rotation. Result: both
+   systems can write their piece without clobbering each other. */
+.sticker.designing-green.polaroid-attached {
+  transform:
+    translate(var(--raise-x, 0px), calc(var(--parallax-y, 0px) + var(--raise-y, 0px)))
+    rotate(-4deg) !important;
+  transition:
+    transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1) 0ms;
+}
+/* When the polaroid raises, the availability sticker shifts OUTWARD
+   (down-right, away from the polaroid center — mirroring the school-
+   note's up-left shift). --parallax-y stays whatever SmoothScroll
+   last wrote, so the sticker keeps its current scroll drift while
+   nudging away. */
+.hero-polaroid.is-raised .sticker.designing-green.polaroid-attached {
+  --raise-x: 48px;
+  --raise-y: 24px;
+}
 
 @keyframes stickerGreenIn {
   /* Pure opacity fade — no translation, no rotation change. Sticker
@@ -3171,7 +3186,12 @@ em.it { font-style: italic; }
    Stage 2: each link row appears one by one (380 / 470 / 560 ms). */
 .connect-row.reveal {
   opacity: 0;
-  transform: none;
+  /* NO `transform: none` here — SmoothScroll.tsx writes an inline
+     `transform: translateY(Xpx)` every scroll frame for the parallax
+     drift. Even though inline styles normally beat regular CSS, adding
+     `transform: none` here creates a competing declaration that some
+     browsers were treating as the active value between parallax frame
+     writes, visibly killing the drift. Reveal is opacity-only. */
   transition: opacity 0ms;
 }
 .connect-row.reveal.in { opacity: 1; }

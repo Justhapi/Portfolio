@@ -147,7 +147,7 @@ export default function HeroV2() {
   const handleHoverEnter = () => {
     const el = hoverRef.current;
     if (!el) return;
-    el.style.transition = "transform 340ms cubic-bezier(0.34, 1.56, 0.64, 1)";
+    el.style.transition = "transform 280ms cubic-bezier(0.34, 1.56, 0.64, 1)";
     el.style.transform = "rotate(6deg)";
   };
   const handleHoverLeave = () => {

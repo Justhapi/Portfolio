@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 import Lenis from "lenis";
 
 /**
@@ -139,6 +140,18 @@ const PARALLAX_TARGETS: ParallaxConfig[] = [
 const PARALLAX_ACTIVATE_DELAY = 300;
 
 export default function SmoothScroll() {
+  /* Re-run the entire setup whenever the route changes. SmoothScroll is
+     mounted in the root layout so its useEffect would otherwise fire
+     once on initial mount only. That leaves parallax `entries[]` and
+     the sceneEl/aboutEl/connectEl refs pointing at the FIRST home
+     page's DOM elements — which get destroyed when the user navigates
+     to a project route. Returning home creates NEW DOM elements, but
+     the effect never re-queries them, so applyParallax writes to
+     detached orphan nodes and the hero + Connect parallax appears
+     broken. Depending on `pathname` triggers cleanup (destroys Lenis,
+     clears transforms, unsubscribes observers) on route change and
+     re-runs setup with a fresh DOM query. */
+  const pathname = usePathname();
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -335,6 +348,17 @@ export default function SmoothScroll() {
       for (const { el, config, scrollBase } of entries) {
         const delta = (scroll - scrollBase) * config.speed;
 
+        // Availability sticker (.sticker.designing-green.polaroid-attached)
+        // writes to a CSS custom property instead of an inline transform.
+        // This lets the CSS compose parallax Y with the polaroid-raise
+        // outward shift (which sets --raise-x/--raise-y on .is-raised)
+        // in a single transform expression, so the two systems no longer
+        // fight over inline vs class-based transforms.
+        if (el.classList.contains("designing-green")) {
+          el.style.setProperty("--parallax-y", `${delta.toFixed(2)}px`);
+          continue;
+        }
+
         if (config.centred) {
           // .hero-polaroid is positioned by its TOP EDGE (translate(-50%, 0))
           // so the gap from the "FROM ONE SCENE…" subtitle stays consistent
@@ -406,7 +430,7 @@ export default function SmoothScroll() {
         el.style.animation = "";
       }
     };
-  }, []);
+  }, [pathname]);
 
   return null;
 }

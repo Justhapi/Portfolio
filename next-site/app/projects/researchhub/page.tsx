@@ -1,6 +1,7 @@
 import CaseCover from "@/components/CaseCover";
 import CaseSectionNav from "@/components/CaseSectionNav";
 import ZoomableImage from "@/components/ZoomableImage";
+import ResearchCarousel from "@/components/ResearchCarousel";
 
 /* Case-study images are co-located with the route — imported as ES
    modules so Webpack bundles them into /_next/static/media/ at build
@@ -8,6 +9,7 @@ import ZoomableImage from "@/components/ZoomableImage";
 import auditImg from "./images/audit.webp";
 import interviewNotesImg from "./images/interview_notes.webp";
 import affinityDiagrammingImg from "./images/affinity_diagraming.png";
+import wireframingImg from "./images/wireframing.webp.png";
 import referencesImg from "./images/references.png";
 import sketchesImg from "./images/sketches.png";
 import colorSchemeImg from "./images/color_scheme.webp";
@@ -82,7 +84,7 @@ export default function ResearchHubCaseStudy() {
           <p>
             Currently at Purdue, research opportunities are{" "}
             <mark className="hl">plentiful but are also scattered across various sources </mark>such as department pages, faculty
-            sites, listings, and word-of-mouth references. As a result, there is no consistent and cnetralized place for project discovery for students.
+            sites, listings, and word-of-mouth references. As a result, there is no consistent and centralized place for project discovery for students.
             <br></br><br></br>
             Professors, similarly, have{" "}
             <mark className="hl">no consistent workspace to coordinate and maintain project workload across their students</mark>,
@@ -106,9 +108,11 @@ export default function ResearchHubCaseStudy() {
           <h2>Researching</h2>
           <h3>Understanding the Platform &amp; the Two User Groups Under Time Constraints</h3>
           <p>
-            Due to the project being a continuation of prior work, I recognized the need to understand the platform's current state and its two user groups. The 
-            <mark className="hl"> researching also needed to be completed within a span of 1.5 weeks</mark> for me to <mark className="hl">also ideate the redesign 
-            and features</mark> in time for <mark className="hl">development of the implementations into the platform to be completed on time.</mark>
+            Due to the project being a continuation of prior work, I recognized the need to
+            understand the platform&rsquo;s current state and its two user groups. Because my
+            teammates needed to{" "}
+            <mark className="hl">begin development on schedule</mark>, the research phase needed
+            to fit within a <mark className="hl">1.5-week sprint</mark>.
             <br></br><br></br>
             Considering these factors, I decided to{" "}
             <mark className="hl">utilize my existing access to the platform and the user groups to conduct a quick research sprint</mark>{" "}
@@ -142,12 +146,14 @@ export default function ResearchHubCaseStudy() {
             </div>
             <div className="audit-split__text">
               <p>
-                <strong>Redundancy and Technical Issues</strong> Although the platform has a mostly functioning base, there 
-                are instances of elements with the same affordances being implemented in the same page or technical
-                issues of data modifications not being saved that I either noted or reported to the development team to quickly resolve.
+                <strong>Redundancy and Technical Issues.</strong> Although the platform has a
+                mostly functioning base, there are instances of elements with the same
+                affordances being implemented on the same page, along with technical issues such
+                as data modifications not being saved. I either noted these findings or reported
+                them to the development team for quick resolution.
               </p>
               <p>
-                <strong>Hinted but not fufilled features</strong> The platform introduces the existence of
+                <strong>Hinted but not fulfilled features</strong> The platform introduces the existence of
                 various features such as profiles, project listings, and instances of communication. However,
                 those features have not been fully utilized, leaving gaps that need to be addressed.
               </p>
@@ -187,15 +193,6 @@ export default function ResearchHubCaseStudy() {
               </ul>
             </div>
           </div>
-          <p>
-            After finishing all the interviews, I then synthesized the findings through affinity diagramming, allowing me to
-            cluster the findings into the following themes:
-          </p>
-          <ul className="focus-list">
-            <li><strong>Communication</strong></li>
-            <li><strong>Maintenance</strong></li>
-            <li><strong>Project Details</strong></li>
-          </ul>
           <div className="audit-split">
             <div className="audit-split__visual">
               <ZoomableImage
@@ -212,8 +209,19 @@ export default function ResearchHubCaseStudy() {
             </div>
             <div className="audit-split__text">
               <p>
-                From the synethesized findings, I was able to recognize the main student needs that the new features needed address,
-                specifically regarding <mark className="hl">ease of communication with professorsand project maintenance of files organization.</mark>
+                After finishing all the interviews, I then synthesized the findings through
+                affinity diagramming, allowing me to cluster the findings into the following
+                themes:
+              </p>
+              <ul className="focus-list">
+                <li><strong>Communication</strong></li>
+                <li><strong>Maintenance</strong></li>
+                <li><strong>Project Details</strong></li>
+              </ul>
+              <p>
+                From the synthesized findings, I was able to recognize the main student needs
+                that the new features needed to address, specifically regarding{" "}
+                <mark className="hl">ease of communication with professors and project maintenance of files organization</mark>.
               </p>
             </div>
           </div>
@@ -222,8 +230,9 @@ export default function ResearchHubCaseStudy() {
             On the professor side, I was later informed that Professor Reese&rsquo;s schedule had unexpectedly prevented the 
             meeting for in-depth professor-side insights. 
             <br></br><br></br>
-            Due to the tight timeline, I decided to <mark className="hl">base 
-            the professor needs from the features Professor Reese had requested during an earlier meeting</mark> with my project lead. I then{" "}
+            Within the sprint window, I decided to{" "}
+            <mark className="hl">base the professor needs on the features Professor Reese had requested during an earlier meeting</mark>{" "}
+            with my project lead. I then{" "}
             <mark className="hl">filtered through those requests, continuing development of only features that served both user groups.</mark>
           </p>
         </section>
@@ -237,8 +246,7 @@ export default function ResearchHubCaseStudy() {
           </p>
           <ul className="focus-list">
             <li><strong>Identifying UI patterns from familiar platforms</strong></li>
-            <li><strong>Ideating new platform UI</strong></li>
-            <li><strong>Refining the existing design system</strong></li>
+            <li><strong>Ideating UI and Design System</strong></li>
             <li><strong>Wireframing for development handoff</strong></li>
           </ul>
 
@@ -248,9 +256,9 @@ export default function ResearchHubCaseStudy() {
             and Gmail as the tools they currently used to communicate with professors, I decided
             to{" "} <mark className="hl">reference the same platforms when designing the UI for ResearchHub</mark>.
             <br></br><br></br>
-            As a result, <mark className="hl">interaction patterns from those platforms were utilized as the base design</mark>
+            As a result, <mark className="hl">interaction patterns from those platforms were utilized as the base design </mark>
             for the platform components with <mark className="hl">modifications to better fit the platform's focus on
-            organization through projects instead of individuals .</mark>
+            organization through projects instead of individuals.</mark>
           </p>
           <ZoomableImage
             src={referencesImg.src}
@@ -264,7 +272,25 @@ export default function ResearchHubCaseStudy() {
             }
           />
 
-          <h3>Constructing a More Attractive Design System</h3>
+          <h3>Ideating UI and Design System</h3>
+          <p>
+            After identifying the reference platform UI patterns, I moved on to sketching ideas
+            for the platform&rsquo;s features and screens to explore possibilities quickly.
+            During these sketching sessions, I{" "}
+            <mark className="hl">showed the sketches to my teammates to discuss the plausibility of developing each page&rsquo;s components</mark>,
+            while also gathering outside feedback in parallel.
+          </p>
+          <ZoomableImage
+            src={sketchesImg.src}
+            alt="My sketches for ResearchHub features and screens, developed alongside plausibility discussions with the development team."
+            aspectRatio={5333 / 2131}
+            caption={
+              <>
+                My sketches for ResearchHub features and screens, developed alongside
+                plausibility discussions with the development team.
+              </>
+            }
+          />
           <div className="audit-split">
             <div className="audit-split__visual">
               <ZoomableImage
@@ -275,15 +301,14 @@ export default function ResearchHubCaseStudy() {
             </div>
             <div className="audit-split__text">
               <p>
-                Due to the goal of the project&rsquo;s completion being that the <mark className="hl">platform can be
-                utilized for real-world research collaborations next semester,</mark> the implementation
-                of <mark className="hl">a complex design system was noted as a goal secondary</mark> to the primary goal of
-                developing features that expand upon the platform&rsquo;s usability.
+                My <mark className="hl">time spent on the design system needed to be short </mark>as the platform being 
+                utilizable next semester was the project's main priority, <mark className="hl">prompting more
+                focus on the necessary feature's development.</mark>
               </p>
               <p>
-                As a result, I focused on refining the existing UI and components to be more
+                As a result, I focused instead on refining the existing UI and components to be <mark className="hl">more
                 reminiscent of Purdue University through{" "}
-                <mark className="hl">color scheme and text</mark> to highlight the
+                color scheme and text</mark> that would highlight the
                 platform&rsquo;s <mark className="hl">identity as primarily a Purdue research platform.</mark>
               </p>
             </div>
@@ -291,21 +316,112 @@ export default function ResearchHubCaseStudy() {
 
           <h3>Prototyping to Describe to Developers Better</h3>
           <p>
-            To ensure my teammates understood my redesigns, I{" "}
-            <mark className="hl">constructed various prototypes in Figma</mark> that showcased my
-            conceptualization of a full redesign of the platform, focusing on connected flows
-            rather than isolated screens. This included a student moving from discovery through
-            application, a professor moving from posting through applicant review, and the shared
-            workspace both roles would inhabit.
+            To keep development on schedule, I{" "}
+            <mark className="hl">wireframed the platform in Figma while concurrently discussing implementation plausibility with my teammates and gathering outside feedback on the wireframes</mark>{" "}
+            for both feasibility and usability.
             <br></br><br></br>
-            Prototypes were able to provide the explanation that written documents could not.
-            Walking a developer through a clickable flow surfaced important questions early on,
-            such as what happens if no projects existed or where a particular status originated
-            from, while the answers to those questions were still low-cost to address. Edge states
-            such as empty, loading, and error were included in the prototype scope specifically
-            because they are what developers would otherwise need to improvise under deadline
-            pressure.
+            Since I needed to wireframe both the student and professor flows in that same window,
+            I{" "}
+            <mark className="hl">utilized Figma Make to keep pages shared by both accounts consistent in design</mark>.
           </p>
+          <ZoomableImage
+            src={wireframingImg.src}
+            alt="Wireframes for ResearchHub developed in Figma concurrently with plausibility discussions and outside feedback."
+            aspectRatio={6649 / 3779}
+            caption={
+              <>
+                Wireframes for ResearchHub developed in Figma concurrently with plausibility
+                discussions with the development team and outside feedback rounds.
+              </>
+            }
+          />
+          <p>
+            The final Figma prototype showcased the full redesign as connected flows that were
+            applicable to real-world use cases of the platform that include the following:
+          </p>
+          <ul className="focus-list">
+            <li><strong>Students logging in to just update task progression</strong></li>
+            <li><strong>Professors maintaining and organizing contents of each project</strong></li>
+            <li><strong>Communication between students and professors</strong></li>
+          </ul>
+          <ResearchCarousel
+            slides={[
+              {
+                key: "student-tasks",
+                content: (
+                  <div className="rq-block">
+                    <div className="rq-block__body">
+                      <span className="rq-method-chip">Student Flow</span>
+                      <h4 className="rq-heading">Students Updating Task Progression</h4>
+                      <p className="rq-lead">
+                        A quick log-in flow for students returning to the platform to update
+                        ongoing project progress, without needing to navigate deep into the
+                        platform first.
+                      </p>
+                      <p className="rq-findings-lead"><strong>Key features and design decisions:</strong></p>
+                      <ul className="rq-findings-list">
+                        <li>[Feature — design decision]</li>
+                        <li>[Feature — design decision]</li>
+                        <li>[Feature — design decision]</li>
+                      </ul>
+                    </div>
+                    <div className="rq-block__visual">
+                      <div className="image-slot">student task-progression pages</div>
+                    </div>
+                  </div>
+                ),
+              },
+              {
+                key: "professor-projects",
+                content: (
+                  <div className="rq-block">
+                    <div className="rq-block__body">
+                      <span className="rq-method-chip">Professor Flow</span>
+                      <h4 className="rq-heading">Professors Maintaining Project Contents</h4>
+                      <p className="rq-lead">
+                        A workspace for professors to organize and track project materials,
+                        deliverables, and student progress across their labs from a single view.
+                      </p>
+                      <p className="rq-findings-lead"><strong>Key features and design decisions:</strong></p>
+                      <ul className="rq-findings-list">
+                        <li>[Feature — design decision]</li>
+                        <li>[Feature — design decision]</li>
+                        <li>[Feature — design decision]</li>
+                      </ul>
+                    </div>
+                    <div className="rq-block__visual">
+                      <div className="image-slot">professor project-maintenance pages</div>
+                    </div>
+                  </div>
+                ),
+              },
+              {
+                key: "communication",
+                content: (
+                  <div className="rq-block">
+                    <div className="rq-block__body">
+                      <span className="rq-method-chip">Cross-Role</span>
+                      <h4 className="rq-heading">Communication Between Students and Professors</h4>
+                      <p className="rq-lead">
+                        Shared communication channels within the platform, replacing the
+                        scattered email, chat, and shared-doc workflow that both roles previously
+                        relied on.
+                      </p>
+                      <p className="rq-findings-lead"><strong>Key features and design decisions:</strong></p>
+                      <ul className="rq-findings-list">
+                        <li>[Feature — design decision]</li>
+                        <li>[Feature — design decision]</li>
+                        <li>[Feature — design decision]</li>
+                      </ul>
+                    </div>
+                    <div className="rq-block__visual">
+                      <div className="image-slot">shared communication pages</div>
+                    </div>
+                  </div>
+                ),
+              },
+            ]}
+          />
         </section>
 
         {/* ───── Implementing ───── */}
@@ -313,35 +429,16 @@ export default function ResearchHubCaseStudy() {
           <h2>Implementing</h2>
           <h3>Stepping In to Ship the Platform on Time</h3>
           <p>
-            Due to the tight timeline, in addition to academic workloads preventing some of my
-            teammates from maintaining consistent progression, I also contributed through{" "}
-            <mark className="hl">front-end React coding</mark> to help build the platform.
-            <br></br><br></br>
-            In practice, this meant implementing screens and components from my own Figma
-            specifications, which turned out to be the fastest feedback loop I could have on my
-            own design work. When a specification was ambiguous, I was the person who directly
-            encountered the ambiguity. When a layout conflicted with the data the backend actually
-            returned, I directly experienced the difficulty. As a result, building my own designs
-            exposed the difference between{" "}
-            <mark className="hl">&ldquo;specified&rdquo; and &ldquo;buildable&rdquo;</mark> in a
-            way that no handoff meeting could.
+            When academic workloads slowed some teammates&rsquo; progression, I also contributed
+            through{" "}
+            <mark className="hl">front-end React coding</mark> to help build the platform on
+            time.
             <br></br><br></br>
             The dynamic within the team also shifted, as design conversations became peer-to-peer
             problem-solving instead of one-way requests. I was able to ask questions such as
             &ldquo;would this be easier if the structure changed?&rdquo; with enough technical
             context for the question to be productive.
           </p>
-          <ZoomableImage
-            src={sketchesImg.src}
-            alt="Design sketches showing the spec-vs-shipped comparison of components I designed and then implemented in React."
-            aspectRatio={5333 / 2131}
-            caption={
-              <>
-                A spec-vs-shipped side-by-side of a component I designed and then implemented in
-                React.
-              </>
-            }
-          />
         </section>
 
         <section id="takeaways" className="case-section">
@@ -349,35 +446,29 @@ export default function ResearchHubCaseStudy() {
 
           <h3>Design With the Cost of Building in Mind</h3>
           <p>
-            Directly building my own ideas{" "}
-            <mark className="hl">significantly modified how I factor in limitations</mark>.
-            Sometimes I would half-angrily think &ldquo;Jeez, who is the designer who designed
-            and thought of all these details&rdquo;, and the designer would be me. Working as
-            both designer and engineer emphasized the need to ideate as a <em>partner</em> to
-            development rather than simply as an <em>ideater or documenter</em>. As a result, I
-            find that a design&rsquo;s worth includes the cost of building it, and the designer
-            who understands that cost is able to make better-informed designs.
+            <mark className="hl"> Directly building my own ideas{" "}
+            significantly modified how I factor in limitations</mark>.
+            Sometimes I would <mark className="hl">code while half-angrily thinking &ldquo;Jeez, who is the designer who designed
+            and requested all of these details&rdquo;.</mark> Working as both designer and engineer emphasized the need to ideate as 
+            a <em>partner</em> to development rather than simply as an <em>ideater or documenter</em>. 
+            <br></br><br></br>
+            From this project, I understand that a <mark className="hl">high-quality design&rsquo;s demands includes research and the building cost,</mark> and that designer
+            who <mark className="hl">accounts for the cost is able to ensure that the well-designed handoff will be also fully utilized.</mark>
           </p>
 
-          <h3>Working Well With Uneven User-Group Access</h3>
+          <h3>Adapting to Uneven User-Group Access</h3>
           <p>
             Due to needing conceptualization finalized early in the semester, I was{" "}
             <mark className="hl">unable to conduct user research on professors as in-depth as I did with students</mark>,
-            since the two user groups offered very different levels of access. I had one professor
-            (our client) readily available and an entire campus of students. Despite this
-            limitation, I was still able to make design decisions addressing both user
-            groups&rsquo; needs by effectively utilizing what I had immediate access to within the
-            small window given. This included deep client conversations on the professor side,
-            structured interviews and affinity synthesis on the student side, and the audit
-            findings serving as a shared foundation for both.
-
-
-
-            Designing and development 
-            were happening concurrently throughout the semester, so every design decision needed to survive a feasibility
-            conversation before being worth committing to. As a result, this kept my
-            specifications pragmatic, since I designed with the understanding that someone
-            (potentially me) needed to build it within the semester&rsquo;s timeframe.
+            since the two user groups offered very different levels of access. I had only one
+            professor (our client) available and an entire campus of students readily available.
+            As a result, I accounted for prioritized the features Professor Reese had requested based on how
+            those features would also serve students.
+            <br></br><br></br>
+            From adapting to this differing-access obstacle, I now recognize that working
+            across uneven user-group research requires <mark className="hl">prioritizing the less-accessible group&rsquo;s
+            requests through a lens of how the same solution can also serve the more-accessible
+            group</mark> to ensure that I filtered the applicable ideas from the impractical ideas.
           </p>
         </section>
       </main>
