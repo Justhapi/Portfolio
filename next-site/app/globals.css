@@ -4887,14 +4887,14 @@ em.it { font-style: italic; }
 .usability-rounds {
   display: flex;
   flex-direction: column;
-  gap: 80px;
-  margin: 32px 0 40px;
+  gap: 48px;
+  margin: 24px 0 32px;
 }
 /* Round wrapper — header on top, stack of equations below. */
 .usability-rounds .ur-round-block {
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 18px;
 }
 /* Round header — chapter divider naming the round. Bold display
    title on the left, tracked mono meta beside it. Progress dots used
@@ -4904,8 +4904,8 @@ em.it { font-style: italic; }
   display: flex;
   align-items: baseline;
   flex-wrap: wrap;
-  gap: 16px;
-  padding-bottom: 14px;
+  gap: 14px;
+  padding-bottom: 10px;
   border-bottom: 1px solid var(--line);
 }
 /* Round focus paragraph — sits BELOW the header, ABOVE the carousel.
@@ -4914,13 +4914,13 @@ em.it { font-style: italic; }
    Same visual style as the standalone .round-focus block. */
 .usability-rounds .ur-round-focus {
   margin: 0;
-  padding: 12px 16px;
+  padding: 10px 14px;
   background: rgba(0, 0, 0, 0.03);
   border-left: 3px solid rgb(var(--accent-rgb, 154 109 76) / 0.6);
   border-radius: 3px;
   font-family: var(--f-sans);
-  font-size: 15px;
-  line-height: 1.5;
+  font-size: 13px;
+  line-height: 1.45;
   color: var(--fg);
 }
 /* Carousel wrapper — contains progress dots (top-right) + insight
@@ -4965,7 +4965,7 @@ em.it { font-style: italic; }
 .usability-rounds .ur-round-header h4 {
   font-family: var(--f-display);
   font-weight: 800;
-  font-size: clamp(22px, 2vw, 28px);
+  font-size: clamp(18px, 1.6vw, 22px);
   line-height: 1;
   letter-spacing: -0.01em;
   color: var(--fg);
@@ -5012,13 +5012,13 @@ em.it { font-style: italic; }
   scroll-snap-align: start;
   scroll-snap-stop: always;
   display: grid;
-  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
-  gap: 32px;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 20px;
   align-items: center;
-  padding: 24px 28px;
+  padding: 16px 20px;
   background: rgb(var(--fg-rgb) / 0.025);
   border: 1px solid rgb(var(--fg-rgb) / 0.06);
-  border-radius: 12px;
+  border-radius: 10px;
   box-sizing: border-box;
 }
 .usability-rounds .ur-card-text {
@@ -5031,8 +5031,8 @@ em.it { font-style: italic; }
   font-family: var(--f-sans);
   font-style: italic;
   font-weight: 500;
-  font-size: 15px;
-  line-height: 1.45;
+  font-size: 13px;
+  line-height: 1.4;
   color: var(--muted);
   margin: 0;
 }
@@ -5041,7 +5041,7 @@ em.it { font-style: italic; }
 .usability-rounds .ur-card-change {
   font-family: var(--f-sans);
   font-weight: 700;
-  font-size: 15px;
+  font-size: 13px;
   line-height: 1.4;
   color: var(--fg);
   margin: 0;
@@ -5060,6 +5060,50 @@ em.it { font-style: italic; }
   grid-template-columns: 1fr 1fr;
   gap: 10px;
   min-width: 0;
+}
+/* Single-image variant — used when the iteration image already shows
+   before + after side-by-side, so a single wider container is more
+   appropriate than two half-width thumbs. Collapses the grid to one
+   column so the ZoomableImage frame fills the full card width. Cap
+   the frame height tighter than the default (62vh) so the iteration
+   image doesn't dominate the card vertically — the recruiter should
+   read the insight text on the left AND scan the before/after image
+   on the right without either side taking over. */
+.usability-rounds .ur-card-visuals--single {
+  grid-template-columns: 1fr;
+}
+.usability-rounds .ur-card-visuals--single .zoomable-frame {
+  /* 40vh cap — a bit taller than the initial 32vh so wide landscape
+     images (Round 1 card-loading, Round 2 upsell / reset) can render
+     wider than ~430px, and portrait images (Round 1 loyalty) don't
+     collapse to a thin sliver. Still well under the default 62vh so
+     the frame never dominates the card vertically. */
+  max-height: 40vh;
+}
+/* Findings-only variant — used by rounds that produced observations
+   without prototype iterations (Round 3 validation). Renders in place
+   of the carousel using the same block spacing so the round section
+   visually matches the other rounds' header + focus layout without
+   the empty carousel container. */
+.usability-rounds .ur-round-findings {
+  font-family: var(--f-sans);
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--fg);
+}
+.usability-rounds .ur-round-findings p {
+  margin: 0 0 12px;
+}
+.usability-rounds .ur-round-findings ul {
+  margin: 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.usability-rounds .ur-round-findings li {
+  font-size: 14px;
+  line-height: 1.5;
 }
 .usability-rounds .ur-card-visuals figure {
   margin: 0;

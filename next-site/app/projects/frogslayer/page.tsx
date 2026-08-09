@@ -3,22 +3,25 @@ import CaseSectionNav from "@/components/CaseSectionNav";
 import UsabilityRound, { InsightCard } from "@/components/UsabilityRound";
 import ResearchCarousel from "@/components/ResearchCarousel";
 import ZoomableImage from "@/components/ZoomableImage";
-
-/* Case-study images are co-located with the route — imported as ES
-   modules so Webpack bundles them into /_next/static/media/ at build
-   time with hashed filenames. basePath is applied automatically by
-   Next.js, so no manual /Portfolio prefixing needed. */
 import outcomeGuidelines from "./images/Guidelines.webp";
-import outcomeJourneyMap from "./images/Journey_Map.png";
-import producerKioskBenefits from "./images/Kiosk_Benefits.webp";
+import outcomeJourneyMap from "./images/Journey_Map.webp";
+import producerKioskBenefits from "./images/Secondary_Research_Visual.webp";
 import producerCompetitorAnalysis from "./images/Competitor_Analysis_Visual.webp";
-import consumerUserObservation from "./images/User_Observation_Visual.png";
-import consumerUserInterview from "./images/User_Interview_Visual.png";
-import ideatingCrazyEights from "./images/Crazy_Eights.png";
-import ideatingObservationFlow from "./images/Observation_User_Flow.png";
-import ideatingBaseWireframes from "./images/Base_Wireframes.png";
-import verifyingInitialPrototype from "./images/Initial_Prototype.png";
-import verifyingFinalPrototype from "./images/Final_Prototype.png";
+import consumerUserObservation from "./images/User_Observation_Visual.webp";
+import consumerUserInterview from "./images/User_Interview_Visual.webp";
+import ideatingCrazyEights from "./images/Crazy_Eights.webp";
+import ideatingObservationFlow from "./images/Observation_User_Flow.webp";
+import ideatingBaseWireframes from "./images/Base_Wireframes.webp";
+import verifyingInitialPrototype from "./images/Initial_Prototype.webp";
+import verifyingFinalPrototype from "./images/Final_Prototype.webp";
+/* Round 1 iterations — each image contains the before + after side-by-side. */
+import round1CardLoading from "./images/Card_Load_Iteration.webp";
+import round1Loyalty from "./images/Loyalty_Round_1_Iteration.webp";
+import round1Ending from "./images/Ending_Iteration.webp";
+import round1PaymentButton from "./images/Payment_Button_Iteration.webp";
+/* Round 2 iterations — each image contains the before + after side-by-side. */
+import round2Upsell from "./images/Upsell_Iteration.png";
+import round2Reset from "./images/Reset_Iteration.png";
 
 export const metadata = {
   title: "Kiosk Interface Design Guidelines — Kathleen Li",
@@ -49,9 +52,8 @@ export default function FrogslayerCaseStudy() {
           <h2>Outcome</h2>
           <aside className="outcome-callout" aria-label="Project outcome">
             <p className="outcome-callout__stat">
-              <strong>Continued Collaboration of Guideline Expansion</strong> — Frogslayer continued
-              their collaboration with the Purdue UXD Experience Studio to expand the guideline set past
-              our initial handoff.
+              <strong>Frogslayer extended the partnership</strong> with the Purdue UXD Experience
+              Studio to expand the guideline set past our initial handoff.
             </p>
             <p className="outcome-callout__meta">
               Fall 2025 · Purdue UXD Experience Studio · handoff → continued partnership
@@ -110,7 +112,7 @@ export default function FrogslayerCaseStudy() {
           <h3>My Role</h3>
           <p>
             I worked as a UX Designer &amp; Researcher on this project, contributing through{" "}
-            <mark className="hl">researching the current state of kiosk design, building the base low-fi user flow, constructing the usability testing prototypes,
+            <mark className="hl">researching the current state of kiosk design, building the base user flow, constructing the usability-testing prototype,
             and iterating upon insights</mark> {" "} across three rounds of testing.
             <br></br><br></br>
             In addition to design work, I was the team&rsquo;s{" "} <mark className="hl">primary point of contact</mark> with Frogslayer&rsquo;s product
@@ -123,11 +125,11 @@ export default function FrogslayerCaseStudy() {
 
           <h3>Clarifying Scope with the Sponsor</h3>
           <p>
-            Due to the <mark className="hl">requested problem goal initially arriving vague as "design kiosk interface guidelines"</mark>
+            Due to the <mark className="hl">requested problem being initially vague as &ldquo;design kiosk interface guidelines,&rdquo;</mark>{" "}
             we recognized the need to{" "} <mark className="hl">immediately narrow down the broad scope for tangible results.</mark>
             <br></br><br></br>
-            This understanding led us to <mark className="hl">approach Frogslayer's product team for contents of their prior internal research</mark> that led to the 
-            project's inception, resulting in us receiving an existing Figma prototype. 
+            This understanding led us to <mark className="hl">approach Frogslayer&rsquo;s product team for their prior internal research</mark> that led to the
+            project&rsquo;s inception, resulting in us receiving an existing Figma prototype.
             <br></br><br></br>
             After auditing it, we discussed our thoughts with Frogslayer's product team and eventually determined the following scope focuses:
           </p>
@@ -146,37 +148,43 @@ export default function FrogslayerCaseStudy() {
             Starting with the producer side, we focused on answering the following questions:
           </p>
           <ul className="focus-list">
-            <li><strong>Why is a kiosk preferable to alternatives?</strong></li>
+            <li><strong>What makes up a kiosk interface?</strong></li>
             <li><strong>How are companies designing kiosk interfaces today?</strong></li>
           </ul>
           <ResearchCarousel
             slides={[
               {
-                key: "preferable",
+                key: "makes-up",
                 content: (
                   <div className="rq-block">
                     <div className="rq-block__body">
                       <span className="rq-method-chip">Secondary Research</span>
-                      <h4 className="rq-heading">&ldquo;Why is a kiosk preferable to alternatives?&rdquo;</h4>
+                      <h4 className="rq-heading">&ldquo;What makes up a kiosk interface?&rdquo;</h4>
                       <p className="rq-lead">
-                        Understanding why businesses and users choose kiosks over staffed counters
-                        helped us identify the <mark className="hl">value users implicitly expect</mark>
-                        {" "}to retain — and what our design couldn&rsquo;t break without breaking
-                        the appeal.
+                        We reviewed articles, journals, and literature across the{" "}
+                        <mark className="hl">four dimensions a kiosk interface has to account for</mark>:
+                        interface elements, consumer psychology, loyalty programs, and physical
+                        kiosk constraints.
                       </p>
-                      <p className="rq-findings-lead"><strong>What we found:</strong></p>
+                      <p className="rq-findings-lead"><strong>The recurring gaps we surfaced:</strong></p>
                       <ul className="rq-findings-list">
-                        <li>User independence without needing human assistance</li>
-                        <li>Applicability across indoor and outdoor environments</li>
-                        <li>Operational cost savings + financial upside for businesses</li>
+                        <li>Usability challenges: slow task completion, environmental noise, unclear affordances</li>
+                        <li>Design pitfalls: inconsistent touch targets, low contrast, inaccessible screen heights</li>
+                        <li>Function-first over discoverability — interfaces optimize for transactions, not exploration</li>
                       </ul>
                     </div>
                     <div className="rq-block__visual">
                       <ZoomableImage
                         src={producerKioskBenefits.src}
-                        alt="Secondary-research synthesis on why businesses and users choose kiosks over staffed counters."
-                        aspectRatio={13205 / 7607}
+                        alt="Secondary-research synthesis across the four dimensions of kiosk interface design."
+                        aspectRatio={4057 / 5114}
                         noDrag
+                        caption={
+                          <>
+                            My own portion of the secondary research. My teammates authored their
+                            own boards, not shown here.
+                          </>
+                        }
                       />
                     </div>
                   </div>
@@ -190,25 +198,29 @@ export default function FrogslayerCaseStudy() {
                       <span className="rq-method-chip">Competitive Analysis</span>
                       <h4 className="rq-heading">&ldquo;How are companies designing kiosk interfaces today?&rdquo;</h4>
                       <p className="rq-lead">
-                        A competitive analysis of kiosk-industry companies mapped{" "}
-                        <mark className="hl">current design conventions</mark> — the patterns
-                        established by incumbents that our guidelines would need to either build on or
-                        deliberately contradict.
+                        We audited kiosk-industry sites, reviews, and product imagery to map the{" "}
+                        <mark className="hl">design conventions incumbents currently share</mark>{" "}
+                        and the opportunity gaps our guidelines could target.
                       </p>
                       <p className="rq-findings-lead"><strong>What we found:</strong></p>
                       <ul className="rq-findings-list">
-                        <li>Consistent labeling of interface purpose (menu, payment, help) at the screen level</li>
-                        <li>Centered placement of interactable elements</li>
-                        <li>Element naming trends toward 1&ndash;2 words</li>
-                        <li>Lack of elements outside the screen&rsquo;s center — significant unused real estate</li>
+                        <li>Consistent labeling of each screen&rsquo;s purpose at the top</li>
+                        <li>Interactive elements clustered center-screen, with names kept to one or two words</li>
+                        <li>Opportunity gap: little use of space outside the center — edges left empty to avoid cognitive overload</li>
                       </ul>
                     </div>
                     <div className="rq-block__visual">
                       <ZoomableImage
                         src={producerCompetitorAnalysis.src}
-                        alt="Competitive analysis of kiosk-industry companies — current design conventions and patterns."
-                        aspectRatio={9126 / 4145}
+                        alt="Competitive analysis across kiosk-industry design conventions and opportunity gaps."
+                        aspectRatio={4039 / 4753}
                         noDrag
+                        caption={
+                          <>
+                            My own competitive analysis contribution. My teammates authored
+                            separate analyses of other companies, not shown here.
+                          </>
+                        }
                       />
                     </div>
                   </div>
@@ -228,6 +240,45 @@ export default function FrogslayerCaseStudy() {
           <ResearchCarousel
             slides={[
               {
+                key: "interviews",
+                content: (
+                  <div className="rq-block">
+                    <div className="rq-block__body">
+                      <span className="rq-method-chip">Interviews &amp; Survey</span>
+                      <h4 className="rq-heading">
+                        &ldquo;How do users currently interact with kiosks?&rdquo;
+                      </h4>
+                      <p className="rq-lead">
+                        We interviewed users for firsthand stories and ran a companion survey with
+                        the same guiding questions to reach a broader audience. Together they
+                        surfaced how users currently{" "}
+                        <mark className="hl">perceive, navigate, and disengage from kiosk flows</mark>.
+                      </p>
+                      <p className="rq-findings-lead"><strong>What we found:</strong></p>
+                      <ul className="rq-findings-list">
+                        <li>Confidence stems from familiarity — users treated kiosks as an extension of touch-screen patterns they already know</li>
+                        <li>Confusion arises when options become overwhelming or poorly labeled</li>
+                        <li>Loyalty programs are rarely used — cited as not worth the effort, annoying sign-up, or simply forgotten</li>
+                      </ul>
+                    </div>
+                    <div className="rq-block__visual">
+                      <ZoomableImage
+                        src={consumerUserInterview.src}
+                        alt="User interview and survey insights board — how users currently interact with kiosks, clustered by theme."
+                        aspectRatio={1522 / 1813}
+                        noDrag
+                        caption={
+                          <>
+                            Notes from one interview session I was involved in. My teammates
+                            conducted the rest of the interviews and the survey.
+                          </>
+                        }
+                      />
+                    </div>
+                  </div>
+                ),
+              },
+              {
                 key: "observations",
                 content: (
                   <div className="rq-block">
@@ -237,61 +288,30 @@ export default function FrogslayerCaseStudy() {
                         &ldquo;How do users actually behave on kiosks in context?&rdquo;
                       </h4>
                       <p className="rq-lead">
-                        We observed participants completing real tasks — purchasing and reloading
-                        play cards — on kiosks at an indoor entertainment center, converting each
-                        session into a journey map. Behavior in the actual environment surfaced
-                        friction that self-report could never catch.
+                        We observed four participants at a partner indoor entertainment center
+                        completing two real tasks (buying a play card and checking / reloading
+                        balance), converting each session into a user journey map to surface
+                        friction that self-report couldn&rsquo;t catch.
                       </p>
                       <p className="rq-findings-lead"><strong>What we found:</strong></p>
                       <ul className="rq-findings-list">
-                        <li><mark className="hl">Payment interactions were the biggest point of confusion</mark> — tap vs. swipe vs. 
-                        insert, which reader to use</li>
-                        <li>Screen real estate was poorly utilized — most content clustered mid-screen</li>
-                        <li>Stressful auditory countdown cues damaged user confidence mid-task</li>
-                        <li>External environmental factors (noise, crowd pressure, glare) affected users unevenly</li>
+                        <li><mark className="hl">Payment transactions were the biggest point of confusion</mark> — tap vs. swipe vs. insert, and which reader to use</li>
+                        <li>Kiosk lag and inefficient screen-space use disrupted flow and hid important information</li>
+                        <li>Countdown sounds and abrupt auditory feedback reduced user confidence mid-task</li>
                       </ul>
                     </div>
                     <div className="rq-block__visual">
                       <ZoomableImage
                         src={consumerUserObservation.src}
-                        alt="Field observation journey map from participants completing real card-purchase/reload tasks at an entertainment center."
-                        aspectRatio={9745 / 6599}
+                        alt="Field observation journey maps from four participants completing real card-purchase and reload tasks at a partner venue."
+                        aspectRatio={7441 / 6555}
                         noDrag
-                      />
-                    </div>
-                  </div>
-                ),
-              },
-              {
-                key: "interviews",
-                content: (
-                  <div className="rq-block">
-                    <div className="rq-block__body">
-                      <span className="rq-method-chip">User Interviews</span>
-                      <h4 className="rq-heading">
-                        &ldquo;How do users feel about using kiosks?&rdquo;
-                      </h4>
-                      <p className="rq-lead">
-                        A separate cohort of participants was interviewed (with a companion survey)
-                        for the firsthand perception context observations couldn&rsquo;t reach:{" "}
-                        <mark className="hl">users are confident with kiosks until options become
-                        overwhelming or poorly labeled</mark>, and loyalty programs are rarely used
-                        because sign-up feels annoying or effortful.
-                      </p>
-                      <p className="rq-findings-lead"><strong>What we found:</strong></p>
-                      <ul className="rq-findings-list">
-                        <li>Confidence stems from familiarity with touch-screen technology</li>
-                        <li>Confusion arises from poorly labeled or over-abundant options at decision points</li>
-                        <li>Hesitance around loyalty programs that require effort or perceived commitment</li>
-                        <li>Users skim before reading — assumptions form before instructions register</li>
-                      </ul>
-                    </div>
-                    <div className="rq-block__visual">
-                      <ZoomableImage
-                        src={consumerUserInterview.src}
-                        alt="User interview insights board — how users feel about using kiosks, clustered by theme."
-                        aspectRatio={8272 / 4613}
-                        noDrag
+                        caption={
+                          <>
+                            Journey map from one field observation session I was involved in. My
+                            teammates observed the other participants.
+                          </>
+                        }
                       />
                     </div>
                   </div>
@@ -307,8 +327,8 @@ export default function FrogslayerCaseStudy() {
             After building a sufficient foundation and familiarity with the current state of kiosk interfaces, we moved on to develop the user flow in two passes:{" "}
             <mark className="hl">individual sketching and feature selection</mark>, then wireframing the features into an interactive prototype.
             <br></br><br></br>
-            This is to conduct usability tests <mark className="hl">applying our findings to a interactive flow for users to verify their authenticity 
-            in real world scenarios.</mark>
+            The purpose was to conduct usability tests <mark className="hl">applying our findings to an interactive flow, so users could verify their authenticity
+            in real-world scenarios.</mark>
           </p>
 
           <h3>Individual Sketching &amp; Feature Selection</h3>
@@ -324,8 +344,8 @@ export default function FrogslayerCaseStudy() {
             <li><strong>Auditory countdown cues that prompt action due to the threat of returning to the beginning of the flow</strong></li>
           </ul>
           <p>
-            As a result, we noted ideation of features that would address those pain points in
-            addition to other features that could improve the overall usability of the flow.
+            As a result, we ideated features that would address those pain points, in addition
+            to other features that could improve the overall usability of the flow.
           </p>
           <p>The selected feature themes included:</p>
           <ul className="focus-list">
@@ -378,7 +398,7 @@ export default function FrogslayerCaseStudy() {
             <ZoomableImage
               src={verifyingInitialPrototype.src}
               alt="Initial user flow prototype taken into Round 1 — built from field observations, before any iteration."
-              aspectRatio={7016 / 3306}
+              aspectRatio={9841 / 4000}
               caption={
                 <>
                   The initial user flow taken into Round 1 — built from field observations of real
@@ -390,122 +410,130 @@ export default function FrogslayerCaseStudy() {
           <div className="usability-rounds">
             <UsabilityRound
               title="Round 1"
-              meta="7 users · PMU"
+              meta="7 users"
               focus={
                 <>
-                  <strong>Round 1 focus:</strong> Validating the{" "}
-                  <mark className="hl">general UI of the flow</mark> regarding user comfort and appearances of cognitive overload
+                  <strong>Round 1 focus:</strong> Verify that{" "}
+                  <mark className="hl">the PMU testing environment was representative of a busy arcade</mark>,
+                  and observe how users interacted with the initial prototype for the first time
                 </>
               }
             >
               <InsightCard
-                insight="“Cognitive overload from too many options at once”"
-                change="Simplified card-loading page"
-                originalLabel="card-loading · original"
-                iteratedLabel="card-loading · simplified"
+                insight="“Cognitive overload on the card-loading selection page”"
+                change="Simplified the card-loading page to match the rest of the flow"
+                imageSrc={round1CardLoading.src}
+                imageAlt="Before and after of the card-loading selection page — original crowded layout on the left, simplified version on the right."
+                imageAspectRatio={1983 / 1282}
               />
               <InsightCard
-                insight="“Resistance to signup and confusion with entry-fee loyalty”"
-                change="Loyalty pop-up that introduces deals without overload"
-                originalLabel="loyalty intro · original"
-                iteratedLabel="loyalty pop-up · introduces deals"
+                insight="“Consistent resistance to signup, plus confusion that loyalty required an entry fee”"
+                change="Loyalty pop-up with a clear comparison of member tiers and deals to compel interaction"
+                imageSrc={round1Loyalty.src}
+                imageAlt="Before and after of the loyalty-program introduction — original in-flow prompt on the left, the new pop-up with tiers and deals on the right."
+                imageAspectRatio={2017 / 2302}
               />
               <InsightCard
-                insight="“End-page orientation broke layout consistency”"
-                change="Flipped end page from vertical to horizontal"
-                originalLabel="end page · vertical"
-                iteratedLabel="end page · horizontal"
+                insight="“Ending-page orientation broke layout consistency”"
+                change="Flipped the end page from vertical to horizontal"
+                imageSrc={round1Ending.src}
+                imageAlt="Before and after of the end page — original vertical button placement on the left, horizontal on the right."
+                imageAspectRatio={1943 / 1282}
               />
               <InsightCard
-                insight="“Button styles read as different elements across screens”"
-                change="Unified button design across the flow"
-                originalLabel="buttons · inconsistent"
-                iteratedLabel="buttons · unified"
+                insight="“Payment buttons read as different elements from the rest of the screens”"
+                change="Redesigned payment buttons to match the site&rsquo;s button system"
+                imageSrc={round1PaymentButton.src}
+                imageAlt="Before and after of the payment buttons — original inconsistent style on the left, unified style matching other buttons on the right."
+                imageAspectRatio={1982 / 1391}
               />
             </UsabilityRound>
 
             <UsabilityRound
               title="Round 2"
-              meta="7 users · PMU · A/B test"
+              meta="7 users · A/B test"
               focus={
                 <>
-                  <strong>Round 2 focus:</strong> an{" "}
-                  <mark className="hl">A/B test guaging the effectiveness of two candidate loyalty-program models, </mark>
-                  tier-based (upgrade for perks) vs. upsell-based (spend $20, play with $25), in context of the entertainment industry
+                  <strong>Round 2 focus:</strong> Because{" "}
+                  <mark className="hl">most Round 1 users didn&rsquo;t attempt to click the sign-up-as-member button</mark>,
+                  we surfaced membership as a pop-up to force interaction with it, then ran an{" "}
+                  <mark className="hl">A/B test through the pop-up to gauge two candidate loyalty-program models</mark>,
+                  tier-based (upgrade for perks) vs. upsell-based (spend $20, play with $25), in the context of the entertainment industry
                 </>
               }
             >
               <InsightCard
-                insight="“Upsells engaged hesitant users far more than tiers”"
-                change="Selected upsells over tiers as the loyalty model"
-                originalLabel="loyalty A/B · tiers vs upsells"
-                iteratedLabel="loyalty · upsells only"
+                insight="Upsells engaged even hesitant users, but a recurring “might be a catch” mistrust surfaced around unclear deals and member pricing"
+                change="Selected upsells over tiers as the loyalty model, then modified upsell prices and deals for clarity to build trust"
+                imageSrc={round2Upsell.src}
+                imageAlt="Before and after of the loyalty pop-up — original tiers A/B with unclear pricing on the left, upsells-only version with clarified prices on the right."
+                imageAspectRatio={2392 / 1742}
               />
               <InsightCard
-                insight="“There might be a catch”"
-                change="Deals and prices clarified to build trust"
-                originalLabel="deals UI · unclear pricing"
-                iteratedLabel="deals UI · clarified prices"
-              />
-              <InsightCard
-                insight="“Cash payment needed clearer step-by-step guidance”"
-                change="Added a dedicated cash payment screen"
-                originalLabel="cash payment · no dedicated flow"
-                iteratedLabel="cash payment · dedicated screen"
-              />
-              <InsightCard
-                insight="“Reset button untouched in every observed session”"
-                change="Replaced the unused reset with sign-in"
-                originalLabel="interface · reset button"
-                iteratedLabel="interface · sign-in button"
+                insight="“Reset button unused in every observed session”"
+                change="Replaced the unused reset button with a sign-in button"
+                imageSrc={round2Reset.src}
+                imageAlt="Before and after of the interface — original screen with the unused reset button on the left, the same screen with a sign-in button in its place on the right."
+                imageAspectRatio={2397 / 1770}
               />
             </UsabilityRound>
 
             <UsabilityRound
               title="Round 3"
-              meta="5 users · PMU · final prototype"
+              meta="5 users · final validation"
               focus={
                 <>
-                  <strong>Round 3 focus:</strong> Guaging user reception to refinement of the{" "}
-                  <mark className="hl">introduction to the membership</mark> by
-                  surfacing &ldquo;Join for Free&rdquo; prominently and making cost transparency
-                  impossible to miss
+                  <strong>Round 3 focus:</strong> Verify the validity of the{" "}
+                  <mark className="hl">iterations we made after Round 2</mark> using an improved
+                  prototype. Because Round 2&rsquo;s iterations tested well, we did not iterate
+                  on the prototype further after this round, and instead applied the findings
+                  directly into the deliverable guideline.
                 </>
               }
-            >
-              <InsightCard
-                insight="“Skimming users miss ‘Join for Free’ entirely”"
-                change="Surfaced “Join for Free” at the top of the pop-up"
-                originalLabel="loyalty pop-up · “Free” mid-screen"
-                iteratedLabel="loyalty pop-up · “Free” at top"
-                iteratedCaption="Finalized"
-              />
-              <InsightCard
-                insight="“Habitual rejection — users assume cost or commitment”"
-                change="Made cost transparency more prominent"
-                originalLabel="membership prompt · cost ambiguous"
-                iteratedLabel="membership prompt · cost transparency"
-                iteratedCaption="Finalized"
-              />
-              <InsightCard
-                insight="“Colors liked but could be more dynamic”"
-                change="Color-dynamism flagged for the guideline"
-                originalLabel="color palette · static"
-                iteratedLabel="color palette · note for guideline"
-                iteratedCaption="Finalized"
-              />
-            </UsabilityRound>
+              findings={
+                <>
+                  <p>
+                    Round 3 confirmed that the Round 2 iterations were effective, so instead of
+                    another prototype pass, we{" "}
+                    <mark className="hl">recorded the findings from this round directly into the deliverable guideline</mark>:
+                  </p>
+                  <ul>
+                    <li>
+                      <strong>Users found the interface intuitive</strong> due to the one-at-a-time
+                      instructions that prevented them from feeling overwhelmed.
+                    </li>
+                    <li>
+                      <strong>Users often missed &ldquo;Join for Free&rdquo; while skimming</strong>,
+                      even though joining being free was the biggest conversion driver. As a result,
+                      we recommended in the guideline to place key information at the top of any
+                      membership prompt.
+                    </li>
+                    <li>
+                      <strong>Users habitually rejected memberships</strong> because they assumed
+                      the membership required cost or commitment. To combat this, the guideline
+                      recommends prominent cost transparency on any membership prompt.
+                    </li>
+                    <li>
+                      <strong>Colors were well-liked</strong> as they are utilized to guide the
+                      user throughout the user flow through contrast.
+                    </li>
+                  </ul>
+                </>
+              }
+            />
           </div>
           <p>
-            By round 3, multiple features have been iterated, however, the feature that received the most changes was the loyalty program, through 
-            specifically <mark className="hl">iterations for clarity of its labelling of the &ldquo;Join for Free&rdquo; upsell with pricing, </mark>
-            as we needed to <mark className="hl">actively combat users' habitual suspicion</mark> of the membership requiring monetary cost.
+            Across all three rounds, the feature that received the most changes was the loyalty
+            program &mdash; specifically{" "}
+            <mark className="hl">iterations for clarity of its labelling of the &ldquo;Join for Free&rdquo; upsell with pricing</mark>,
+            as we needed to <mark className="hl">actively combat users&rsquo; habitual suspicion</mark>{" "}
+            of the membership requiring monetary cost.
           </p>
           <div className="usability-flow-anchor">
             <ZoomableImage
               src={verifyingFinalPrototype.src}
               alt="Final user flow prototype after three rounds of testing — Join-for-Free surfaced, cash-payment flow dedicated, buttons unified."
-              aspectRatio={4634 / 3514}
+              aspectRatio={11555 / 5321}
               caption={
                 <>
                   The final user flow after three rounds of testing — upsell-based loyalty
@@ -518,16 +546,12 @@ export default function FrogslayerCaseStudy() {
         </section>
         <section id="takeaways" className="case-section">
           <h2>Takeaways</h2>
-          <blockquote className="case-pullquote">
-            &ldquo;Is it pretty?&rdquo; mattered less than &ldquo;what will this teach us?&rdquo;
-            <cite>Frogslayer · design guideline project</cite>
-          </blockquote>
 
           <h3>Prototype as Research Instrument</h3>
           <p>
-            Designing a prototype{" "} <mark className="hl">as a tool and not as a product</mark> heavily differed from my previous projects, 
-            where the end goal was to construct a prototype for developers to implement. As a result, I prioritize reserch verification over design aesthetics when
-            desigining the prototype. 
+            Designing a prototype{" "} <mark className="hl">as a tool and not as a product</mark> heavily differed from my previous projects,
+            where the end goal was to construct a prototype for developers to implement. As a result, I prioritized research verification over design aesthetics
+            when designing the prototype.
           </p>
 
           <h3>Environment as Design Material</h3>

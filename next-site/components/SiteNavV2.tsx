@@ -22,24 +22,6 @@ function useActiveSection(): SectionId {
 
       for (const id of SECTIONS) {
         if (id === "connect") {
-          // #connect is position:sticky inside .ac-scene, so its rect.top
-          // reads as 0 the moment .ac-scene enters the viewport — even
-          // while About is still fully covering Connect. Rather than
-          // measuring About's rect (which can misbehave once About has
-          // scrolled far off-screen — some browsers clamp offscreen
-          // rects unpredictably), compute the exact scroll position at
-          // which Connect covers ≥ 60% of the viewport and compare
-          // against window.scrollY directly.
-          //
-          //   scrollY = sceneTop            → About fills viewport (0% Connect)
-          //   scrollY = sceneTop + aboutH   → About fully off-screen (100% Connect)
-          //   Connect visible fraction = (scrollY - sceneTop) / aboutH
-          //   Threshold: (scrollY - sceneTop) / aboutH >= 0.6
-          //     → scrollY >= sceneTop + aboutH * 0.6
-          //
-          // Once scroll passes the sticky range entirely (scrollY beyond
-          // sceneTop + aboutH), the >= comparison still holds so Connect
-          // stays active for the whole footer view.
           const scene = document.querySelector<HTMLElement>(".ac-scene");
           const aboutEl = document.querySelector<HTMLElement>(".about");
           if (scene && aboutEl) {
