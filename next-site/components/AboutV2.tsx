@@ -230,10 +230,9 @@ export default function AboutV2() {
           {/* Stage 2 — body follows 300 ms after the heading starts */}
           <div className="about-body">
             <p>
-              Once I realized I can keep{" "} designing as an
-              <HoverWord view="illos"> artist</HoverWord>
-              {" "}<em className="it">while</em> solving real problems for
-              real people as a UX designer, I decided to jump into the field.
+              Once I realized I can keep{" "} designing
+              {" "}<em className="it">while</em> solving real-world problems for
+              people as a UX designer, I decided to jump into the field.
             </p>
             <p>
               To ensure my designing method and experiences are applicable to real world

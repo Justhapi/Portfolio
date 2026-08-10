@@ -4,16 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import SparkleField from "@/components/SparkleField";
 import ArtistDesignerWordmark from "@/components/ArtistDesignerWordmark";
 
-/**
- * HeroV2 — sticker-collage polaroid hero on dark stage
- * Adapted from Claude Design Portoflio/hero.jsx + the latest 3 hero sketches:
- *   - Connected "Artist × Designer" ligature (the t→D forms an X)
- *   - Polaroid with photo + caption ("Last Updated · 05/07/26" + tagline)
- *   - Olive yellow "Kathleen Li" sticker (top-right) + maroon 李曦 oval underneath
- *   - Green "Currently designing at __ while" sticky (bottom-left)
- *   - Faint strings/luggage tags from polaroid corners to stickers
- *   - Muted, paper-feel palette
- */
 export default function HeroV2() {
   const stageRef = useRef<HTMLDivElement | null>(null);
   const photoRef = useRef<HTMLButtonElement | null>(null);
