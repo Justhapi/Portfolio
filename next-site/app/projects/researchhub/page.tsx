@@ -2,6 +2,7 @@ import CaseCover from "@/components/CaseCover";
 import CaseSectionNav from "@/components/CaseSectionNav";
 import ZoomableImage from "@/components/ZoomableImage";
 import ResearchCarousel from "@/components/ResearchCarousel";
+import CyclingImage from "@/components/CyclingImage";
 
 /* Case-study images are co-located with the route — imported as ES
    modules so Webpack bundles them into /_next/static/media/ at build
@@ -9,10 +10,19 @@ import ResearchCarousel from "@/components/ResearchCarousel";
 import auditImg from "./images/audit.webp";
 import interviewNotesImg from "./images/interview_notes.webp";
 import affinityDiagrammingImg from "./images/affinity_diagraming.png";
-import wireframingImg from "./images/wireframing.webp.png";
 import referencesImg from "./images/references.png";
 import sketchesImg from "./images/sketches.png";
 import colorSchemeImg from "./images/color_scheme.webp";
+/* Finalized page visuals shown in the Prototyping carousel. */
+import homePage from "./images/Home_Page.png";
+import messagesPage from "./images/Messages_Page.png";
+import projectPage1 from "./images/Project_Page_1.png";
+import projectPage2 from "./images/Project_Page_2.png";
+import projectPage3 from "./images/Project_Page_3.png";
+import projectPage4 from "./images/Project_Page_4.png";
+import projectPage5 from "./images/Project_Page_5.png";
+/* Wide-strip iteration-progression visuals for the Prototyping section. */
+import projectDashboardProgression from "./images/Project_Dashboard_Progression.webp";
 
 export const metadata = {
   title: "ResearchHub — Kathleen Li",
@@ -94,7 +104,7 @@ export default function ResearchHubCaseStudy() {
 
           <h3>My Role</h3>
           <p>
-            I was the <mark className="hl">sole UI designer and later a Design Engineer role</mark>
+            I was the <mark className="hl">sole UI designer, and later took on a Design Engineer role,</mark>{" "}
             in the 6-person Purdue Stack team with 5 full-stack developers. During the project, I <mark className="hl">determined all
             UX and UI decisions and also contributed front-end React code</mark> to maintain project progression.
             <br></br><br></br>
@@ -106,7 +116,7 @@ export default function ResearchHubCaseStudy() {
         {/* ───── Researching ───── */}
         <section id="researching" className="case-section">
           <h2>Researching</h2>
-          <h3>Understanding the Platform &amp; the Two User Groups Under Time Constraints</h3>
+          <h3>Auditing the Platform and Its Two User Groups</h3>
           <p>
             Due to the project being a continuation of prior work, I recognized the need to
             understand the platform&rsquo;s current state and its two user groups. Because my
@@ -123,7 +133,7 @@ export default function ResearchHubCaseStudy() {
             <li><strong>Interviews with Purdue students and staff</strong></li>
           </ul>
 
-          <h3>Understanding the Platform's Current State</h3>
+          <h3>The Platform Audit</h3>
           <p>
             The <mark className="hl">core features (account creation and logins, project postings, and application submission) were functioning</mark>,
             however the overall experience focused solely on functionality. This was due to
@@ -153,13 +163,13 @@ export default function ResearchHubCaseStudy() {
                 them to the development team for quick resolution.
               </p>
               <p>
-                <strong>Hinted but not fulfilled features</strong> The platform introduces the existence of
+                <strong>Hinted-at but Unfulfilled Features.</strong> The platform introduces the existence of
                 various features such as profiles, project listings, and instances of communication. However,
                 those features have not been fully utilized, leaving gaps that need to be addressed.
               </p>
               <p>
-                <strong>Design System Components Needed</strong> While exploring the platform, I was able to interact with and track
-                various elements such as buttons, cards, and navigation labels that needed to be accounted for when constructing the 
+                <strong>Design System Components Needed.</strong> While exploring the platform, I was able to interact with and track
+                various elements such as buttons, cards, and navigation labels that needed to be accounted for when constructing the
                 design system later on.
               </p>
             </div>
@@ -197,12 +207,12 @@ export default function ResearchHubCaseStudy() {
             <div className="audit-split__visual">
               <ZoomableImage
                 src={affinityDiagrammingImg.src}
-                alt="Cross-interview affinity diagram — clustering 4 student interview observations into themes around discovery, evaluation, communication, and ongoing maintenance."
+                alt="Cross-interview affinity diagram — clustering 4 student interview observations into three themes: Communication, Maintenance, and Project Details."
                 aspectRatio={9366 / 6144}
                 caption={
                   <>
-                    Affinity diagramming the 4 student interviews into themes around intention
-                    clarity, communication features, and consistent meeting rhythms.
+                    Affinity diagramming the 4 student interviews into themes around
+                    Communication, Maintenance, and Project Details.
                   </>
                 }
               />
@@ -221,20 +231,47 @@ export default function ResearchHubCaseStudy() {
               <p>
                 From the synthesized findings, I was able to recognize the main student needs
                 that the new features needed to address, specifically regarding{" "}
-                <mark className="hl">ease of communication with professors and project maintenance of files organization</mark>.
+                <mark className="hl">ease of communication with professors and project maintenance through file organization</mark>.
               </p>
             </div>
           </div>
 
           <p>
-            On the professor side, I was later informed that Professor Reese&rsquo;s schedule had unexpectedly prevented the 
-            meeting for in-depth professor-side insights. 
+            On the professor side, I was later informed that Professor Reese&rsquo;s schedule had unexpectedly prevented the
+            meeting for in-depth professor-side insights.
             <br></br><br></br>
             Within the sprint window, I decided to{" "}
             <mark className="hl">base the professor needs on the features Professor Reese had requested during an earlier meeting</mark>{" "}
             with my project lead. I then{" "}
-            <mark className="hl">filtered through those requests, continuing development of only features that served both user groups.</mark>
+            <mark className="hl">prioritized those requests by how frequently students would interact with each feature</mark>,
+            so the highest-student-impact professor-requested features would ship first even under
+            the tight timeline.
           </p>
+
+          <h3>The Core Features Professor Reese Requested</h3>
+          <p>
+            From the earlier meeting notes, the core features Professor Reese requested for the
+            professor side, sequenced by how frequently students would interact with each, were:
+          </p>
+          <ul className="focus-list">
+            <li>
+              <strong>Individual project workspace</strong> to centralize tracking of details,
+              team, progress, timeline, and optional milestones.{" "}
+              <mark className="hl">Prioritized first</mark>, as this is the primary interface
+              students would return to most often.
+            </li>
+            <li>
+              <strong>AI review tests</strong> to verify that students had actually read the
+              assigned research documents. <mark className="hl">Prioritized second</mark>, as
+              students would encounter it on a per-document basis throughout the project.
+            </li>
+            <li>
+              <strong>The ability to &ldquo;finalize&rdquo; projects</strong>, and to check
+              whether the students on the project wanted referral letters at that point.{" "}
+              <mark className="hl">Prioritized last</mark>, since the interaction only triggers
+              at a project&rsquo;s end.
+            </li>
+          </ul>
         </section>
 
         {/* ───── Designing ───── */}
@@ -282,7 +319,7 @@ export default function ResearchHubCaseStudy() {
           </p>
           <ZoomableImage
             src={sketchesImg.src}
-            alt="My sketches for ResearchHub features and screens, developed alongside plausibility discussions with the development team."
+            alt="Hand-drawn ResearchHub feature and screen sketches on paper, spanning multiple pages of the student and professor flows."
             aspectRatio={5333 / 2131}
             caption={
               <>
@@ -291,7 +328,7 @@ export default function ResearchHubCaseStudy() {
               </>
             }
           />
-          <div className="audit-split">
+          <div className="audit-split audit-split--compact">
             <div className="audit-split__visual">
               <ZoomableImage
                 src={colorSchemeImg.src}
@@ -301,48 +338,52 @@ export default function ResearchHubCaseStudy() {
             </div>
             <div className="audit-split__text">
               <p>
-                My <mark className="hl">time spent on the design system needed to be short </mark>as the platform being 
-                utilizable next semester was the project's main priority, <mark className="hl">prompting more
-                focus on the necessary feature's development.</mark>
+                Since the platform being utilizable next semester was the project&rsquo;s main
+                priority, I <mark className="hl">deliberately kept the design system work minimal</mark>{" "}
+                so the ship-critical features could take priority.
               </p>
               <p>
-                As a result, I focused instead on refining the existing UI and components to be <mark className="hl">more
-                reminiscent of Purdue University through{" "}
-                color scheme and text</mark> that would highlight the
-                platform&rsquo;s <mark className="hl">identity as primarily a Purdue research platform.</mark>
+                As a result, I focused instead on refining the existing UI and components to be{" "}
+                <mark className="hl">more reminiscent of Purdue University through color scheme and text</mark>{" "}
+                that would highlight the platform&rsquo;s{" "}
+                <mark className="hl">identity as primarily a Purdue research platform.</mark>
               </p>
             </div>
           </div>
 
-          <h3>Prototyping to Describe to Developers Better</h3>
+          <h3>Prototyping for Developer Handoff</h3>
           <p>
             To keep development on schedule, I{" "}
             <mark className="hl">wireframed the platform in Figma while concurrently discussing implementation plausibility with my teammates and gathering outside feedback on the wireframes</mark>{" "}
             for both feasibility and usability.
-            <br></br><br></br>
+          </p>
+          <div className="progression-block">
+            <ZoomableImage
+              src={projectDashboardProgression.src}
+              alt="Project dashboard modification progression — successive iterations of the ResearchHub project dashboard laid out side-by-side."
+              aspectRatio={6742 / 2059}
+            />
+            <p className="progression-block__label"><strong>Project dashboard — modification progression</strong></p>
+            <p>
+              {/* Describe the project dashboard modification progression here — what
+                 was iterated across the versions and what each modification addressed. */}
+            </p>
+          </div>
+
+          <p>
             Since I needed to wireframe both the student and professor flows in that same window,
             I{" "}
-            <mark className="hl">utilized Figma Make to keep pages shared by both accounts consistent in design</mark>.
+            <mark className="hl">utilized Figma Make (AI-assisted design tooling) to keep pages shared by both accounts consistent in design</mark>{" "}
+            without re-drawing the same components across two flows.
           </p>
-          <ZoomableImage
-            src={wireframingImg.src}
-            alt="Wireframes for ResearchHub developed in Figma concurrently with plausibility discussions and outside feedback."
-            aspectRatio={6649 / 3779}
-            caption={
-              <>
-                Wireframes for ResearchHub developed in Figma concurrently with plausibility
-                discussions with the development team and outside feedback rounds.
-              </>
-            }
-          />
           <p>
             The final Figma prototype showcased the full redesign as connected flows that were
             applicable to real-world use cases of the platform that include the following:
           </p>
           <ul className="focus-list">
             <li><strong>Students logging in to just update task progression</strong></li>
-            <li><strong>Professors maintaining and organizing contents of each project</strong></li>
             <li><strong>Communication between students and professors</strong></li>
+            <li><strong>Professors maintaining and organizing contents of each project</strong></li>
           </ul>
           <ResearchCarousel
             slides={[
@@ -354,43 +395,27 @@ export default function ResearchHubCaseStudy() {
                       <span className="rq-method-chip">Student Flow</span>
                       <h4 className="rq-heading">Students Updating Task Progression</h4>
                       <p className="rq-lead">
-                        A quick log-in flow for students returning to the platform to update
-                        ongoing project progress, without needing to navigate deep into the
-                        platform first.
+                        The dashboard was designed to provide{" "}
+                        <mark className="hl">everything a student might need on a monotonous day</mark>{" "}
+                        such as updating task progression or checking messages, while still
+                        offering immediate access to more detailed views if the student needs to
+                        navigate to a specific project dashboard or a direct message with a
+                        specific person.
                       </p>
                       <p className="rq-findings-lead"><strong>Key features and design decisions:</strong></p>
                       <ul className="rq-findings-list">
-                        <li>[Feature — design decision]</li>
-                        <li>[Feature — design decision]</li>
-                        <li>[Feature — design decision]</li>
+                        <li>Surfaced frequent, low-effort actions (task progression updates and message previews) at the landing view so students do not have to navigate deep for the everyday case.</li>
+                        <li>Added direct-access affordances to specific project dashboards and specific direct messages, so the deeper information is one click away when a student does need it.</li>
+                        <li>Prioritized the dashboard as the first professor-requested feature to ship, since it is the interface students return to most often.</li>
                       </ul>
                     </div>
                     <div className="rq-block__visual">
-                      <div className="image-slot">student task-progression pages</div>
-                    </div>
-                  </div>
-                ),
-              },
-              {
-                key: "professor-projects",
-                content: (
-                  <div className="rq-block">
-                    <div className="rq-block__body">
-                      <span className="rq-method-chip">Professor Flow</span>
-                      <h4 className="rq-heading">Professors Maintaining Project Contents</h4>
-                      <p className="rq-lead">
-                        A workspace for professors to organize and track project materials,
-                        deliverables, and student progress across their labs from a single view.
-                      </p>
-                      <p className="rq-findings-lead"><strong>Key features and design decisions:</strong></p>
-                      <ul className="rq-findings-list">
-                        <li>[Feature — design decision]</li>
-                        <li>[Feature — design decision]</li>
-                        <li>[Feature — design decision]</li>
-                      </ul>
-                    </div>
-                    <div className="rq-block__visual">
-                      <div className="image-slot">professor project-maintenance pages</div>
+                      <ZoomableImage
+                        src={homePage.src}
+                        alt="Student home page — a quick log-in landing view for updating ongoing project progress."
+                        aspectRatio={1566 / 823}
+                        noDrag
+                      />
                     </div>
                   </div>
                 ),
@@ -403,19 +428,62 @@ export default function ResearchHubCaseStudy() {
                       <span className="rq-method-chip">Cross-Role</span>
                       <h4 className="rq-heading">Communication Between Students and Professors</h4>
                       <p className="rq-lead">
-                        Shared communication channels within the platform, replacing the
-                        scattered email, chat, and shared-doc workflow that both roles previously
-                        relied on.
+                        The messages page was designed to provide{" "}
+                        <mark className="hl">organizational comfort for students communicating with professors, graduate project leads, and other students</mark>,
+                        combining the standard file-attachment feature with a &ldquo;pin
+                        board&rdquo; on the right for pinning the current task and linking to
+                        important external resources.
                       </p>
                       <p className="rq-findings-lead"><strong>Key features and design decisions:</strong></p>
                       <ul className="rq-findings-list">
-                        <li>[Feature — design decision]</li>
-                        <li>[Feature — design decision]</li>
-                        <li>[Feature — design decision]</li>
+                        <li>Standard file-attachment feature as the base affordance for familiarity.</li>
+                        <li>&ldquo;Pin board&rdquo; on the right for pinning the current task so the other person knows what the user is working on, and linking to important resources (Google Drive, Google Meet, and other communication tools). This also spares the development team from having to build every integration in-house.</li>
+                        <li>Two-level navigation from projects down to individuals, referencing how Microsoft Teams organizes from classes down to specific channels — a familiar pattern for the Purdue student user base.</li>
                       </ul>
                     </div>
                     <div className="rq-block__visual">
-                      <div className="image-slot">shared communication pages</div>
+                      <ZoomableImage
+                        src={messagesPage.src}
+                        alt="Messages page — the shared communication channel that replaces the scattered email, chat, and shared-doc workflow."
+                        aspectRatio={1566 / 823}
+                        noDrag
+                      />
+                    </div>
+                  </div>
+                ),
+              },
+              {
+                key: "project-pages",
+                content: (
+                  <div className="rq-block">
+                    <div className="rq-block__body">
+                      <span className="rq-method-chip">Professor Flow</span>
+                      <h4 className="rq-heading">Professors Maintaining Project Contents</h4>
+                      <p className="rq-lead">
+                        The project dashboard was designed to{" "}
+                        <mark className="hl">hold the large amount of features it carries without overwhelming the viewer</mark>,
+                        using left-side navigation to segment the page into five sections
+                        (Notifications, Students, Documents, Task Log, and Timeline). The
+                        project page cycles through its main views below.
+                      </p>
+                      <p className="rq-findings-lead"><strong>Key features and design decisions:</strong></p>
+                      <ul className="rq-findings-list">
+                        <li>Left-side navigation splits the page into five sections — Notifications, Students, Documents, Task Log, and Timeline — so a single dense workspace does not overwhelm the viewer.</li>
+                        <li>Additional organization within each section that prioritizes reducing cognitive load, so a professor can drill into a specific section without feeling flooded.</li>
+                        <li>Container designed to scale with feature density, since the project dashboard holds the most professor-requested features and needed the most organizational structure.</li>
+                      </ul>
+                    </div>
+                    <div className="rq-block__visual">
+                      <CyclingImage
+                        aspectRatio={1566 / 823}
+                        slides={[
+                          { src: projectPage1.src, alt: "Project page — version 1." },
+                          { src: projectPage2.src, alt: "Project page — version 2." },
+                          { src: projectPage3.src, alt: "Project page — version 3." },
+                          { src: projectPage4.src, alt: "Project page — version 4." },
+                          { src: projectPage5.src, alt: "Project page — version 5." },
+                        ]}
+                      />
                     </div>
                   </div>
                 ),
@@ -446,14 +514,14 @@ export default function ResearchHubCaseStudy() {
 
           <h3>Design With the Cost of Building in Mind</h3>
           <p>
-            <mark className="hl"> Directly building my own ideas{" "}
-            significantly modified how I factor in limitations</mark>.
-            Sometimes I would <mark className="hl">code while half-angrily thinking &ldquo;Jeez, who is the designer who designed
-            and requested all of these details&rdquo;.</mark> Working as both designer and engineer emphasized the need to ideate as 
-            a <em>partner</em> to development rather than simply as an <em>ideater or documenter</em>. 
+            <mark className="hl">Directly building my own ideas significantly modified how I factor in limitations</mark>.
+            Sometimes I would <mark className="hl">code while thinking, half-annoyed, &ldquo;Jeez, who is the designer who designed
+            and requested all of these details&rdquo;</mark>. Working as both designer and engineer emphasized the need to ideate as
+            a <em>partner</em> to development rather than simply as an <em>ideater or documenter</em>.
             <br></br><br></br>
-            From this project, I understand that a <mark className="hl">high-quality design&rsquo;s demands includes research and the building cost,</mark> and that designer
-            who <mark className="hl">accounts for the cost is able to ensure that the well-designed handoff will be also fully utilized.</mark>
+            From this project, I understand that a{" "}
+            <mark className="hl">high-quality design&rsquo;s demands include research and the building cost</mark>, and that a
+            designer who <mark className="hl">accounts for the cost is able to ensure a well-designed handoff is fully utilized.</mark>
           </p>
 
           <h3>Adapting to Uneven User-Group Access</h3>
@@ -468,7 +536,7 @@ export default function ResearchHubCaseStudy() {
             From adapting to this differing-access obstacle, I now recognize that working
             across uneven user-group research requires <mark className="hl">prioritizing the less-accessible group&rsquo;s
             requests through a lens of how the same solution can also serve the more-accessible
-            group</mark> to ensure that I filtered the applicable ideas from the impractical ideas.
+            group</mark>, so I can filter the applicable ideas from the impractical ones.
           </p>
         </section>
       </main>

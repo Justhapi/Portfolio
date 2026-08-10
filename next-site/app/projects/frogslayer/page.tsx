@@ -69,7 +69,7 @@ export default function FrogslayerCaseStudy() {
           <div className="case-image-row">
             <ZoomableImage
               src={outcomeGuidelines.src}
-              alt="Kiosk design guidelines deck — NN/g-style heuristics for hospitality and entertainment kiosks."
+              alt="A set of kiosk design guidelines for hospitality and entertainment kiosks, formatted after NN/g's heuristics."
               aspectRatio={8820 / 4766}
               caption={
                 <>
@@ -80,7 +80,7 @@ export default function FrogslayerCaseStudy() {
             />
             <ZoomableImage
               src={outcomeJourneyMap.src}
-              alt="User journey map of the final validated kiosk flow with emotion dips flagged."
+              alt="A journey map of the project's final validated user flow, capturing emotion dips and reference insights."
               aspectRatio={5024 / 2366}
               caption={
                 <>
@@ -176,13 +176,12 @@ export default function FrogslayerCaseStudy() {
                     <div className="rq-block__visual">
                       <ZoomableImage
                         src={producerKioskBenefits.src}
-                        alt="Secondary-research synthesis across the four dimensions of kiosk interface design."
+                        alt="My portion of the team's secondary-research board on kiosk interface design."
                         aspectRatio={4057 / 5114}
                         noDrag
                         caption={
                           <>
-                            My own portion of the secondary research. My teammates authored their
-                            own boards, not shown here.
+                            My portion of the secondary research.
                           </>
                         }
                       />
@@ -212,13 +211,12 @@ export default function FrogslayerCaseStudy() {
                     <div className="rq-block__visual">
                       <ZoomableImage
                         src={producerCompetitorAnalysis.src}
-                        alt="Competitive analysis across kiosk-industry design conventions and opportunity gaps."
+                        alt="My contribution to the team's competitive analysis of kiosk-industry companies."
                         aspectRatio={4039 / 4753}
                         noDrag
                         caption={
                           <>
-                            My own competitive analysis contribution. My teammates authored
-                            separate analyses of other companies, not shown here.
+                            My competitive analysis contribution.
                           </>
                         }
                       />
@@ -264,13 +262,12 @@ export default function FrogslayerCaseStudy() {
                     <div className="rq-block__visual">
                       <ZoomableImage
                         src={consumerUserInterview.src}
-                        alt="User interview and survey insights board — how users currently interact with kiosks, clustered by theme."
+                        alt="The interview protocol questions and notes from an interview session I conducted."
                         aspectRatio={1522 / 1813}
                         noDrag
                         caption={
                           <>
-                            Notes from one interview session I was involved in. My teammates
-                            conducted the rest of the interviews and the survey.
+                            The questions utilized during, and notes from, an interview session I conducted.
                           </>
                         }
                       />
@@ -303,13 +300,12 @@ export default function FrogslayerCaseStudy() {
                     <div className="rq-block__visual">
                       <ZoomableImage
                         src={consumerUserObservation.src}
-                        alt="Field observation journey maps from four participants completing real card-purchase and reload tasks at a partner venue."
+                        alt="Journey map from one field observation session I was involved in at a partner indoor entertainment center."
                         aspectRatio={7441 / 6555}
                         noDrag
                         caption={
                           <>
-                            Journey map from one field observation session I was involved in. My
-                            teammates observed the other participants.
+                            Journey map from one field observation session I was involved in.
                           </>
                         }
                       />
@@ -355,7 +351,7 @@ export default function FrogslayerCaseStudy() {
           <div className="visual-compact">
             <ZoomableImage
               src={ideatingCrazyEights.src}
-              alt="My Crazy 8's sketch sheet — individual ideation quadrants of arcade kiosk feature concepts before team walkthrough."
+              alt="My ideated arcade kiosk user flow sketch."
               aspectRatio={8446 / 4981}
               caption={<>My ideated arcade kiosk user flow</>}
             />
@@ -369,16 +365,16 @@ export default function FrogslayerCaseStudy() {
           <div className="case-image-row with-arrow">
             <ZoomableImage
               src={ideatingObservationFlow.src}
-              alt="Initial user flow based directly on the field-observation kiosk flow, before any feature additions."
+              alt="Whiteboarding of the field-observation arcade kiosk flow."
               aspectRatio={3654 / 4120}
-              caption={<>Initial user flow based on field-observation flow</>}
+              caption={<>Whiteboarding of the field-observation arcade kiosk flow</>}
             />
             <span className="arrow-sep">→</span>
             <ZoomableImage
               src={ideatingBaseWireframes.src}
-              alt="Iterated user flow with ideated features integrated into the base kiosk arcade flow."
+              alt="Wireframed user flow addressing the significant pain points from user observations."
               aspectRatio={5591 / 4716}
-              caption={<>Iterated user flow consisting of ideated features</>}
+              caption={<>Wireframed user flow addressing the significant pain points</>}
             />
           </div>
         </section>
@@ -397,12 +393,11 @@ export default function FrogslayerCaseStudy() {
           <div className="usability-flow-anchor">
             <ZoomableImage
               src={verifyingInitialPrototype.src}
-              alt="Initial user flow prototype taken into Round 1 — built from field observations, before any iteration."
+              alt="The initial user flow prototype utilized during Round 1 testing."
               aspectRatio={9841 / 4000}
               caption={
                 <>
-                  The initial user flow taken into Round 1 — built from field observations of real
-                  kiosk use, before any iteration.
+                  The initial user flow utilized during Round 1.
                 </>
               }
             />
@@ -532,13 +527,11 @@ export default function FrogslayerCaseStudy() {
           <div className="usability-flow-anchor">
             <ZoomableImage
               src={verifyingFinalPrototype.src}
-              alt="Final user flow prototype after three rounds of testing — Join-for-Free surfaced, cash-payment flow dedicated, buttons unified."
+              alt="The final user flow prototype after three rounds of usability testing."
               aspectRatio={11555 / 5321}
               caption={
                 <>
-                  The final user flow after three rounds of testing — upsell-based loyalty
-                  prominent, &ldquo;Join for Free&rdquo; surfaced at the top of the pop-up,
-                  cash-payment flow dedicated, buttons unified.
+                  The final user flow after three rounds of testing.
                 </>
               }
             />

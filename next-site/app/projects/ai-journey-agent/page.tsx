@@ -129,7 +129,7 @@ export default function AIJourneyAgentCaseStudy() {
               <figure>
                 <ZoomableImage
                   src={platformAudit.src}
-                  alt="Platform audit board — sticky notes on screenshots. All content anonymized; sponsor name and specific findings replaced with category-level labels."
+                  alt="My platform audit board of sticky notes on blurred platform screenshots, color-coded by category."
                   aspectRatio={3975 / 2922}
                   caption={
                     <>
@@ -151,12 +151,11 @@ export default function AIJourneyAgentCaseStudy() {
               <figure>
                 <ZoomableImage
                   src={agentComponents.src}
-                  alt="Agent-components synthesis board — five research-lens categories with sticker clusters. Sticker content blurred; framework structure and section labels legible."
+                  alt="The agent-components synthesis the partner team authored, categorized into five focuses."
                   aspectRatio={5128 / 3458}
                   caption={
                     <>
-                      The agent-components synthesis the partner team authored — five research-lens
-                      columns with blurred sticker clusters.
+                      The agent-components synthesis the partner team authored categorized into five focuses.
                     </>
                   }
                 />
@@ -166,8 +165,9 @@ export default function AIJourneyAgentCaseStudy() {
 
           <h3>Industry &amp; Interaction Patterns</h3>
           <p>
-            We then conducted competitive analysis of  <mark className="hl">direct and indirect competitors</mark> to understand the 
-            current state of the AI agent industry.
+            We then conducted competitive analysis across{" "}
+            <mark className="hl">direct journey-management competitors and analogous AI-driven SaaS platforms</mark>{" "}
+            to understand the current state of the AI agent industry.
           </p>
           <div className="parallel-tracks">
             <div className="research-track">
@@ -180,33 +180,31 @@ export default function AIJourneyAgentCaseStudy() {
               <figure>
                 <ZoomableImage
                   src={directCompetitor.src}
-                  alt="Direct-competitor analysis board — three columns: Agent & User Interactions, Agent's Components within Platform, Agent's Pain Points. Screenshots blurred, sticker text category-level only. Competitor logo redacted."
+                  alt="My direct-competitor analysis of one of the four direct competitors."
                   aspectRatio={7696 / 2260}
                   caption={
                     <>
-                      My direct-competitor analysis focused on three columns (Agent &amp; User Interactions,
-                      Agent&rsquo;s Components within Platform, Agent&rsquo;s Pain Points) with blurred
-                      screenshots and category-labeled stickers.
+                      My direct-competitor analysis on one of the four direct competitors.
                     </>
                   }
                 />
               </figure>
             </div>
             <div className="research-track">
-              <span className="track-label">Indirect · Partner team</span>
-              <h3>3 Indirect Analogous AI-driven SaaS Competitors</h3>
+              <span className="track-label">Analogous · Partner team</span>
+              <h3>3 Analogous AI-driven SaaS Platforms</h3>
               <p>
                 The partner team focused on auditing products that utilize AI to analyze customer data for feedback and insights.
               </p>
               <figure>
                 <ZoomableImage
                   src={indirectCompetitor.src}
-                  alt="Indirect-competitor analysis board — analogous AI-driven SaaS platforms audited for cross-domain pattern references. Screenshots blurred; sticker text category-level only."
+                  alt="The partner team's indirect-competitor analysis of analogous AI-driven SaaS platforms."
                   aspectRatio={3380 / 2204}
                   caption={
                     <>
                       The partner team&rsquo;s indirect-competitor analysis of analogous AI-driven
-                      SaaS platforms, feeding cross-domain pattern references into our synthesis.
+                      SaaS platforms.
                     </>
                   }
                 />
@@ -220,14 +218,12 @@ export default function AIJourneyAgentCaseStudy() {
           <figure>
             <ZoomableImage
               src={interactionPattern.src}
-              alt="Interaction-pattern synthesis: Nielsen 10-heuristic evaluation of a competitor platform + agent, paired with four user-flow diagrams categorized by content-manipulation type. Screenshots blurred; sticker text category-level only."
+              alt="My interaction-pattern synthesis through a Nielsen 10-heuristic evaluation of the platform's AI features."
               aspectRatio={4727 / 1576}
               caption={
                 <>
-                  Interaction-pattern synthesis — Nielsen 10-heuristic evaluation (violation +
-                  recommendation columns) paired with four user-flow diagrams categorized by
-                  content-manipulation type (creation, organization, creation-with-user-input,
-                  summarization).
+                  My interaction-pattern synthesis through a Nielsen 10-heuristic evaluation, going over the general platform
+                  and user flows of the instances of the platform&rsquo;s AI features.
                 </>
               }
             />
@@ -248,12 +244,11 @@ export default function AIJourneyAgentCaseStudy() {
           <figure>
             <ZoomableImage
               src={interviewNotes.src}
-              alt="Session notes from the three interviews I participated in — text blurred so note-taking structure and volume read without exposing participant-level findings."
+              alt="My session notes from the three interviews I participated in."
               aspectRatio={4746 / 1517}
               caption={
                 <>
-                  My session notes from the three interviews I participated in — blurred sticky notes on
-                  a paper background.
+                  My session notes from the three interviews I participated in.
                 </>
               }
             />
@@ -261,12 +256,11 @@ export default function AIJourneyAgentCaseStudy() {
           <figure>
             <ZoomableImage
               src={interviewAffinity.src}
-              alt="Cross-session affinity diagram — nine themed clusters with headers visible, individual sticky-note content blurred. Draws from all six interviews."
+              alt="Team affinity synthesis across all six interviews, clustered into themes."
               aspectRatio={3996 / 2413}
               caption={
                 <>
-                  Team affinity synthesis across all six interviews — nine themed clusters with visible
-                  headers and blurred sticky content.
+                  Team affinity synthesis across all six interviews clustered into themes.
                 </>
               }
             />
@@ -290,11 +284,11 @@ export default function AIJourneyAgentCaseStudy() {
           <figure>
             <ZoomableImage
               src={crazyEightSketch.src}
-              alt="My Crazy 8's sketch sheet — hand-drawn low-fidelity ideation quadrants exploring AI-agent feature concepts."
+              alt="My Crazy 8's sketches of my AI agent concept features."
               aspectRatio={2453 / 1664}
               caption={
                 <>
-                  My Crazy 8&rsquo;s — hand-drawn quadrants of AI-agent feature sketches.
+                  My Crazy 8&rsquo;s sketches of my AI agent concept features.
                 </>
               }
             />
@@ -310,7 +304,7 @@ export default function AIJourneyAgentCaseStudy() {
           <figure>
             <ZoomableImage
               src={whiteboardConcept.src}
-              alt="Whiteboarding session I led on a rules-based direction that was ultimately not selected. Shown at full content pending sponsor review."
+              alt="A whiteboarding session I led on a rules-based direction that was not selected as the final concept."
               aspectRatio={5290 / 3588}
               caption={
                 <>
@@ -373,7 +367,7 @@ export default function AIJourneyAgentCaseStudy() {
           <figure className="visual-compact">
             <ZoomableImage
               src={usabilityTesting.src}
-              alt="Usability-testing feedback affinity — four rows: Task 1 (Initial Navigation), Task 2 (Informed Map Modifications / Updating), Task 3 (Further AI Agent Interactions), Reflections (General Thoughts of Concept and User Flow). Sticky-note content blurred; row labels legible."
+              alt="Notes from the usability test I conducted."
               aspectRatio={1980 / 1291}
               caption={
                 <>

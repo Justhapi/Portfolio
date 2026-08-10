@@ -4004,14 +4004,36 @@ em.it { font-style: italic; }
    reference. Stacks to a single column at ≤820px. */
 .audit-split {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  /* Visual side now gets more horizontal room (1.3fr vs text 1fr) so
+     the boards inside actually render at a size that matches the side
+     text column's height rather than sitting short with whitespace
+     below. Combined with align-items: stretch + the frame overrides
+     below, the image scales up to fill the row instead of being
+     capped at its default 62vh. */
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
   gap: 32px;
-  align-items: start;
+  align-items: stretch;
   margin: 16px 0 24px;
 }
 .audit-split__visual {
   min-width: 0;
   margin: 0;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+}
+/* Let the ZoomableImage frame fill the audit-split row height rather
+   than obeying its default 62vh cap. Aspect ratio + column width still
+   constrain the final size, but this removes the artificial ceiling so
+   the image can grow to visually match the side text block. */
+.audit-split__visual .zoomable-wrap {
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+}
+.audit-split__visual .zoomable-frame {
+  max-height: none !important;
+  height: 100%;
 }
 .audit-split__text {
   min-width: 0;
@@ -4019,10 +4041,75 @@ em.it { font-style: italic; }
 .audit-split__text > p:first-child {
   margin-top: 0;
 }
+/* Compact variant — for audit-split blocks where the visual is a
+   small reference (e.g. the ResearchHub color palette, near-square
+   aspect) rather than a dense board that needs to fill the row. Flips
+   the grid ratio to favor the text side, removes the row-height
+   stretch, and re-caps the frame so the small visual centers vertically
+   at its natural aspect without dominating the block. */
+.audit-split.audit-split--compact {
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr);
+  align-items: center;
+}
+.audit-split.audit-split--compact .audit-split__visual .zoomable-frame {
+  max-height: 32vh !important;
+  height: auto;
+}
+/* Wide-visual variant — for audit-split blocks whose visual is a very
+   wide progression strip (aspect ~3:1 or wider). At normal audit-split
+   ratios such a strip is either extremely short vertically or fights
+   the row-height stretch. This variant gives the visual most of the
+   row width (2fr vs 1fr text), releases the stretch (align-items:
+   center), and lets the frame render at natural aspect — the strip
+   ends up readable at its full horizontal extent while the text sits
+   as a narrower vertically-centered side column. */
+.audit-split.audit-split--wide-visual {
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  align-items: center;
+}
+.audit-split.audit-split--wide-visual .audit-split__visual .zoomable-frame {
+  max-height: none !important;
+  height: auto;
+}
+
+/* Progression block — full-width visual on top, label + description
+   below. Used for very wide iteration-progression strips where a
+   side-by-side layout would either crush the visual or the text.
+   Groups the pair visually so the label reads as belonging to the
+   image above rather than a standalone paragraph. */
+.progression-block {
+  margin: 24px 0 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.progression-block .zoomable-frame {
+  max-height: none !important;
+}
+.progression-block__label {
+  margin: 4px 0 0;
+  font-family: var(--f-mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent-on-cream);
+}
+.progression-block__label strong {
+  font-weight: 700;
+}
+.progression-block > p:last-child {
+  margin-top: 0;
+}
 @media (max-width: 820px) {
   .audit-split {
     grid-template-columns: 1fr;
     gap: 20px;
+    align-items: start;
+  }
+  /* On the single-column mobile stack, release the height override so
+     the image doesn't try to fill an infinite row. */
+  .audit-split__visual .zoomable-frame {
+    height: auto;
   }
 }
 
@@ -4470,15 +4557,28 @@ em.it { font-style: italic; }
   margin: 0;
   flex: 0 1 60%;
 }
-/* When a ZoomableImage lives inside a carousel-card visual, keep the
-   frame within the card's height budget (~32vh, matching the previous
-   .image-slot cap). Also drop the extra bottom gap so the frame's
-   caption sits close to the card body. */
+/* When a ZoomableImage lives inside a carousel-card visual, cap the
+   frame height so the whole card still fits inside a laptop viewport,
+   but keep the cap generous enough that portrait-aspect images (most
+   of the research boards land ~0.8 aspect) don't collapse to a thin
+   column with lots of empty space to the right of the frame. Raised
+   from 32vh → 52vh so portrait boards render around ~410px wide
+   instead of ~250px, and landscape boards fill the visual column
+   edge-to-edge. Also drop the extra bottom gap so the caption sits
+   close to the card body. */
 .rq-block__visual .zoomable-wrap {
   gap: 0;
 }
 .rq-block__visual .zoomable-frame {
-  max-height: 32vh;
+  max-height: 52vh;
+}
+/* CyclingImage — thin wrapper around a ZoomableImage that swaps its
+   src on an interval. The wrapper adds hover / focus pause detection;
+   no additional visual chrome (no tracker dots, no per-slide labels),
+   so the reader sees exactly the same affordances as a standalone
+   ZoomableImage. */
+.rq-block__visual .cycling-image {
+  width: 100%;
 }
 /* Image inside any .image-slot container — fills the container while
    preserving its own aspect ratio (letterboxes onto the paper bg when
