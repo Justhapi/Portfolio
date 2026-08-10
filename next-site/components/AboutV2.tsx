@@ -1,5 +1,6 @@
 "use client";
 import { useRef, useState, useCallback } from "react";
+import HoverBag from "@/components/HoverBag";
 
 type View = "stack" | "mentor" | "illos" | "food" | "sketch";
 
@@ -222,30 +223,36 @@ export default function AboutV2() {
         </div>
 
         <div className="about-prose reveal">
-          {/* Stage 1 — heading arrives first */}
+          {/* Stage 1 — heading arrives first, full-width above the split */}
           <h3 className="lead">
             A designer who avoids being "the <em className="de">architect</em> in a <em className="de">room of engineers</em>"
           </h3>
 
-          {/* Stage 2 — body follows 300 ms after the heading starts */}
-          <div className="about-body">
-            <p>
-              Once I realized I can keep{" "} designing
-              {" "}<em className="it">while</em> solving real-world problems for
-              people as a UX designer, I decided to jump into the field.
-            </p>
-            <p>
-              To ensure my designing method and experiences are applicable to real world
-               solutions in interdisciplinary groups, I am also pursuing a
-               Computer Science minor and contributing to Purdue Stack as one of the UI Designers.
-            </p>
-            <p>
-              I&rsquo;m also a mentor at{" "}
-              <HoverWord view="mentor" href="https://linktr.ee/sasepurdue">Purdue SASE</HoverWord>
-              , and I plan my{" "}
-              <HoverWord view="food" href="https://beliapp.co/app/lyux">next trip</HoverWord>
-              {" "}around a list of local food spots.
-            </p>
+          {/* Below the heading: bag on the LEFT, body paragraphs on the RIGHT.
+              Both live inside .about-prose so the existing reveal / stagger
+              animations keep working — the body <p> entrance driven by
+              .about-prose.in still fires. */}
+          <div className="about-body-split">
+            <HoverBag />
+            <div className="about-body">
+              <p>
+                Once I realized I can keep{" "} designing
+                {" "}<em className="it">while</em> solving real-world problems for
+                people as a UX designer, I decided to jump into the field.
+              </p>
+              <p>
+                To ensure my designing method and experiences are applicable to real world
+                 solutions in interdisciplinary groups, I am also pursuing a
+                 Computer Science minor and contributing to Purdue Stack as one of the UI Designers.
+              </p>
+              <p>
+                I&rsquo;m also a mentor at{" "}
+                <HoverWord view="mentor" href="https://linktr.ee/sasepurdue">Purdue SASE</HoverWord>
+                , and I plan my{" "}
+                <HoverWord view="food" href="https://beliapp.co/app/lyux">next trip</HoverWord>
+                {" "}around a list of local food spots.
+              </p>
+            </div>
           </div>
         </div>
       </div>

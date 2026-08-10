@@ -2884,6 +2884,307 @@ em.it { font-style: italic; }
   text-align: center;
 }
 
+/* About layout — heading centered at the top, then bag + body in a
+   two-column split below. The heading (.lead) stays centered and
+   spans the full width so it visually anchors the section; the split
+   below (.about-body-split) places the HoverBag on the LEFT and the
+   body paragraphs on the RIGHT. Both the heading and the split live
+   inside .about-prose so the existing reveal / stagger animations
+   still drive both entrances. Widens .about-prose from 680px to
+   1080px to accommodate the split. */
+.about-prose:has(.about-body-split) {
+  max-width: 1080px;
+  padding-inline: 24px;
+}
+.about-body-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  gap: 56px;
+  align-items: center;
+  margin-top: 40px;
+  text-align: left;
+}
+/* Lower the inline About body text below the HoverBag's pill so the
+   pill (which lives inside .hover-bag on the LEFT side of the grid)
+   renders above the paragraph text on the RIGHT when it overlaps.
+   Both need position:relative for z-index to apply. */
+.about-body-split .about-body {
+  position: relative;
+  z-index: 1;
+}
+.about-body-split .hover-bag {
+  position: relative;
+  z-index: 2;
+}
+@media (max-width: 820px) {
+  .about-body-split {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    text-align: center;
+  }
+}
+
+/* ── HoverBag ────────────────────────────────────────────────────
+   Layered bag illustration (10 stacked PNGs) + invisible hit zones
+   for interactive items + a fixed-position pill that follows the
+   cursor. Same interaction model as HoverWord in the About body:
+   hover triggers an image pill anchored to the pointer.
+   Entrance: whole stack slides up + fades in on scroll-into-view
+   (piggybacks .reveal / .in from RevealOnScroll). Each layer has a
+   small inline transition-delay stagger so contents visually
+   "settle" into the bag after the bag itself has landed. */
+.hover-bag {
+  position: relative;
+  width: 100%;
+  max-width: 460px;
+  margin-inline: auto;
+  /* Pre-entrance state: off to the left, invisible. The keyframe
+     animation below drives the entrance once .in is added. */
+  opacity: 0;
+  transform: translateX(-80px);
+}
+.hover-bag.in {
+  animation: bagSlideBounceIn 1100ms cubic-bezier(0.4, 0.05, 0.5, 1) forwards;
+  /* Pivot at the bottom-right corner so the tilt reads as the bag's
+     LEFT edge sagging from momentum while the right side stays
+     planted — like something that just landed with weight on one
+     side. Also used as the origin for the squash. */
+  transform-origin: 100% 100%;
+}
+/* Cartoonish slide-in-from-left with the tilt STARTING during the
+   slide (not after the halt). Sequence:
+     0-25%   → sliding in, tilt begins mid-slide (momentum forward)
+     25-40%  → arrives at max rightward overshoot + max tilt
+     40-58%  → tilts back through neutral (past 0, slight counter-tilt)
+     58-75%  → vertical squash + horizontal spread (landing weight)
+     75-100% → rebound scale + settle to neutral */
+@keyframes bagSlideBounceIn {
+  0%   { transform: translateX(-90px) rotate(0deg)   scale(1, 1);         opacity: 0; }
+  40%  { transform: translateX( 18px) rotate(8deg)   scale(1, 1);         opacity: 1; }
+  58%  { transform: translateX(  6px) rotate(0deg)   scale(1, 1);         opacity: 1; }
+  75%  { transform: translateX(  0px) rotate(0deg)   scale(1.03, 0.96);   opacity: 1; }
+  88%  { transform: translateX(  0px) rotate(0deg)   scale(0.99, 1.02);   opacity: 1; }
+  100% { transform: translateX(  0px) rotate(0deg)   scale(1, 1);         opacity: 1; }
+}
+/* During the parent's rebound phase (~68-100%), the laptop, ipad,
+   and phone layers get their own small upward bounce — as if the
+   bag's squash momentarily jolted them out of their pockets before
+   they settled back. Times to end exactly with the parent animation
+   so hover-transform behavior resumes cleanly at the finish. */
+@keyframes bagItemBounceUp {
+  0%   { transform: translateY(0); }
+  55%  { transform: translateY(-8px); }
+  100% { transform: translateY(0); }
+}
+.hover-bag.in .hover-bag__layer[data-layer="eight_ipad"],
+.hover-bag.in .hover-bag__layer[data-layer="nine_laptop"],
+.hover-bag.in .hover-bag__layer[data-layer="five_phone"] {
+  animation: bagItemBounceUp 350ms cubic-bezier(0.34, 1.56, 0.64, 1) 750ms;
+}
+/* Earbud sway during rebound — the earbuds are dangling on their
+   strap, so the bag's squash momentum swings them right first
+   (like being flung), then left through neutral, then rests. Runs
+   during the same 68-100% rebound window as the item bounce above.
+   Both earbud layers use the same keyframe with slight delay
+   differentiation so they don't sway in lockstep — the back earbud
+   lags the front by ~60ms for a natural asymmetric feel. */
+@keyframes bagEarbudSway {
+  0%   { transform: rotate(0deg); }
+  30%  { transform: rotate(6deg); }
+  62%  { transform: rotate(-4deg); }
+  100% { transform: rotate(0deg); }
+}
+.hover-bag.in .hover-bag__layer[data-layer="one_earbud_1"] {
+  animation: bagEarbudSway 500ms cubic-bezier(0.34, 1.56, 0.64, 1) 750ms;
+}
+.hover-bag.in .hover-bag__layer[data-layer="two_earbud_2"] {
+  animation: bagEarbudSway 500ms cubic-bezier(0.34, 1.56, 0.64, 1) 810ms;
+}
+/* Ticket bob — the ticket is wedged into the middle pocket, so on
+   the bag's landing impact it briefly pushes DOWN into the pocket
+   before settling back up to rest. */
+@keyframes bagTicketBob {
+  0%   { transform: translateY(0); }
+  50%  { transform: translateY(6px); }
+  100% { transform: translateY(0); }
+}
+.hover-bag.in .hover-bag__layer[data-layer="six_ticket"] {
+  animation: bagTicketBob 400ms cubic-bezier(0.34, 1.56, 0.64, 1) 750ms;
+}
+/* Usagi shift — on the landing rebound the whole bunny slides
+   completely to the right first, then back past center to the
+   left, before resting. Uses translateX (not rotate) so it reads
+   as a linear side-to-side shift, not a pendulum swing. */
+@keyframes bagUsagiSway {
+  0%   { transform: translateX(0); }
+  30%  { transform: translateX(4px); }
+  62%  { transform: translateX(-2px); }
+  100% { transform: translateX(0); }
+}
+.hover-bag.in .hover-bag__layer[data-layer="three_usagi"] {
+  /* Delay set to start just before the parent's tilt-back begins
+     (parent tilts back from 8deg → 0deg between 40% and 58%, which
+     is 440ms → 638ms into the 1100ms animation). Starting at 420ms
+     gives the usagi shift ~20ms of head-start on the tilt-back so
+     it reads as inertia leading the recovery. Duration extended to
+     700ms so the shift is slower / more subtle. */
+  animation: bagUsagiSway 700ms cubic-bezier(0.34, 1.56, 0.64, 1) 420ms;
+}
+.hover-bag__stack {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3968 / 2960;
+}
+.hover-bag__layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+  /* Only the hover-transform applies now (no entrance offset per
+     layer). The whole stack enters as a rigid unit via the container
+     animation above; layers only animate on hover. */
+  --hover-transform: translateY(0) rotate(0);
+  transform: var(--hover-transform);
+  transition: transform 240ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.hover-bag__layer.is-lifted {
+  --hover-transform: translateY(-8px);
+}
+.hover-bag__layer.is-tilted-left {
+  --hover-transform: rotate(-8deg);
+}
+.hover-bag__layer.is-tilted-right {
+  --hover-transform: rotate(8deg);
+}
+/* Per-item transform-origin — each layer pivots around the specific
+   corner of its visible item, so tilts feel anchored to the item's
+   natural attachment point rather than swinging around the full-image
+   center. Percentages are in the layer image's own coordinate space
+   (which spans the full stack container).
+     earbuds → top-right of item        (22%, 55%)
+     ticket  → top-left of item         (44%, 41%)
+     phone   → bottom-left of item      (70%, 48%)
+     usagi   → bottom-left of item      (53%, 90%) */
+.hover-bag__layer[data-layer="one_earbud_1"],
+.hover-bag__layer[data-layer="two_earbud_2"] {
+  transform-origin: 22% 55%;
+}
+.hover-bag__layer[data-layer="six_ticket"] {
+  transform-origin: 44% 41%;
+}
+.hover-bag__layer[data-layer="five_phone"] {
+  transform-origin: 70% 48%;
+}
+.hover-bag__layer[data-layer="three_usagi"] {
+  transform-origin: 72% 92%;
+}
+
+/* Per-earbud differentiation — the two earbud layers move at
+   slightly different angles and offset timings so they don't swing
+   in lockstep. Real earbuds hanging on a strap wouldn't move as one
+   rigid piece; the front earbud swings more, the back earbud lags
+   with a smaller angle. */
+.hover-bag__layer[data-layer="one_earbud_1"].is-tilted-left {
+  --hover-transform: rotate(-12deg);
+}
+.hover-bag__layer[data-layer="two_earbud_2"].is-tilted-left {
+  --hover-transform: rotate(-5deg);
+  transition-delay: 40ms;
+}
+/* Phone-specific override: smaller lift than laptop/iPad so it reads
+   as a subtle peek rather than a full jump. */
+.hover-bag__layer[data-layer="five_phone"].is-lifted {
+  --hover-transform: translateY(-4px);
+}
+.hover-bag__zone {
+  position: absolute;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  z-index: 20;
+}
+.hover-bag__zone:focus-visible {
+  outline: 2px dashed var(--accent-on-cream);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+/* Debug outlines — turn on by passing `debug` prop to <HoverBag />.
+   Renders each zone as a dashed rectangle with the item label in the
+   top-left corner so zone positions can be visually verified without
+   opening DevTools. Toggle off before shipping. */
+.hover-bag.is-debug .hover-bag__zone {
+  outline: 2px dashed rgba(255, 60, 60, 0.7);
+  outline-offset: -2px;
+  background: rgba(255, 60, 60, 0.08);
+  border-radius: 4px;
+}
+.hover-bag.is-debug .hover-bag__zone::after {
+  content: attr(data-debug-label);
+  position: absolute;
+  top: 2px;
+  left: 4px;
+  font-family: var(--f-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(200, 0, 0, 0.9);
+  background: rgba(255, 255, 255, 0.85);
+  padding: 1px 4px;
+  border-radius: 2px;
+  pointer-events: none;
+}
+/* Fixed-position pill following the pointer. Direct DOM writes drive
+   left/top on mousemove, so no re-render churn. Uses opacity + scale
+   spring-in for the appear/disappear. */
+.hover-bag__pill {
+  position: fixed;
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(0.94);
+  transition:
+    opacity   180ms ease,
+    transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 100;
+}
+.hover-bag__pill.is-on {
+  opacity: 1;
+  transform: scale(1);
+}
+.hover-bag__pill-inner {
+  width: 196px;
+  height: 136px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #F6EEE6;
+  box-shadow:
+    0 4px 10px rgba(0, 0, 0, 0.15),
+    0 12px 28px -8px rgba(0, 0, 0, 0.35);
+}
+.hover-bag__pill-inner .image-slot {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--f-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgb(var(--fg-rgb) / 0.42);
+  text-align: center;
+  padding: 8px;
+  background-image:
+    repeating-linear-gradient(45deg, transparent 0 14px, rgba(0, 0, 0, 0.035) 14px 15px);
+}
+
 /* Entrance: two-stage stagger — heading first, body text follows.
    .about-prose itself is the IntersectionObserver trigger: it snaps
    visible in 0 ms so its children can animate independently.
