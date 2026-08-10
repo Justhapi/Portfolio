@@ -43,7 +43,7 @@ export default function ResearchHubCaseStudy() {
       <CaseSectionNav sections={SECTIONS} />
       <CaseCover
         title="ResearchHub — Connecting Students with Faculty Research"
-        meta="Spring 2026 · 9 weeks · 5 engineers + me · Design Engineer (sole designer)"
+        meta="Spring 2026 · 6 weeks · 5 engineers + me · Design Engineer (sole designer)"
         subtitle="A redesigned student–faculty research platform, planned to ship fall 2026"
         imageLabel="ResearchHub · cover image"
       />
@@ -63,7 +63,7 @@ export default function ResearchHubCaseStudy() {
           </aside>
 
           <p>
-            The semester-long project resulted in a{" "}
+            The 6-week project resulted in a{" "}
             <mark className="hl">redesign and expansion of ResearchHub</mark>, a Purdue-specific research
             collaboration platform, to address its lack of a design system and to improve usability by Purdue students and staff.
             <br></br><br></br>
@@ -523,7 +523,7 @@ export default function ResearchHubCaseStudy() {
 
           <h3>Adapting to Uneven User-Group Access</h3>
           <p>
-            Due to needing conceptualization finalized early in the semester, I was{" "}
+            Due to needing conceptualization finalized in the project&rsquo;s first weeks, I was{" "}
             <mark className="hl">unable to conduct user research on professors as in-depth as I did with students</mark>,
             since the two user groups offered very different levels of access. I had only one
             professor (our client) available and an entire campus of students readily available.

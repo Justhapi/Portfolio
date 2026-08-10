@@ -2,10 +2,6 @@ import CaseCover from "@/components/CaseCover";
 import CaseSectionNav from "@/components/CaseSectionNav";
 import ZoomableImage from "@/components/ZoomableImage";
 
-/* Case-study images are co-located with the route — imported as ES
-   modules so Webpack bundles them into /_next/static/media/ at build
-   time with hashed filenames. basePath (/Portfolio in prod) is
-   applied automatically by Next.js, so no manual prefixing needed. */
 import platformAudit from "./images/Platform_Audit_Visual.webp";
 import agentComponents from "./images/Ai_Agent_Components_Visual.webp";
 import directCompetitor from "./images/Direct_Competitor_Visual.webp";
@@ -35,7 +31,7 @@ export default function AIJourneyAgentCaseStudy() {
       <CaseSectionNav sections={SECTIONS} />
       <CaseCover
         title="Designing an AI Maintenance Agent for Customer Journey Maps"
-        meta="Spring 2026 · 14 weeks · UX Designer & Researcher · Concept shipped to beta"
+        meta="Spring 2026 · 8 weeks · UX Designer & Researcher · Concept shipped to beta"
         subtitle="An agentic AI concept for keeping customer journey maps accurate and trustworthy over time"
         imageLabel="AI maintenance agent · cover image"
       />
@@ -390,14 +386,14 @@ export default function AIJourneyAgentCaseStudy() {
           <h3>Design Decision-Making Related to Platform</h3>
           <p>
             This project was my first time{" "}
-            <mark className="hl">designing within an existing product context and design system</mark>.
+            <mark className="hl">designing within an existing product context and design system. </mark>
             The first half was exploratory and general regarding takeaways, but the second half
             focused heavily on the platform&rsquo;s own needs, making it natural to narrow
             down findings to apply to the final product later on.
             <br></br><br></br>
             <mark className="hl">Narrowing down scope was a challenge I had previously addressed early</mark> on when
             constructing the first set of guidelines for Frogslayer. I now understand that
-            <mark className="hl">specific factors, like a project&rsquo;s theme of expansion, hints at its unique
+            <mark className="hl"> specific factors, like a project&rsquo;s theme of expansion, hints at its unique
             expected window for scope narrowing.</mark>
           </p>
         </section>

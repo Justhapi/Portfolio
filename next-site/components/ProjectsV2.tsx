@@ -234,42 +234,26 @@ const PROJECTS: Project[] = [
     tag: "inline · Product Design Intern · 2026",
     blurb: (
       <>
-        Contributed to an <strong>early-stage consumer product exploration</strong> by leading <strong>multiple rounds of usability testing</strong> while also conducting competitive research, gap analysis, and concept design. Under active NDA, so detailed materials are available on request.
+        Conducted <strong>early-stage exploration for a B2B2C consumer product</strong> by auditing the industry, then verifying{" "}
+        <strong>popular patterns and opportunity gaps</strong> through prototyping and multiple rounds of usability testing.
       </>
     ),
     meta: ["NDA", "Product Design", "Usability Testing", "2026"],
     accent: ["#F5B8CB", "#9D9BF5"],
-    // Mulled Plum — a warm wine/berry cover that sits apart from the
-    // tan, teal, and slate-navy folders. Back steps a notch darker; the
-    // shadow stop holds just above black so the multiply gradient keeps
-    // depth on the open folder without crushing the bottom edge to mud.
     folder: { front: "#7C4A63", back: "#5E3349", shadow: "#39202F" },
     href: "/projects/inline",
     readTime: "4 min read",
   },
   {
-    // Sponsor name anonymized on the folder card + URL path per
-    // Section 6.a.iv review process — the sponsor is referred to by
-    // product category only ("customer journey management platform")
-    // while the case study is under written-approval review with the
-    // client. Content submitted to sponsor (Christin) for review per
-    // Section 6.a.iv of the Purdue UXD Studio IP/NDA Agreement. Kept at
-    // process/methodology level pending written approval; any
-    // sponsor-required modifications will be applied on receipt.
     tag: "Customer Journey Platform (NDA) · Concept shipped to beta 2026",
     blurb: (
       <>
-        Designed an <strong>agentic AI maintenance agent</strong> concept for an anonymous <strong>customer journey management platform</strong>. The sponsor <strong>shipped it to beta</strong> a month after handoff, with designs closely mirroring the concept our team delivered.
+        Led concept ideation for an <strong>agentic AI maintenance agent</strong> for a <strong>customer journey
+          management platform</strong>, with the sponsor taking the concept to beta a month after handoff.
       </>
     ),
     meta: ["NDA", "UI", "Interaction", "User Research", "2026", "SHIPPED TO BETA"],
     accent: ["#D59B6E", "#E8C77C"],
-    // Deep Ink — near-black with a navy cast. The back layer steps a
-    // notch LIGHTER (inverted from the usual darker-back pattern)
-    // because the front is already so dark that a darker back would
-    // vanish; lifting the back gives the open folder some depth read.
-    // Shadow stop is held a hair below the front so the multiply
-    // gradient still tilts the bottom edge without driving it to mud.
     folder: { front: "#C68D5F", back: "#9A6D45", shadow: "#5C3924" },
     href: "/projects/ai-journey-agent",
     readTime: "3 min read",
@@ -278,7 +262,8 @@ const PROJECTS: Project[] = [
     tag: "Purdue Stack · Ships fall 2026",
     blurb: (
       <>
-        Redesigned Purdue&rsquo;s <strong>student–faculty research collaboration platform</strong>, owning the design decisions and also contributing <strong>front-end React</strong> alongside a 5-engineer team. Planned to ship fall 2026.
+        Redesigned Purdue&rsquo;s <strong>student–faculty research collaboration platform</strong>, owning
+        design decisions and also contributing <strong>front-end React</strong> alongside a 5-engineer team.
       </>
     ),
     meta: ["Design Systems", "UI", "Design Engineering", "User Research", "2026", "SHIPS FALL 2026"],
@@ -293,19 +278,12 @@ const PROJECTS: Project[] = [
     tag: "Frogslayer · Shipped 2025",
     blurb: (
       <>
-        Shipped a set of <strong>evidence-based design guidelines</strong> for entertainment and hospitality kiosks, validated across <strong>three rounds of usability testing</strong>.
+        Shipped a set of <strong>evidence-based design guidelines</strong> for entertainment and hospitality 
+        kiosks, validated across <strong>three rounds of usability testing</strong>.
       </>
     ),
     meta: ["UI", "Interaction Design", "Usability Testing", "2025"],
     accent: ["#84C0FA", "#53EC9D"],
-    // Deep Ink — lifted from #0F1217 to a slate-navy base so the
-    // multiply gradient actually reads: at the old near-black front,
-    // front × shadow ≈ black-on-black and the cover looked flat. The
-    // shadow stop is raised in step (multiply result at the bottom
-    // edge ≈ #090C12, roughly the old front color) so the gradient
-    // spans a visible range without crushing to mud. Back returns to
-    // the standard darker-than-front pattern now that the front is
-    // light enough to hold the contrast.
     folder: { front: "#262E3A", back: "#171C24", shadow: "#3F444E" },
     href: "/projects/frogslayer",
     readTime: "6 min read",
@@ -321,19 +299,8 @@ type FolderPhase = "rest" | "hovered" | "leaving";
 export default function ProjectsV2() {
   const [hoverPill, setHoverPill] = useState<string | null>(null);
   const [pos, setPos] = useState({ x: 0, y: 0 });
-
-  // Per-folder morph phase, keyed by project.tag. Drives the
-  // .folder-art--hovered / .folder-art--leaving CSS hooks. Tracked
-  // per-folder so two cards can morph independently when the cursor
-  // moves directly from one card onto another.
   const [phases, setPhases] = useState<Record<string, FolderPhase>>({});
-  // Pending "leaving → rest" timers, keyed by folder id, so a fast
-  // re-enter mid-leave cancels the pending reset.
   const leavingTimers = useRef<Record<string, number>>({});
-  // The single folder currently holding the open/hovered pose. Only one
-  // folder may be open at a time — entering a new folder force-closes
-  // whatever this points at, covering cases where onMouseLeave never
-  // fired (e.g. a scroll sliding a new folder under a still cursor).
   const hoveredId = useRef<string | null>(null);
 
   // ── 3-D tilt: direct DOM writes so mouse-move never triggers a re-render ──

@@ -42,7 +42,7 @@ export default function FrogslayerCaseStudy() {
       <CaseSectionNav sections={SECTIONS} />
       <CaseCover
         title="Kiosk Interface Design Guidelines"
-        meta="Fall 2025 · 16 weeks · 6-person team · UX Designer & Researcher, Point of Communication"
+        meta="Fall 2025 · 8 weeks · 6-person team · UX Designer & Researcher, Point of Communication"
         subtitle="Adopted as Frogslayer's guideline reference + collaboration extended"
         imageLabel="Frogslayer kiosk · cover image"
       />
