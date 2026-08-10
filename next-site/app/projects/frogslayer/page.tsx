@@ -56,7 +56,7 @@ export default function FrogslayerCaseStudy() {
               Studio to expand the guideline set past our initial handoff.
             </p>
             <p className="outcome-callout__meta">
-              Fall 2025 · Purdue UXD Experience Studio · handoff → continued partnership
+              Fall 2025 · Purdue UXD Experience Studio → Handoff · Continued partnership
             </p>
           </aside>
 

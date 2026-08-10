@@ -5,6 +5,7 @@ export const metadata = {
   title: "Pop by inline — Kathleen Li",
   robots: { index: false, follow: false },
 };
+
 const SECTIONS = [
   { id: "outcome", label: "Outcome" },
   { id: "overview", label: "Overview" },
@@ -21,16 +22,14 @@ export default function PopByInlineCaseStudy() {
       <CaseSectionNav sections={SECTIONS} />
       <CaseCover
         title="Pop by inline — Designing Event Coordination Under Uncertainty"
-        meta="Summer 2026 · 3-month remote internship · Product Design Intern"
-        subtitle="A lightweight consumer tool for planning everyday gatherings, marking inline's step from B2B into B2B2C"
+        meta="Summer 2026 · 10 weeks · Product Design Intern"
+        subtitle="A lightweight B2B2C consumer tool for planning everyday gatherings"
         imageLabel="Pop by inline · cover image"
       />
 
       <main id="main" className="case-body">
         <p className="case-disclaimer">
-          Draft copy for private review. Under the terms of the sponsor&rsquo;s confidentiality
-          agreement, this page is not publicly linked and should not be shared until written
-          consent is on file. Confidential and proprietary details remain covered by the
+          Under the terms of the sponsor&rsquo;s non-disclosure agreement, confidential and proprietary details remain covered by the
           agreement.
         </p>
 
@@ -40,30 +39,34 @@ export default function PopByInlineCaseStudy() {
 
           <aside className="outcome-callout" aria-label="Project outcome">
             <p className="outcome-callout__stat">
-              <strong>Delivered against inline&rsquo;s stated criterion of &ldquo;clarity of thinking over production output&rdquo;</strong>{" "}
-              across four rounds of usability testing, with each round&rsquo;s findings closed as
-              shipped iterations before the following round began. The priority distribution
-              shifted red-heavy to mostly-blue with zero reds by the final round.
+              <strong>Handed off a set of must-have features for Pop, </strong>
+              alongside research findings for justification, in a written product
+              direction report for future development.
             </p>
             <p className="outcome-callout__meta">
-              Summer 2026 · Pop by inline · 3-month remote internship · 4 test rounds
+              Summer 2026 · 10 weeks inline internship → Handoff
             </p>
           </aside>
 
           <p>
-            I delivered a <mark className="hl">competitive audit, gap analysis, and an end-to-end interactive prototype</mark>{" "}
-            of the product&rsquo;s first scenario covering both host and guest flows. As I ran
-            each of the four external rounds of usability testing (plus one internal-employee
-            validation round) as lead facilitator, I closed the findings from each round as
-            shipped iterations before the following round began.
+            The handoff bundled a{" "}
+            <mark className="hl">competitive audit, gap analysis, and an end-to-end interactive prototype</mark>{" "}
+            of the product&rsquo;s first scenario covering both host and guest flows, together with the
+            round-by-round usability findings that shaped each iteration. As lead facilitator across
+            four external rounds of testing (plus one internal-employee validation round), I closed
+            the highest-priority findings from each round as shipped iterations before the following
+            round began, so the final prototype the team inherited already carried the evidence
+            behind every decision.
           </p>
           <p>
             After the interim stakeholder presentation, I contributed to a{" "}
             <mark className="hl">cohort-wide consolidation step</mark> that aggregated findings
             across the interns&rsquo; testers, so structural decisions could be made ahead of
-            the CEO-attended final review. From that consolidation, a set of core features was
-            solidified for the final review and the written{" "}
-            <mark className="hl">Product Direction Summary</mark>.
+            the CEO-attended final review. From that consolidation, the{" "}
+            <mark className="hl">set of most-needed features</mark> was solidified for the final
+            review and written up in the{" "}
+            <mark className="hl">Product Direction Summary</mark>, giving the team a documented
+            starting point for Pop&rsquo;s next phase.
           </p>
         </section>
 

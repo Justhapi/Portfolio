@@ -51,7 +51,7 @@ export default function AIJourneyAgentCaseStudy() {
               delivered.
             </p>
             <p className="outcome-callout__meta">
-              Spring 2026 · JourneyTrack platform · concept → beta
+              Spring 2026 · JourneyTrack platform → Concept · Eventual Beta
             </p>
           </aside>
 

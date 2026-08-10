@@ -102,8 +102,8 @@ const EFFECT_CLASS: Record<HoverEffect, string> = {
   "tilt-right": "is-tilted-right",
 };
 
-const PILL_OFFSET_X = -25;
-const PILL_OFFSET_Y = -360;
+const PILL_OFFSET_X = -40;
+const PILL_OFFSET_Y = -265;
 
 export default function HoverBag({ debug = false }: { debug?: boolean }) {
   const [active, setActive] = useState<string | null>(null);
