@@ -65,10 +65,10 @@ export default function InlineCaseStudy() {
 
           <p>
             Interned as a <mark className="hl">Product Design Intern</mark> at inline, a
-            restaurant-technology company based in the Asia-Pacific region. Contributed to an
-            early-stage product exploration over a{" "}
-            <mark className="hl">3-month remote internship</mark> across a roughly 12-hour
-            time-zone gap.
+            restaurant-technology company based in the Asia-Pacific region. During the{" "}
+            <mark className="hl">3-month remote internship</mark>, I contributed to an
+            early-stage product exploration while working across a roughly 12-hour time-zone gap
+            with the team based in Taiwan.
           </p>
         </section>
 
@@ -85,8 +85,8 @@ export default function InlineCaseStudy() {
           </ul>
           <p>
             The role was framed around{" "}
-            <mark className="hl">clarity of thinking over production output</mark>, focusing on
-            bringing an outside-in perspective to an early-stage product exploration.
+            <mark className="hl">clarity of thinking rather than production output</mark>, so I
+            focused on bringing an outside perspective to the early-stage product exploration.
           </p>
         </section>
 

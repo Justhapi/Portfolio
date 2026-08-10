@@ -234,7 +234,7 @@ const PROJECTS: Project[] = [
     tag: "inline · Product Design Intern · 2026",
     blurb: (
       <>
-        Contributed to an <strong>early-stage consumer product exploration</strong> — led <strong>multiple rounds of usability testing</strong> alongside competitive research, gap analysis, and concept design. Under active NDA; detailed materials available on request.
+        Contributed to an <strong>early-stage consumer product exploration</strong> by leading <strong>multiple rounds of usability testing</strong> while also conducting competitive research, gap analysis, and concept design. Under active NDA, so detailed materials are available on request.
       </>
     ),
     meta: ["NDA", "Product Design", "Usability Testing", "2026"],
@@ -259,7 +259,7 @@ const PROJECTS: Project[] = [
     tag: "Customer Journey Platform (NDA) · Concept shipped to beta 2026",
     blurb: (
       <>
-        Designed an <strong>agentic AI maintenance agent</strong> concept for an anonymous <strong>customer journey management platform</strong> — <strong>shipped to beta</strong> a month after handoff with designs closely mirroring the concept we delivered
+        Designed an <strong>agentic AI maintenance agent</strong> concept for an anonymous <strong>customer journey management platform</strong>. The sponsor <strong>shipped it to beta</strong> a month after handoff, with designs closely mirroring the concept our team delivered.
       </>
     ),
     meta: ["NDA", "UI", "Interaction", "User Research", "2026", "SHIPPED TO BETA"],
@@ -278,7 +278,7 @@ const PROJECTS: Project[] = [
     tag: "Purdue Stack · Ships fall 2026",
     blurb: (
       <>
-        Redesigned Purdue&rsquo;s <strong>student–faculty research collaboration platform</strong> — owned design and contributed <strong>front-end React</strong> alongside a 5-engineer team, planned to ship fall 2026
+        Redesigned Purdue&rsquo;s <strong>student–faculty research collaboration platform</strong>, owning the design decisions and also contributing <strong>front-end React</strong> alongside a 5-engineer team. Planned to ship fall 2026.
       </>
     ),
     meta: ["Design Systems", "UI", "Design Engineering", "User Research", "2026", "SHIPS FALL 2026"],
@@ -293,7 +293,7 @@ const PROJECTS: Project[] = [
     tag: "Frogslayer · Shipped 2025",
     blurb: (
       <>
-        Shipped <strong>evidence-based design guidelines</strong> for entertainment and hospitality kiosks — validated across <strong>three rounds of usability testing</strong>
+        Shipped a set of <strong>evidence-based design guidelines</strong> for entertainment and hospitality kiosks, validated across <strong>three rounds of usability testing</strong>.
       </>
     ),
     meta: ["UI", "Interaction Design", "Usability Testing", "2025"],

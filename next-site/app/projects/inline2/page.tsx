@@ -63,18 +63,17 @@ export default function PopByInlineCaseStudy() {
           </aside>
 
           <p>
-            I delivered a{" "}
-            <mark className="hl">competitive audit, gap analysis, and an end-to-end interactive prototype</mark>{" "}
-            of the product&rsquo;s first scenario covering both host and guest flows. I then ran
-            four rounds of usability testing as lead facilitator, closing each round&rsquo;s
-            findings as shipped iterations before the following round began.
+            I delivered a <mark className="hl">competitive audit, gap analysis, and an end-to-end interactive prototype</mark>{" "}
+            of the product&rsquo;s first scenario covering both host and guest flows. As I ran
+            each of the four rounds of usability testing as lead facilitator, I closed the
+            findings from each round as shipped iterations before the following round began.
           </p>
           <p>
-            Following the interim stakeholder presentation, I contributed to a{" "}
+            After the interim stakeholder presentation, I contributed to a{" "}
             <mark className="hl">cohort-wide consolidation step</mark> that aggregated findings
-            across all interns&rsquo; testers, informing structural decisions ahead of the
-            CEO-attended final review. Four candidate features were ultimately solidified for the
-            final review and the written Product Direction Summary:{" "}
+            across all the interns&rsquo; testers, so structural decisions could be made ahead of
+            the CEO-attended final review. From that consolidation, four candidate features were
+            ultimately solidified for the final review and the written Product Direction Summary:{" "}
             <mark className="hl">Questionnaire, Interest + Finalized RSVP, Notifications, and Archive</mark>.
           </p>
         </section>
@@ -93,19 +92,19 @@ export default function PopByInlineCaseStudy() {
           <h3>The Problem</h3>
           <p>
             Every gathering involves three variables:{" "}
-            <mark className="hl">headcount, time, and location</mark>. In real life, these are
-            rarely all confirmed at once. The design challenge was to make coordination feel
-            smooth while those variables were still uncertain, with lower friction than a group
-            chat, for a Gen Z audience.
+            <mark className="hl">headcount, time, and location</mark>, however in real life these
+            are rarely all confirmed at once. As a result, the design challenge was to make
+            coordination feel smooth while those variables were still uncertain, with lower
+            friction than a group chat, for a Gen Z audience.
           </p>
 
           <h3>My Role</h3>
           <p>
             I worked as a Product Design Intern,{" "}
             <mark className="hl">remote across a roughly 12-hour time-zone gap</mark> with a team
-            based in Taiwan. The role was framed around clarity of thinking over production
-            output, focusing on bringing an outside-in perspective through competitive research,
-            gap analysis, concept design, and usability testing.
+            based in Taiwan. The role was framed around clarity of thinking rather than
+            production output, so I focused on bringing an outside perspective through
+            competitive research, gap analysis, concept design, and usability testing.
           </p>
         </section>
 
@@ -117,16 +116,16 @@ export default function PopByInlineCaseStudy() {
             I built a{" "}
             <mark className="hl">single competitive-analysis framework</mark> covering
             positioning, key features, strengths and weaknesses, business model, and end-to-end
-            host and guest walkthroughs. This framework was then applied consistently across
-            multiple event-coordination products, with the audits themselves conducted hands-on
-            rather than by simply skimming feature lists.
+            host and guest walkthroughs. I then applied this framework consistently across
+            multiple event-coordination products, conducting each audit hands-on instead of
+            simply skimming their feature lists.
           </p>
           <p>
-            A significant realization from this pass was that{" "}
-            <mark className="hl">competitors were not all the same kind of product</mark> as Pop.
-            That category distinction then became the backbone of the following gap analysis, so
-            that a weakness in a different product category would not be automatically counted as
-            a gap for Pop.
+            Something I realized during this pass was that{" "}
+            <mark className="hl">the competitors were not all the same kind of product</mark> as
+            Pop. Because of that, the category distinction became the backbone of the following
+            gap analysis, so a weakness from a different product category would not automatically
+            be counted as a gap for Pop.
           </p>
           <figure>
             <div className="image-slot">competitive-analysis framework · reusable template</div>
@@ -141,8 +140,8 @@ export default function PopByInlineCaseStudy() {
           <p>
             Cross-referencing each competitor&rsquo;s weaknesses against the team&rsquo;s
             proposed feature set required{" "}
-            <mark className="hl">judgment rather than a mechanical table</mark>. After filtering
-            for the category distinction identified in the audit, the remaining gaps became the
+            <mark className="hl">judgment rather than a mechanical table</mark>. After I filtered
+            through the audit&rsquo;s category distinction, the remaining gaps became the
             grounding evidence for the design proposals that followed.
           </p>
           <figure>
@@ -161,16 +160,16 @@ export default function PopByInlineCaseStudy() {
           <h3>Scenario 1: An Evolving Event</h3>
           <p>
             The design brief posed two questions: <em>how does the flow handle TBD time and
-            venue?</em> and <em>how does the guest experience an evolving event?</em> I worked
-            through three artifact layers to answer them, starting with a{" "}
+            venue?</em> and <em>how does the guest experience an evolving event?</em> To answer
+            them, I worked through three artifact layers, starting with a{" "}
             <mark className="hl">FigJam user flow with phase swimlanes</mark>, then moving to
-            AI-assisted wireframes, and finally to an interactive single-phone prototype that
-            conveyed the event&rsquo;s evolving state over time.
+            AI-assisted wireframes, and finally arriving at an interactive single-phone prototype
+            that conveyed the event&rsquo;s evolving state over time.
           </p>
           <p>
-            Each major design move traced back to a specific observation from the competitive
-            audit and gap analysis, so that every feature decision could be defended against a
-            documented finding rather than a preference.
+            As I made each major design move, I traced it back to a specific observation from
+            the competitive audit and gap analysis, so every feature decision could be defended
+            against a documented finding instead of a preference.
           </p>
           <figure>
             <div className="image-slot">FigJam phase-swimlane flow + key prototype screens</div>
@@ -182,19 +181,20 @@ export default function PopByInlineCaseStudy() {
 
           <h3>Working with AI Prototyping Tools</h3>
           <p>
-            This project marked the first heavy use of AI-assisted prototyping in my workflow,
-            and it consequently taught me that{" "}
+            This project was my first heavy use of AI-assisted prototyping, and it taught me
+            that{" "}
             <mark className="hl">AI tools generate polish but do not preserve design intent without explicit guardrails</mark>.
             Early iterations flattened product-specific mechanics into generic event-app shapes
-            until prompted with explicit &ldquo;what to leave alone&rdquo; constraints. I also
+            until I prompted with explicit &ldquo;what to leave alone&rdquo; constraints. I also
             actively caught and removed AI-fabricated framing before sharing deliverables, since
             content I did not author should not appear in work attributed to me.
           </p>
           <p>
             AI prototyping handled the heavy lifting throughout the project by generating
-            components and plausible interactions, while manual refinement handled the precision
-            work that made the interface actually consistent. As a result, I find that{" "}
-            <mark className="hl">using AI and manual refinement together, in the right order and with the right ratio for the moment, is the actual skill</mark>.
+            components and plausible interactions, while I handled the precision work manually
+            to make the interface actually consistent. As a result, I recognize that{" "}
+            <mark className="hl">using AI and manual refinement together, in the right order and with the right ratio for the moment</mark>,
+            is what makes the difference between an AI-shaped output and a designer-shaped one.
           </p>
         </section>
 
@@ -205,29 +205,29 @@ export default function PopByInlineCaseStudy() {
           <p>
             I served as{" "}
             <mark className="hl">lead facilitator across four rounds of usability testing</mark>,
-            which was my first time proctoring after months of preparing as a researcher.
-            Same-day for each round, I synthesized the findings into a structured insights
+            which was my first time proctoring after months of preparing as a researcher. On the
+            same day as each round, I synthesized the findings into a structured insights
             document organized as Insight → Reasoning → Proposed Iteration, with priority
             color-coding applied throughout.
           </p>
           <p>
             To prepare for the sessions, I built a{" "}
-            <mark className="hl">bilingual participant guide</mark> that placed one task per page
-            so participants always knew what came next, along with an interview plan that paired
-            warm-up and post-task debrief probes anchored on the brief&rsquo;s two original
-            design questions. As a result, I find that a testing protocol benefits from the same
-            iterative rigor as the designs it evaluates.
+            <mark className="hl">bilingual participant guide</mark> that placed one task per
+            page so participants always knew what came next, along with an interview plan that
+            paired warm-up and post-task debrief probes anchored on the brief&rsquo;s two
+            original design questions. From building this protocol, I recognize that a testing
+            protocol benefits from the same iterative rigor as the designs it evaluates.
           </p>
 
           <h3>Priority Distribution as Diagnostic</h3>
           <p>
             The clearest signal of iteration progress across the four rounds was the{" "}
-            <mark className="hl">priority distribution itself</mark>: Round 1 produced multiple
-            red-priority findings, Round 2 produced only one, and Rounds 3 and 4 produced zero
-            red-priority findings with mostly blue &ldquo;additional feature idea&rdquo; rows.
-            From this shift, I find that a round whose synthesis moves from reds to yellows to
-            blues is the closest a usability process gets to objective evidence that an iteration
-            worked.
+            <mark className="hl">priority distribution itself</mark>. Round 1 produced multiple
+            red-priority findings, however Round 2 produced only one, and Rounds 3 and 4
+            produced zero red-priority findings with mostly blue &ldquo;additional feature
+            idea&rdquo; rows. From this shift, I recognize that a round whose synthesis moves
+            from reds to yellows to blues is the closest a usability process gets to objective
+            evidence that an iteration worked.
           </p>
           <figure>
             <div className="image-slot">insights document · four-round priority-distribution comparison</div>
@@ -244,13 +244,13 @@ export default function PopByInlineCaseStudy() {
           <h3>Closing Loops Between Rounds</h3>
           <p>
             Within days of each round&rsquo;s synthesis, I built a new prototype iteration that
-            closed the most-leveraged findings from the round before the following round began.
-            As a result, every round of testing evaluated a prototype that had already responded
-            to the previous round&rsquo;s recorded evidence, rather than the same prototype
-            re-tested with different participants.
+            addressed the highest-priority findings from that round before the following round
+            began. As a result, every round of testing evaluated a prototype that had already
+            responded to the previous round&rsquo;s recorded evidence, instead of the same
+            prototype re-tested with different participants.
           </p>
 
-          <h3>Two-Artifact Split for Two Conversations</h3>
+          <h3>Splitting the Prototype Across Two Artifacts</h3>
           <p>
             After the interim review, the prototype was{" "}
             <mark className="hl">ported to Figma Make through a deliberate guardrails contract</mark>,
@@ -258,10 +258,10 @@ export default function PopByInlineCaseStudy() {
             Only the visual treatment was redesigned during the port.
           </p>
           <p>
-            The two artifacts then served two distinct conversations. The Figma Make version
-            carried the polished UI for design review and the final-review stakeholders, while
-            the AI Studio prototype kept the live testing panel and consequently remained the
-            active usability-research artifact.
+            The two artifacts then served two distinct purposes. The Figma Make version carried
+            the polished UI for design review and the final-review stakeholders, while the AI
+            Studio prototype kept the live testing panel and stayed the active
+            usability-research artifact.
           </p>
         </section>
 
@@ -272,14 +272,14 @@ export default function PopByInlineCaseStudy() {
           <h3>Prioritizing Synthesis Over Listing</h3>
           <p>
             The biggest analytical lesson from this project was that{" "}
-            <mark className="hl">collecting observations is only the input, not the actual value</mark>.
-            What is useful comes from comparing across the observations and committing to a
+            <mark className="hl">collecting observations is only the input</mark>, so the actual
+            value comes from comparing across the observations and committing to a
             recommendation based on them.
             <br></br><br></br>
             On the same note, I also noticed that I tended to polish the parts I was already
             confident about while avoiding the harder parts, even though the harder parts were
             what the brief was actually asking about. Because of that, I am now more deliberate
-            about tackling the least-confident parts first so that the remaining time goes to
+            about tackling the least-confident parts first, so the remaining time goes to
             refining instead of stalling.
           </p>
 
@@ -299,10 +299,10 @@ export default function PopByInlineCaseStudy() {
           <p>
             The cohort-consolidation step taught me that{" "}
             <mark className="hl">individual synthesis and cohort aggregation are used differently</mark>.
-            The individual document tells the closed-loop story of a specific project, while the
+            The individual document captures the story of a specific project, while the
             aggregation across all testers drives structural decisions across the product.
-            Recognizing that both formats have their own role changed how I think about which
-            one to reach for at each stage.
+            Because both formats have their own role, I now think differently about which one to
+            reach for at each stage of the project.
           </p>
         </section>
       </main>

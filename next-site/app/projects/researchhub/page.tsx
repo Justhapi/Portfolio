@@ -85,9 +85,9 @@ export default function ResearchHubCaseStudy() {
             methods such as cold emails and departmental postings, it consolidates them into a
             single system where both parties are able to view the same information.
             <br></br><br></br>
-            <mark className="hl">Prior projects on the platform focused solely on functionality</mark> in logins, project postings, and application 
-            submissions. As a result, it contained base functionality but <mark className="hl">lacked a coherent design system and additional 
-            features</mark> to address its intended users of students and staff.
+            <mark className="hl">Prior projects on the platform focused solely on delivering functionality</mark> — logins, project postings, and application
+            submissions. As a result, it contained a working base but <mark className="hl">lacked a coherent design system and additional
+            features</mark> to serve the students and staff it was intended for.
           </p>
 
           <h3>The Problem</h3>
@@ -136,8 +136,7 @@ export default function ResearchHubCaseStudy() {
           <h3>The Platform Audit</h3>
           <p>
             The <mark className="hl">core features (account creation and logins, project postings, and application submission) were functioning</mark>,
-            however the overall experience focused solely on functionality. This was due to
-            recognizing the state of the platform&rsquo;s UI as{" "}
+            however the overall experience focused solely on functionality. The UI itself was{" "}
             <mark className="hl">visually basic and obviously AI-generated</mark>.
             <br></br><br></br>
             I <mark className="hl">explored the platform as both a student and a professor</mark>,
@@ -251,7 +250,8 @@ export default function ResearchHubCaseStudy() {
           <h3>The Core Features Professor Reese Requested</h3>
           <p>
             From the earlier meeting notes, the core features Professor Reese requested for the
-            professor side, sequenced by how frequently students would interact with each, were:
+            professor side, in prioritization order (by how frequently students would interact
+            with each), were:
           </p>
           <ul className="focus-list">
             <li>
@@ -283,7 +283,7 @@ export default function ResearchHubCaseStudy() {
           </p>
           <ul className="focus-list">
             <li><strong>Identifying UI patterns from familiar platforms</strong></li>
-            <li><strong>Ideating UI and Design System</strong></li>
+            <li><strong>Refining UI around Purdue identity</strong></li>
             <li><strong>Wireframing for development handoff</strong></li>
           </ul>
 
@@ -295,7 +295,7 @@ export default function ResearchHubCaseStudy() {
             <br></br><br></br>
             As a result, <mark className="hl">interaction patterns from those platforms were utilized as the base design </mark>
             for the platform components with <mark className="hl">modifications to better fit the platform's focus on
-            organization through projects instead of individuals.</mark>
+            organization by project rather than by individual.</mark>
           </p>
           <ZoomableImage
             src={referencesImg.src}
@@ -309,7 +309,7 @@ export default function ResearchHubCaseStudy() {
             }
           />
 
-          <h3>Ideating UI and Design System</h3>
+          <h3>Refining UI Around Purdue Identity</h3>
           <p>
             After identifying the reference platform UI patterns, I moved on to sketching ideas
             for the platform&rsquo;s features and screens to explore possibilities quickly.
@@ -357,18 +357,17 @@ export default function ResearchHubCaseStudy() {
             <mark className="hl">wireframed the platform in Figma while concurrently discussing implementation plausibility with my teammates and gathering outside feedback on the wireframes</mark>{" "}
             for both feasibility and usability.
           </p>
-          <div className="progression-block">
-            <ZoomableImage
-              src={projectDashboardProgression.src}
-              alt="Project dashboard modification progression — successive iterations of the ResearchHub project dashboard laid out side-by-side."
-              aspectRatio={6742 / 2059}
-            />
-            <p className="progression-block__label"><strong>Project dashboard — modification progression</strong></p>
-            <p>
-              {/* Describe the project dashboard modification progression here — what
-                 was iterated across the versions and what each modification addressed. */}
-            </p>
-          </div>
+          <ZoomableImage
+            src={projectDashboardProgression.src}
+            alt="Project dashboard modification progression — successive iterations of the ResearchHub project dashboard laid out side-by-side."
+            aspectRatio={6742 / 2059}
+            caption={
+              <>
+                Iterations of the ResearchHub project dashboard laid out in progression order,
+                addressing feedback across each round on hierarchy and navigation clarity.
+              </>
+            }
+          />
 
           <p>
             Since I needed to wireframe both the student and professor flows in that same window,
@@ -392,15 +391,12 @@ export default function ResearchHubCaseStudy() {
                 content: (
                   <div className="rq-block rq-block--stacked-findings">
                     <div className="rq-block__body">
-                      <span className="rq-method-chip">Student Flow</span>
-                      <h4 className="rq-heading">Students Updating Task Progression</h4>
+                      <h4 className="rq-heading">General Dashboard</h4>
                       <p className="rq-lead">
-                        The dashboard was designed to provide{" "}
-                        <mark className="hl">everything a student might need on a monotonous day</mark>{" "}
-                        such as updating task progression or checking messages, while still
-                        offering immediate access to more detailed views if the student needs to
-                        navigate to a specific project dashboard or a direct message with a
-                        specific person.
+                        The dashboard was designed to <mark className="hl"> centralize
+                        everything a user might need on a monotonous day.</mark>{" "}
+                        For example, a student just need to update task progression or send messages while a professor
+                        might need to assess the progression of their students.
                       </p>
                     </div>
                     <div className="rq-block__visual">
@@ -412,11 +408,10 @@ export default function ResearchHubCaseStudy() {
                       />
                     </div>
                     <div className="rq-block__findings">
-                      <p className="rq-findings-lead"><strong>Key features and design decisions:</strong></p>
+                      <p className="rq-findings-lead"><strong>Key features:</strong></p>
                       <ul className="rq-findings-list">
-                        <li>Surfaced frequent, low-effort actions (task progression updates and message previews) at the landing view so students do not have to navigate deep for the everyday case.</li>
-                        <li>Added direct-access affordances to specific project dashboards and specific direct messages, so the deeper information is one click away when a student does need it.</li>
-                        <li>Prioritized the dashboard as the first professor-requested feature to ship, since it is the interface students return to most often.</li>
+                        <li>Mini Project Dashboard that provides access to tasks and to other projects</li>
+                        <li>Buttons to access specific project dashboards and direct messages within one click.</li>
                       </ul>
                     </div>
                   </div>
@@ -427,14 +422,11 @@ export default function ResearchHubCaseStudy() {
                 content: (
                   <div className="rq-block rq-block--stacked-findings">
                     <div className="rq-block__body">
-                      <span className="rq-method-chip">Cross-Role</span>
-                      <h4 className="rq-heading">Communication Between Students and Professors</h4>
+                      <h4 className="rq-heading">Communication</h4>
                       <p className="rq-lead">
                         The messages page was designed to provide{" "}
-                        <mark className="hl">organizational comfort for students communicating with professors, graduate project leads, and other students</mark>,
-                        combining the standard file-attachment feature with a &ldquo;pin
-                        board&rdquo; on the right for pinning the current task and linking to
-                        important external resources.
+                        <mark className="hl">organization for communication between professors, research assistants, and students </mark> through
+                        organizing messages and content in a structure familiar to students and staff.
                       </p>
                     </div>
                     <div className="rq-block__visual">
@@ -446,11 +438,11 @@ export default function ResearchHubCaseStudy() {
                       />
                     </div>
                     <div className="rq-block__findings">
-                      <p className="rq-findings-lead"><strong>Key features and design decisions:</strong></p>
+                      <p className="rq-findings-lead"><strong>Key features:</strong></p>
                       <ul className="rq-findings-list">
-                        <li>Standard file-attachment feature as the base affordance for familiarity.</li>
-                        <li>&ldquo;Pin board&rdquo; on the right for pinning the current task so the other person knows what the user is working on, and linking to important resources (Google Drive, Google Meet, and other communication tools). This also spares the development team from having to build every integration in-house.</li>
-                        <li>Two-level navigation from projects down to individuals, referencing how Microsoft Teams organizes from classes down to specific channels — a familiar pattern for the Purdue student user base.</li>
+                        <li>Standard file-attachment feature as the base affordance for familiarity to other platforms</li>
+                        <li>&ldquo;Pin board&rdquo; to pin and inform the other user of the user's workload and to link to external resources (Google Drive, Google Meet, and other communication tools) that spares the development team from additional integrations.</li>
+                        <li>Two-level navigation from projects down to individuals similar to Microsoft Teams' organization classes down to specific channels.</li>
                       </ul>
                     </div>
                   </div>
@@ -461,14 +453,13 @@ export default function ResearchHubCaseStudy() {
                 content: (
                   <div className="rq-block rq-block--stacked-findings">
                     <div className="rq-block__body">
-                      <span className="rq-method-chip">Professor Flow</span>
-                      <h4 className="rq-heading">Professors Maintaining Project Contents</h4>
+                      <h4 className="rq-heading">Project Content Maintenance</h4>
                       <p className="rq-lead">
                         The project dashboard was designed to{" "}
-                        <mark className="hl">hold the large amount of features it carries without overwhelming the viewer</mark>,
-                        using left-side navigation to segment the page into five sections
-                        (Notifications, Students, Documents, Task Log, and Timeline). The
-                        project page cycles through its main views below.
+                        <mark className="hl">centralize a project's content without overwhelming the viewer </mark>
+                        though a left-side navigation to segment the page into five sections
+                        (Notifications, Students, Documents, Task Log, and Timeline). Its inception was from Professor Reese's request for a dashboard
+                        for project maintenance.
                       </p>
                     </div>
                     <div className="rq-block__visual">
@@ -484,11 +475,11 @@ export default function ResearchHubCaseStudy() {
                       />
                     </div>
                     <div className="rq-block__findings">
-                      <p className="rq-findings-lead"><strong>Key features and design decisions:</strong></p>
+                      <p className="rq-findings-lead"><strong>Key features:</strong></p>
                       <ul className="rq-findings-list">
-                        <li>Left-side navigation splits the page into five sections — Notifications, Students, Documents, Task Log, and Timeline — so a single dense workspace does not overwhelm the viewer.</li>
-                        <li>Additional organization within each section that prioritizes reducing cognitive load, so a professor can drill into a specific section without feeling flooded.</li>
-                        <li>Container designed to scale with feature density, since the project dashboard holds the most professor-requested features and needed the most organizational structure.</li>
+                        <li>Left-side navigation splits content into five sections (Notifications, Students, Documents, Task Log, and Timeline) to avoid overwhelming the viewer.</li>
+                        <li>Each section serves both roles simultaneously, so professors manage the content while students engage with it in parallel.</li>
+                        <li>The Documents section includes AI-generated comprehension quizzes to verify students have read the assigned materials, addressing one of Professor Reese&rsquo;s core-feature requests.</li>
                       </ul>
                     </div>
                   </div>
@@ -536,13 +527,14 @@ export default function ResearchHubCaseStudy() {
             <mark className="hl">unable to conduct user research on professors as in-depth as I did with students</mark>,
             since the two user groups offered very different levels of access. I had only one
             professor (our client) available and an entire campus of students readily available.
-            As a result, I prioritized the features Professor Reese had requested based on how
-            those features would also serve students.
+            As a result, I prioritized the features Professor Reese had requested by how
+            frequently students would interact with each, so the highest-student-impact
+            professor-requested features would ship first.
             <br></br><br></br>
             From adapting to this differing-access obstacle, I now recognize that working
-            across uneven user-group research requires <mark className="hl">prioritizing the less-accessible group&rsquo;s
-            requests through a lens of how the same solution can also serve the more-accessible
-            group</mark>, so I can filter the applicable ideas from the impractical ones.
+            across uneven user-group research requires <mark className="hl">sequencing the less-accessible group&rsquo;s
+            requests by how frequently the more-accessible group would interact with each</mark>,
+            so I can prioritize the applicable ideas ahead of the impractical ones.
           </p>
         </section>
       </main>
