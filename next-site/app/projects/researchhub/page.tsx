@@ -390,7 +390,7 @@ export default function ResearchHubCaseStudy() {
               {
                 key: "student-tasks",
                 content: (
-                  <div className="rq-block">
+                  <div className="rq-block rq-block--stacked-findings">
                     <div className="rq-block__body">
                       <span className="rq-method-chip">Student Flow</span>
                       <h4 className="rq-heading">Students Updating Task Progression</h4>
@@ -402,12 +402,6 @@ export default function ResearchHubCaseStudy() {
                         navigate to a specific project dashboard or a direct message with a
                         specific person.
                       </p>
-                      <p className="rq-findings-lead"><strong>Key features and design decisions:</strong></p>
-                      <ul className="rq-findings-list">
-                        <li>Surfaced frequent, low-effort actions (task progression updates and message previews) at the landing view so students do not have to navigate deep for the everyday case.</li>
-                        <li>Added direct-access affordances to specific project dashboards and specific direct messages, so the deeper information is one click away when a student does need it.</li>
-                        <li>Prioritized the dashboard as the first professor-requested feature to ship, since it is the interface students return to most often.</li>
-                      </ul>
                     </div>
                     <div className="rq-block__visual">
                       <ZoomableImage
@@ -417,13 +411,21 @@ export default function ResearchHubCaseStudy() {
                         noDrag
                       />
                     </div>
+                    <div className="rq-block__findings">
+                      <p className="rq-findings-lead"><strong>Key features and design decisions:</strong></p>
+                      <ul className="rq-findings-list">
+                        <li>Surfaced frequent, low-effort actions (task progression updates and message previews) at the landing view so students do not have to navigate deep for the everyday case.</li>
+                        <li>Added direct-access affordances to specific project dashboards and specific direct messages, so the deeper information is one click away when a student does need it.</li>
+                        <li>Prioritized the dashboard as the first professor-requested feature to ship, since it is the interface students return to most often.</li>
+                      </ul>
+                    </div>
                   </div>
                 ),
               },
               {
                 key: "communication",
                 content: (
-                  <div className="rq-block">
+                  <div className="rq-block rq-block--stacked-findings">
                     <div className="rq-block__body">
                       <span className="rq-method-chip">Cross-Role</span>
                       <h4 className="rq-heading">Communication Between Students and Professors</h4>
@@ -434,12 +436,6 @@ export default function ResearchHubCaseStudy() {
                         board&rdquo; on the right for pinning the current task and linking to
                         important external resources.
                       </p>
-                      <p className="rq-findings-lead"><strong>Key features and design decisions:</strong></p>
-                      <ul className="rq-findings-list">
-                        <li>Standard file-attachment feature as the base affordance for familiarity.</li>
-                        <li>&ldquo;Pin board&rdquo; on the right for pinning the current task so the other person knows what the user is working on, and linking to important resources (Google Drive, Google Meet, and other communication tools). This also spares the development team from having to build every integration in-house.</li>
-                        <li>Two-level navigation from projects down to individuals, referencing how Microsoft Teams organizes from classes down to specific channels — a familiar pattern for the Purdue student user base.</li>
-                      </ul>
                     </div>
                     <div className="rq-block__visual">
                       <ZoomableImage
@@ -449,13 +445,21 @@ export default function ResearchHubCaseStudy() {
                         noDrag
                       />
                     </div>
+                    <div className="rq-block__findings">
+                      <p className="rq-findings-lead"><strong>Key features and design decisions:</strong></p>
+                      <ul className="rq-findings-list">
+                        <li>Standard file-attachment feature as the base affordance for familiarity.</li>
+                        <li>&ldquo;Pin board&rdquo; on the right for pinning the current task so the other person knows what the user is working on, and linking to important resources (Google Drive, Google Meet, and other communication tools). This also spares the development team from having to build every integration in-house.</li>
+                        <li>Two-level navigation from projects down to individuals, referencing how Microsoft Teams organizes from classes down to specific channels — a familiar pattern for the Purdue student user base.</li>
+                      </ul>
+                    </div>
                   </div>
                 ),
               },
               {
                 key: "project-pages",
                 content: (
-                  <div className="rq-block">
+                  <div className="rq-block rq-block--stacked-findings">
                     <div className="rq-block__body">
                       <span className="rq-method-chip">Professor Flow</span>
                       <h4 className="rq-heading">Professors Maintaining Project Contents</h4>
@@ -466,12 +470,6 @@ export default function ResearchHubCaseStudy() {
                         (Notifications, Students, Documents, Task Log, and Timeline). The
                         project page cycles through its main views below.
                       </p>
-                      <p className="rq-findings-lead"><strong>Key features and design decisions:</strong></p>
-                      <ul className="rq-findings-list">
-                        <li>Left-side navigation splits the page into five sections — Notifications, Students, Documents, Task Log, and Timeline — so a single dense workspace does not overwhelm the viewer.</li>
-                        <li>Additional organization within each section that prioritizes reducing cognitive load, so a professor can drill into a specific section without feeling flooded.</li>
-                        <li>Container designed to scale with feature density, since the project dashboard holds the most professor-requested features and needed the most organizational structure.</li>
-                      </ul>
                     </div>
                     <div className="rq-block__visual">
                       <CyclingImage
@@ -484,6 +482,14 @@ export default function ResearchHubCaseStudy() {
                           { src: projectPage5.src, alt: "Project page — version 5." },
                         ]}
                       />
+                    </div>
+                    <div className="rq-block__findings">
+                      <p className="rq-findings-lead"><strong>Key features and design decisions:</strong></p>
+                      <ul className="rq-findings-list">
+                        <li>Left-side navigation splits the page into five sections — Notifications, Students, Documents, Task Log, and Timeline — so a single dense workspace does not overwhelm the viewer.</li>
+                        <li>Additional organization within each section that prioritizes reducing cognitive load, so a professor can drill into a specific section without feeling flooded.</li>
+                        <li>Container designed to scale with feature density, since the project dashboard holds the most professor-requested features and needed the most organizational structure.</li>
+                      </ul>
                     </div>
                   </div>
                 ),

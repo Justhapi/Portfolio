@@ -4557,6 +4557,36 @@ em.it { font-style: italic; }
   margin: 0;
   flex: 0 1 60%;
 }
+/* Stacked-findings variant — used when the findings list should span
+   the full card width (row below body + visual) rather than being
+   crushed into the narrow left text column. Requires findings to live
+   as a sibling of body/visual (not inside body) via the
+   .rq-block__findings wrapper. Two rows:
+     Row 1 — body (text lead) on the LEFT, visual on the RIGHT
+     Row 2 — findings full width
+   At ≤720px stacks to a single column: body → visual → findings. */
+.rq-block.rq-block--stacked-findings {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-areas:
+    "body     visual"
+    "findings findings";
+  column-gap: 28px;
+  row-gap: 20px;
+  align-items: center;
+}
+.rq-block.rq-block--stacked-findings .rq-block__body {
+  grid-area: body;
+  flex: none;
+}
+.rq-block.rq-block--stacked-findings .rq-block__visual {
+  grid-area: visual;
+  flex: none;
+}
+.rq-block.rq-block--stacked-findings .rq-block__findings {
+  grid-area: findings;
+  min-width: 0;
+}
 /* When a ZoomableImage lives inside a carousel-card visual, cap the
    frame height so the whole card still fits inside a laptop viewport,
    but keep the cap generous enough that portrait-aspect images (most
@@ -4666,11 +4696,9 @@ em.it { font-style: italic; }
 .rq-findings-list li {
   margin-bottom: 4px;
 }
-/* Narrow-window fallback — flip the rq-block from horizontal (text
-   left, visual right) back to vertical stacking. 720px is the
-   threshold where the text column would start feeling cramped
-   (~7-word lines) at the 55% split; below it, vertical stacking
-   gives both text and visual full-width breathing room. */
+/* Narrow-window fallback — flip the default rq-block back to vertical
+   stacking (body above visual). 720px is the threshold where the text
+   column would start feeling cramped at the horizontal split. */
 @media (max-width: 720px) {
   .rq-block {
     flex-direction: column;
@@ -4680,6 +4708,16 @@ em.it { font-style: italic; }
   .rq-block__body,
   .rq-block__visual {
     flex: 1 1 auto;
+  }
+  /* Stacked-findings variant on narrow: collapse the two-row grid to
+     a single vertical stack — body → visual → findings. */
+  .rq-block.rq-block--stacked-findings {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "body"
+      "visual"
+      "findings";
+    row-gap: 20px;
   }
 }
 @media (max-width: 640px) {
