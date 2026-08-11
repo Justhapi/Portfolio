@@ -124,17 +124,22 @@ export default function PopByInlineCaseStudy() {
         {/* ───── Testing ───── */}
         <section id="testing" className="case-section">
           <h2>Testing</h2>
-          <h3>Facilitating Four Rounds of Usability Testing</h3>
+          <h3>Facilitating Usability Testing</h3>
           <p>
-            During the 8 usability test sessions, I served as the facilitator. First, I would introduce the focus of the prototype by
-            asking each tester warm-up questions before directing them to complete tasks while navigating the prototype's user flows
-            and probing for feedback on those flows.
+            During the 8 usability test sessions, I served as the facilitator. First, I would <mark className="hl">introduce the focus of the prototype by
+            asking each tester warm-up questions</mark> before directing them to <mark className="hl">complete tasks while navigating the prototype's user flows.</mark>
+            After they completed each flow, I would probe for their feedback and thoughts of the recently traversed user flow.
           </p>
 
           <h3>Addressing Insights and Feedback with Iterations</h3>
           <p>
-            After every 2 - 3 sessions to ensure that feedback reflected a general rather than a singular voice, I would assess the feedback to identify
-            iterations to implement into the prototype and tweak the usability protocol to probe for feedback on those iterations.
+            After <mark className="hl">every sprint of 2 - 3 sessions to ensure that feedback reflected a general rather than a singular voice,</mark> I would 
+            assess the feedback to <mark className="hl">identify iterations to implement into the prototype and tweak the usability protocol</mark> to probe 
+            for feedback on those iterations.
+            <br></br><br></br>
+            Because of this structure, <mark className="hl">each sprint tested a prototype that had already responded to the previous sprint&rsquo;s feedback. </mark>
+            As the rounds progressed, I noticed that the feedback from participants gradually <mark className="hl">shifted from usability issues to 
+            additive feature suggestions</mark> that would modify the prototype to be adaptable to other use cases.
           </p>
         </section>
 

@@ -208,13 +208,8 @@ export default function AboutV2() {
         <div className="about-prose reveal">
           {/* Stage 1 — heading arrives first, full-width above the split */}
           <h3 className="lead">
-            A designer who avoids being "the <em className="de">architect</em> in a <em className="de">room of engineers</em>"
+            A designer who avoids being the <em className="de">architect</em> in a <em className="de">room of engineers</em>
           </h3>
-
-          {/* Below the heading: bag on the LEFT, body paragraphs on the RIGHT.
-              Both live inside .about-prose so the existing reveal / stagger
-              animations keep working — the body <p> entrance driven by
-              .about-prose.in still fires. */}
           <div className="about-body-split">
             <HoverBag />
             <div className="about-body">
@@ -224,22 +219,20 @@ export default function AboutV2() {
                 people as a UX designer, I decided to jump into the field.
               </p>
               <p>
-                To ensure my designing method and experiences are applicable to real world
-                 solutions in interdisciplinary groups, I am also pursuing a
-                 Computer Science minor and contributing to Purdue Stack as one of the UI Designers.
+                To keep my design experiences and collaboration skills applicable to real-world
+                solutions across interdisciplinary groups, I stay engaged through various
+                roles across campus:
               </p>
-              <p>
-                I&rsquo;m also a mentor at{" "}
-                <HoverWord view="mentor" href="https://linktr.ee/sasepurdue">Purdue SASE</HoverWord>
-                , and I plan my{" "}
-                <HoverWord view="food" href="https://beliapp.co/app/lyux">next trip</HoverWord>
-                {" "}around a list of local food spots.
-              </p>
+              <ul className="focus-list focus-list--spark">
+                <li><Sparkle /><span>designing UI for <HoverWord view="stack" href="https://www.purduestack.org/">Purdue Stack</HoverWord></span></li>
+                <li><Sparkle /><span>pursuing a Computer Science minor</span></li>
+                <li><Sparkle /><span>mentoring at <HoverWord view="mentor" href="https://linktr.ee/sasepurdue">Purdue SASE</HoverWord></span></li>
+                <li><Sparkle /><span>advising Purdue&rsquo;s Lion Dance Team</span></li>
+              </ul>
             </div>
           </div>
         </div>
       </div>
-
     </section>
   );
 }

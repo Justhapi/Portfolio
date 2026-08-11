@@ -4267,6 +4267,46 @@ em.it { font-style: italic; }
   color: var(--accent-on-cream);
 }
 
+/* ── About-section focus list — sparkle bullets ──────────────────────────
+   Same 4-pointed sparkle shape as the site nav (see .nav-spark). Reused
+   here as list markers so the About block visually rhymes with the nav
+   and the "Currently designing…" sticker. Bullet rotates 45° on hover
+   for parity with the nav-link:hover interaction.
+
+   Typography explicitly matched to .about-prose p (CookieRun 19px 1.6)
+   because <ul> doesn't inherit the p-scoped rule and would otherwise
+   fall back to browser default K2D at a smaller size. */
+.about-body ul.focus-list--spark {
+  list-style: none;
+  margin: 12px 0 20px;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+  font-family: var(--f-cookie);
+  font-size: 18px;
+  line-height: 1.55;
+  color: var(--fg-soft);
+  max-width: 56ch;
+}
+.about-body ul.focus-list--spark li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 0;
+}
+.about-body ul.focus-list--spark li > svg {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  fill: var(--accent);
+  /* nudge down so the sparkle centres roughly on the CookieRun cap
+     height of the first line, not the true baseline */
+  transform: translateY(6px);
+}
+.about-body ul.focus-list--spark li > span {
+  flex: 1;
+}
+
 /* ── JT User Interviews split layout ────────────────────────────────────
    Text on the left, interview-notes figure on the right (side-by-side)
    at wide viewports. The affinity diagram that follows sits below both
