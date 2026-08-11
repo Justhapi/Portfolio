@@ -10,6 +10,32 @@ import { saveHomeScroll } from "@/components/ScrollRestore";
  * Folder cards (closed → open on hover) with sparkle accents.
  */
 
+/**
+ * Folder-card thumbnails — sponsor / project marks that peek out of the
+ * opened folder. Each file in /public/img/folders/ is a pre-framed 120×120
+ * square SVG with its own rounded corners (rx=10) — vector, infinitely
+ * crisp at any display size, no raster resolution ceiling.
+ *
+ * Per-project NDA rationale:
+ *   - Frogslayer / Purdue Stack / inline: sponsors named publicly on the
+ *     site (folder tag, case body, or a public HoverWord link), so brand
+ *     marks are fine.
+ *   - JT / AI Journey Agent: sponsor deliberately anonymized on the site,
+ *     so a hand-designed "Anonymous" sticky replaces a brand logo (a real
+ *     logo would break the anonymization via reverse image search).
+ *
+ * BASE_PATH — raw <img>/<image> srcs need the /Portfolio prefix in
+ * production (Next auto-applies to next/image and routing but NOT to raw
+ * SVG <image> href attributes). Same pattern used in HoverBag.
+ */
+const BASE_PATH = process.env.NODE_ENV === "production" ? "/Portfolio" : "";
+const FOLDER_THUMB = {
+  frogslayer: `${BASE_PATH}/img/folders/frogslayer.svg`,
+  stack:      `${BASE_PATH}/img/folders/stack.svg`,
+  inline:     `${BASE_PATH}/img/folders/inline.svg`,
+  anonymous:  `${BASE_PATH}/img/folders/anonymous.svg`,
+} as const;
+
 const FolderClosed = ({
   front = "#FFDA85",
   shadow = "#9F5A45",
@@ -69,12 +95,20 @@ const FolderOpen = ({
   front = "#FFDA85",
   back = "#E19F7E",
   shadow = "#9F5A45",
+  thumbnail,
+  thumbnailAlt = "",
 }: {
   tint?: string;
   tint2?: string;
   front?: string;
   back?: string;
   shadow?: string;
+  /** When provided, overlays a sponsor logo (or the Anonymous mark) on
+   *  top of the larger sticky. The colored sticky rect still renders
+   *  underneath so the ~16px of horizontal padding around the 1:1 logo
+   *  shows the sticky's tint color — "logo on colored paper." */
+  thumbnail?: string;
+  thumbnailAlt?: string;
 }) => {
   // unique gradient id per render so multiple cards don't reuse the same defs
   const gid = useId().replace(/:/g, "");
@@ -138,19 +172,56 @@ const FolderOpen = ({
         strokeWidth="3.83596"
       />
       </g>
-      {/* tint2 sticky (teal by default) — wrapped so it can drift on idle */}
+      {/* tint2 sticky slot — when a thumbnail is provided, the icon sits
+          UPRIGHT at the same visual center where the tilted sticky was,
+          so the logo stays legible. The outline rect wraps its exact
+          bounds with the same 3.83596 white stroke as the other stickies.
+          When no thumbnail is present, the original tilted colored sticky
+          renders as a fallback.
+          Coordinates derived by pre-rotating the sticky's centre through
+          its 87.5606° transform around (241.092, 30.3229):
+            centre_pre  = (316.7255, 90.2049)   // sticky midpoint
+            centre_post = (184.485,  108.437)   // after rotation
+          Icon is 119.764 square (matches sticky height), centred on that
+          post-rotation point → top-left at (124.603, 48.555). rx = 10 ×
+          (119.764/120) ≈ 9.98 to match the SVG's own rounded corners. */}
       <g className="fo-sticky" data-fx-i="1">
-      <rect
-        x="241.092"
-        y="30.3229"
-        width="151.267"
-        height="119.764"
-        rx="6.40023"
-        transform="rotate(87.5606 241.092 30.3229)"
-        fill={tint2}
-        stroke="#FBF7EE"
-        strokeWidth="3.83596"
-      />
+      {thumbnail ? (
+        <>
+          <image
+            href={thumbnail}
+            x="124.603"
+            y="48.555"
+            width="119.764"
+            height="119.764"
+            preserveAspectRatio="xMidYMid meet"
+          >
+            {thumbnailAlt ? <title>{thumbnailAlt}</title> : null}
+          </image>
+          <rect
+            x="124.603"
+            y="48.555"
+            width="119.764"
+            height="119.764"
+            rx="9.9803"
+            fill="none"
+            stroke="#FBF7EE"
+            strokeWidth="3.83596"
+          />
+        </>
+      ) : (
+        <rect
+          x="241.092"
+          y="30.3229"
+          width="151.267"
+          height="119.764"
+          rx="6.40023"
+          transform="rotate(87.5606 241.092 30.3229)"
+          fill={tint2}
+          stroke="#FBF7EE"
+          strokeWidth="3.83596"
+        />
+      )}
       </g>
       {/* front folder cover — same float as back cover so both bottoms stay joined */}
       <g className="fo-flap-front">
@@ -243,6 +314,8 @@ const PROJECTS: Project[] = [
     folder: { front: "#7C4A63", back: "#5E3349", shadow: "#39202F" },
     href: "/projects/inline",
     readTime: "4 min read",
+    thumbnail: FOLDER_THUMB.inline,
+    thumbnailAlt: "inline — sponsor logo",
   },
   {
     tag: "Customer Journey Platform (NDA) · Concept shipped to beta 2026",
@@ -257,6 +330,8 @@ const PROJECTS: Project[] = [
     folder: { front: "#C68D5F", back: "#9A6D45", shadow: "#5C3924" },
     href: "/projects/ai-journey-agent",
     readTime: "3 min read",
+    thumbnail: FOLDER_THUMB.anonymous,
+    thumbnailAlt: "Sponsor anonymized under NDA",
   },
   {
     tag: "Purdue Stack · Ships fall 2026",
@@ -273,6 +348,8 @@ const PROJECTS: Project[] = [
     folder: { front: "#276866", back: "#1A4E4C", shadow: "#163838" },
     href: "/projects/researchhub",
     readTime: "4 min read",
+    thumbnail: FOLDER_THUMB.stack,
+    thumbnailAlt: "Purdue Stack — sponsor logo",
   },
   {
     tag: "Frogslayer · Shipped 2025",
@@ -287,6 +364,8 @@ const PROJECTS: Project[] = [
     folder: { front: "#262E3A", back: "#171C24", shadow: "#3F444E" },
     href: "/projects/frogslayer",
     readTime: "6 min read",
+    thumbnail: FOLDER_THUMB.frogslayer,
+    thumbnailAlt: "Frogslayer — sponsor logo",
   },
 ];
 
@@ -479,6 +558,8 @@ export default function ProjectsV2() {
                         front={p.folder.front}
                         back={p.folder.back}
                         shadow={p.folder.shadow}
+                        thumbnail={p.thumbnail}
+                        thumbnailAlt={p.thumbnailAlt}
                       />
                     </div>
                   </div>
