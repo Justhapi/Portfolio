@@ -69,10 +69,8 @@ export default function PopByInlineCaseStudy() {
 
           <h3>My Role</h3>
           <p>
-            I worked as a Product Design Intern,{" "}
-            <mark className="hl">remote across a roughly 12-hour time-zone gap</mark> with the
-            team based in Taiwan. I was the{" "}
-            <mark className="hl">sole designer on one branch of the project</mark>, working
+            I worked as a Product Design Intern,working remotely with the Product
+            team based in Taiwan. I was the{" "}<mark className="hl">sole designer on one branch of the project</mark>, working
             alongside a parallel branch of the internship. My focus was to bring an outside perspective of the
             current market through competitive research, gap analysis, concept design, and
             usability testing.
@@ -109,12 +107,14 @@ export default function PopByInlineCaseStudy() {
         <section id="designing" className="case-section">
           <h2>Designing</h2>
 
-          <h3>Use Case Scenario</h3>
+          <h3>Ideating Scenario</h3>
           <p>
             To narrow the scope to guide implementations and determine success, the scenario included
             <mark className="hl"> factors regarding uncertainty</mark>. After the scenario was determined in detail,
             I then went on to plan the user flow to determine where to implement the ideated features.
-            <br></br><br></br>
+          </p>
+          <h3>Prototyping</h3>
+          <p>
             Due to the scale of the user flow and interactions needed within the small window, I utilized AI-assisted
             prototyping tools. Initially, I utilized Figma Make, but eventually <mark className="hl">swapped to Google AI Studio as
             its daily prompting credit limits were more well-suited</mark> to future usability testing sessions and iterations.
@@ -126,7 +126,7 @@ export default function PopByInlineCaseStudy() {
           <h2>Testing</h2>
           <h3>Facilitating Four Rounds of Usability Testing</h3>
           <p>
-            During the 8 usability test sessions, I served as the facilitator. First I would introduce the intent of the prototype by
+            During the 8 usability test sessions, I served as the facilitator. First, I would introduce the focus of the prototype by
             asking each tester warm-up questions before directing them to complete tasks while navigating the prototype's user flows
             and probing for feedback on those flows.
           </p>
