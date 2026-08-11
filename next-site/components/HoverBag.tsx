@@ -105,6 +105,14 @@ const EFFECT_CLASS: Record<HoverEffect, string> = {
 const PILL_OFFSET_X = -40;
 const PILL_OFFSET_Y = -265;
 
+/**
+ * GitHub Pages serves the site under /Portfolio/, so raw <img src="/…"> paths
+ * 404 in production. Next's basePath is applied to routing / next/link / next/image
+ * automatically, but NOT to plain <img> tags. Prepend manually to match the
+ * pattern already used elsewhere in the repo (see HANDOVER.md → GitHub Pages / basePath).
+ */
+const BASE_PATH = process.env.NODE_ENV === "production" ? "/Portfolio" : "";
+
 export default function HoverBag({ debug = false }: { debug?: boolean }) {
   const [active, setActive] = useState<string | null>(null);
   const pillRef = useRef<HTMLDivElement | null>(null);
@@ -129,7 +137,7 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
           /* eslint-disable-next-line @next/next/no-img-element */
           <img
             key={layer.key}
-            src={layer.src}
+            src={`${BASE_PATH}${layer.src}`}
             alt=""
             className={`hover-bag__layer${liftedLayers.has(layer.key) ? ` ${activeEffectClass}` : ""}`}
             data-layer={layer.key}
