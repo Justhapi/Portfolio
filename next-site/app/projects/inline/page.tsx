@@ -27,9 +27,13 @@ export default function PopByInlineCaseStudy() {
       />
 
       <main id="main" className="case-body">
-        <p className="case-disclaimer">
-          Under the terms of the sponsor&rsquo;s non-disclosure agreement, confidential and proprietary details remain covered by the
-          agreement.
+        <p className="case-disclaimer" aria-label="NDA notice">
+          <span className="case-disclaimer__badge">NDA</span>
+          <span className="case-disclaimer__text">
+            This case study covers sponsor work protected by a non-disclosure agreement.
+            Specific product features, competitor names, and internal artifacts are excluded.
+            Process narrative and personal takeaways are preserved.
+          </span>
         </p>
 
         {/* ───── Outcome ───── */}

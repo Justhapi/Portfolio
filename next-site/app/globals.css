@@ -4199,19 +4199,49 @@ em.it { font-style: italic; }
   pointer-events: none;
 }
 
-/* ── Case disclaimer (NDA / anonymization notice) ──────────────────────── */
+/* ── Case disclaimer (NDA / anonymization notice) ────────────────────────
+   Re-weighted for noticeability: warm accent-tinted background + left
+   accent border (matches outcome-callout language), sentence-case body
+   copy so it reads as content instead of fine-print, and a bold uppercase
+   "NDA" badge inline that carries the tag-level prominence. The goal is
+   for a recruiter's eye to catch the notice on first scroll and read it
+   as "intentional constraint I'm respecting" rather than a boilerplate
+   footer they should skip. */
 .case-disclaimer {
+  font-family: var(--f-sans);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--fg-soft);
+  background: #F6EEE6;
+  border-left: 4px solid var(--accent);
+  border-radius: 4px;
+  padding: 16px 20px 16px 22px;
+  margin: 0 0 56px;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.case-disclaimer__badge {
   font-family: var(--f-mono);
-  font-weight: 500;
+  font-weight: 700;
   font-size: 11px;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgb(var(--fg-rgb) / 0.5);
-  border: 1px solid rgb(var(--fg-rgb) / 0.12);
-  border-radius: 6px;
-  padding: 14px 20px;
-  margin-bottom: 72px;
-  line-height: 1.6;
+  color: var(--accent-on-cream);
+  background: rgb(var(--accent-rgb, 154 109 76) / 0.14);
+  padding: 4px 10px;
+  border-radius: 999px;
+  flex-shrink: 0;
+  white-space: nowrap;
+  /* small optical nudge — the badge sits on the baseline of the body
+     text but reads slightly heavier without it */
+  transform: translateY(-1px);
+}
+.case-disclaimer__text {
+  flex: 1;
+  min-width: 240px;
 }
 
 /* ── Case pull-quote — Klee One editorial callout ──────────────────────────
