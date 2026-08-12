@@ -576,6 +576,14 @@ export default function ProjectsV2() {
                     {p.meta.map((m) => (
                       <span key={m}>{m}</span>
                     ))}
+                    {/* Read-time chip — visible ONLY on touch / phone via CSS.
+                        Desktop users get the cursor-following .read-pill on
+                        folder hover; touch users have no hover, so without this
+                        chip they'd click into a case study with no idea of the
+                        read commitment. Mirrors the same info as the pill. */}
+                    <span className="meta__read" aria-label="Estimated read time">
+                      {p.readTime}
+                    </span>
                   </div>
                   <p className="blurb">{p.blurb}</p>
                 </div>

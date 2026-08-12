@@ -2784,6 +2784,35 @@ em.it { font-style: italic; }
 }
 .folder .meta span:last-child::after { content: ""; }
 
+/* Read-time chip — hidden by default (desktop users see the cursor-
+   following .read-pill on folder hover). Revealed on touch / phone
+   viewports where hover doesn't exist, so recruiters can gauge case
+   commitment before tapping in. Uses accent-on-cream + weight bump
+   so it reads as distinct from the neutral topic chips (UI, Interaction,
+   etc.) — this chip is a COMMITMENT signal, not a topic. */
+.folder .meta .meta__read {
+  display: none;
+}
+/* When meta__read is DOM-present but hidden, the chip immediately before
+   it (e.g. "2025") would otherwise render a trailing "·" leading to
+   invisible content. Trim that dot on desktop; restore it on mobile
+   where meta__read is visible and needs the separator. */
+.folder .meta > span:has(+ .meta__read)::after {
+  content: "";
+}
+@media (max-width: 720px), (pointer: coarse) {
+  .folder .meta .meta__read {
+    display: inline-flex;
+    color: var(--accent-on-cream);
+    font-weight: 600;
+  }
+  .folder .meta > span:has(+ .meta__read)::after {
+    content: "·";
+    margin-left: 10px;
+    color: color-mix(in srgb, var(--muted) 40%, transparent);
+  }
+}
+
 /* =====================================================
    ABOUT
    ===================================================== */
@@ -3999,6 +4028,28 @@ em.it { font-style: italic; }
 .case-nav-pill.has-overflow-right {
   border-top-right-radius: 400px;
   border-bottom-right-radius: 400px;
+}
+/* Mobile / touch — the border-radius affordance is too subtle on
+   phones (recruiters routinely miss it). Layer a fade-mask gradient
+   on the overflowing edge so labels visibly dissolve into transparency,
+   making it unambiguous that more content sits past the visible edge.
+   Applied via mask-image so the fade affects labels + background as
+   one unit. Desktop keeps the border-radius-only affordance since
+   the pill already fits without scroll at wider viewports. */
+@media (max-width: 720px), (pointer: coarse) {
+  .case-nav-pill.has-overflow-left {
+    -webkit-mask-image: linear-gradient(to right, transparent 0, black 28px, black 100%);
+            mask-image: linear-gradient(to right, transparent 0, black 28px, black 100%);
+  }
+  .case-nav-pill.has-overflow-right {
+    -webkit-mask-image: linear-gradient(to right, black 0, black calc(100% - 28px), transparent 100%);
+            mask-image: linear-gradient(to right, black 0, black calc(100% - 28px), transparent 100%);
+  }
+  /* Both edges overflowing → both fade */
+  .case-nav-pill.has-overflow-left.has-overflow-right {
+    -webkit-mask-image: linear-gradient(to right, transparent 0, black 28px, black calc(100% - 28px), transparent 100%);
+            mask-image: linear-gradient(to right, transparent 0, black 28px, black calc(100% - 28px), transparent 100%);
+  }
 }
 .case-nav-link {
   position: relative;
