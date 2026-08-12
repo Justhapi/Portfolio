@@ -51,12 +51,12 @@ export default function AIJourneyAgentCaseStudy() {
           <h2>Outcome</h2>
           <aside className="outcome-callout" aria-label="Project outcome">
             <p className="outcome-callout__stat">
-                <strong>The concept was selected by the sponsor and developed into a high-fidelity prototype that 
-                was handed off to their product team.</strong> Shortly after, the sponsor shared that an <strong>AI maintenance 
-                agent was moving into development</strong> — an outcome that validated the direction the team had explored.
+                The concept was selected by the sponsor and developed into a high-fidelity prototype that was 
+                <strong> handed off to their product team.</strong> Shortly after, the <strong>sponsor shared that an AI maintenance agent 
+                was moving into development,</strong> validating the direction the team had explored.
             </p>
             <p className="outcome-callout__meta">
-              Spring 2026 · JourneyTrack platform → Concept · Developement
+              Spring 2026 · Sponsor platform → Concept · Developement
             </p>
           </aside>
 
