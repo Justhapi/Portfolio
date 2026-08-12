@@ -773,9 +773,13 @@ body.on-paper .nav-pill {
     height: auto;
     min-height: 100vh;
     gap: 40px;
-    /* Top padding trimmed 20px (calc(18vh - 20px)) so the block sits
-       20px higher than the last pass. Bottom padding unchanged. */
-    padding: calc(18vh - 20px) 24px 6vh;
+    /* Top padding was calc(18vh - 20px) — too generous on phones once
+     the polaroid + attached availability sticker overhang below. Cap
+     the top pad so the greeting + polaroid + availability sticker
+     cluster fits inside 100vh without being clipped by the Projects
+     section scrolling over the sticky hero. Bottom pad tightened
+     from 6vh to 3vh for the same reason. */
+    padding: clamp(48px, 10vh, 128px) 24px 3vh;
   }
   .hero-greeting {
     max-width: none;
@@ -928,9 +932,12 @@ body.on-paper .nav-pill {
   position: relative;
   flex: 0 0 auto;
   transform: rotate(-4deg);
-  /* +25% width bump (was 220px, now 275px) to reduce whitespace on
-     the right column and match the larger greeting-text scale. */
-  width: 275px;
+  /* Fluid width: 275px on desktop, shrinks to ~210px on narrow phones
+     so the polaroid + its attached "Available Summer 2026" sticker
+     don't push hero content beyond 100vh (Hero is sticky with overflow
+     hidden — anything past 100vh gets clipped by the Projects section
+     scrolling over it). Clamp uses vw so the shrink scales smoothly. */
+  width: clamp(210px, 55vw, 275px);
   z-index: 10;
   /* Perspective for the 3D card flip inside .polaroid-card. Applied
      here (on the parent of the flipper) so the perspective view is
@@ -6026,7 +6033,7 @@ em.it { font-style: italic; }
   }
   .connect-row {
     grid-template-columns: 1fr;
-    gap: 48px;
+    gap: 32px;
   }
   /* When the connect row stacks vertically (single column at ≤980px),
      center-align the pitch text since it no longer has a right-column
@@ -6035,6 +6042,30 @@ em.it { font-style: italic; }
   .connect-pitch {
     text-align: center;
     align-self: center;
+  }
+  /* Mobile Connect padding — the desktop 180px top pad is calibrated
+     for parallax drift (content starts high, parallax pulls it down
+     into view as About slides off). Parallax is disabled on touch /
+     coarse-pointer devices (SmoothScroll.tsx early-returns), so on
+     mobile that padding just pushes content off the bottom of the
+     fixed 100vh Connect box — which then overflow:hidden clips.
+     Trim to a modest value so the heading, pitch, and 3 link rows
+     all sit inside a single mobile viewport without overflow.
+     Min value bumped 72 → 128px so the "Connect more over my designs?"
+     heading clears the fixed .site-nav pill (nav sits at ~top: 12px
+     with ~52px pill height + margin ≈ 96px total; adding 32px breathing
+     room lands at 128px minimum). */
+  .connect > .container {
+    padding-top: clamp(180px, 22vh, 240px);
+    padding-bottom: 32px;
+  }
+  /* Give Connect a bit of vertical breathing room too — 100vh is tight
+     on phones with browser chrome eating into the viewport. min-height
+     lets it grow if content still doesn't fit, avoiding clipping while
+     keeping the sticky range identical for the ac-scene mechanic. */
+  .connect {
+    height: auto;
+    min-height: 100vh;
   }
   .hero-stage { min-height: 720px; }
   /* Legacy `.ribbon-artist { top: 64px; width: min(86vw, 640px) }`
