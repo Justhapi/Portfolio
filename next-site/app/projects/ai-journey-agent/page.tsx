@@ -31,7 +31,7 @@ export default function AIJourneyAgentCaseStudy() {
       <CaseSectionNav sections={SECTIONS} />
       <CaseCover
         title="Designing an AI Maintenance Agent for Customer Journey Maps"
-        meta="Spring 2026 · 8 weeks · UX Designer & Researcher · Concept shipped to beta"
+        meta="Spring 2026 · 8 weeks · UX Designer & Researcher · Concept shipped to development"
         subtitle="An agentic AI concept for keeping customer journey maps accurate and trustworthy over time"
         imageLabel="AI maintenance agent · cover image"
       />
@@ -51,12 +51,12 @@ export default function AIJourneyAgentCaseStudy() {
           <h2>Outcome</h2>
           <aside className="outcome-callout" aria-label="Project outcome">
             <p className="outcome-callout__stat">
-              <strong>~30 days after handoff</strong>, the sponsor announced the AI agent going
-              live in beta — with designs and features that closely mirror the concept our team
-              delivered.
+                <strong>The concept was selected by the sponsor and developed into a high-fidelity prototype that 
+                was handed off to their product team.</strong> Shortly after, the sponsor shared that an <strong>AI maintenance 
+                agent was moving into development</strong> — an outcome that validated the direction the team had explored.
             </p>
             <p className="outcome-callout__meta">
-              Spring 2026 · JourneyTrack platform → Concept · Eventual Beta
+              Spring 2026 · JourneyTrack platform → Concept · Developement
             </p>
           </aside>
 
@@ -95,7 +95,7 @@ export default function AIJourneyAgentCaseStudy() {
             to research synthesis, wireframing, high-fidelity prototyping, and usability testing.
             <br></br><br></br>
             In addition to leading ideation, I{" "} also
-            <mark className="hl">managed communication between the team, sponsor leads, and platform users</mark>
+            <mark className="hl"> managed communication between the team, sponsor leads, and platform users</mark>
             {" "}to ensure alignment on project progression, sponsor goals, and user needs — through
             organizing update meetings, update emails, and interviews. I also mentored the junior
             designers joining the studio on Figma onboarding and studio deliverable expectations.
