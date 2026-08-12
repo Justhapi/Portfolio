@@ -540,8 +540,10 @@ body.on-paper .nav-pill {
 /* nav-status (CT clock) removed — kept this comment so the section is easy to find later */
 
 /* ── Mobile menu toggle ───────────────────────────────────────────────
-   Hidden on desktop; replaces the pill on viewports ≤ 980px (same
-   breakpoint where nav-pill already disappears).
+   Hidden on desktop; replaces the pill on viewports ≤ 720px (moved
+   down from 980px so the nav stays in its horizontal pill form on
+   tablets and small laptops — hamburger only appears on true phone
+   widths where the full-pill links would crowd or wrap).
    The toggle is a dark glass pill (matches nav-mark) containing a
    hamburger icon that animates to a × when the menu is open. */
 .nav-menu-toggle {
@@ -573,7 +575,7 @@ body.on-paper .nav-pill {
   transform: translateY(-4.5px) rotate(-45deg);
 }
 
-@media (max-width: 980px) {
+@media (max-width: 720px) {
   /* Re-layout nav-inner: mark left, toggle right, no center column */
   .nav-inner {
     grid-template-columns: 1fr auto;
@@ -762,24 +764,31 @@ body.on-paper .nav-pill {
      vertically instead — greeting on top, polaroid below. */
   .hero-stage {
     flex-direction: column;
-    /* Anchor content toward the LOWER half of the viewport instead of
-       true center. Uses `justify-content: flex-start` with a generous
-       `padding-top: 18vh` — larger top padding scales with viewport
-       height so the block always lands ~1/5 down the screen, regardless
-       of how tall the browser is. Small `padding-bottom` lets the
-       polaroid+sticker cluster overhang without extra bottom room. */
-    justify-content: flex-start;
+    /* Vertical centering (was justify-content: flex-start with top pad,
+       which pulled content toward the upper third and left visible dead
+       space below the polaroid + Available Summer sticker cluster).
+       `center` puts content at the visual midline of the viewport when
+       Hero is at the top of scroll — the padding values below act as
+       min-safe-zones from the viewport edges rather than fixed anchors. */
+    justify-content: center;
     align-items: center;
     height: auto;
     min-height: 100vh;
-    gap: 40px;
-    /* Top padding was calc(18vh - 20px) — too generous on phones once
-     the polaroid + attached availability sticker overhang below. Cap
-     the top pad so the greeting + polaroid + availability sticker
-     cluster fits inside 100vh without being clipped by the Projects
-     section scrolling over the sticky hero. Bottom pad tightened
-     from 6vh to 3vh for the same reason. */
-    padding: clamp(48px, 10vh, 128px) 24px 3vh;
+    /* Gap shrinks proportionally on shorter viewports — was fixed 40px
+       which ate too much vertical room on phones once the polaroid +
+       attached sticker cluster was added below the greeting. */
+    gap: clamp(16px, 3vh, 32px);
+    /* Padding tuned to center content between the NAV BOTTOM and the
+       VIEWPORT BOTTOM (not viewport top / bottom — that pulled content
+       into the upper third once the nav zone was accounted for).
+       Top pad ≈ nav's vertical footprint (fixed pill at ~top:16px +
+       ~50px height + ~30px breathing room). With justify-content: center
+       above, that shifts the centering axis of the flex column down by
+       nav-height/2, landing the content cluster at the visual midpoint
+       of the space UNDER the nav. Bottom pad stays small so the polaroid
+       + attached sticker cluster overhangs cleanly without extra dead
+       space at the very bottom. */
+    padding: clamp(96px, 13vh, 128px) 24px clamp(16px, 3vh, 32px);
   }
   .hero-greeting {
     max-width: none;
@@ -932,12 +941,12 @@ body.on-paper .nav-pill {
   position: relative;
   flex: 0 0 auto;
   transform: rotate(-4deg);
-  /* Fluid width: 275px on desktop, shrinks to ~210px on narrow phones
+  /* Fluid width: 275px on desktop, shrinks to ~180px on narrow phones
      so the polaroid + its attached "Available Summer 2026" sticker
      don't push hero content beyond 100vh (Hero is sticky with overflow
      hidden — anything past 100vh gets clipped by the Projects section
      scrolling over it). Clamp uses vw so the shrink scales smoothly. */
-  width: clamp(210px, 55vw, 275px);
+  width: clamp(180px, 48vw, 275px);
   z-index: 10;
   /* Perspective for the 3D card flip inside .polaroid-card. Applied
      here (on the parent of the flipper) so the perspective view is
@@ -1184,6 +1193,28 @@ body.on-paper .nav-pill {
   transform-style: preserve-3d;
   -webkit-transform-style: preserve-3d;
   transition: transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* One-time wiggle "affordance" — after the polaroid's entrance
+     animation completes (350ms delay + 550ms duration = 900ms) plus
+     ~700ms of settling breathing room, a brief 900ms rocking motion
+     signals that the card is interactive (click to flip, hover to
+     lift). No iteration = plays once, then returns to rest so it
+     doesn't become visual noise during the rest of the session.
+     Skipped for reduced-motion users via the global media rule
+     already in place at the bottom of the file. */
+  animation: polaroidWiggleHint 900ms cubic-bezier(0.4, 0.0, 0.2, 1) 1600ms 1 backwards;
+}
+@keyframes polaroidWiggleHint {
+  0%   { transform: rotate(0deg); }
+  20%  { transform: rotate(-3deg); }
+  45%  { transform: rotate(3deg); }
+  70%  { transform: rotate(-1.5deg); }
+  100% { transform: rotate(0deg); }
+}
+/* When the polaroid is raised (hover / click), the wiggle keyframes
+   must not override the rise transform. Turn the wiggle off entirely
+   in that state so the .is-raised transform below applies cleanly. */
+.polaroid-lift.is-raised {
+  animation: none;
 }
 .polaroid-lift.is-raised {
   transform: scale(1.12) translateY(-14px);
@@ -6055,17 +6086,36 @@ em.it { font-style: italic; }
      heading clears the fixed .site-nav pill (nav sits at ~top: 12px
      with ~52px pill height + margin ≈ 96px total; adding 32px breathing
      room lands at 128px minimum). */
+  /* Mobile Connect layout — two problems solved together:
+     1. Heading was overlapping the fixed site-nav pill (needs top pad
+        clearance from the nav's ~96px vertical footprint + margin).
+     2. Content piled at the top left a big empty dead zone at the
+        bottom of the sticky 100vh box.
+     Fix: bump padding-top to safely clear the nav (min 200px, was 180)
+     AND switch the container to justify-content: space-between so the
+     footer sinks to the bottom of the box while the heading + pitch +
+     link rows sit centered in the middle. Any leftover space now sits
+     as breathing room between content clusters, not as dead space. */
   .connect > .container {
-    padding-top: clamp(180px, 22vh, 240px);
-    padding-bottom: 32px;
+    padding-top: clamp(200px, 24vh, 260px);
+    padding-bottom: clamp(32px, 5vh, 56px);
+    justify-content: space-between;
   }
-  /* Give Connect a bit of vertical breathing room too — 100vh is tight
-     on phones with browser chrome eating into the viewport. min-height
-     lets it grow if content still doesn't fit, avoiding clipping while
-     keeping the sticky range identical for the ac-scene mechanic. */
+  /* Use dvh (dynamic viewport height) so mobile browser chrome
+     collapsing doesn't leave dead space at the bottom. Falls back to
+     vh via the earlier min-height rule for browsers without dvh. */
   .connect {
     height: auto;
     min-height: 100vh;
+    min-height: 100dvh;
+  }
+  /* .connect-row is flex:1 by default — on mobile with
+     justify-content: space-between on the parent, let the row size
+     to its content so the footer floats naturally at the bottom
+     instead of the row eating all the space and pushing the footer
+     off-screen. */
+  .connect .connect-row {
+    flex: 0 0 auto;
   }
   .hero-stage { min-height: 720px; }
   /* Legacy `.ribbon-artist { top: 64px; width: min(86vw, 640px) }`
