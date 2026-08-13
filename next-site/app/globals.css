@@ -827,59 +827,60 @@ body.on-paper .nav-pill {
   }
 
   /* ── Hero text sizes scale with VIEWPORT WIDTH on mobile ──────────
-     All hero text and the wordmark were previously fixed px values,
-     which don't shrink on narrow phones — the greeting + wordmark +
-     focus stack + polaroid + attached stickers combined were still
-     overflowing 100vh on ~375-390px iPhone widths and getting clipped
-     by the Projects section scrolling over the sticky hero.
-     Convert every visible size to clamp(min, vw-based, desktop-max)
-     so on a 320px phone every element proportionally shrinks together,
-     preserving the visual balance while fitting inside the viewport. */
+     All hero text and the wordmark were previously fixed px values.
+     Aggressive clamp values so on a 320-400px phone, everything
+     shrinks together enough that the full content stack (greeting +
+     wordmark + focus + polaroid + BOTH attached stickers + polaroid
+     caption) fits inside a single mobile viewport without clipping. */
   .hero-greet-lead {
-    font-size: clamp(24px, 8.5vw, 46px);
+    font-size: clamp(20px, 6.2vw, 46px);
   }
   .hero-an {
-    font-size: clamp(18px, 6.5vw, 36px);
+    font-size: clamp(14px, 4.6vw, 36px);
   }
   .ribbon-artist .wordmark {
-    height: clamp(24px, 8.5vw, 45px);
+    height: clamp(20px, 6.2vw, 45px);
   }
   .hero-focus {
-    font-size: clamp(11px, 3.2vw, 15px);
+    font-size: clamp(9px, 2.6vw, 15px);
   }
-  /* Polaroid further tightened — was clamp(180px, 48vw, 275px), now
-     bottoms out at 140px on ~320px phones so the polaroid + its
-     Available Summer sticker overhang together stay under half the
-     viewport height. */
+  /* Polaroid tightened again — was 140-275, now bottoms out at 120px
+     on the narrowest phones so the polaroid + its BOTH attached
+     stickers (Purdue on top, Available Summer on bottom) + caption
+     block below the photo together stay within ~40% of viewport
+     height. */
   .hero-polaroid {
-    width: clamp(140px, 38vw, 275px);
+    width: clamp(120px, 32vw, 275px);
   }
-  /* Polaroid CAPTION also scales with viewport width on mobile — was
-     20px Caveat + 9px mono fixed, which added ~65px of vertical to
-     the polaroid cluster and pushed the Available Summer sticker
-     off-screen. The caption is decorative flavor, not information —
-     safe to shrink aggressively on phones. */
+  /* Polaroid caption scaled down more aggressively — was ~65px of
+     vertical baseline, now ~40px on a typical phone. */
   .hero-polaroid .caption-line {
-    font-size: clamp(12px, 3.8vw, 20px);
+    font-size: clamp(10px, 3vw, 20px);
     line-height: 1.1;
   }
   .hero-polaroid .caption-meta {
-    font-size: clamp(7px, 2.2vw, 9px);
+    font-size: clamp(6px, 1.8vw, 9px);
   }
   .hero-polaroid .caption-block {
-    margin-top: clamp(6px, 1.6vw, 12px);
-    gap: clamp(2px, 0.6vw, 4px);
+    margin-top: clamp(4px, 1.2vw, 12px);
+    gap: clamp(2px, 0.5vw, 4px);
   }
 }
 /* Hero-stage tightened further at true phone widths — top padding
    scales down at ≤640px so the whole content stack + polaroid +
    attached "Available Summer" sticker sits fully inside 100vh even
-   on tall Safari with browser chrome eating vertical space. */
+   on tall Safari with browser chrome eating vertical space.
+   Gap between hero stack elements also tightened so the greeting →
+   wordmark → focus → polaroid transitions read as a cohesive cluster
+   rather than a widely-spaced list. */
 @media (max-width: 640px) {
   .hero-stage {
-    padding: clamp(72px, 10vh, 96px) 20px clamp(12px, 2vh, 24px);
-    gap: clamp(12px, 2vh, 24px);
+    padding: clamp(64px, 9vh, 88px) 20px clamp(8px, 1.5vh, 20px);
+    gap: clamp(8px, 1.5vh, 20px);
   }
+  /* Greeting-stack internal gap (between "Hello I'm" / wordmark /
+     focus lines) also tightens on narrow phones — was 6px inherited. */
+  .hero-greeting { gap: clamp(4px, 1vh, 10px); }
 }
 
 /* ── Left column: handwritten greeting ────────────────────────────────
