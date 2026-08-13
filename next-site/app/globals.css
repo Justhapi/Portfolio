@@ -825,6 +825,35 @@ body.on-paper .nav-pill {
     max-width: none;
     margin-top: 4px;
   }
+
+  /* ── Hero text sizes scale with VIEWPORT WIDTH on mobile ──────────
+     All hero text and the wordmark were previously fixed px values,
+     which don't shrink on narrow phones — the greeting + wordmark +
+     focus stack + polaroid + attached stickers combined were still
+     overflowing 100vh on ~375-390px iPhone widths and getting clipped
+     by the Projects section scrolling over the sticky hero.
+     Convert every visible size to clamp(min, vw-based, desktop-max)
+     so on a 320px phone every element proportionally shrinks together,
+     preserving the visual balance while fitting inside the viewport. */
+  .hero-greet-lead {
+    font-size: clamp(24px, 8.5vw, 46px);
+  }
+  .hero-an {
+    font-size: clamp(18px, 6.5vw, 36px);
+  }
+  .ribbon-artist .wordmark {
+    height: clamp(24px, 8.5vw, 45px);
+  }
+  .hero-focus {
+    font-size: clamp(11px, 3.2vw, 15px);
+  }
+  /* Polaroid further tightened — was clamp(180px, 48vw, 275px), now
+     bottoms out at 150px on ~320px phones so the polaroid + its
+     Available Summer sticker overhang together stay under half the
+     viewport height. */
+  .hero-polaroid {
+    width: clamp(150px, 42vw, 275px);
+  }
 }
 
 /* ── Left column: handwritten greeting ────────────────────────────────
