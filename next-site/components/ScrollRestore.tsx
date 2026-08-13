@@ -42,7 +42,29 @@ export default function ScrollRestore() {
     }
 
     const saved = sessionStorage.getItem(KEY);
-    if (!saved) return;
+
+    // ── No saved position: this is a FRESH visit (first load, refresh,
+    // or new tab). Force scroll to top so the hero is the entry point
+    // regardless of any stale hash left in the URL from a previous
+    // session (e.g. /#work carried over from the "Back to projects"
+    // link). Without this, mobile users who ever navigated via a hash
+    // land on Projects instead of Hero on their next fresh visit. */
+    if (!saved) {
+      // Clear any hash so a lingering /#work / /#about doesn't get
+      // re-scrolled to by browser hash-nav on subsequent internal links
+      if (window.location.hash) {
+        history.replaceState(null, "", window.location.pathname + window.location.search);
+      }
+      const goTop = () => window.scrollTo(0, 0);
+      goTop();
+      const rafTop = requestAnimationFrame(goTop);
+      const tTop = window.setTimeout(goTop, 90);
+      return () => {
+        cancelAnimationFrame(rafTop);
+        window.clearTimeout(tTop);
+      };
+    }
+
     sessionStorage.removeItem(KEY);
 
     const y = parseInt(saved, 10);
