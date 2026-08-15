@@ -102,8 +102,8 @@ const EFFECT_CLASS: Record<HoverEffect, string> = {
   "tilt-right": "is-tilted-right",
 };
 
-const PILL_OFFSET_X = -40;
-const PILL_OFFSET_Y = -265;
+const PILL_OFFSET_X = -45;
+const PILL_OFFSET_Y = -320;
 
 /**
  * GitHub Pages serves the site under /Portfolio/, so raw <img src="/…"> paths
