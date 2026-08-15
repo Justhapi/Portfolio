@@ -86,11 +86,17 @@ export default function HeroV2() {
               .is-raised + .is-anim-fwd|bwd. If a rapid click comes in
               during a running flip, the previous timers are cancelled
               and this click's dir wins.
-       t=260  .is-raised removed → unraise begins
-       t=330  flip keyframe ends → sync `flipped` to targetRef, clear animDir
+       t=460  .is-raised removed → unraise begins (holds through peak
+              + slow-shrink portion of the flip so the card doesn't
+              fight the flip's own scale animation)
+       t=580  flip keyframe ends → sync `flipped` to targetRef, clear
+              animDir. Matches the CSS flip animation (520ms duration
+              + 40ms delay = 560ms) with a small safety buffer so the
+              class swap happens AFTER the keyframe naturally settles
+              at the resting transform — no mid-animation snap.
   */
-  const RISE_HOLD_MS = 260;
-  const ANIM_END_MS = 330;
+  const RISE_HOLD_MS = 460;
+  const ANIM_END_MS = 580;
 
   const handlePhotoClick = () => {
     // Cancel any in-flight timers from a previous click. Prevents a

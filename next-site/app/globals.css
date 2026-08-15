@@ -1233,7 +1233,15 @@ body.on-paper .nav-pill {
   position: relative;
   transform-style: preserve-3d;
   -webkit-transform-style: preserve-3d;
-  transition: transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* Rise easing tuned for "slow start → fast middle → gentle settle
+     with a bounce at the end." cubic-bezier(0.55, 0.05, 0.15, 1.2):
+       - First control (0.55, 0.05) delays acceleration so the initial
+         motion is slow / anticipatory (~15% of duration for ~5% of
+         travel)
+       - Second control (0.15, 1.2) overshoots past 1 then settles
+         back for a subtle spring bounce at the end
+     Duration bumped 220ms → 380ms for the extra choreography. */
+  transition: transform 380ms cubic-bezier(0.55, 0.05, 0.15, 1.2);
   /* One-time wiggle "affordance" — after the polaroid's entrance
      animation completes (350ms delay + 550ms duration = 900ms) plus
      ~700ms of settling breathing room, a brief 900ms rocking motion
@@ -1323,32 +1331,50 @@ body.on-paper .nav-pill {
   transform: rotateX(0deg) rotateY(180deg) rotate(-8deg);
 }
 .polaroid-card.is-anim-fwd {
-  animation: flipMalleableFwd 250ms cubic-bezier(0.45, 0.05, 0.55, 0.95) 80ms;
+  /* Duration extended 250ms → 520ms for the toss-up-and-flip arc.
+     Timing set to linear because the keyframe positions themselves
+     carry the acceleration profile (slow start → fast middle → soft
+     settle + bounce at the end). Delay bumped 80 → 40ms so the flip
+     starts closer to the rise onset — reads as one continuous motion. */
+  animation: flipMalleableFwd 520ms linear 40ms;
 }
 .polaroid-card.is-anim-bwd {
-  animation: flipMalleableBwd 250ms cubic-bezier(0.45, 0.05, 0.55, 0.95) 80ms;
+  animation: flipMalleableBwd 520ms linear 40ms;
 }
 
-/* Malleable flip keyframes — the card doesn't rotate as a rigid plane.
-   Instead the top edge tilts forward first (rotateX negative → top
-   corners rise toward viewer), the card rotates on Y-axis through the
-   flip, then the bottom edge rises (rotateX positive) as the top
-   settles back — giving a wave-like "malleable card" feel. The Z-axis
-   rotation (rotate) interpolates from 0 → -8deg so the tilt lands on
-   the right when the doodle side is up. */
+/* Malleable flip keyframes — THREE noticeably slower moments (start,
+   mid, end) separated by quicker connectors. Mid-slow window HALVED
+   from 10% (52-62%) to 5% (48-53%) so the peak hang is a shorter
+   beat — quick pause rather than a long float. Layout by zone:
+     • 0-15%   SLOW start — anticipation rise, small deltas
+     • 15-48%  FAST climb — rapid ascent to peak
+     • 48-53%  SLOW mid — brief 5% window, rotateY moves just 4°
+               here vs 2-3° per % everywhere else = ~3× slower
+     • 53-88%  FAST fall — quick descent + Y-rotation completion
+     • 88-100% SLOW end — soft landing + bounce undershoot */
 @keyframes flipMalleableFwd {
-  0%   { transform: rotateX(0deg)   rotateY(0deg)   rotate(0deg); }
-  22%  { transform: rotateX(-12deg) rotateY(30deg)  rotate(-1.5deg); }
-  50%  { transform: rotateX(0deg)   rotateY(90deg)  rotate(-4deg); }
-  78%  { transform: rotateX(10deg)  rotateY(150deg) rotate(-6.5deg); }
-  100% { transform: rotateX(0deg)   rotateY(180deg) rotate(-8deg); }
+  0%   { transform: rotateX(0deg)   rotateY(0deg)   rotate(0deg)    scale(1)     translateY(0); }
+  5%   { transform: rotateX(-3deg)  rotateY(5deg)   rotate(-0.3deg) scale(1.005) translateY(-1px); }   /* SLOW start */
+  10%  { transform: rotateX(-6deg)  rotateY(12deg)  rotate(-0.8deg) scale(1.01)  translateY(-5px); }   /* SLOW start ends */
+  32%  { transform: rotateX(-7deg)  rotateY(58deg)  rotate(-2.7deg) scale(1.09)  translateY(-14px); }  /* FAST rise */ /* FAST rise ends */
+  50%  { transform: rotateX(0deg)   rotateY(89deg)  rotate(-4.0deg) scale(1.2) translateY(-21px); }  /* SLOW mid start */
+  53%  { transform: rotateX(3deg)   rotateY(93deg)  rotate(-4.3deg) scale(1.14)  translateY(-22px); }  /* SLOW mid ends */
+  68%  { transform: rotateX(6deg)   rotateY(135deg) rotate(-5.9deg) scale(1.09)  translateY(-14px); }  /* FAST fall */
+
+  94%  { transform: rotateX(1deg)   rotateY(177deg) rotate(-7.85deg) scale(0.985) translateY(1px); }   /* SLOW end / bounce */
+  100% { transform: rotateX(0deg)   rotateY(180deg) rotate(-8deg)   scale(1)     translateY(0); }      /* SLOW end / settle */
 }
 @keyframes flipMalleableBwd {
-  0%   { transform: rotateX(0deg)   rotateY(180deg) rotate(-8deg); }
-  22%  { transform: rotateX(-12deg) rotateY(150deg) rotate(-6.5deg); }
-  50%  { transform: rotateX(0deg)   rotateY(90deg)  rotate(-4deg); }
-  78%  { transform: rotateX(10deg)  rotateY(30deg)  rotate(-1.5deg); }
-  100% { transform: rotateX(0deg)   rotateY(0deg)   rotate(0deg); }
+  0%   { transform: rotateX(0deg)   rotateY(180deg) rotate(-8deg)   scale(1)     translateY(0); }
+  5%   { transform: rotateX(-3deg)  rotateY(175deg) rotate(-7.7deg) scale(1.005) translateY(-1px); }
+  10%  { transform: rotateX(-6deg)  rotateY(168deg) rotate(-7.2deg) scale(1.01)  translateY(-5px); }
+  32%  { transform: rotateX(-7deg)  rotateY(122deg) rotate(-5.3deg) scale(1.09)  translateY(-14px); }
+  50%  { transform: rotateX(0deg)   rotateY(91deg)  rotate(-4.0deg) scale(1.2) translateY(-21px); }
+  53%  { transform: rotateX(3deg)   rotateY(87deg)  rotate(-3.7deg) scale(1.14)  translateY(-22px); }
+  68%  { transform: rotateX(6deg)   rotateY(45deg)  rotate(-2.1deg) scale(1.09)  translateY(-14px); }
+
+  94%  { transform: rotateX(1deg)   rotateY(3deg)   rotate(-0.15deg) scale(0.985) translateY(1px); }
+  100% { transform: rotateX(0deg)   rotateY(0deg)   rotate(0deg)    scale(1)     translateY(0); }
 }
 
 /* Faces — each face is a full polaroid card (paper look). Front is
@@ -3266,31 +3292,481 @@ em.it { font-style: italic; }
   opacity: 1;
   transform: scale(1);
 }
+/* ── Unified pill shell — every variant renders inside the same
+   fixed-size solid rectangle. Shell overflow is VISIBLE so the art
+   cloud can extend past the perimeter; carousel pills (food/friends)
+   clip their own inner frames to keep contents inside the rectangle. */
 .hover-bag__pill-inner {
-  width: 196px;
-  height: 136px;
-  border-radius: 12px;
-  overflow: hidden;
+  width: 240px;
+  height: 170px;
+  border-radius: 14px;
   background: #F6EEE6;
+  border: 1.5px solid rgb(var(--fg-rgb) / 0.12);
   box-shadow:
-    0 4px 10px rgba(0, 0, 0, 0.15),
-    0 12px 28px -8px rgba(0, 0, 0, 0.35);
+    0 6px 14px rgba(0, 0, 0, 0.18),
+    0 2px 4px rgba(0, 0, 0, 0.08);
+  position: relative;
+  color: var(--fg-soft);
+  overflow: visible;
 }
-.hover-bag__pill-inner .image-slot {
-  width: 100%;
-  height: 100%;
+/* Art pill — the cloud now covers only the TOP HALF of the shell
+   (per the sketch), so restore the pill's own background/border so
+   the bottom half of the pill (which holds the caption) reads as a
+   normal card. */
+.hover-bag__pill--ipad .hover-bag__pill-inner {
+  overflow: hidden;
+}
+
+/* Every variant absolutely fills the shell so layouts can position
+   from the shell's edges consistently. */
+.hover-bag__pill-inner > div[class^="pill-"] {
+  position: absolute;
+  inset: 0;
+}
+
+/* ---- Music (iPod centered + two flanking handwritten notes) ------ */
+.pill-music {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--f-mono);
-  font-size: 10px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: rgb(var(--fg-rgb) / 0.42);
-  text-align: center;
   padding: 8px;
-  background-image:
-    repeating-linear-gradient(45deg, transparent 0 14px, rgba(0, 0, 0, 0.035) 14px 15px);
+}
+.pill-music__ipod {
+  width: 82px;
+  padding: 10px 8px 10px;
+  border-radius: 12px;
+  background: #FFFDF7;
+  border: 1.5px solid rgb(var(--fg-rgb) / 0.14);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.pill-music__screen {
+  height: 62px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #2A302F, #1A1F1E);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 4px;
+  color: #F6EEE6;
+}
+.pill-music__track {
+  font-family: var(--f-hand);
+  font-size: 14px;
+  font-weight: 700;
+  color: #F6EEE6;
+  line-height: 1;
+}
+.pill-music__wave {
+  display: block;
+  width: 46px;
+  height: 10px;
+  background:
+    radial-gradient(circle at  4px  6px, #C68D5F 0 1.6px, transparent 1.6px),
+    radial-gradient(circle at 12px  3px, #C68D5F 0 1.6px, transparent 1.6px),
+    radial-gradient(circle at 20px  8px, #C68D5F 0 1.6px, transparent 1.6px),
+    radial-gradient(circle at 28px  3px, #C68D5F 0 1.6px, transparent 1.6px),
+    radial-gradient(circle at 36px  6px, #C68D5F 0 1.6px, transparent 1.6px);
+}
+.pill-music__wheel {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  height: 28px;
+  border-radius: 999px;
+  background: #EADDD0;
+  color: var(--fg-soft);
+  font-size: 10px;
+}
+.pill-music__wheel-btn--center {
+  color: var(--accent-on-cream);
+  font-size: 13px;
+}
+.pill-music__note {
+  position: absolute;
+  background: #FFFDF7;
+  border: 1px solid rgb(var(--fg-rgb) / 0.14);
+  border-radius: 8px;
+  padding: 5px 8px;
+  font-family: var(--f-hand);
+  font-size: 11px;
+  line-height: 1.25;
+  color: var(--fg-soft);
+  max-width: 78px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+}
+.pill-music__note strong { color: var(--accent-on-cream); font-weight: 700; font-size: 12px; }
+.pill-music__note--left  { top: 14px; left: 8px; transform: rotate(-5deg); }
+.pill-music__note--right { bottom: 14px; right: 8px; transform: rotate(4deg); }
+
+/* ---- Friends (upward cascade — new photos enter from the bottom,
+   drift up, exit at the top). Each polaroid has its own horizontal
+   offset + rotation so the pile is DISPERSED (not a single-file
+   column) — at any moment ~2-3 cards are visible spread across the
+   pill's width with names readable. */
+.pill-friends {}
+.pill-friends__frame {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 12px;
+}
+.pill-friends__card {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 62px;
+  padding: 3px 3px 12px;
+  background: #FFFDF7;
+  border-radius: 3px;
+  box-shadow: 0 3px 7px rgba(0,0,0,0.22);
+  animation: friendsRise 12s linear infinite;
+}
+.pill-friends__photo {
+  width: 100%;
+  aspect-ratio: 1;
+  background: linear-gradient(135deg, #C6BDB2 0%, #A89E92 100%);
+  border-radius: 2px;
+}
+.pill-friends__name {
+  display: block;
+  margin-top: 2px;
+  font-family: var(--f-hand);
+  font-size: 11px;
+  line-height: 1;
+  text-align: center;
+  color: var(--fg-soft);
+}
+/* Continuous rise — enters at bottom of frame (translateY 120%),
+   drifts UP through the pill, exits at top (translateY -220%). The
+   card's horizontal offset (--x) stays constant so it moves straight
+   up; its rotation (--rot) stays constant so the photo feels stable.
+   6 cards staggered by 2s each on a 12s loop → ~3 visible at a time. */
+@keyframes friendsRise {
+  0%   { transform: translate(calc(-50% + var(--x, 0px)),  120%) rotate(var(--rot, 0deg)); }
+  100% { transform: translate(calc(-50% + var(--x, 0px)), -220%) rotate(var(--rot, 0deg)); }
+}
+
+/* ---- Food (lazy-Susan wheel with plates on cardinal points) ------
+   4 plates positioned around a rotating disc. The disc spins slowly
+   and continuously; each plate is counter-rotated inside its slot so
+   it stays visually upright as the wheel turns. The plate currently
+   at the FRONT (bottom of the disc, closest to the viewer) reads as
+   the featured item — others are half-clipped by the pill edges,
+   creating the illusion that the wheel extends beyond the pill. */
+.pill-food { overflow: hidden; border-radius: 12px; }
+.pill-food__caption {
+  position: absolute;
+  top: 8px;
+  left: 12px;
+  font-family: var(--f-hand);
+  font-size: 12px;
+  color: var(--accent-on-cream);
+  z-index: 3;
+}
+.pill-food__wheel {
+  position: absolute;
+  /* Wheel is larger than before AND positioned so the featured plate
+     (at wheel's 6 o'clock) sits WELL INSIDE the pill — not clipped
+     at the bottom edge. Wheel hub sits above the pill's top edge so
+     the visible arc is the bottom quarter of the wheel; the feature
+     plate lands ~60% down into the pill with clearance from the edge. */
+  top: 50%;
+  left: 50%;
+  width: 260px;
+  height: 260px;
+  transform: translate(-50%, -95%);
+  /* Timing function is cubic-bezier(0.65, 0, 0.35, 1) — a smooth
+     accelerate-decelerate that makes each 90° step feel intentional
+     (glide → settle → glide) rather than mechanical linear spinning. */
+  animation: foodSpin 12s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+.pill-food__slot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  transform-origin: center;
+}
+.pill-food__counter {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  translate: -50% -50%;
+}
+.pill-food__plate {
+  display: block;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.22), inset 0 -3px 6px rgba(0,0,0,0.15);
+}
+.pill-food__label {
+  font-family: var(--f-hand);
+  font-size: 13px;
+  color: var(--fg-soft);
+  background: #FFFDF7;
+  padding: 1px 6px;
+  border-radius: 3px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  white-space: nowrap;
+}
+/* Rhythmic carousel — rotates 90°, PAUSES to showcase the food,
+   then rotates the next 90°. Each of the 4 plates gets ~2s of
+   featured "hold" time. Total cycle 12s (4 × 3s per plate). */
+@keyframes foodSpin {
+  0%,  17% { transform: translate(-50%, -95%) rotate(0deg); }
+  25%, 42% { transform: translate(-50%, -95%) rotate(-90deg); }
+  50%, 67% { transform: translate(-50%, -95%) rotate(-180deg); }
+  75%, 92% { transform: translate(-50%, -95%) rotate(-270deg); }
+  100%     { transform: translate(-50%, -95%) rotate(-360deg); }
+}
+/* Counter-rotate in matching stepped rhythm so plates stay upright
+   during the wheel's paused holds AND during its transitions. */
+.pill-food__counter {
+  animation: foodCounter 12s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+@keyframes foodCounter {
+  0%,  17% { rotate: 0deg; }
+  25%, 42% { rotate: 90deg; }
+  50%, 67% { rotate: 180deg; }
+  75%, 92% { rotate: 270deg; }
+  100%     { rotate: 360deg; }
+}
+
+/* ---- Travel (camera zooms into each pin sequentially) ----------
+   Pinboard background stays fixed. A "camera" (scaling wrapper)
+   animates transform to zoom in on each pin one at a time — purple
+   (China) → red (Japan) → yellow (HK) → back to purple. Cycle 9s
+   with a hold at each pin so the recruiter can read the label. */
+.pill-travel {
+  background:
+    repeating-linear-gradient(45deg, #E8DDCB 0 6px, #E3D7C1 6px 12px);
+  border-radius: 12px;
+  overflow: hidden;
+  color: var(--accent-on-cream);
+}
+.pill-travel__caption {
+  position: absolute;
+  top: 8px;
+  left: 12px;
+  font-family: var(--f-hand);
+  font-size: 12px;
+  color: var(--accent-on-cream);
+  z-index: 3;
+}
+/* Camera wrapper — animates translate + scale to zoom into each pin
+   in the sequence. transform-origin at 0 0 so math is predictable:
+   to bring pin (px, py) to viewport center (120, 85) at scale s:
+     transform: translate(120 - px*s, 85 - py*s) scale(s)
+   Pins at China (48, 71), Japan (130, 102), HK (197, 61).
+   Scale used: 2. */
+.pill-travel__camera {
+  position: absolute;
+  inset: 0;
+  transform-origin: 0 0;
+  animation: travelPan 9s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+@keyframes travelPan {
+  0%,   25% { transform: translate(24px,  -57px) scale(2); }    /* China */
+  33%,  58% { transform: translate(-140px, -119px) scale(2); }   /* Japan */
+  66%,  91% { transform: translate(-274px, -37px) scale(2); }    /* HK */
+  100%      { transform: translate(24px,  -57px) scale(2); }
+}
+.pill-travel__web {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.pill-travel__pin {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  padding: 3px 8px 3px 14px;
+  background: #FFFDF7;
+  color: var(--fg-soft);
+  font-family: var(--f-hand);
+  font-size: 12px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.16);
+  border: 2px solid transparent;
+  white-space: nowrap;
+}
+.pill-travel__pin--purple { border-color: #7C4A9A; }
+.pill-travel__pin--red    { border-color: #B5533A; }
+.pill-travel__pin--yellow { border-color: #E2B341; }
+.pill-travel__dot {
+  position: absolute;
+  left: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+/* ---- Games (dispersed icons + centered story overlay) -----------
+   Icons stay in the same triangle positions. A cursor orbits and
+   "clicks" each. Instead of story popups near each icon, a SINGLE
+   centered story overlay sits at the pill's midpoint — content
+   swaps in sync with the cursor's active icon so the recruiter's eye
+   has one predictable place to read. */
+.pill-games { overflow: hidden; border-radius: 12px; }
+.pill-games__slot {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  z-index: 1;
+}
+.pill-games__slot[data-idx="0"] { top: 18px; left: 28px; }
+.pill-games__slot[data-idx="1"] { top: 18px; right: 28px; }
+.pill-games__slot[data-idx="2"] { bottom: 22px; left: 50%; transform: translateX(-50%); }
+.pill-games__icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFDF7;
+  font-family: var(--f-display);
+  font-weight: 800;
+  font-size: 16px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.22);
+  animation: iconPulse 9s ease-in-out infinite;
+}
+.pill-games__label {
+  font-family: var(--f-mono);
+  font-size: 8px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fg-soft);
+}
+.pill-games__slot[data-idx="0"] .pill-games__icon { animation-delay:  0s; }
+.pill-games__slot[data-idx="1"] .pill-games__icon { animation-delay: -3s; }
+.pill-games__slot[data-idx="2"] .pill-games__icon { animation-delay: -6s; }
+
+/* Centered story stage — always at the pill midpoint. Story items
+   cycle through it in sync with the cursor's icon-visits. */
+.pill-games__stage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  min-width: 130px;
+  min-height: 40px;
+  padding: 6px 10px;
+  background: #FFFDF7;
+  border: 1px solid rgb(var(--fg-rgb) / 0.14);
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+.pill-games__story {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  padding: 0 6px;
+  font-family: var(--f-hand);
+  font-size: 12px;
+  line-height: 1.2;
+  color: var(--fg-soft);
+  text-align: center;
+  white-space: nowrap;
+  opacity: 0;
+  animation: storyCentered 9s ease-in-out infinite;
+}
+@keyframes iconPulse {
+  0%, 100% { transform: scale(1); }
+  33%      { transform: scale(1.18); box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+  44%      { transform: scale(1); }
+}
+@keyframes storyCentered {
+  0%, 8%, 100% { opacity: 0; transform: translate(-50%, calc(-50% + 4px)); }
+  16%, 33%     { opacity: 1; transform: translate(-50%, -50%); }
+  44%          { opacity: 0; transform: translate(-50%, calc(-50% + 4px)); }
+}
+/* Cursor sprite — orbits between the 3 icon positions in a 9s cycle. */
+.pill-games__cursor {
+  position: absolute;
+  top: 28px;
+  left: 40px;
+  animation: cursorOrbit 9s cubic-bezier(0.6, 0, 0.4, 1) infinite;
+  pointer-events: none;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));
+  z-index: 3;
+}
+@keyframes cursorOrbit {
+  0%,15%   { top: 28px; left: 40px; transform: scale(1); }
+  10%      { top: 28px; left: 40px; transform: scale(0.85); }
+  33%,48%  { top: 28px; left: 190px; transform: scale(1); }
+  43%      { top: 28px; left: 190px; transform: scale(0.85); }
+  66%,81%  { top: 122px; left: 115px; transform: scale(1); }
+  76%      { top: 122px; left: 115px; transform: scale(0.85); }
+  100%     { top: 28px; left: 40px; transform: scale(1); }
+}
+
+/* ---- Art (thought bubble covers TOP HALF only, caption below) ---
+   Cloud SVG now sits in the top half of the pill. Doodle inside the
+   cloud; caption below the cloud in the bottom half of the pill. */
+.pill-art { display: block; }
+.pill-art__cloud {
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  width: 220px;
+  height: 100px;
+  transform: translateX(-50%);
+  color: var(--accent-on-cream);
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.14));
+}
+.pill-art__inner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 12px 14px;
+  z-index: 1;
+}
+.pill-art__doodle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 60px;
+}
+.pill-art__doodle svg {
+  width: 50px;
+  height: 50px;
+  color: var(--accent-on-cream);
+}
+.pill-art__caption {
+  margin: 0;
+  font-family: var(--f-hand);
+  font-size: 14px;
+  line-height: 1.2;
+  text-align: center;
+  color: var(--fg-soft);
 }
 
 /* Entrance: two-stage stagger — heading first, body text follows.
