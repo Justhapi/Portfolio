@@ -5,6 +5,8 @@ export default function CaseCover({
   imageLabel = "cover image",
   kicker,
   hideHero = false,
+  heroVideoSrc,
+  heroVideoPoster,
 }: {
   title: string;
   meta: string;
@@ -14,6 +16,15 @@ export default function CaseCover({
   kicker?: string;
   /** Suppress the hero image slot — used when NDA or other constraints prevent showing visuals. */
   hideHero?: boolean;
+  /** When provided, render a looping muted autoplay video as the hero
+   *  instead of the placeholder image slot. Pass an ES-imported .webm
+   *  / .mp4 asset (e.g. `import cover from './Cover.webm'` → pass
+   *  `cover` here — webpack's asset/resource loader outputs a string
+   *  URL). */
+  heroVideoSrc?: string;
+  /** Optional still image shown before the video loads / as fallback for
+   *  browsers that don't support the video format. */
+  heroVideoPoster?: string;
 }) {
   return (
     <header className="case-cover">
@@ -24,7 +35,20 @@ export default function CaseCover({
         <div className="case-subtitle">{subtitle}</div>
         {!hideHero && (
           <div className="case-hero-image">
-            <div className="image-slot">{imageLabel}</div>
+            {heroVideoSrc ? (
+              <video
+                className="case-hero-video"
+                src={heroVideoSrc}
+                poster={heroVideoPoster}
+                autoPlay
+                loop
+                muted
+                playsInline
+                aria-label={imageLabel}
+              />
+            ) : (
+              <div className="image-slot">{imageLabel}</div>
+            )}
           </div>
         )}
       </div>

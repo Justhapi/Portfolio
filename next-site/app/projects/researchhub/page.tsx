@@ -37,6 +37,12 @@ const SECTIONS = [
   { id: "takeaways", label: "Takeaways" },
 ];
 
+/* Cover video — served from /public/img/cover so the static export
+   pipeline copies it verbatim to /out. basePath prefix same pattern
+   as HoverBag and the Frogslayer cover: /Portfolio in prod, "" in dev. */
+const BASE_PATH = process.env.NODE_ENV === "production" ? "/Portfolio" : "";
+const COVER_VIDEO = `${BASE_PATH}/img/cover/ResearchHub.webm`;
+
 export default function ResearchHubCaseStudy() {
   return (
     <div className="case">
@@ -45,7 +51,8 @@ export default function ResearchHubCaseStudy() {
         title="ResearchHub — Connecting Students with Faculty Research"
         meta="Spring 2026 · 6 weeks · 5 engineers + me · Design Engineer (sole designer)"
         subtitle="A redesigned student–faculty research platform, planned to ship fall 2026"
-        imageLabel="ResearchHub · cover image"
+        imageLabel="ResearchHub · cover animation"
+        heroVideoSrc={COVER_VIDEO}
       />
 
       <main id="main" className="case-body">

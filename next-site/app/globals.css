@@ -4770,6 +4770,17 @@ em.it { font-style: italic; }
   background:
     repeating-linear-gradient(45deg, transparent 0 14px, rgba(0,0,0,0.04) 14px 15px);
 }
+/* Video cover — fills the .case-hero-image frame (16:9 aspect-ratio),
+   crop-to-fill so the frame is always fully covered even if the video
+   source's aspect ratio differs slightly. Autoplay/muted/loop set on
+   the element itself (see CaseCover). */
+.case-hero-image .case-hero-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  background: var(--paper);
+}
 
 .case-body {
   max-width: 1080px;
@@ -4927,8 +4938,26 @@ em.it { font-style: italic; }
 .about-body ul.focus-list--spark li {
   display: flex;
   align-items: flex-start;
+  justify-content: flex-start;
   gap: 12px;
   margin: 0;
+  text-align: left;
+}
+/* On narrow viewports (≤820px) where .about-body-split stacks + centers
+   the whole About column, each list row becomes an inline-flex GROUP
+   sized to its content — sparkle sits right against the text with the
+   12px gap — and the row is centered as a whole within the ul's grid
+   cell via justify-self. This gives "text centered on the page" AND
+   "sparkle right next to the text" simultaneously. */
+@media (max-width: 820px) {
+  .about-body ul.focus-list--spark {
+    margin-inline: auto;
+    justify-items: center;
+  }
+  .about-body ul.focus-list--spark li {
+    width: fit-content;
+    max-width: 100%;
+  }
 }
 .about-body ul.focus-list--spark li > svg {
   flex-shrink: 0;
@@ -4940,7 +4969,13 @@ em.it { font-style: italic; }
   transform: translateY(6px);
 }
 .about-body ul.focus-list--spark li > span {
-  flex: 1;
+  /* Sizes to text width (not full flex row) so the sparkle sits
+     directly adjacent to the text. Prevents the "sparkle on the far
+     left, text floating in the middle" gap that appeared when the
+     span had flex:1 and inherited text-align:center from the mobile
+     .about-body-split rule. */
+  flex: 0 1 auto;
+  text-align: left;
 }
 
 /* ── JT User Interviews split layout ────────────────────────────────────

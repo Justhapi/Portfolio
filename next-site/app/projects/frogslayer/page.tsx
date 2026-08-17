@@ -36,6 +36,14 @@ const SECTIONS = [
   { id: "takeaways", label: "Takeaways" },
 ];
 
+/* Cover video — served from /public so static export (`output: "export"`)
+   copies it verbatim to /out. ES-module import via the asset/resource
+   webpack loader emitted the file to the server bundle, which the
+   static-export pipeline doesn't publish — 404 on GitHub Pages.
+   basePath prefix same pattern as HoverBag: /Portfolio in prod, "" in dev. */
+const BASE_PATH = process.env.NODE_ENV === "production" ? "/Portfolio" : "";
+const COVER_VIDEO = `${BASE_PATH}/img/cover/Frogslayer.webm`;
+
 export default function FrogslayerCaseStudy() {
   return (
     <div className="case">
@@ -44,10 +52,19 @@ export default function FrogslayerCaseStudy() {
         title="Kiosk Interface Design Guidelines"
         meta="Fall 2025 · 8 weeks · 6-person team · UX Designer & Researcher, Point of Communication"
         subtitle="Adopted as Frogslayer's guideline reference + collaboration extended"
-        imageLabel="Frogslayer kiosk · cover image"
+        imageLabel="Frogslayer kiosk · cover animation"
+        heroVideoSrc={COVER_VIDEO}
       />
 
       <main id="main" className="case-body">
+        <p className="case-disclaimer" aria-label="NDA notice">
+          <span className="case-disclaimer__badge">NDA</span>
+          <span className="case-disclaimer__text">
+            This case study covers sponsor work under a non-disclosure agreement.
+            The company&rsquo;s prototype visuals and analyzed competitor names are excluded.
+            Process narrative and personal takeaways are preserved.
+          </span>
+        </p>
         <section id="outcome" className="case-section">
           <h2>Outcome</h2>
           <aside className="outcome-callout" aria-label="Project outcome">
