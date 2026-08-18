@@ -150,9 +150,24 @@
      it's used in one specific role. */
   --f-quote:   var(--font-klee, "Klee One"), Georgia, "Times New Roman", serif;
 
-  /* easing */
-  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  /* easing tokens */
+  --ease-out-expo:  cubic-bezier(0.16, 1, 0.3, 1);
   --ease-out-quart: cubic-bezier(0.22, 1, 0.36, 1);
+  /* --ease-snap: strong ease-out for UI state changes (dropdowns, pill
+     entrance, hover pops). Emil's recommended UI curve — instant
+     response, smooth settle, no overshoot. */
+  --ease-snap:      cubic-bezier(0.23, 1, 0.32, 1);
+  /* --ease-spring: signature bounce/overshoot easing (previously inlined
+     32× as cubic-bezier(0.34, 1.56, 0.64, 1)). Use for rare/one-shot
+     personality moments — never on mousemove-driven or continuous
+     animations where overshoot compounds into jitter. */
+  --ease-spring:    cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* duration tokens */
+  --dur-instant: 100ms;   /* button press feedback */
+  --dur-fast:    160ms;   /* tooltips, small state changes */
+  --dur-med:     240ms;   /* dropdowns, hover pops */
+  --dur-slow:    400ms;   /* modals, drawers, cascade reveals */
 }
 
 * { box-sizing: border-box; }
@@ -459,11 +474,18 @@ body.on-paper .nav-mark {
   border-radius: 999px;
   border: 1px solid transparent; /* no visible pill in hero */
   background: transparent;
+  /* Was 850ms on both gap + padding (layout properties) — that's a
+     3× UI-budget window of layout thrash every time the nav crosses
+     from hero to paper on scroll. Reduced to 400ms so the thrash
+     window is closer to Emil's UI budget while still reading as a
+     deliberate morph. Full DOM refactor to eliminate the layout
+     animation entirely (wrap content in a scaling child) is the
+     ideal fix, deferred to when the nav structure is next touched. */
   transition:
-    gap 850ms var(--ease-out-expo),
-    padding 850ms var(--ease-out-expo),
-    border-color 600ms ease,
-    background 600ms ease;
+    gap var(--dur-slow) var(--ease-out-expo),
+    padding var(--dur-slow) var(--ease-out-expo),
+    border-color 300ms ease,
+    background 300ms ease;
 }
 body.on-paper .nav-pill {
   gap: 2px;
@@ -500,10 +522,16 @@ body.on-paper .nav-pill {
     opacity 200ms ease,
     fill 200ms ease;
 }
-.nav-link:hover { opacity: 1; }
-.nav-link:hover .nav-spark {
-  transform: rotate(90deg);
-  opacity: 1;
+/* Hover gating — touch devices trigger :hover on tap, which "sticks"
+   the hover state until the user taps elsewhere. Emil's rule:
+   wrap hover-only visual state changes behind hover-capable pointers
+   so touch gets clean tap → active states instead of stuck hovers. */
+@media (hover: hover) and (pointer: fine) {
+  .nav-link:hover { opacity: 1; }
+  .nav-link:hover .nav-spark {
+    transform: rotate(90deg);
+    opacity: 1;
+  }
 }
 .nav-link.active {
   opacity: 1;
@@ -1242,15 +1270,17 @@ body.on-paper .nav-pill {
          back for a subtle spring bounce at the end
      Duration bumped 220ms → 380ms for the extra choreography. */
   transition: transform 380ms cubic-bezier(0.55, 0.05, 0.15, 1.2);
-  /* One-time wiggle "affordance" — after the polaroid's entrance
-     animation completes (350ms delay + 550ms duration = 900ms) plus
-     ~700ms of settling breathing room, a brief 900ms rocking motion
-     signals that the card is interactive (click to flip, hover to
-     lift). No iteration = plays once, then returns to rest so it
-     doesn't become visual noise during the rest of the session.
-     Skipped for reduced-motion users via the global media rule
-     already in place at the bottom of the file. */
-  animation: polaroidWiggleHint 900ms cubic-bezier(0.4, 0.0, 0.2, 1) 1600ms 1 backwards;
+}
+/* One-time wiggle "affordance" — signals the polaroid is interactive.
+   Triggered by IntersectionObserver in HeroV2 the first time the
+   polaroid enters the viewport (via the .play-wiggle class), so users
+   who scroll fast past the hero on page load AND users who return
+   with restored scroll positions both catch the affordance signal
+   when the polaroid is actually visible.
+   Skipped for reduced-motion users via the global media rule at the
+   bottom of the file. */
+.polaroid-lift.play-wiggle {
+  animation: polaroidWiggleHint 900ms cubic-bezier(0.4, 0.0, 0.2, 1) 1 backwards;
 }
 @keyframes polaroidWiggleHint {
   0%   { transform: rotate(0deg); }
@@ -3986,8 +4016,13 @@ em.it { font-style: italic; }
   text-decoration-color: var(--accent);
   cursor: default;
   display: inline-block; /* needed for transform to apply on inline text */
+  /* Was cubic-bezier(0.34, 1.56, 0.64, 1) at 260ms — spring overshoot
+     on a mousemove-driven tilt reads as jittery because the transition
+     re-triggers on every mouse motion event. Emil's rule 3: strong
+     ease-out for interactive UI. Duration shortened to 160ms for
+     snappier response to cursor tracking. */
   transition: color 150ms ease, text-decoration-color 150ms ease,
-              transform 260ms cubic-bezier(0.34, 1.56, 0.64, 1);
+              transform var(--dur-fast) var(--ease-snap);
 }
 .hw--on .hw-label {
   color: var(--fg);
@@ -4413,7 +4448,9 @@ em.it { font-style: italic; }
     color 200ms ease,
     border-color 200ms ease,
     background 200ms ease,
-    transform 240ms var(--ease-out-quart);
+    /* Was 240ms — button press feedback should be 100-160ms (Emil's
+       duration table) so it feels instant, not delayed. */
+    transform var(--dur-instant) var(--ease-snap);
 }
 .c-copy:hover {
   color: var(--hero-fg);
@@ -4432,10 +4469,13 @@ em.it { font-style: italic; }
   border-color: rgba(157, 216, 157, 0.5);
   background: rgba(157, 216, 157, 0.08);
 }
-.c-copy.is-copied .c-copy-icon { animation: copyPulse 420ms var(--ease-out-quart); }
+.c-copy.is-copied .c-copy-icon { animation: copyPulse 280ms var(--ease-snap); }
 @keyframes copyPulse {
-  0%   { transform: scale(0.5); opacity: 0; }
-  60%  { transform: scale(1.2); opacity: 1; }
+  /* Was starting from scale(0.5) — nothing in the real world appears
+     from near-nothing; Emil's rule. Start at scale(0.9) + opacity 0.
+     Duration shortened 420 → 280ms for a snappier success signal. */
+  0%   { transform: scale(0.9); opacity: 0; }
+  55%  { transform: scale(1.15); opacity: 1; }
   100% { transform: scale(1); opacity: 1; }
 }
 
@@ -4612,7 +4652,10 @@ em.it { font-style: italic; }
      longer 560ms duration so the corner morph reads as a continuous
      "breathing" rather than a snap. Matches the calm motion language
      used elsewhere on the site (folder morph, divider reveal). */
-  transition: border-radius 560ms cubic-bezier(0.45, 0, 0.55, 1);
+  /* Was 560ms — too long for a subtle corner morph; tightened to
+     320ms with the shared --ease-snap so it reads as a crisp state
+     change rather than a slow breathe. */
+  transition: border-radius 320ms var(--ease-snap);
 }
 .case-nav-pill::-webkit-scrollbar {
   display: none;

@@ -43,6 +43,12 @@ export default function HeroV2() {
   const targetRef = useRef(false);
   const riseTimerRef = useRef<number | null>(null);
   const animEndTimerRef = useRef<number | null>(null);
+  /* Ref to the .polaroid-lift wrapper — used by an IntersectionObserver
+     that adds the .play-wiggle class the FIRST time the polaroid comes
+     into view. Ensures the affordance signal fires when the polaroid
+     is actually visible, not on a page-load timer that could miss
+     users who scroll fast or return with a restored scroll position. */
+  const liftRef = useRef<HTMLDivElement | null>(null);
   // Hover wrapper — receives an inline rotateY on mouseenter for a
   // clear sideways tilt cue that hints clickability.
   const hoverRef = useRef<HTMLDivElement | null>(null);
@@ -128,6 +134,40 @@ export default function HeroV2() {
     return () => {
       if (riseTimerRef.current) window.clearTimeout(riseTimerRef.current);
       if (animEndTimerRef.current) window.clearTimeout(animEndTimerRef.current);
+    };
+  }, []);
+
+  /* Wiggle hint trigger — adds .play-wiggle the FIRST time the polaroid
+     enters the viewport. Was previously CSS-only with a fixed 1600ms
+     load delay, which missed users who scrolled past the hero within
+     that window (mobile especially) or who returned with a scroll
+     position past hero. IntersectionObserver ensures the affordance
+     fires when the polaroid is actually visible. Adds a small delay
+     after entry so the polaroid's own entrance animation (350+550ms)
+     finishes settling first. Once triggered, the observer disconnects
+     so the wiggle plays exactly once per session. */
+  useEffect(() => {
+    const el = liftRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    let wiggleTimer: number | null = null;
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            wiggleTimer = window.setTimeout(() => {
+              el.classList.add("play-wiggle");
+            }, 900);
+            io.disconnect();
+            break;
+          }
+        }
+      },
+      { threshold: 0.4 }
+    );
+    io.observe(el);
+    return () => {
+      io.disconnect();
+      if (wiggleTimer) window.clearTimeout(wiggleTimer);
     };
   }, []);
 
@@ -230,7 +270,7 @@ export default function HeroV2() {
               inline-style specificity. Moving the rise to this inner
               element lets the two transforms compose via the CSS
               transform chain instead of clobbering each other. */}
-          <div className={`polaroid-lift${isRaised ? " is-raised" : ""}`}>
+          <div ref={liftRef} className={`polaroid-lift${isRaised ? " is-raised" : ""}`}>
             {/* Hover-tilt wrapper — mouse tracking rotates this element
                 on X/Y to follow the cursor. Wraps the flipper button so
                 the click choreography (which owns .polaroid-card's
