@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 /**
  * HoverBag — layered bag illustration with hoverable items.
@@ -106,12 +106,13 @@ const EFFECT_CLASS: Record<HoverEffect, string> = {
    -120 X = half of pill width so cursor is under pill center.
    -186 Y = pill height (170) + 16px gap → pill bottom lands ~16px
    above cursor so the two never overlap. */
-/* Pill positioning relative to cursor — placed just above and slightly
-   to the right of the pointer, tooltip-style. Small ~12px gap so the
-   cursor sits clearly at the pill's lower-left corner without being
-   covered. Was too far up-and-left (pill floated well above the bag). */
-const PILL_OFFSET_X = 14;
-const PILL_OFFSET_Y = -12 - 170; /* gap + pill height */
+/* Pill positioning relative to cursor — tightened from a 12px vertical
+   gap and 14px right offset to sit right next to the cursor tooltip-
+   style. Cursor now lands ~2px below the pill's bottom edge and 6px
+   left of its left edge → pill visually attaches to the cursor
+   instead of floating above it. */
+const PILL_OFFSET_X = 6;
+const PILL_OFFSET_Y = -2 - 170; /* gap + pill height */
 
 /**
  * GitHub Pages serves the site under /Portfolio/, so raw <img src="/…"> paths
@@ -124,6 +125,21 @@ const BASE_PATH = process.env.NODE_ENV === "production" ? "/Portfolio" : "";
 export default function HoverBag({ debug = false }: { debug?: boolean }) {
   const [active, setActive] = useState<string | null>(null);
   const pillRef = useRef<HTMLDivElement | null>(null);
+  /* Gate the entire pill interaction to hover-capable pointers. Touch
+     users can't hover, so all 6 pill variants + the cursor-follow shell
+     are dead weight on mobile — no display + no listeners saves CSS
+     evaluation and JS work on the platform that most needs both.
+     Default true (SSR + before hydration) so hover-capable devices see
+     the pill instantly on first hover; useEffect corrects on touch. */
+  const [hoverCapable, setHoverCapable] = useState<boolean>(true);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const update = () => setHoverCapable(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
 
   /**
    * Clamp the pill so it NEVER extends beyond the browser viewport. The
@@ -175,7 +191,11 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
             draggable={false}
           />
         ))}
-        {ITEMS.map((item) => (
+        {/* Hit zones + mouse listeners: only rendered on hover-capable
+            pointers. On touch, the bag illustration stays visible as
+            static art but has no interactive hotspots — pointer events
+            on the bag are moot without a pill to reveal. */}
+        {hoverCapable && ITEMS.map((item) => (
           <button
             key={item.key}
             type="button"
@@ -199,15 +219,21 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
           />
         ))}
       </div>
-      <div
-        ref={pillRef}
-        className={`hover-bag__pill hover-bag__pill--${activeItem?.key ?? "none"}${active ? " is-on" : ""}`}
-        aria-hidden="true"
-      >
-        <div className="hover-bag__pill-inner">
-          {activeItem && renderPillVariant(activeItem.key)}
+      {/* Pill wrapper: gated on hover-capable so the entire cursor-
+          follow overlay is skipped on touch. Removes the pill's DOM
+          node entirely so its continuous CSS keyframe animations don't
+          run in the background either — meaningful battery win. */}
+      {hoverCapable && (
+        <div
+          ref={pillRef}
+          className={`hover-bag__pill hover-bag__pill--${activeItem?.key ?? "none"}${active ? " is-on" : ""}`}
+          aria-hidden="true"
+        >
+          <div className="hover-bag__pill-inner">
+            {activeItem && renderPillVariant(activeItem.key)}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

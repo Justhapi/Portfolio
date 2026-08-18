@@ -1,3 +1,5 @@
+import HeroVideo from "./HeroVideo";
+
 export default function CaseCover({
   title,
   meta,
@@ -36,15 +38,10 @@ export default function CaseCover({
         {!hideHero && (
           <div className="case-hero-image">
             {heroVideoSrc ? (
-              <video
-                className="case-hero-video"
+              <HeroVideo
                 src={heroVideoSrc}
                 poster={heroVideoPoster}
-                autoPlay
-                loop
-                muted
-                playsInline
-                aria-label={imageLabel}
+                label={imageLabel}
               />
             ) : (
               <div className="image-slot">{imageLabel}</div>
