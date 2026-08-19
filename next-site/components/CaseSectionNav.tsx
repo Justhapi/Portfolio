@@ -103,7 +103,13 @@ export default function CaseSectionNav({ sections }: { sections: Section[] }) {
   return (
     <nav className={`case-nav ${scrolled ? "scrolled" : ""}`} aria-label="Section navigation">
       <div className="case-nav-inner">
-        <Link href="/#work" className="case-back" aria-label="Back to projects">
+        {/* Route to `/` (not `/#work`) so Next.js's default hash-scroll
+            doesn't race with ScrollRestore. `scroll={false}` prevents
+            Next.js from auto-scrolling to top on navigation — leaves
+            positioning entirely to ScrollRestore, which reads the
+            sessionStorage entry saved when the user clicked the folder
+            card and restores their exact scrollY on the home page. */}
+        <Link href="/" scroll={false} className="case-back" aria-label="Back to projects">
           <span className="arrow">←</span>
           <span className="case-back-label">Back to projects</span>
         </Link>

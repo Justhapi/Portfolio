@@ -341,6 +341,24 @@ h1.ribbon-artist, h2.h { margin: 0; font-weight: inherit; }
   .cursor-fx, .cursor-dot, .cursor-ring { transition: none !important; }
 }
 
+/* ── prefers-reduced-transparency ────────────────────────────────
+   Users who set this preference find translucent surfaces hard to
+   read (blurry text on shifting backgrounds). Apple's guidance: swap
+   blur/backdrop-filter for solid, higher-opacity fills. Applies to
+   every surface on the site that uses backdrop-filter. */
+@media (prefers-reduced-transparency: reduce) {
+  .nav-pill,
+  body.on-paper .nav-pill,
+  .nav-menu-toggle,
+  body.on-paper .nav-menu-toggle,
+  .nav.is-menu-open .nav-pill,
+  .case-nav {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: var(--hero-bg-deep) !important;
+  }
+}
+
 /* =====================================================
    GRAIN OVERLAY
    ===================================================== */
@@ -3279,6 +3297,43 @@ em.it { font-style: italic; }
   outline-offset: 2px;
   border-radius: 4px;
 }
+/* Discoverability hint — one-time sparkle pulse at the center of each
+   interactive zone, staggered across the 6 items, fired once when
+   the bag first enters the viewport (via .in class from RevealOnScroll).
+   Signals "these items are hoverable" without cluttering the bag
+   illustration itself. Uses the accent color so it reads as part of
+   the site vocabulary. Skipped for reduced-motion users via the
+   global rule at the bottom of the file. */
+.hover-bag.in .hover-bag__zone::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--accent) 0%, rgba(198, 141, 95, 0) 70%);
+  transform: translate(-50%, -50%) scale(0);
+  animation: zoneHintPulse 1000ms var(--ease-out-quart) backwards;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+.hover-bag.in .hover-bag__zone:nth-of-type(1)::before { animation-delay: 1500ms; }
+.hover-bag.in .hover-bag__zone:nth-of-type(2)::before { animation-delay: 1620ms; }
+.hover-bag.in .hover-bag__zone:nth-of-type(3)::before { animation-delay: 1740ms; }
+.hover-bag.in .hover-bag__zone:nth-of-type(4)::before { animation-delay: 1860ms; }
+.hover-bag.in .hover-bag__zone:nth-of-type(5)::before { animation-delay: 1980ms; }
+.hover-bag.in .hover-bag__zone:nth-of-type(6)::before { animation-delay: 2100ms; }
+@keyframes zoneHintPulse {
+  0%   { transform: translate(-50%, -50%) scale(0);   opacity: 0; }
+  35%  { transform: translate(-50%, -50%) scale(1.2); opacity: 0.9; }
+  100% { transform: translate(-50%, -50%) scale(2.4); opacity: 0; }
+}
+/* Hide hint pulse for users who prefer reduced motion — the outline
+   focus-visible state still makes zones keyboard-discoverable. */
+@media (prefers-reduced-motion: reduce) {
+  .hover-bag.in .hover-bag__zone::before { animation: none; display: none; }
+}
 /* Debug outlines — turn on by passing `debug` prop to <HoverBag />.
    Renders each zone as a dashed rectangle with the item label in the
    top-left corner so zone positions can be visually verified without
@@ -4073,7 +4128,14 @@ em.it { font-style: italic; }
   top: 0;
   left: 0;
   transform: scale(0.88);
-  transform-origin: top left;
+  /* Apple's origin-aware popover rule: scale from the trigger, not
+     from an arbitrary corner. The pill sits ABOVE the keyword word,
+     so the bottom-center of the pill is the point closest to the
+     trigger. Scale grows from there → feels like the pill emerges
+     from the word rather than materializing above it. Was `top left`,
+     which made the pill grow toward the upper-right, away from the
+     trigger. */
+  transform-origin: 50% 100%;
   opacity: 0;
   pointer-events: none;
   z-index: 200;
@@ -4089,9 +4151,11 @@ em.it { font-style: italic; }
     0 20px 48px -10px rgb(var(--fg-rgb) / 0.32),
     0 4px 12px -2px rgb(var(--fg-rgb) / 0.14);
 
+  /* Tightened easing to match the HoverBag pill treatment — was
+     ease-out-quart at 200ms; --ease-snap at 160ms feels crisper. */
   transition:
-    opacity 180ms var(--ease-out-quart),
-    transform 200ms var(--ease-out-quart);
+    opacity var(--dur-fast) var(--ease-snap),
+    transform var(--dur-fast) var(--ease-snap);
 }
 .hw--on .hw-pill {
   opacity: 1;
@@ -4546,10 +4610,12 @@ em.it { font-style: italic; }
   top: 0;
   z-index: 60;
   /* match the home nav's perceived darkness — the case-cover bg below is lighter,
-     so we need a higher alpha to read at the same level. */
-  background: rgba(6, 8, 10, 0.92);
-  backdrop-filter: saturate(140%) blur(12px);
-  -webkit-backdrop-filter: saturate(140%) blur(12px);
+     so we need a higher alpha to read at the same level. Alpha slightly
+     softened (0.92 → 0.88) so the translucent-glass feel reads more
+     material-like without hurting label legibility. */
+  background: rgba(6, 8, 10, 0.88);
+  backdrop-filter: saturate(140%) blur(14px);
+  -webkit-backdrop-filter: saturate(140%) blur(14px);
   padding: 22px 0;
   transition: padding 280ms var(--ease-out-quart), background 280ms ease;
   border-bottom: 1px solid rgb(var(--hero-fg-rgb) / 0.06);

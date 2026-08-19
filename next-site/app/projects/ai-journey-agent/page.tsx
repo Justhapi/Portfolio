@@ -25,6 +25,11 @@ const SECTIONS = [
   { id: "takeaways", label: "Takeaways" },
 ];
 
+/* Cover video — served from /public/img/cover so static export copies
+   it verbatim. Same pattern as the other case studies. */
+const BASE_PATH = process.env.NODE_ENV === "production" ? "/Portfolio" : "";
+const COVER_VIDEO = `${BASE_PATH}/img/cover/Ai_Agent.webm`;
+
 export default function AIJourneyAgentCaseStudy() {
   return (
     <div className="case">
@@ -33,7 +38,8 @@ export default function AIJourneyAgentCaseStudy() {
         title="Designing an AI Maintenance Agent for Customer Journey Maps"
         meta="Spring 2026 · 8 weeks · UX Designer & Researcher · Concept shipped to development"
         subtitle="An agentic AI concept for keeping customer journey maps accurate and trustworthy over time"
-        imageLabel="AI maintenance agent · cover image"
+        imageLabel="AI maintenance agent · cover animation"
+        heroVideoSrc={COVER_VIDEO}
       />
 
       <main id="main" className="case-body">

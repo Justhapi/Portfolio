@@ -15,6 +15,11 @@ const SECTIONS = [
   { id: "takeaways", label: "Takeaways" },
 ];
 
+/* Cover video — served from /public/img/cover so static export copies
+   it verbatim. Same pattern as Frogslayer + ResearchHub. */
+const BASE_PATH = process.env.NODE_ENV === "production" ? "/Portfolio" : "";
+const COVER_VIDEO = `${BASE_PATH}/img/cover/inline.webm`;
+
 export default function PopByInlineCaseStudy() {
   return (
     <div className="case">
@@ -23,7 +28,8 @@ export default function PopByInlineCaseStudy() {
         title="Pop by inline — Designing Event Coordination Under Uncertainty"
         meta="Summer 2026 · 10 weeks · Product Design Intern"
         subtitle="A lightweight B2B2C consumer tool for planning everyday gatherings"
-        imageLabel="Pop by inline · cover image"
+        imageLabel="Pop by inline · cover animation"
+        heroVideoSrc={COVER_VIDEO}
       />
 
       <main id="main" className="case-body">
@@ -73,11 +79,11 @@ export default function PopByInlineCaseStudy() {
 
           <h3>My Role</h3>
           <p>
-            I worked as a Product Design Intern,working remotely with the Product
-            team based in Taiwan. I was the{" "}<mark className="hl">sole designer on one branch of the project</mark>, working
+            During this project, I worked as a Product Design Intern working remotely with inline's Product team based in Taiwan. I 
+            was the{" "}<mark className="hl">sole designer on one branch of the project</mark>, working
             alongside a parallel branch of the internship. My focus was to bring an outside perspective of the
             current market through competitive research, gap analysis, concept design, and
-            usability testing.
+            usability testing to ensure priority of features that ensures success of the Pop app within the exisiting market.
           </p>
         </section>
 
