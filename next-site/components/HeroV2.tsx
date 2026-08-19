@@ -390,7 +390,7 @@ export default function HeroV2() {
             <div className="d-text">
               <strong>Available Summer 2026</strong>
               <span className="d-sub">
-                Product Design, PM, and Producer
+                For internships in Product Design / Product Management!
               </span>
             </div>
           </div>

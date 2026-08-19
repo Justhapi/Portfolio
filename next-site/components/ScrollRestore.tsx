@@ -65,8 +65,14 @@ export default function ScrollRestore() {
       };
     }
 
-    sessionStorage.removeItem(KEY);
-
+    // Do NOT sessionStorage.removeItem here — React strict mode in dev
+    // double-invokes useEffect (mount → cleanup → mount). If we remove
+    // the saved value on run #1, run #2 sees an empty sessionStorage
+    // and falls into the "no saved" branch above, which forces the page
+    // to scrollTo(0, 0). Result: user lands on the hero every time.
+    // Keeping the value is safe because `saveHomeScroll` overwrites it
+    // on every subsequent folder-card click, so it always reflects the
+    // most recent scroll position — no stale restore.
     const y = parseInt(saved, 10);
     if (Number.isNaN(y)) return;
 
