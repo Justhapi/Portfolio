@@ -1922,7 +1922,12 @@ em.it { font-style: italic; }
   left: -60px;
   right: auto;
   bottom: auto;
-  transform: rotate(-6deg);
+  /* Coordinated with .designing-green.polaroid-attached below: this note
+     sits at the polaroid's TOP-LEFT and leans further left (-8deg) while
+     the availability note sits at BOTTOM-RIGHT and leans right (+3deg).
+     The two form a mirrored diagonal pair around the polaroid so the
+     cluster reads as intentionally composed rather than pinned at random. */
+  transform: rotate(-8deg);
   z-index: 13;
   /* Enters AFTER the focus line fades in on the left (2200-2720ms).
      Delay 2820ms so the paper-note cluster arrives as the final beat
@@ -1933,7 +1938,11 @@ em.it { font-style: italic; }
 .sticker.designing-green.polaroid-attached {
   /* bottom pushed further down (-30 → -70) so the sticker sits below
      the polaroid's handwritten caption line "I design solutions with
-     moments worth lingering on" — was previously clipping into it. */
+     moments worth lingering on" — was previously clipping into it.
+     Reverted from the mirrored +3deg back to the original -4deg lean
+     per user preference — the coordinated diagonal-mirror pairing with
+     the school-note (-8deg) was too obviously composed; the original
+     matched-lean pair reads more naturally as scrappily pinned. */
   top: auto;
   right: -60px;
   bottom: -70px;
@@ -1970,7 +1979,7 @@ em.it { font-style: italic; }
    interpolate between those frames, causing perceived lag. Instant
    application matches how parallax expects to drive the element. */
 .hero-polaroid.is-raised .sticker.school-note.polaroid-attached {
-  transform: rotate(-6deg) translate(-48px, -24px) !important;
+  transform: rotate(-8deg) translate(-48px, -24px) !important;
 }
 /* Availability sticker composes parallax + raise-shift via CSS custom
    properties. SmoothScroll.tsx writes `--parallax-y` (the vertical
@@ -1997,9 +2006,10 @@ em.it { font-style: italic; }
 
 @keyframes stickerGreenIn {
   /* Pure opacity fade — no translation, no rotation change. Sticker
-     appears in place at its rest -4° tilt (matches parallax baseRotate)
-     so there's no "second" positional/tilt state visible during
-     entrance or between entrance and parallax activation. */
+     appears in place at its rest -4° tilt (matches the reverted
+     rotation set above) so there's no "second" positional/tilt state
+     visible during entrance or between entrance and parallax
+     activation. */
   from { opacity: 0; transform: rotate(-4deg); }
   to   { opacity: 1; transform: rotate(-4deg); }
 }
@@ -2014,12 +2024,29 @@ em.it { font-style: italic; }
   color: var(--fg);
 }
 .sticker.designing-green .d-text strong {
+  /* Elevated hiring-window headline. Bumped from 18px → 22px so
+     "Summer 2026" is the biggest single glyph in the sticker — the one
+     fact a recruiter must retrieve in < 1 second. */
   font-family: var(--f-quote);
   font-weight: 600;
   font-style: normal;
-  font-size: 18px;
-  line-height: 1.15;
+  font-size: 22px;
+  line-height: 1.05;
   letter-spacing: -0.005em;
+}
+/* Small "Available" prefix chip above the hiring-window headline.
+   Mono, uppercased, tracked — sits like a tiny label above the primary
+   fact so the sticker reads: (label) Available / (BIG) Summer 2026 /
+   (small) discipline list. */
+.sticker.designing-green .d-text .d-avail {
+  font-family: var(--f-mono);
+  font-weight: 500;
+  font-size: 9.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgb(var(--fg-rgb) / 0.56);
+  line-height: 1;
+  margin-bottom: 2px;
 }
 .sticker.designing-green .d-text .d-sub {
   font-family: var(--f-mono);
@@ -2029,6 +2056,52 @@ em.it { font-style: italic; }
   text-transform: uppercase;
   color: rgb(var(--fg-rgb) / 0.62);
   line-height: 1.35;
+  margin-top: 2px;
+}
+
+/* ── Availability doodle draw-in (A4) ──────────────────────────────────
+   The two interlocked circles inside the availability sticker trace
+   themselves in on entrance instead of appearing whole. Paths carry
+   pathLength="1" (see HeroV2.tsx) so stroke-dashoffset can animate 0→1
+   uniformly regardless of true path length.
+   Fires on .reveal.in (the sticker's own reveal-observer trigger, same
+   pattern used across the site). The two paths stagger 220ms apart so
+   the larger circle traces first, then the smaller — reads as being
+   drawn by hand, not both at once.
+   Reduced-motion: instantly reveals both fully-drawn (no animation). */
+.sticker.designing-green .design-doodle path.doodle-p1,
+.sticker.designing-green .design-doodle path.doodle-p2 {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+.reveal.in .sticker.designing-green .design-doodle path.doodle-p1 {
+  animation: doodleDraw 720ms var(--ease-snap) 3200ms forwards;
+}
+.reveal.in .sticker.designing-green .design-doodle path.doodle-p2 {
+  animation: doodleDraw 620ms var(--ease-snap) 3420ms forwards;
+}
+/* Fallback: if the sticker's enclosing container never gets .reveal.in
+   for any reason, ensure the doodle isn't left permanently invisible —
+   the sticker itself has its own opacity-fade entrance, so trigger the
+   trace off that same reveal path via .hero-polaroid or .hero as a
+   secondary anchor. */
+.hero .sticker.designing-green .design-doodle path.doodle-p1 {
+  animation: doodleDraw 720ms var(--ease-snap) 3200ms forwards;
+}
+.hero .sticker.designing-green .design-doodle path.doodle-p2 {
+  animation: doodleDraw 620ms var(--ease-snap) 3420ms forwards;
+}
+@keyframes doodleDraw {
+  from { stroke-dashoffset: 1; }
+  to   { stroke-dashoffset: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sticker.designing-green .design-doodle path.doodle-p1,
+  .sticker.designing-green .design-doodle path.doodle-p2 {
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    animation: none !important;
+  }
 }
 .sticker.designing-green em {
   font-style: normal;
@@ -2427,6 +2500,27 @@ em.it { font-style: italic; }
      during the morph's translate-up. */
   height: clamp(320px, 32vw, 460px);
   margin-bottom: 0;
+  /* Instant hover feedback (C5): fast transform + filter transition so
+     the moment the cursor touches the folder-art, the whole element
+     lifts 3px and its shadow deepens BEFORE the 460ms open-close morph
+     kicks in. Confirms the hover was registered on the first frame
+     instead of after the SVG morph plays out. Uses --dur-fast (160ms)
+     + --ease-snap for a crisp, non-springy acknowledgment. Composes
+     with the child .folder-tilt-wrap's inline transform (the tilt lives
+     in its own coordinate space one level down). */
+  transition:
+    transform var(--dur-fast) var(--ease-snap),
+    filter var(--dur-fast) var(--ease-snap);
+}
+@media (hover: hover) and (pointer: fine) {
+  .folder-art:hover {
+    transform: translateY(-3px);
+    filter: drop-shadow(0 10px 20px rgba(60, 40, 20, 0.16));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .folder-art { transition: none; }
+  .folder-art:hover { transform: none; filter: none; }
 }
 /* Tilt wrapper — sits between .folder-art and .folder-svg.
    JS writes perspective + rotateX/rotateY here so the 3D tilt
@@ -2858,6 +2952,23 @@ em.it { font-style: italic; }
   color: var(--accent-on-cream);
   margin-bottom: 10px;
 }
+/* Sponsor name gets the strongest weight + accent color in the tag
+   line ("inline" in "inline · Product Design Intern"). The rest of the
+   tag stays muted so a 3-second skim across the row pulls the sponsor
+   list off the cards first — sponsor is the credibility anchor a
+   recruiter latches onto. Rendered via a split in ProjectsV2.tsx that
+   wraps the first `·`-separated segment in .tag-sponsor. */
+.folder .tag .tag-sponsor {
+  font-weight: 700;
+  color: var(--accent);
+  /* Slight bump in tracking to visually separate the bold sponsor from
+     the muted rest text without a fresh line break. */
+  letter-spacing: 0.24em;
+}
+.folder .tag .tag-rest {
+  color: rgb(var(--fg-rgb) / 0.55);
+  font-weight: 500;
+}
 .folder .blurb {
   /* CookieRun — a rounded, friendly display face for the long-form
      impact statement. With the project title removed, this copy IS the
@@ -2898,6 +3009,37 @@ em.it { font-style: italic; }
   color: color-mix(in srgb, var(--muted) 40%, transparent);
 }
 .folder .meta span:last-child::after { content: ""; }
+
+/* Outcome chip (C2): the last of the 4 standardized meta slots is the
+   project OUTCOME ("Shipped to Beta", "Ships Fall 2026", "Guidelines
+   Shipped", "NDA Handoff"). Bumped visually so a recruiter's 5-second
+   skim pulls the WIN off each card first — accent-tinted background,
+   accent text color, rounded pill, weight bump. Suppresses the "·"
+   separator that .folder .meta span::after would otherwise add before
+   the chip, since the pill shape provides its own visual boundary. */
+.folder .meta .meta__outcome {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--accent-on-cream);
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  /* Slight negative left margin absorbs the gap the flex layout would
+     otherwise leave — pill sits tight after the last topic chip while
+     still visually distinct. */
+  margin-left: -2px;
+}
+/* Kill the trailing "·" on the chip BEFORE the outcome pill — the pill's
+   own visual boundary replaces the dot separator. */
+.folder .meta > span:has(+ .meta__outcome)::after {
+  content: "";
+}
+/* Kill any trailing "·" that would render inside the outcome chip
+   itself (it's normally the last chip but on touch there's also a
+   .meta__read chip after). */
+.folder .meta .meta__outcome::after { content: ""; }
 
 /* Read-time chip — hidden by default (desktop users see the cursor-
    following .read-pill on folder hover). Revealed on touch / phone
@@ -3297,43 +3439,11 @@ em.it { font-style: italic; }
   outline-offset: 2px;
   border-radius: 4px;
 }
-/* Discoverability hint — one-time sparkle pulse at the center of each
-   interactive zone, staggered across the 6 items, fired once when
-   the bag first enters the viewport (via .in class from RevealOnScroll).
-   Signals "these items are hoverable" without cluttering the bag
-   illustration itself. Uses the accent color so it reads as part of
-   the site vocabulary. Skipped for reduced-motion users via the
-   global rule at the bottom of the file. */
-.hover-bag.in .hover-bag__zone::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: radial-gradient(circle, var(--accent) 0%, rgba(198, 141, 95, 0) 70%);
-  transform: translate(-50%, -50%) scale(0);
-  animation: zoneHintPulse 1000ms var(--ease-out-quart) backwards;
-  pointer-events: none;
-  will-change: transform, opacity;
-}
-.hover-bag.in .hover-bag__zone:nth-of-type(1)::before { animation-delay: 1500ms; }
-.hover-bag.in .hover-bag__zone:nth-of-type(2)::before { animation-delay: 1620ms; }
-.hover-bag.in .hover-bag__zone:nth-of-type(3)::before { animation-delay: 1740ms; }
-.hover-bag.in .hover-bag__zone:nth-of-type(4)::before { animation-delay: 1860ms; }
-.hover-bag.in .hover-bag__zone:nth-of-type(5)::before { animation-delay: 1980ms; }
-.hover-bag.in .hover-bag__zone:nth-of-type(6)::before { animation-delay: 2100ms; }
-@keyframes zoneHintPulse {
-  0%   { transform: translate(-50%, -50%) scale(0);   opacity: 0; }
-  35%  { transform: translate(-50%, -50%) scale(1.2); opacity: 0.9; }
-  100% { transform: translate(-50%, -50%) scale(2.4); opacity: 0; }
-}
-/* Hide hint pulse for users who prefer reduced motion — the outline
-   focus-visible state still makes zones keyboard-discoverable. */
-@media (prefers-reduced-motion: reduce) {
-  .hover-bag.in .hover-bag__zone::before { animation: none; display: none; }
-}
+/* Zone-hint amber pulse REMOVED per user request — the staggered
+   .hover-bag__zone::before radial-gradient pulses were reading as
+   "brown sparkles" on the bag rather than a subtle discoverability
+   hint. Keyboard users still get the focus-visible outline on each
+   .hover-bag__zone button for zone discovery. */
 /* Debug outlines — turn on by passing `debug` prop to <HoverBag />.
    Renders each zone as a dashed rectangle with the item label in the
    top-left corner so zone positions can be visually verified without

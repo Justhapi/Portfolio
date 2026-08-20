@@ -31,6 +31,13 @@ type Item = {
   layers: string[];
   hoverEffect: HoverEffect;
   zone: { x: number; y: number; w: number; h: number };
+  /* Per-item pill placement — tuned by hand so each item's pill sits
+     in a visually pleasing spot that doesn't cover the item itself.
+     xPct / yPct are percentages of the .hover-bag__stack bounds (same
+     coordinate system as `zone`), and describe where the pill's CENTRE
+     should land. E.g. { xPct: 50, yPct: 42 } → pill centre sits at the
+     illustration's horizontal middle, 42% down. */
+  pillOffset: { xPct: number; yPct: number };
 };
 
 type Layer = {
@@ -51,6 +58,21 @@ const LAYERS: Layer[] = [
   { key: "one_earbud_1",     src: "/img/bag/one_earbud_1.webp" },
 ];
 
+/* ITEMS — per-item hit zone + per-item pill placement.
+   ───────────────────────────────────────────────────────────────────
+   `pillOffset` = { xPct, yPct } is the pill CENTRE, expressed as
+   percentages of the .hover-bag__stack rect (same coord system as
+   `zone`). Tune these visually per item — starting values below place
+   each pill in the bag's empty pocket area, away from the item's own
+   position. Adjust in browser (Cmd+R to reload after each tweak).
+
+   Reference for eyeballing (zones in stack %):
+     ipad     — top-center-left    (x 23-47, y  2-19)
+     laptop   — top-center-right   (x 48-85, y  0-18)
+     phone    — right-mid          (x 67-84, y 36-59)
+     ticket   — front pocket       (x 44-58, y 54-74)
+     usagi    — right-bottom hang  (x 63-73, y 63-98)
+     earbuds  — left-bottom hang   (x  4-24, y 60-87)                */
 const ITEMS: Item[] = [
   {
     key: "ipad",
@@ -58,6 +80,7 @@ const ITEMS: Item[] = [
     layers: ["eight_ipad"],
     hoverEffect: "lift",
     zone: { x: 23, y:  2, w: 24, h: 17 },
+    pillOffset: { xPct: 50, yPct: 55 },
   },
   {
     key: "laptop",
@@ -65,6 +88,7 @@ const ITEMS: Item[] = [
     layers: ["nine_laptop"],
     hoverEffect: "lift",
     zone: { x: 48, y:  0, w: 37, h: 18 },
+    pillOffset: { xPct: 45, yPct: 55 },
   },
   {
     key: "phone",
@@ -72,6 +96,7 @@ const ITEMS: Item[] = [
     layers: ["five_phone"],
     hoverEffect: "lift",
     zone: { x: 67, y: 36, w: 17, h: 23 },
+    pillOffset: { xPct: 35, yPct: 40 },
   },
   {
     key: "ticket",
@@ -79,6 +104,7 @@ const ITEMS: Item[] = [
     layers: ["six_ticket"],
     hoverEffect: "tilt-right",
     zone: { x: 44, y: 54, w: 14, h: 20 },
+    pillOffset: { xPct: 50, yPct: 25 },
   },
   {
     key: "usagi",
@@ -86,6 +112,7 @@ const ITEMS: Item[] = [
     layers: ["three_usagi"],
     hoverEffect: "tilt-right",
     zone: { x: 63, y: 63, w: 10, h: 35 },
+    pillOffset: { xPct: 35, yPct: 35 },
   },
   {
     key: "earbuds",
@@ -93,6 +120,7 @@ const ITEMS: Item[] = [
     layers: ["one_earbud_1", "two_earbud_2"],
     hoverEffect: "tilt-left",
     zone: { x:  4, y: 60, w: 20, h: 27 },
+    pillOffset: { xPct: 55, yPct: 35 },
   },
 ];
 
@@ -102,10 +130,9 @@ const EFFECT_CLASS: Record<HoverEffect, string> = {
   "tilt-right": "is-tilted-right",
 };
 
-/* Gap between the hovered item's zone (top edge) and the pill's bottom
-   edge — enough breathing room that the pill never overlaps the item
-   being hovered. */
-const PILL_GAP = 16;
+/* Pill placement is now driven per-item via ITEMS[i].pillOffset — see
+   the ITEMS array below. No shared anchor / no algorithmic overlap
+   avoidance — each item's pill position is hand-tuned. */
 
 /**
  * GitHub Pages serves the site under /Portfolio/, so raw <img src="/…"> paths
@@ -118,11 +145,11 @@ const BASE_PATH = process.env.NODE_ENV === "production" ? "/Portfolio" : "";
 export default function HoverBag({ debug = false }: { debug?: boolean }) {
   const [active, setActive] = useState<string | null>(null);
   const pillRef = useRef<HTMLDivElement | null>(null);
-  const bagRef = useRef<HTMLDivElement | null>(null);
-  /* Cache of hit-zone element refs keyed by item.key. Populated via the
-     button's ref callback below. Used by the resize handler so it can
-     re-measure the currently-hovered zone without re-querying the DOM. */
-  const zoneRefs = useRef<Map<string, HTMLButtonElement | null>>(new Map());
+  /* Anchor for pill positioning — the direct visual container of the
+     bag illustration (parent of the layer <img>s). Using this instead
+     of the outer .hover-bag container avoids the pill drifting into
+     the empty grid space to the right of the artwork. */
+  const stackRef = useRef<HTMLDivElement | null>(null);
   /* Gate the entire pill interaction to hover-capable pointers. Touch
      users can't hover, so all 6 pill variants + the cursor-follow shell
      are dead weight on mobile — no display + no listeners saves CSS
@@ -140,35 +167,37 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
   }, []);
 
   /**
-   * Anchoring the pill to the bag CONTAINER (not the cursor) keeps the
-   * pill in a predictable spot regardless of where inside the zone the
-   * cursor entered — no more drift or accidental item-cover. Y is
-   * derived from the hovered item's zone rect so the pill always clears
-   * the item being hovered (pill bottom sits `PILL_GAP` above zone top).
+   * Position the pill using the hovered item's hand-tuned pillOffset.
+   * X/Y are read as percentages of the .hover-bag__stack rect (same
+   * coord system as `zone`) and describe the pill's CENTRE. Anchoring
+   * to the stack (not the outer .hover-bag) keeps the pill visually
+   * pinned to the bag artwork regardless of surrounding whitespace.
    *
-   * Called on hover-enter / focus of any item and on window resize —
-   * NOT on mousemove. This is intentional: cursor motion no longer
-   * drives pill position, so the pill stays visually stable while the
-   * cursor roams inside a zone.
-   *
-   * Clamping keeps the pill fully inside the viewport at all times —
-   * if the ideal spot overflows, the pill snugs against the nearest
-   * edge instead of bleeding off-screen.
+   * Called on hover-enter / focus and on resize — NOT on mousemove.
+   * Viewport clamp is the only safety net; per-item positions are the
+   * source of truth. Tune the numbers in ITEMS[].pillOffset above.
    */
-  const positionPill = (zoneEl: HTMLElement | null | undefined) => {
+  const positionPill = (item: Item | null | undefined) => {
     const pill = pillRef.current;
-    const bag = bagRef.current;
-    if (!pill || !bag || !zoneEl) return;
+    const stack = stackRef.current;
+    if (!pill || !stack || !item) return;
     const pillRect = pill.getBoundingClientRect();
     // getBoundingClientRect can return 0×0 on first paint before the
     // pill has been laid out. Fall back to shell dimensions (240×170)
     // matching the CSS so positioning still works on the very first frame.
     const pillW = pillRect.width || 240;
     const pillH = pillRect.height || 170;
-    const bagRect = bag.getBoundingClientRect();
-    const zoneRect = zoneEl.getBoundingClientRect();
-    const desiredX = bagRect.left + bagRect.width / 2 - pillW / 2;
-    const desiredY = zoneRect.top - pillH - PILL_GAP;
+    const stackRect = stack.getBoundingClientRect();
+
+    // Pill centre lands at (xPct, yPct) of the stack; convert to the
+    // pill's top-left for style.left/top writes.
+    const centreX = stackRect.left + stackRect.width * (item.pillOffset.xPct / 100);
+    const centreY = stackRect.top + stackRect.height * (item.pillOffset.yPct / 100);
+    const desiredX = centreX - pillW / 2;
+    const desiredY = centreY - pillH / 2;
+
+    // Viewport clamp — safety net so the pill never leaves the screen
+    // even if a hand-tuned offset overflows on small viewports.
     const margin = 8;
     const maxX = Math.max(margin, window.innerWidth - pillW - margin);
     const maxY = Math.max(margin, window.innerHeight - pillH - margin);
@@ -178,13 +207,13 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
     pill.style.top = `${clampedY}px`;
   };
 
-  /* Reposition on window resize while a pill is active — viewport size
-     changes shift both the bag container's centre and the hovered
-     item's Y, so the cached position would otherwise drift. Only bound
-     while a pill is showing to avoid dead listeners. */
+  /* Reposition on window resize while a pill is active — the stack's
+     size / position changes with the viewport, so the cached pill spot
+     would otherwise drift. Only bound while a pill is showing. */
   useEffect(() => {
     if (!active) return;
-    const onResize = () => positionPill(zoneRefs.current.get(active) ?? null);
+    const item = ITEMS.find((i) => i.key === active);
+    const onResize = () => positionPill(item);
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, [active]);
@@ -195,11 +224,10 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
 
   return (
     <div
-      ref={bagRef}
       className={`hover-bag reveal${debug ? " is-debug" : ""}`}
       data-active={active ?? ""}
     >
-      <div className="hover-bag__stack">
+      <div className="hover-bag__stack" ref={stackRef}>
         {LAYERS.map((layer) => (
           /* eslint-disable-next-line @next/next/no-img-element */
           <img
@@ -219,9 +247,6 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
         {hoverCapable && ITEMS.map((item) => (
           <button
             key={item.key}
-            ref={(el) => {
-              zoneRefs.current.set(item.key, el);
-            }}
             type="button"
             className={`hover-bag__zone${active === item.key ? " is-active" : ""}`}
             style={{
@@ -230,14 +255,14 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
               width: `${item.zone.w}%`,
               height: `${item.zone.h}%`,
             }}
-            onMouseEnter={(e) => {
+            onMouseEnter={() => {
               setActive(item.key);
-              positionPill(e.currentTarget);
+              positionPill(item);
             }}
             onMouseLeave={() => setActive(null)}
-            onFocus={(e) => {
+            onFocus={() => {
               setActive(item.key);
-              positionPill(e.currentTarget);
+              positionPill(item);
             }}
             onBlur={() => setActive(null)}
             aria-label={item.label}
