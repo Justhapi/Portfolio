@@ -102,17 +102,10 @@ const EFFECT_CLASS: Record<HoverEffect, string> = {
   "tilt-right": "is-tilted-right",
 };
 
-/* Pill sits just above the cursor, centered horizontally on it.
-   -120 X = half of pill width so cursor is under pill center.
-   -186 Y = pill height (170) + 16px gap → pill bottom lands ~16px
-   above cursor so the two never overlap. */
-/* Pill positioning relative to cursor — tightened from a 12px vertical
-   gap and 14px right offset to sit right next to the cursor tooltip-
-   style. Cursor now lands ~2px below the pill's bottom edge and 6px
-   left of its left edge → pill visually attaches to the cursor
-   instead of floating above it. */
-const PILL_OFFSET_X = 6;
-const PILL_OFFSET_Y = -2 - 170; /* gap + pill height */
+/* Gap between the hovered item's zone (top edge) and the pill's bottom
+   edge — enough breathing room that the pill never overlaps the item
+   being hovered. */
+const PILL_GAP = 16;
 
 /**
  * GitHub Pages serves the site under /Portfolio/, so raw <img src="/…"> paths
@@ -125,6 +118,11 @@ const BASE_PATH = process.env.NODE_ENV === "production" ? "/Portfolio" : "";
 export default function HoverBag({ debug = false }: { debug?: boolean }) {
   const [active, setActive] = useState<string | null>(null);
   const pillRef = useRef<HTMLDivElement | null>(null);
+  const bagRef = useRef<HTMLDivElement | null>(null);
+  /* Cache of hit-zone element refs keyed by item.key. Populated via the
+     button's ref callback below. Used by the resize handler so it can
+     re-measure the currently-hovered zone without re-querying the DOM. */
+  const zoneRefs = useRef<Map<string, HTMLButtonElement | null>>(new Map());
   /* Gate the entire pill interaction to hover-capable pointers. Touch
      users can't hover, so all 6 pill variants + the cursor-follow shell
      are dead weight on mobile — no display + no listeners saves CSS
@@ -142,32 +140,54 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
   }, []);
 
   /**
-   * Clamp the pill so it NEVER extends beyond the browser viewport. The
-   * cursor still drives desired position (via PILL_OFFSET_X/Y), but we
-   * measure the pill's actual rendered size and clip both axes to
-   * (edgeMargin) .. (viewport - edgeMargin - pillSize). If the ideal
-   * spot overflows, the pill snugs against the nearest edge instead of
-   * bleeding off-screen.
+   * Anchoring the pill to the bag CONTAINER (not the cursor) keeps the
+   * pill in a predictable spot regardless of where inside the zone the
+   * cursor entered — no more drift or accidental item-cover. Y is
+   * derived from the hovered item's zone rect so the pill always clears
+   * the item being hovered (pill bottom sits `PILL_GAP` above zone top).
+   *
+   * Called on hover-enter / focus of any item and on window resize —
+   * NOT on mousemove. This is intentional: cursor motion no longer
+   * drives pill position, so the pill stays visually stable while the
+   * cursor roams inside a zone.
+   *
+   * Clamping keeps the pill fully inside the viewport at all times —
+   * if the ideal spot overflows, the pill snugs against the nearest
+   * edge instead of bleeding off-screen.
    */
-  const moveToPointer = (e: React.MouseEvent) => {
-    const el = pillRef.current;
-    if (!el) return;
-    const desiredX = e.clientX + PILL_OFFSET_X;
-    const desiredY = e.clientY + PILL_OFFSET_Y;
-    const margin = 8;
-    const rect = el.getBoundingClientRect();
+  const positionPill = (zoneEl: HTMLElement | null | undefined) => {
+    const pill = pillRef.current;
+    const bag = bagRef.current;
+    if (!pill || !bag || !zoneEl) return;
+    const pillRect = pill.getBoundingClientRect();
     // getBoundingClientRect can return 0×0 on first paint before the
     // pill has been laid out. Fall back to shell dimensions (240×170)
-    // matching the CSS so clamping still works on the very first frame.
-    const pillW = rect.width || 240;
-    const pillH = rect.height || 170;
+    // matching the CSS so positioning still works on the very first frame.
+    const pillW = pillRect.width || 240;
+    const pillH = pillRect.height || 170;
+    const bagRect = bag.getBoundingClientRect();
+    const zoneRect = zoneEl.getBoundingClientRect();
+    const desiredX = bagRect.left + bagRect.width / 2 - pillW / 2;
+    const desiredY = zoneRect.top - pillH - PILL_GAP;
+    const margin = 8;
     const maxX = Math.max(margin, window.innerWidth - pillW - margin);
     const maxY = Math.max(margin, window.innerHeight - pillH - margin);
     const clampedX = Math.min(Math.max(desiredX, margin), maxX);
     const clampedY = Math.min(Math.max(desiredY, margin), maxY);
-    el.style.left = `${clampedX}px`;
-    el.style.top = `${clampedY}px`;
+    pill.style.left = `${clampedX}px`;
+    pill.style.top = `${clampedY}px`;
   };
+
+  /* Reposition on window resize while a pill is active — viewport size
+     changes shift both the bag container's centre and the hovered
+     item's Y, so the cached position would otherwise drift. Only bound
+     while a pill is showing to avoid dead listeners. */
+  useEffect(() => {
+    if (!active) return;
+    const onResize = () => positionPill(zoneRefs.current.get(active) ?? null);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, [active]);
 
   const activeItem = ITEMS.find((i) => i.key === active);
   const liftedLayers = new Set(activeItem?.layers ?? []);
@@ -175,6 +195,7 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
 
   return (
     <div
+      ref={bagRef}
       className={`hover-bag reveal${debug ? " is-debug" : ""}`}
       data-active={active ?? ""}
     >
@@ -198,6 +219,9 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
         {hoverCapable && ITEMS.map((item) => (
           <button
             key={item.key}
+            ref={(el) => {
+              zoneRefs.current.set(item.key, el);
+            }}
             type="button"
             className={`hover-bag__zone${active === item.key ? " is-active" : ""}`}
             style={{
@@ -208,11 +232,13 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
             }}
             onMouseEnter={(e) => {
               setActive(item.key);
-              moveToPointer(e);
+              positionPill(e.currentTarget);
             }}
-            onMouseMove={moveToPointer}
             onMouseLeave={() => setActive(null)}
-            onFocus={() => setActive(item.key)}
+            onFocus={(e) => {
+              setActive(item.key);
+              positionPill(e.currentTarget);
+            }}
             onBlur={() => setActive(null)}
             aria-label={item.label}
             data-debug-label={debug ? item.label : undefined}

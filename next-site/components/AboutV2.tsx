@@ -11,26 +11,9 @@ const Sparkle = () => (
   </svg>
 );
 
-/**
- * HoverWord — an inline keyword that pops up a floating image pill on hover.
- *
- * The keyword is bold + accent-colored at rest. Hovering it shows a
- * pill-shaped card containing a placeholder image slot (replace <div
- * className="image-slot"> with <img src="…"> once photos are ready).
- *
- * View keys match the old iPad views for copy continuity:
- *   stack  → Purdue Stack screenshot
- *   mentor → mentoring photo
- *   illos  → digital illustration
- *   food   → Beli food screenshot
- *   sketch → iPad / sketchbook photo
- */
-// Desktop: pill appears 14px right + 14px below cursor
-const PILL_OFFSET_X = 14;
-const PILL_OFFSET_Y = 14;
+const PILL_OFFSET_X = -30;
+const PILL_OFFSET_Y = -1000;
 
-// Touch: pill appears above the finger (196px wide × 136px tall + 20px gap)
-// Clamped to viewport edges so it never clips off-screen.
 const PILL_W = 196;
 const PILL_H = 136;
 const TOUCH_GAP = 20;
