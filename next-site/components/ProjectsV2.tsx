@@ -36,12 +36,41 @@ const FOLDER_THUMB = {
   anonymous:  `${BASE_PATH}/img/folders/anonymous.svg`,
 } as const;
 
+/* Cover videos — served from /public/img/cover so Next's static export
+   copies them verbatim (Webpack asset/resource emits to the wrong path
+   for static export). Same pattern as the case-page HeroVideo covers.
+   When a project's `coverVideo` is set, the folder-open SVG replaces
+   the sponsor thumbnail sticky slot with a <video> in a <foreignObject>
+   — muted / looped / plays only while the folder is in its hovered
+   phase (see FolderOpen play/pause useEffect). */
+const FOLDER_COVER = {
+  frogslayer:  `${BASE_PATH}/img/cover/Frogslayer.webm`,
+  researchhub: `${BASE_PATH}/img/cover/ResearchHub.webm`,
+  inline:      `${BASE_PATH}/img/cover/inline.webm`,
+  aiAgent:     `${BASE_PATH}/img/cover/Ai_Agent.webm`,
+} as const;
+
+/** Turn "#RRGGBB" into "rgba(r, g, b, a)" — used to derive the folder's
+ *  drop-shadow halo from its own outline color at two alpha levels. */
+function hexToRgba(hex: string, alpha: number): string {
+  const h = hex.replace("#", "");
+  const r = parseInt(h.slice(0, 2), 16);
+  const g = parseInt(h.slice(2, 4), 16);
+  const b = parseInt(h.slice(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
 const FolderClosed = ({
   front = "#FFDA85",
   shadow = "#9F5A45",
+  outline = "#FBF7EE",
 }: {
   front?: string;
   shadow?: string;
+  /** Stroke color for the folder outline. Derived from the folder's
+   *  front cover fill via lighten(), so each folder outlines in its
+   *  own lightened case tone rather than a shared cream white. */
+  outline?: string;
 }) => {
   // Unique gradient id per render — otherwise three FolderClosed
   // instances on the page would collide on `fc_grad` and only the
@@ -68,7 +97,7 @@ const FolderClosed = ({
       />
       <path
         d="M87.9258 10.4043C88.9592 5.77375 93.5511 2.85743 98.1816 3.89062L202.989 27.2822C207.62 28.3157 210.536 32.9074 209.503 37.5381L206.048 53.0146L356.964 86.6973C367.548 89.0596 374.214 99.5544 371.852 110.139L332.955 284.419C330.593 295.003 320.097 301.669 309.513 299.307L19.0459 234.479C8.46147 232.117 1.79593 221.622 4.1582 211.037L43.0547 36.7568C45.417 26.1724 55.9126 19.5069 66.4971 21.8691L84.4717 25.8799L87.9258 10.4043Z"
-        stroke="#FBF7EE"
+        stroke={outline}
         strokeWidth="6"
         vectorEffect="non-scaling-stroke"
       />
@@ -95,24 +124,70 @@ const FolderOpen = ({
   front = "#FFDA85",
   back = "#E19F7E",
   shadow = "#9F5A45",
+  folderOutline = "#FBF7EE",
+  sponsorOutline = "#FBF7EE",
+  videoOutline = "#FBF7EE",
   thumbnail,
   thumbnailAlt = "",
+  coverVideo,
+  isOpen = false,
 }: {
   tint?: string;
   tint2?: string;
   front?: string;
   back?: string;
   shadow?: string;
+  /** Stroke on the folder's front + back cover paths. Darker version
+   *  of the folder color, per-project. */
+  folderOutline?: string;
+  /** Stroke on the sponsor sticky (data-fx-i="0"). Per-project — tied
+   *  to the sponsor logo's own color, not the folder body. */
+  sponsorOutline?: string;
+  /** Stroke on the video/preview sticky (data-fx-i="1"). Shared across
+   *  ALL folders (single constant VIDEO_STICKY_OUTLINE at top of file)
+   *  since the video content is homogeneous — one frame color for the
+   *  whole set. */
+  videoOutline?: string;
   /** When provided, overlays a sponsor logo (or the Anonymous mark) on
    *  top of the larger sticky. The colored sticky rect still renders
    *  underneath so the ~16px of horizontal padding around the 1:1 logo
    *  shows the sticky's tint color — "logo on colored paper." */
   thumbnail?: string;
   thumbnailAlt?: string;
+  /** When provided, replaces the sponsor thumbnail sticky slot with a
+   *  looping cover video embedded via SVG <foreignObject>. Video is
+   *  played only while `isOpen` is true (folder is hovered) so all
+   *  four folders don't decode + play simultaneously on page load. */
+  coverVideo?: string;
+  /** Drives play/pause on the embedded cover video. True when the
+   *  parent .folder-art is in its "hovered" phase. */
+  isOpen?: boolean;
 }) => {
   // unique gradient id per render so multiple cards don't reuse the same defs
   const gid = useId().replace(/:/g, "");
   const gradId = `fo_grad_${gid}`;
+  // Cover-video play/pause — only fires when both a video is provided
+  // and the folder is in its hovered phase. Muted + loop + playsInline
+  // so browser autoplay policies don't block it. On unhover we pause
+  // AND rewind to 0 so the next hover replays from the intro (the
+  // most punchy part of a short cover animation).
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v || !coverVideo) return;
+    if (typeof window !== "undefined" &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return;
+    }
+    if (isOpen) {
+      // .play() returns a promise that can reject if autoplay is blocked;
+      // catch and swallow — the poster/last frame remains visible.
+      v.play().catch(() => {});
+    } else {
+      v.pause();
+      try { v.currentTime = 0; } catch { /* seek can throw before metadata loads */ }
+    }
+  }, [isOpen, coverVideo]);
   return (
     <svg
       className="open"
@@ -127,7 +202,7 @@ const FolderOpen = ({
         <path
           d="M107.138 74.9883C109.281 65.3887 118.799 59.3439 128.399 61.4863L391.84 120.282C401.44 122.425 407.485 131.943 405.342 141.543L370.065 299.607C367.922 309.207 358.404 315.253 348.804 313.11L85.3628 254.314C75.7633 252.172 69.7186 242.653 71.8608 233.054L107.138 74.9883Z"
           fill={back}
-          stroke="#FBF7EE"
+          stroke={folderOutline}
           strokeWidth="6.6785"
         />
       </g>
@@ -149,19 +224,53 @@ const FolderOpen = ({
         strokeWidth="3.83596"
       />
       </g>
-      {/* tint sticky (blue by default) — wrapped so it can drift on idle */}
+      {/* tint sticky (data-fx-i="0") — hosts the SPONSOR ICON UPRIGHT
+          at the visual centre of the tilted sticky. Same pattern as
+          slot 1: coordinates pre-computed by rotating the sticky's
+          centre through its 112.879° transform around (373.685,
+          98.1076). Pre-rotation centre = (434.31, 157.99); post-
+          rotation centre ≈ (294.96, 130.70). Upright 119.764² icon
+          placed centred on that point → top-left at (235.12, 70.82).
+          Both icon AND its outline are upright — the sticky's tilt
+          character is preserved only in the FALLBACK case (no
+          thumbnail), which renders the original tilted tinted rect. */}
       <g className="fo-sticky" data-fx-i="0">
-      <rect
-        x="373.685"
-        y="98.1076"
-        width="121.247"
-        height="119.764"
-        rx="6.40023"
-        transform="rotate(112.879 373.685 98.1076)"
-        fill={tint}
-        stroke="#FBF7EE"
-        strokeWidth="3.83596"
-      />
+      {thumbnail ? (
+        <>
+          <image
+            href={thumbnail}
+            x="235.12"
+            y="70.82"
+            width="119.764"
+            height="119.764"
+            preserveAspectRatio="xMidYMid meet"
+          >
+            {thumbnailAlt ? <title>{thumbnailAlt}</title> : null}
+          </image>
+          <rect
+            x="235.12"
+            y="70.82"
+            width="119.764"
+            height="119.764"
+            rx="9.9803"
+            fill="none"
+            stroke={sponsorOutline}
+            strokeWidth="3.83596"
+          />
+        </>
+      ) : (
+        <rect
+          x="373.685"
+          y="98.1076"
+          width="121.247"
+          height="119.764"
+          rx="6.40023"
+          transform="rotate(112.879 373.685 98.1076)"
+          fill={tint}
+          stroke={sponsorOutline}
+          strokeWidth="3.83596"
+        />
+      )}
       </g>
       {/* X-star (left) — wrapped so it can twinkle on idle */}
       <g className="fo-xstar" data-fx-i="2">
@@ -185,8 +294,60 @@ const FolderOpen = ({
           Icon is 119.764 square (matches sticky height), centred on that
           post-rotation point → top-left at (124.603, 48.555). rx = 10 ×
           (119.764/120) ≈ 9.98 to match the SVG's own rounded corners. */}
+      {/* Upright sticky (data-fx-i="1") — now hosts the COVER VIDEO
+          when one is provided. This slot's coordinates were originally
+          derived to place a thumbnail upright at the sticky's visual
+          centre; the video inherits that same upright rendering, which
+          is the "definitely better slot to view the company" — video
+          gets the un-tilted, un-cropped presentation. The video is
+          additionally rotated -90° (counter-clockwise) inside the
+          foreignObject so a landscape source reads as a portrait
+          poster in the square slot. Fallbacks: sponsor thumbnail
+          (backward compat) → plain tinted rect. */}
       <g className="fo-sticky" data-fx-i="1">
-      {thumbnail ? (
+      {coverVideo ? (
+        <>
+          <foreignObject
+            x="124.603"
+            y="48.555"
+            width="119.764"
+            height="119.764"
+          >
+            <video
+              ref={videoRef}
+              src={coverVideo}
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              aria-label={thumbnailAlt || undefined}
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                borderRadius: "9.98px",
+                display: "block",
+                /* Rotate the video content -90° (counter-clockwise).
+                   Because the container is square, rotation preserves
+                   the container's bounds — only the video content
+                   inside is spun. object-fit: cover crops the source's
+                   16:9 down to a square, then rotation displays that
+                   square rotated left. */
+              }}
+            />
+          </foreignObject>
+          <rect
+            x="124.603"
+            y="48.555"
+            width="119.764"
+            height="119.764"
+            rx="9.9803"
+            fill="none"
+            stroke={videoOutline}
+            strokeWidth="3.83596"
+          />
+        </>
+      ) : thumbnail ? (
         <>
           <image
             href={thumbnail}
@@ -205,7 +366,7 @@ const FolderOpen = ({
             height="119.764"
             rx="9.9803"
             fill="none"
-            stroke="#FBF7EE"
+            stroke={videoOutline}
             strokeWidth="3.83596"
           />
         </>
@@ -218,7 +379,7 @@ const FolderOpen = ({
           rx="6.40023"
           transform="rotate(87.5606 241.092 30.3229)"
           fill={tint2}
-          stroke="#FBF7EE"
+          stroke={videoOutline}
           strokeWidth="3.83596"
         />
       )}
@@ -236,7 +397,7 @@ const FolderOpen = ({
         />
         <path
           d="M74.3975 77.3926L74.7295 77.4268L74.8184 77.4395L74.9053 77.4561L175.14 96.6309C177.546 97.0187 179.333 98.7419 180.421 100.582C181.546 102.484 182.186 104.895 182.218 107.543L183.015 115.071L326.721 141.54L326.761 141.547L326.801 141.556C331.518 142.544 335.292 145.06 337.819 148.936C340.252 152.667 341.378 157.42 341.417 162.808L363.455 298.693L363.562 299.352L363.407 300.001C361.209 309.245 351.604 314.758 342.21 312.79L78.9277 257.625L78.8584 257.61L78.79 257.593C73.8675 256.342 69.5145 254.918 66.1172 251.907C62.644 248.829 60.5773 244.481 59.2158 238.3L23.7461 104.127L23.7236 104.042L23.7061 103.955C23.0214 100.672 22.4543 98.0073 22.1533 95.9756C22.0014 94.9502 21.8991 93.9714 21.8984 93.0771C21.8978 92.2038 21.991 91.1979 22.3828 90.2295C22.8136 89.1647 23.5605 88.2621 24.623 87.667C25.5928 87.1239 26.6135 86.9569 27.4502 86.9092C28.6362 86.8416 30.0529 86.9957 31.5518 87.2168L33.0732 87.4551L33.1094 87.4609L33.1465 87.4678L70.7285 94.3896L69.0938 87.958L69.0352 87.7266L69.0098 87.4893C68.8611 86.0936 68.7472 84.0296 69.0801 82.2334C69.2407 81.3668 69.5742 80.1582 70.3984 79.1396C71.3329 77.9848 72.752 77.2759 74.3975 77.3926Z"
-          stroke="#FBF7EE"
+          stroke={folderOutline}
           strokeWidth="6.6785"
         />
       </g>
@@ -263,6 +424,20 @@ type FolderTheme = {
   front: string;
   back: string;
   shadow: string;
+  /** Three hand-picked outline hex codes per project. No auto-derive
+   *  — every value is explicit so the palette stays predictable.
+   *    folder  → closed folder edge + open folder front/back covers.
+   *              Also drives the folder's drop-shadow halo (via
+   *              hexToRgba conversion at render time).
+   *    company → sponsor sticky outline (data-fx-i="0").
+   *    video   → video/preview sticky outline (data-fx-i="1"). Use the
+   *              SAME hex across all folders if you want the consistent
+   *              video-frame color; use different hex per-folder if not. */
+  outlines: {
+    folder: string;
+    company: string;
+    video: string;
+  };
 };
 
 type Project = {
@@ -292,6 +467,11 @@ type Project = {
    *  the same transform/clip when present. */
   thumbnail?: string;
   thumbnailAlt?: string;
+  /** Optional looping cover video embedded into the folder-open sticky
+   *  slot. When set, replaces the sponsor thumbnail with a <video>
+   *  element that plays only while the folder is hovered. Files live in
+   *  /public/img/cover/ — see FOLDER_COVER above. */
+  coverVideo?: string;
 };
 
 const PROJECTS: Project[] = [
@@ -311,11 +491,21 @@ const PROJECTS: Project[] = [
     ),
     meta: ["NDA", "Product Design", "Usability Testing", "2026"],
     accent: ["#F5B8CB", "#9D9BF5"],
-    folder: { front: "#7C4A63", back: "#5E3349", shadow: "#39202F" },
+    folder: {
+      front: "#7C4A63",
+      back: "#5E3349",
+      shadow: "#39202F",
+      outlines: {
+        folder:  "#3B1A26", // ← folder body outline (hand-pick)
+        company: "#7E1811", // ← company sticky outline (hand-pick)
+        video:   "#3F332A", // ← video sticky outline (hand-pick)
+      },
+    },
     href: "/projects/inline",
     readTime: "4 min read",
     thumbnail: FOLDER_THUMB.inline,
     thumbnailAlt: "inline — sponsor logo",
+    coverVideo: FOLDER_COVER.inline,
   },
   {
     tag: "Customer Journey Platform (NDA) · Concept shipped to beta 2026",
@@ -327,11 +517,21 @@ const PROJECTS: Project[] = [
     ),
     meta: ["NDA", "UI", "Interaction", "User Research", "2026", "SHIPPED TO BETA"],
     accent: ["#D59B6E", "#E8C77C"],
-    folder: { front: "#C68D5F", back: "#9A6D45", shadow: "#5C3924" },
+    folder: {
+      front: "#C68D5F",
+      back: "#9A6D45",
+      shadow: "#5C3924",
+      outlines: {
+        folder:  "#6E4A28", // ← folder body outline (hand-pick)
+        company: "#3F2915", // ← company sticky outline (hand-pick)
+        video:   "#3F332A", // ← video sticky outline (hand-pick)
+      },
+    },
     href: "/projects/ai-journey-agent",
     readTime: "3 min read",
     thumbnail: FOLDER_THUMB.anonymous,
     thumbnailAlt: "Sponsor anonymized under NDA",
+    coverVideo: FOLDER_COVER.aiAgent,
   },
   {
     tag: "Purdue Stack · Ships fall 2026",
@@ -345,11 +545,21 @@ const PROJECTS: Project[] = [
     accent: ["#F5D967", "#F0707C"],
     // Ocean Blue — the dark teal. Shadow held one notch above pitch-
     // black so multiply doesn't drive the bottom edge to mud.
-    folder: { front: "#276866", back: "#1A4E4C", shadow: "#163838" },
+    folder: {
+      front: "#276866",
+      back: "#1A4E4C",
+      shadow: "#163838",
+      outlines: {
+        folder:  "#0C2E2D", // ← folder body outline (hand-pick)
+        company: "#3A1010", // ← company sticky outline (hand-pick)
+        video:   "#3F332A", // ← video sticky outline (hand-pick)
+      },
+    },
     href: "/projects/researchhub",
     readTime: "4 min read",
     thumbnail: FOLDER_THUMB.stack,
     thumbnailAlt: "Purdue Stack — sponsor logo",
+    coverVideo: FOLDER_COVER.researchhub,
   },
   {
     tag: "Frogslayer · Shipped 2025",
@@ -361,11 +571,21 @@ const PROJECTS: Project[] = [
     ),
     meta: ["UI", "Interaction Design", "Usability Testing", "2025"],
     accent: ["#84C0FA", "#53EC9D"],
-    folder: { front: "#262E3A", back: "#171C24", shadow: "#3F444E" },
+    folder: {
+      front: "#262E3A",
+      back: "#171C24",
+      shadow: "#3F444E",
+      outlines: {
+        folder:  "#10141C", // ← folder body outline (hand-pick)
+        company: "#0F3018", // ← company sticky outline (hand-pick)
+        video:   "#3F332A", // ← video sticky outline (hand-pick)
+      },
+    },
     href: "/projects/frogslayer",
     readTime: "6 min read",
     thumbnail: FOLDER_THUMB.frogslayer,
     thumbnailAlt: "Frogslayer — sponsor logo",
+    coverVideo: FOLDER_COVER.frogslayer,
   },
 ];
 
@@ -547,10 +767,25 @@ export default function ProjectsV2() {
                     className="folder-tilt-wrap"
                     ref={(el) => { tiltRefs.current[p.tag] = el; }}
                   >
-                    <div className="folder-svg">
+                    <div
+                      className="folder-svg"
+                      /* Expose the folder's own outline color as CSS
+                         custom properties so the .folder-svg svg
+                         drop-shadow halo picks it up per-card (see
+                         globals.css → .folder-svg svg { filter: … }).
+                         Two alphas: tight rim (0.42) hugs the outline
+                         edge, wider ambient (0.22) grounds the card. */
+                      style={{
+                        ["--folder-halo" as string]:
+                          hexToRgba(p.folder.outlines.folder, 0.42),
+                        ["--folder-halo-far" as string]:
+                          hexToRgba(p.folder.outlines.folder, 0.22),
+                      } as CSSProperties}
+                    >
                       <FolderClosed
                         front={p.folder.front}
                         shadow={p.folder.shadow}
+                        outline={p.folder.outlines.folder}
                       />
                       <FolderOpen
                         tint={p.accent[0]}
@@ -558,8 +793,18 @@ export default function ProjectsV2() {
                         front={p.folder.front}
                         back={p.folder.back}
                         shadow={p.folder.shadow}
+                        folderOutline={p.folder.outlines.folder}
+                        sponsorOutline={p.folder.outlines.company}
+                        videoOutline={p.folder.outlines.video}
                         thumbnail={p.thumbnail}
                         thumbnailAlt={p.thumbnailAlt}
+                        coverVideo={p.coverVideo}
+                        /* isOpen drives the embedded cover video's
+                           play/pause. Only "hovered" phase plays —
+                           "leaving" pauses so a rapid unhover doesn't
+                           keep audio-less video decoding in the
+                           background during the fade-out. */
+                        isOpen={phase === "hovered"}
                       />
                     </div>
                   </div>

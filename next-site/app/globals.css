@@ -2559,13 +2559,16 @@ em.it { font-style: italic; }
      on this artwork — let it through. */
   overflow: visible;
   transition: transform 600ms var(--ease-out-expo), opacity 320ms ease;
-  /* Blended dark halo behind the artwork so the white outline reads as
-     a crisp edge against the light paper background. The tight shadow
-     (0 offset, small blur) builds a darkening rim hugging the outline;
-     the wider, lower one grounds the folder with ambient depth. */
+  /* Blended halo behind the artwork so the outline reads as a crisp
+     edge against the light paper background. Halo color = the folder's
+     own outline stroke, exposed as --folder-outline (set inline per
+     card in ProjectsV2's map render). Falls back to the neutral fg
+     tone if the var isn't set. The tight shadow (0 offset, small blur)
+     builds a tinted rim hugging the outline; the wider, lower one
+     grounds the folder with ambient depth in the same hue. */
   filter:
-    drop-shadow(0 0 7px rgb(var(--fg-rgb) / 0.26))
-    drop-shadow(0 10px 34px rgb(var(--fg-rgb) / 0.17));
+    drop-shadow(0 0 7px var(--folder-halo, rgb(var(--fg-rgb) / 0.26)))
+    drop-shadow(0 10px 34px var(--folder-halo-far, rgb(var(--fg-rgb) / 0.17)));
   /* GPU compositor hint — without this, the two drop-shadow filters
      are recomputed on the CPU every frame as the parent .folder-art
      slides in during the entrance, producing the jank the user
