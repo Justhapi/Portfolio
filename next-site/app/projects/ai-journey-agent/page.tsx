@@ -11,6 +11,7 @@ import interviewNotes from "./images/Interview_Notes_Visual.webp";
 import interviewAffinity from "./images/Interview_Affinity_Diagramming.webp";
 import crazyEightSketch from "./images/Crazy_Eight_Sketch.webp";
 import whiteboardConcept from "./images/Whiteboard_Concept.webp";
+import conceptRefinement from "./images/Concept_A_Refinement.webp";
 import usabilityTesting from "./images/Usability_Test_Feedback_Visual.webp";
 
 export const metadata = {
@@ -279,11 +280,11 @@ export default function AIJourneyAgentCaseStudy() {
           <h2>Ideating</h2>
           <h3>From Individual Sketching to a Sponsor-Selected Direction</h3>
           <p>
-            We developed concept directions in three passes:{" "}
-            <mark className="hl">sketching, concept proposals, and wireframing</mark>.
+            We developed the AI agent concept direction through three stages:{" "}
+            <mark className="hl">sketching, proposing, and wireframing concepts</mark>.
           </p>
 
-          <h3>Sketching</h3>
+          <h3>Sketching Ideas</h3>
           <p>
             Each designer ideated during the Crazy 8&rsquo;s sprint before walking through everyone&rsquo;s
             ideas together and combining the most supported features through group whiteboarding.{" "}
@@ -304,9 +305,6 @@ export default function AIJourneyAgentCaseStudy() {
             During the idea walkthroughs, I pitched a concept direction focusing on our recurring
             themes of user inputs, resulting in me{" "}
             <mark className="hl">leading a rules-based approach to the agent concept</mark>.
-            <br></br><br></br>
-            Although it was ultimately not selected as a final concept during the sponsor&rsquo;s
-            assessment, elements of it were integrated into the concepts that were.
           </p>
           <figure>
             <ZoomableImage
@@ -322,8 +320,12 @@ export default function AIJourneyAgentCaseStudy() {
               }
             />
           </figure>
+          <p>
+            Although it was ultimately not selected as a final concept during the sponsor&rsquo;s
+            assessment, elements of it were integrated into the concepts that were.
+          </p>
 
-          <h3>Concept Proposals</h3>
+        <h3>Proposing Concepts</h3>
           <p>
             We presented <mark className="hl">six concept proposals</mark> to the sponsor —
             including the rules-based whiteboarded direction I led (shown above) — each paired
@@ -331,56 +333,28 @@ export default function AIJourneyAgentCaseStudy() {
             directions to move forward with.
           </p>
 
-          <h3>Wireframing &amp; Eventual Merging into One System</h3>
-          <p>
-            Wireframing the two concepts in parallel later revealed heavy overlap in context and
-            evidence. Rather than shipping two parallel surfaces, we{" "}
-            <mark className="hl">merged them into a single agentic system</mark>.
-            <br></br><br></br>
-            Because the wireframes are built on the sponsor&rsquo;s platform UI, they aren&rsquo;t
-            shown here to comply with the NDA.
-          </p>
-        </section>
-
-        {/* ───── Verifying ───── */}
-        <section id="verifying" className="case-section">
-          <h2>Verifying</h2>
-          <h3>Prototyping and Testing the Unified Concept</h3>
-          <p>
-            We took the combined concept into{" "}
-            <mark className="hl">high-fidelity prototyping, usability testing, and iteration</mark>.
-            The process below describes how the work was structured.
-          </p>
-
-          <h3>Feature Wireframing</h3>
-          <p>
-            To effeciently conceptualize an AI maintenance agent, we explored four research focuses: the platform&rsquo;s current state,
-            the agent&rsquo;s required components, the current industry, and the current user
-            needs.
-          </p>
-
+        <h3>Dual Feature Wireframing</h3>
           <p className="research-split-lead">
-            Due to having two feature concepts approved for the Ai agent, we decided to evenly split the team to focus on either concept A or concept B
+            Due to having two feature concepts approved for the Ai agent, we decided to evenly split the team to work on either concept A or 
+            concept B.
           </p>
           <div className="parallel-tracks">
             <div className="research-track">
               <span className="track-label">Track 1 · My team</span>
               <h3>Concept A</h3>
               <p>
-                I audited the platform as a user, exploring{" "}
-                <mark className="hl">its features across functionality and placement</mark> to
-                better ideate aspects of the agent such as its <mark className="hl">placement within the existing UI
-                and integration with related features.</mark>
+                To translate the concept into interactive features, I <mark className="hl">led the team through sketches intent on 
+                encapsulating Concept A's contents while also providing access to features from Concept B.</mark> The sketches were made 
+                to begin the later refinements on the wireframes for more efficent ease of use.
               </p>
               <figure>
                 <ZoomableImage
-                  src={platformAudit.src}
-                  alt="My platform audit board of sticky notes on blurred platform screenshots, color-coded by category."
+                  src={conceptRefinement.src}
+                  alt="Timeline of the Concept A's refinement"
                   aspectRatio={3975 / 2922}
                   caption={
                     <>
-                      My platform audit board containing sticky notes on blurred platform screenshots, color-coded
-                      by category.
+                      Timeline of Concept A's gradual refinment into its finalized version (not shown due to NDA)
                     </>
                   }
                 />
@@ -408,6 +382,27 @@ export default function AIJourneyAgentCaseStudy() {
               </figure>
             </div>
           </div>
+
+          <h3>Eventual Merging of Wireframes into One System</h3>
+          <p>
+            From wireframing, the two concepts revealed heavy overlap in utilizing the same context and
+            evidence. Due to this fact, we decided to <mark className="hl">merge them into a single 
+            agentic system</mark>.
+            <br></br><br></br>
+            Because the wireframes are built on the sponsor&rsquo;s platform UI, they aren&rsquo;t
+            shown here to comply with the NDA.
+          </p>
+        </section>
+
+        {/* ───── Verifying ───── */}
+        <section id="verifying" className="case-section">
+          <h2>Verifying</h2>
+          <h3>Prototyping and Testing the Unified Concept</h3>
+          <p>
+            We took the combined concept into{" "}
+            <mark className="hl">high-fidelity prototyping, usability testing, and iteration</mark>.
+            The process below describes how the work was structured.
+          </p>
 
           <h3>Hi-Fi Prototyping</h3>
           <p>
@@ -459,9 +454,9 @@ export default function AIJourneyAgentCaseStudy() {
             focused heavily on the platform&rsquo;s own needs, making it natural to narrow
             down findings to apply to the final product later on.
             <br></br><br></br>
-            <mark className="hl">Narrowing down scope was a challenge I had previously addressed early</mark> on when
+            <mark className="hl">Narrowing down scope was a challenge subjective from project to project that I had previously addressed early</mark> on when
             constructing the first set of guidelines for Frogslayer. I now understand that
-            <mark className="hl"> specific factors, like a project&rsquo;s theme of expansion, hints at its unique
+            <mark className="hl"> specific factors, like a project&rsquo;s theme of expansion, hints at its
             expected window for scope narrowing.</mark>
           </p>
         </section>
