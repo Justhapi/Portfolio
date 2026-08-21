@@ -497,8 +497,8 @@ const PROJECTS: Project[] = [
       shadow: "#39202F",
       outlines: {
         folder:  "#3B1A26", // ← folder body outline (hand-pick)
-        company: "#7E1811", // ← company sticky outline (hand-pick)
-        video:   "#3F332A", // ← video sticky outline (hand-pick)
+        company: "#AF1408", // ← company sticky outline — inline
+        video:   "#CFA287", // ← video sticky outline (shared across all folders)
       },
     },
     href: "/projects/inline",
@@ -523,8 +523,8 @@ const PROJECTS: Project[] = [
       shadow: "#5C3924",
       outlines: {
         folder:  "#6E4A28", // ← folder body outline (hand-pick)
-        company: "#3F2915", // ← company sticky outline (hand-pick)
-        video:   "#3F332A", // ← video sticky outline (hand-pick)
+        company: "#544F4F", // ← company sticky outline — anonymous mark
+        video:   "#CFA287", // ← video sticky outline (shared across all folders)
       },
     },
     href: "/projects/ai-journey-agent",
@@ -551,8 +551,8 @@ const PROJECTS: Project[] = [
       shadow: "#163838",
       outlines: {
         folder:  "#0C2E2D", // ← folder body outline (hand-pick)
-        company: "#3A1010", // ← company sticky outline (hand-pick)
-        video:   "#3F332A", // ← video sticky outline (hand-pick)
+        company: "#283370", // ← company sticky outline — Stack
+        video:   "#CFA287", // ← video sticky outline (shared across all folders)
       },
     },
     href: "/projects/researchhub",
@@ -577,8 +577,8 @@ const PROJECTS: Project[] = [
       shadow: "#3F444E",
       outlines: {
         folder:  "#10141C", // ← folder body outline (hand-pick)
-        company: "#0F3018", // ← company sticky outline (hand-pick)
-        video:   "#3F332A", // ← video sticky outline (hand-pick)
+        company: "#897DD5", // ← company sticky outline — Frogslayer
+        video:   "#CFA287", // ← video sticky outline (shared across all folders)
       },
     },
     href: "/projects/frogslayer",
