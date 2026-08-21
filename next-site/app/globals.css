@@ -5124,48 +5124,50 @@ em.it { font-style: italic; }
 }
 
 /* ── Case disclaimer (NDA / anonymization notice) ────────────────────────
-   Re-weighted for noticeability: warm accent-tinted background + left
-   accent border (matches outcome-callout language), sentence-case body
-   copy so it reads as content instead of fine-print, and a bold uppercase
-   "NDA" badge inline that carries the tag-level prominence. The goal is
-   for a recruiter's eye to catch the notice on first scroll and read it
-   as "intentional constraint I'm respecting" rather than a boilerplate
-   footer they should skip. */
+   Redesigned per Kathleen's sketch: a bold SOLID mustard badge floats
+   at the top-left with the notice text flowing next to it on plain
+   page background — no card, no border stripe, no framed-note feel.
+   The badge (chip-yellow fill, dark ink text) carries all the visual
+   weight of the notice; the body text is a warm neutral sentence
+   reading as intentional constraint rather than boilerplate. */
 .case-disclaimer {
   font-family: var(--f-sans);
   font-weight: 400;
   font-size: 14px;
-  line-height: 1.55;
+  line-height: 1.6;
   color: var(--fg-soft);
-  background: #F6EEE6;
-  border-left: 4px solid var(--accent);
-  border-radius: 4px;
-  padding: 16px 20px 16px 22px;
+  background: transparent;
+  border: none;
+  padding: 0;
   margin: 0 0 56px;
   display: flex;
-  align-items: baseline;
-  gap: 12px;
+  align-items: flex-start;
+  gap: 18px;
   flex-wrap: wrap;
 }
 .case-disclaimer__badge {
   font-family: var(--f-mono);
-  font-weight: 700;
-  font-size: 11px;
-  letter-spacing: 0.18em;
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--accent-on-cream);
-  background: rgb(var(--accent-rgb, 154 109 76) / 0.14);
-  padding: 4px 10px;
-  border-radius: 999px;
+  color: var(--chip-yellow-ink);
+  background: var(--chip-yellow);
+  padding: 10px 14px;
+  border-radius: 8px;
   flex-shrink: 0;
   white-space: nowrap;
-  /* small optical nudge — the badge sits on the baseline of the body
-     text but reads slightly heavier without it */
-  transform: translateY(-1px);
+  line-height: 1;
+  /* Slight lift + soft shadow so the badge reads as a solid tag stuck
+     onto the page, not a flat sibling of the paragraph beside it. */
+  box-shadow:
+    0 4px 10px -4px rgb(var(--fg-rgb) / 0.22),
+    0 1px 2px    rgb(var(--fg-rgb) / 0.12);
 }
 .case-disclaimer__text {
   flex: 1;
   min-width: 240px;
+  padding-top: 2px;
 }
 
 /* ── Case pull-quote — Klee One editorial callout ──────────────────────────
@@ -5440,35 +5442,55 @@ em.it { font-style: italic; }
    display face (K2D) and a warmer accent surface. Positioned above the
    body-copy Outcome paragraph so a 30-second skimmer gets the killer
    fact before diving into narrative. */
+/* Redesigned per Kathleen's sketch: soft cream card with a large
+   pill-radius, no border stripe, generous padding. The META line sits
+   ABOVE the stat (visual order flipped via flex column-reverse — DOM
+   order unchanged so screen readers still hear "handoff report" first
+   as the primary claim). Meta is a darker, tracked warm-brown mono
+   line reading as a header, stat below is a wrapped sentence with the
+   key phrase bolded in accent color. */
 .outcome-callout {
   margin: 8px 0 40px;
-  padding: 22px 26px 20px;
-  background: rgb(var(--accent-rgb, 154 109 76) / 0.08);
-  border-left: 4px solid var(--accent-on-cream);
-  border-radius: 4px;
-  max-width: 640px;
+  padding: 32px 40px;
+  background: #EDE3D3;
+  border-left: none;
+  border-radius: 22px;
+  /* Card spans the same fluid width as the case body paragraphs
+     (constrained only by .case-body's 1080px cap + horizontal
+     padding). Removing the 720px cap so the card scales with the
+     reading column instead of sitting narrower than it. */
+  width: 100%;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 20px;
 }
 .outcome-callout__stat {
   margin: 0;
   font-family: var(--f-display);
   font-weight: 500;
-  font-size: clamp(17px, 1.55vw, 20px);
-  line-height: 1.4;
+  font-size: clamp(18px, 1.6vw, 22px);
+  line-height: 1.5;
   color: var(--fg);
   letter-spacing: -0.005em;
+  text-align: center;
 }
 .outcome-callout__stat strong {
+  /* Warm accent brown — matches the strong treatment used in
+     .about-prose p strong, so the bolded outcome phrase carries the
+     same "elevated highlight" color language used elsewhere on the
+     portfolio. */
   color: var(--accent-on-cream);
-  font-weight: 800;
+  font-weight: 700;
 }
 .outcome-callout__meta {
-  margin: 12px 0 0;
+  margin: 0;
   font-family: var(--f-mono);
-  font-weight: 500;
-  font-size: 11px;
-  letter-spacing: 0.18em;
+  font-weight: 600;
+  font-size: clamp(12px, 1.05vw, 14px);
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: rgb(var(--fg-rgb) / 0.6);
+  color: var(--fg);
+  text-align: center;
 }
 
 /* ── Case body scroll-reveal ───────────────────────────────────────────────
@@ -5505,9 +5527,12 @@ em.it { font-style: italic; }
 .case-section h2 {
   font-family: var(--f-display);
   font-weight: 800;
-  font-size: clamp(34px, 4.6vw, 56px);
+  /* Bumped max from 56px → 88px so the section headings match the
+     display-scale weight in Kathleen's Outcome reference — huge chunky
+     type that carries the section like a poster title. */
+  font-size: clamp(44px, 6.6vw, 88px);
   line-height: 0.95;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
   margin: 0 0 36px;
   /* Heading sits next to the sticky-note number badge below */
   display: flex;

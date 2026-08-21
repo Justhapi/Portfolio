@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "wireframe": {
+      "source": "TejusRMeda/wireframe-skill",
+      "sourceType": "github",
+      "skillPath": "skills/wireframe/SKILL.md",
+      "computedHash": "71f9f1c9088225c1440d83cd8b4b14741d25ca65d395694c49202036390b5d5d"
+    }
+  }
+}
