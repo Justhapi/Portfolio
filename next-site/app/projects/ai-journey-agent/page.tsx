@@ -352,6 +352,63 @@ export default function AIJourneyAgentCaseStudy() {
             The process below describes how the work was structured.
           </p>
 
+          <h3>Feature Wireframing</h3>
+          <p>
+            To effeciently conceptualize an AI maintenance agent, we explored four research focuses: the platform&rsquo;s current state,
+            the agent&rsquo;s required components, the current industry, and the current user
+            needs.
+          </p>
+
+          <p className="research-split-lead">
+            Due to having two feature concepts approved for the Ai agent, we decided to evenly split the team to focus on either concept A or concept B
+          </p>
+          <div className="parallel-tracks">
+            <div className="research-track">
+              <span className="track-label">Track 1 · My team</span>
+              <h3>Concept A</h3>
+              <p>
+                I audited the platform as a user, exploring{" "}
+                <mark className="hl">its features across functionality and placement</mark> to
+                better ideate aspects of the agent such as its <mark className="hl">placement within the existing UI
+                and integration with related features.</mark>
+              </p>
+              <figure>
+                <ZoomableImage
+                  src={platformAudit.src}
+                  alt="My platform audit board of sticky notes on blurred platform screenshots, color-coded by category."
+                  aspectRatio={3975 / 2922}
+                  caption={
+                    <>
+                      My platform audit board containing sticky notes on blurred platform screenshots, color-coded
+                      by category.
+                    </>
+                  }
+                />
+              </figure>
+            </div>
+            <div className="research-track">
+              <span className="track-label">Track 2 · Partner team</span>
+              <h3>Concept B</h3>
+              <p>
+                The partner team surveyed the AI components that a maintenance agent would require:{" "}
+                <mark className="hl">the types of AI, categories of monitoring, and user trust of AI</mark>.
+                {" "}
+              </p>
+              <figure>
+                <ZoomableImage
+                  src={agentComponents.src}
+                  alt="The agent-components synthesis the partner team authored, categorized into five focuses."
+                  aspectRatio={5128 / 3458}
+                  caption={
+                    <>
+                      The agent-components synthesis the partner team authored categorized into five focuses.
+                    </>
+                  }
+                />
+              </figure>
+            </div>
+          </div>
+
           <h3>Hi-Fi Prototyping</h3>
           <p>
             We built an interactive Figma prototype that expressed the unified concept end-to-end
