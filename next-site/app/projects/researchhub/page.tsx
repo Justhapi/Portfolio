@@ -501,15 +501,15 @@ export default function ResearchHubCaseStudy() {
           <h2>Implementing</h2>
           <h3>Stepping In to Ship the Platform on Time</h3>
           <p>
-            When academic workloads slowed some teammates&rsquo; progression, I also contributed
-            through{" "}
-            <mark className="hl">front-end React coding</mark> to help build the platform on
-            time.
+            As the wireframe designs were finalized, I then began to also contribute to the code
+            through <mark className="hl">front-end React coding</mark> to help build the platform on
+            time. During this phase, I also needed to address designs regarding the reactivity of features 
+            formatting to be adaptivable to any browser size.
+            { /* -give reasoning why - */}
             <br></br><br></br>
             The dynamic within the team also shifted, as design conversations became peer-to-peer
-            problem-solving instead of one-way requests. I was able to ask questions such as
-            &ldquo;would this be easier if the structure changed?&rdquo; with enough technical
-            context for the question to be productive.
+            problem-solving for me to be able to fill in gaps of simple yet tedious coding for my
+            teammates who are more code-savy to focus on the more complex aspects of platform.
           </p>
         </section>
 
