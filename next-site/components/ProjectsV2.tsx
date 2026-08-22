@@ -36,13 +36,6 @@ const FOLDER_THUMB = {
   anonymous:  `${BASE_PATH}/img/folders/anonymous.svg`,
 } as const;
 
-/* Cover videos — served from /public/img/cover so Next's static export
-   copies them verbatim (Webpack asset/resource emits to the wrong path
-   for static export). Same pattern as the case-page HeroVideo covers.
-   When a project's `coverVideo` is set, the folder-open SVG replaces
-   the sponsor thumbnail sticky slot with a <video> in a <foreignObject>
-   — muted / looped / plays only while the folder is in its hovered
-   phase (see FolderOpen play/pause useEffect). */
 const FOLDER_COVER = {
   frogslayer:  `${BASE_PATH}/img/cover/Frogslayer.webm`,
   researchhub: `${BASE_PATH}/img/cover/ResearchHub.webm`,
@@ -50,8 +43,6 @@ const FOLDER_COVER = {
   aiAgent:     `${BASE_PATH}/img/cover/Ai_Agent.webm`,
 } as const;
 
-/** Turn "#RRGGBB" into "rgba(r, g, b, a)" — used to derive the folder's
- *  drop-shadow halo from its own outline color at two alpha levels. */
 function hexToRgba(hex: string, alpha: number): string {
   const h = hex.replace("#", "");
   const r = parseInt(h.slice(0, 2), 16);
@@ -67,12 +58,8 @@ const FolderClosed = ({
 }: {
   front?: string;
   shadow?: string;
-  /** Per-project outline stroke color for the closed folder's edge. */
   outline?: string;
 }) => {
-  // Unique gradient id per render — otherwise three FolderClosed
-  // instances on the page would collide on `fc_grad` and only the
-  // first one's shadow stop would apply to all.
   const gid = useId().replace(/:/g, "");
   const gradId = `fc_grad_${gid}`;
   return (
@@ -135,36 +122,16 @@ const FolderOpen = ({
   front?: string;
   back?: string;
   shadow?: string;
-  /** Stroke on the folder's front + back cover paths. */
   folderOutline?: string;
-  /** Stroke on the sponsor sticky (data-fx-i="0"). Per-project — tied
-   *  to the sponsor logo's own color, not the folder body. */
   sponsorOutline?: string;
-  /** Stroke on the video/preview sticky (data-fx-i="1"). */
   videoOutline?: string;
-  /** When provided, overlays a sponsor logo (or the Anonymous mark) on
-   *  top of the larger sticky. The colored sticky rect still renders
-   *  underneath so the ~16px of horizontal padding around the 1:1 logo
-   *  shows the sticky's tint color — "logo on colored paper." */
   thumbnail?: string;
   thumbnailAlt?: string;
-  /** When provided, replaces the sponsor thumbnail sticky slot with a
-   *  looping cover video embedded via SVG <foreignObject>. Video is
-   *  played only while `isOpen` is true (folder is hovered) so all
-   *  four folders don't decode + play simultaneously on page load. */
   coverVideo?: string;
-  /** Drives play/pause on the embedded cover video. True when the
-   *  parent .folder-art is in its "hovered" phase. */
   isOpen?: boolean;
 }) => {
-  // unique gradient id per render so multiple cards don't reuse the same defs
   const gid = useId().replace(/:/g, "");
   const gradId = `fo_grad_${gid}`;
-  // Cover-video play/pause — only fires when both a video is provided
-  // and the folder is in its hovered phase. Muted + loop + playsInline
-  // so browser autoplay policies don't block it. On unhover we pause
-  // AND rewind to 0 so the next hover replays from the intro (the
-  // most punchy part of a short cover animation).
   const videoRef = useRef<HTMLVideoElement | null>(null);
   useEffect(() => {
     const v = videoRef.current;
@@ -174,12 +141,15 @@ const FolderOpen = ({
       return;
     }
     if (isOpen) {
-      // .play() returns a promise that can reject if autoplay is blocked;
-      // catch and swallow — the poster/last frame remains visible.
       v.play().catch(() => {});
     } else {
       v.pause();
-      try { v.currentTime = 0; } catch { /* seek can throw before metadata loads */ }
+      // seek can throw before metadata loads — safe to swallow
+      try {
+        v.currentTime = 0;
+      } catch {
+        void 0;
+      }
     }
   }, [isOpen, coverVideo]);
   return (
@@ -191,7 +161,6 @@ const FolderOpen = ({
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      {/* back folder cover — animates in sync with front so both bottoms stay joined */}
       <g className="fo-flap-back">
         <path
           d="M107.138 74.9883C109.281 65.3887 118.799 59.3439 128.399 61.4863L391.84 120.282C401.44 122.425 407.485 131.943 405.342 141.543L370.065 299.607C367.922 309.207 358.404 315.253 348.804 313.11L85.3628 254.314C75.7633 252.172 69.7186 242.653 71.8608 233.054L107.138 74.9883Z"
@@ -200,7 +169,6 @@ const FolderOpen = ({
           strokeWidth="6.6785"
         />
       </g>
-      {/* X-star (right side) — wrapped so it can twinkle on idle */}
       <g className="fo-xstar" data-fx-i="0">
       <path
         d="M383.405 176.641C384.09 177.145 384.186 177.889 384.202 178C384.24 178.258 384.227 178.49 384.216 178.625C384.193 178.918 384.132 179.249 384.068 179.556C383.935 180.191 383.713 181.067 383.457 182.077C382.936 184.134 382.225 186.935 381.602 190.152C380.344 196.643 379.499 204.569 381.158 211.222C382.776 217.707 387.33 223.921 391.593 228.771C393.708 231.177 395.69 233.182 397.154 234.702C397.868 235.443 398.499 236.11 398.933 236.637C399.141 236.89 399.375 237.195 399.546 237.51C399.629 237.664 399.752 237.917 399.817 238.232C399.88 238.539 399.933 239.141 399.562 239.749C399.179 240.375 398.596 240.589 398.368 240.659C398.093 240.744 397.837 240.768 397.666 240.777C397.315 240.795 396.923 240.765 396.56 240.726C395.813 240.646 394.811 240.479 393.671 240.279C391.347 239.87 388.263 239.291 384.807 238.823C377.804 237.873 369.753 237.455 364.016 239.609C356.028 242.606 349.57 247.169 344.979 250.959C342.685 252.853 340.872 254.541 339.548 255.756C338.903 256.349 338.328 256.872 337.882 257.23C337.668 257.401 337.402 257.602 337.122 257.754C336.987 257.827 336.753 257.942 336.457 258.006C336.176 258.067 335.568 258.137 334.948 257.759C334.149 257.271 334.025 256.46 334.001 256.298C333.96 256.023 333.975 255.775 333.989 255.626C334.018 255.308 334.09 254.95 334.168 254.614C334.327 253.921 334.592 252.971 334.899 251.876C335.523 249.649 336.376 246.634 337.134 243.207C338.668 236.276 339.729 228.003 337.926 221.449C336.223 215.258 332.47 208.997 329.111 204.061C327.433 201.596 325.906 199.535 324.776 197.949C324.227 197.178 323.747 196.485 323.421 195.938C323.263 195.674 323.094 195.365 322.976 195.056C322.918 194.903 322.842 194.671 322.81 194.396C322.782 194.146 322.763 193.622 323.079 193.083C323.433 192.479 323.979 192.238 324.298 192.145C324.614 192.054 324.897 192.048 325.067 192.053C325.416 192.063 325.773 192.133 326.059 192.2C326.658 192.339 327.447 192.583 328.313 192.858C330.096 193.424 332.465 194.206 335.217 194.914C340.765 196.342 347.541 197.378 353.509 195.788C360.655 193.885 367.276 189.144 372.291 184.789C374.781 182.627 376.832 180.599 378.328 179.113C379.061 178.384 379.698 177.748 380.169 177.315C380.397 177.106 380.651 176.885 380.892 176.715C381.003 176.637 381.204 176.503 381.458 176.403C381.588 176.351 382.408 176.023 383.261 176.544L383.405 176.641Z"
@@ -221,16 +189,6 @@ const FolderOpen = ({
       <g className="fo-sticky" data-fx-i="0">
       {thumbnail ? (
         <>
-          {/* Sponsor icon rendered UPRIGHT (no rotate transform) at
-              coords pre-computed by rotating the sticky's centre
-              through the 112.879° transform around (373.685, 98.1076):
-                pre-rotation centre  = (434.31, 157.99)
-                post-rotation centre ≈ (295, 130.7)
-              Upright 119.764² square centred on that post-rotation
-              point → top-left at (235.12, 70.82). Both icon and its
-              outline are upright so the sponsor logo reads legibly
-              (was previously inheriting the sticky's 113° tilt, which
-              flipped the icon nearly upside-down). */}
           <image
             href={thumbnail}
             x="235.12"
@@ -266,7 +224,6 @@ const FolderOpen = ({
         />
       )}
       </g>
-      {/* X-star (left) — wrapped so it can twinkle on idle */}
       <g className="fo-xstar" data-fx-i="2">
       <path
         d="M19.6959 125.721C20.4835 125.401 21.1681 125.708 21.2711 125.753C21.5105 125.856 21.7014 125.987 21.8114 126.068C22.0483 126.241 22.2987 126.466 22.5272 126.681C22.9987 127.127 23.6294 127.774 24.3567 128.52C25.837 130.04 27.8522 132.111 30.2685 134.325C35.1428 138.791 41.4563 143.657 47.9944 145.723C54.3673 147.736 62.0462 147.105 68.4096 146.008C71.5665 145.464 74.3121 144.823 76.3728 144.37C77.3779 144.15 78.2768 143.96 78.9524 143.867C79.2772 143.822 79.6591 143.782 80.0175 143.801C80.1926 143.81 80.4721 143.838 80.7743 143.947C81.0693 144.054 81.6101 144.324 81.9341 144.958C82.268 145.612 82.1448 146.221 82.0853 146.452C82.0136 146.73 81.9005 146.961 81.8188 147.111C81.6505 147.421 81.42 147.739 81.1968 148.028C80.7376 148.622 80.071 149.39 79.3041 150.256C77.741 152.023 75.6345 154.349 73.4274 157.049C68.9555 162.521 64.3879 169.165 63.2225 175.181C61.5999 183.557 62.1107 191.448 62.9398 197.343C63.3542 200.29 63.8442 202.717 64.1881 204.481C64.3556 205.34 64.5008 206.105 64.5723 206.672C64.6064 206.943 64.6388 207.276 64.6216 207.593C64.6133 207.747 64.5891 208.007 64.4887 208.293C64.3936 208.563 64.1353 209.119 63.4892 209.449C62.6544 209.875 61.899 209.557 61.7482 209.493C61.4923 209.383 61.2888 209.24 61.1693 209.151C60.9136 208.961 60.6458 208.711 60.4 208.469C59.8931 207.971 59.2217 207.248 58.4491 206.414C56.8774 204.717 54.7541 202.414 52.2296 199.975C47.1246 195.043 40.6285 189.811 34.0989 187.919C27.9319 186.133 20.6324 186.057 14.6681 186.339C11.69 186.479 9.13456 186.703 7.19171 186.836C6.24718 186.901 5.40591 186.947 4.76951 186.939C4.46126 186.936 4.10926 186.918 3.78437 186.857C3.62403 186.827 3.38609 186.771 3.13538 186.653C2.90725 186.547 2.45064 186.288 2.1567 185.737C1.82728 185.12 1.9069 184.529 1.99519 184.208C2.08237 183.891 2.22572 183.647 2.31895 183.504C2.50927 183.212 2.75645 182.945 2.96272 182.736C3.39461 182.298 4.01537 181.753 4.70241 181.159C6.11736 179.935 8.02363 178.325 10.0662 176.35C14.1853 172.369 18.6122 167.135 20.3788 161.216C22.4938 154.131 21.9164 146.007 20.8278 139.455C20.2874 136.203 19.6313 133.393 19.1471 131.342C18.9096 130.335 18.7005 129.46 18.5781 128.832C18.5189 128.528 18.4628 128.196 18.4444 127.902C18.436 127.767 18.4269 127.525 18.4743 127.257C18.4986 127.119 18.648 126.248 19.5376 125.794L19.6959 125.721Z"
@@ -298,12 +255,6 @@ const FolderOpen = ({
                 objectFit: "cover",
                 borderRadius: "9.98px",
                 display: "block",
-                /* Rotate the video content -90° (counter-clockwise).
-                   Because the container is square, rotation preserves
-                   the container's bounds — only the video content
-                   inside is spun. object-fit: cover crops the source's
-                   16:9 down to a square, then rotation displays that
-                   square rotated left. */
               }}
             />
           </foreignObject>
@@ -388,19 +339,10 @@ const FolderOpen = ({
     </svg>
   );
 };
-// Folder cover theme — only the COVER layers (front, back, multiplied
-// shadow stop) are themed per project. The contents inside (X-stars,
-// stickies, white outline) stay shared across all three folders.
 type FolderTheme = {
   front: string;
   back: string;
   shadow: string;
-  /** Three hand-picked outline hex codes per project:
-   *    folder  → closed folder edge + open folder front/back covers.
-   *              Drives the folder's drop-shadow halo too (via CSS var
-   *              --folder-halo, derived from this hex at two alphas).
-   *    company → sponsor sticky outline (data-fx-i="0").
-   *    video   → video/preview sticky outline (data-fx-i="1"). */
   outlines: {
     folder: string;
     company: string;
@@ -410,46 +352,21 @@ type FolderTheme = {
 
 type Project = {
   tag: string;
-  // Not shown on the card — retained only as the folder link's
-  // accessible name (aria-label) so screen-reader users get a
-  // meaningful link target.
-  // ReactNode (not string) so blurbs can bold the key phrases — what I
-  // did, and why it mattered to the project.
   blurb: ReactNode;
   meta: string[];
   accent: [string, string];
   folder: FolderTheme;
   href: string;
   readTime: string;
-  /** ── /shape decision: project thumbnail peeks out of open folder ──
-   *  When a recruiter hovers a folder card, the open SVG reveals two
-   *  sticky-note rects (the blue + teal `.fo-sticky` shapes). Once
-   *  case-study screenshots exist, the larger of those two stickies
-   *  will be replaced by a small thumbnail image at the same rotation
-   *  and shadow — the folder reveals the WORK, not a colored shape.
-   *  Holding the visual until assets land so an empty image-slot
-   *  doesn't leak into the card (the same reason HoverWord pills are
-   *  gated on imageSrc). When ready, set `thumbnail: "/projects/X.png"`
-   *  and `thumbnailAlt`. Implementation goes in FolderOpen: gate the
-   *  second `<rect>` on `thumbnail`, render an `<image>` element with
-   *  the same transform/clip when present. */
   thumbnail?: string;
   thumbnailAlt?: string;
-  /** Optional looping cover video embedded into the folder-open sticky
-   *  slot. When set, replaces the sponsor thumbnail with a <video>
-   *  element that plays only while the folder is hovered. Files live in
-   *  /public/img/cover/ — see FOLDER_COVER above. */
   coverVideo?: string;
-  /** Short deliverable + shipping status appended to the tag line —
-   *  "Report Handed Off", "Concept Shipped to Beta", etc. Rendered as
-   *  a .tag-outcome span in the tag, so the WIN is visible on the
-   *  projects-row skim without adding a new section to each card. */
   outcome?: string;
 };
 
 const PROJECTS: Project[] = [
   {
-    tag: "inline · Product Design Intern · Recommended Features Handed Off · 2026",
+    tag: "inline · Product Design Intern · 2026 · Recommended Features Handed Off ",
     blurb: (
       <>
         Conducted <strong>early-stage exploration for a B2B2C consumer product</strong> by auditing the industry, then verifying{" "}
@@ -463,9 +380,9 @@ const PROJECTS: Project[] = [
       back: "#5E3349",
       shadow: "#39202F",
       outlines: {
-        folder:  "#3B1A26", // ← folder body outline (hand-pick)
-        company: "#AF1408", // ← company sticky outline — inline
-        video:   "#CFA287", // ← video sticky outline (shared across all folders)
+        folder:  "#3B1A26",
+        company: "#AF1408",
+        video:   "#CFA287",
       },
     },
     href: "/projects/inline",
@@ -475,7 +392,7 @@ const PROJECTS: Project[] = [
     coverVideo: FOLDER_COVER.inline,
   },
   {
-    tag: "Customer Journey Platform · Concept Shipped to Beta · 2026",
+    tag: "Customer Journey Platform · 2026 · Concept Shipped to Beta",
     blurb: (
       <>
         Led concept ideation for an <strong>agentic AI maintenance agent</strong> for a <strong>customer journey
@@ -501,7 +418,7 @@ const PROJECTS: Project[] = [
     coverVideo: FOLDER_COVER.aiAgent,
   },
   {
-    tag: "Purdue Stack · Design Engineer · Platform Ships Fall · 2026",
+    tag: "Purdue Stack · Design Engineer · 2026 · Platform Ships Fall",
     blurb: (
       <>
         Redesigned Purdue&rsquo;s <strong>student–faculty research collaboration platform</strong>, owning
@@ -527,7 +444,7 @@ const PROJECTS: Project[] = [
     coverVideo: FOLDER_COVER.researchhub,
   },
   {
-    tag: "Frogslayer · Guidelines Shipped · 2025",
+    tag: "Frogslayer · Co-lead Designer and Researcher · 2025 · Guidelines Shipped ",
     blurb: (
       <>
         Shipped a set of <strong>evidence-based design guidelines</strong> for entertainment and hospitality 
@@ -554,8 +471,6 @@ const PROJECTS: Project[] = [
   },
 ];
 
-// Duration of the closed↔open morph (must match the keyframes in globals.css).
-// After this many ms in the "leaving" phase, the card returns to "rest".
 const MORPH_MS = 460;
 
 type FolderPhase = "rest" | "hovered" | "leaving";
@@ -579,10 +494,6 @@ export default function ProjectsV2() {
     const rect = wrap.getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2;  // −1 → 1
     const y = ((e.clientY - rect.top) / rect.height - 0.5) * 2;  // −1 → 1
-    // Magnetic pull toward the cursor + subtle 3-D tilt.
-    // translateX/Y moves the folder toward the mouse (±18px / ±14px);
-    // rotateY/X adds the depth lean on top.
-    // Spring easing gives physical weight — folder lags then overshoots.
     wrap.style.transition =
       "transform 260ms cubic-bezier(0.34, 1.56, 0.64, 1)";
     wrap.style.transform =
@@ -606,11 +517,6 @@ export default function ProjectsV2() {
     };
   }, []);
 
-  // Per-folder scroll reveal. Each folder card runs its entrance bounce
-  // only once IT scrolls into view — observed individually so a card
-  // further down the page doesn't fire its animation while still
-  // off-screen (the old approach staggered every folder at once the
-  // moment the top of the row appeared).
   const [revealed, setRevealed] = useState<Record<string, boolean>>({});
   const folderEls = useRef<Record<string, HTMLDivElement | null>>({});
   useEffect(() => {
@@ -653,9 +559,6 @@ export default function ProjectsV2() {
       window.clearTimeout(pending);
       delete leavingTimers.current[id];
     }
-    // Enforce one-at-a-time: if another folder is still holding the open
-    // pose, send it into its closing morph before this one opens — so two
-    // folders are never in the hovered state simultaneously.
     if (hoveredId.current && hoveredId.current !== id) {
       leaveFolder(hoveredId.current);
     }
@@ -689,11 +592,6 @@ export default function ProjectsV2() {
                 ? "folder-art"
                 : `folder-art folder-art--${phase}`;
             return (
-              // .folder is now a plain <div> so clicks on the copy
-              // column do NOT navigate — only the <Link> wrapping the
-              // artwork is hit-testable. The grid layout still works
-              // because `display: grid` is on .folder regardless of
-              // element type.
               <div
                 className={`folder${revealed[p.tag] ? " in" : ""}`}
                 key={p.tag}
@@ -702,19 +600,10 @@ export default function ProjectsV2() {
                 }}
                 data-folder-tag={p.tag}
               >
-                {/* Morph triggers, read-time pill, AND the actual
-                    navigation hit-area all live on the .folder-art
-                    Link — so the folder is the only thing that
-                    responds to hover and click. The copy column
-                    below is purely informational. */}
                 <Link
                   href={p.href}
                   className={folderArtClass}
                   aria-label={`${p.tag} — ${p.readTime}`}
-                  /* Record exact home scrollY before navigating away. On
-                     return ScrollRestore picks it up and snaps the page
-                     back to this folder, so a recruiter clicking through
-                     projects keeps their place in the row. */
                   onClick={saveHomeScroll}
                   onMouseEnter={(e) => {
                     setPos({ x: e.clientX, y: e.clientY });
@@ -734,12 +623,6 @@ export default function ProjectsV2() {
                   >
                     <div
                       className="folder-svg"
-                      /* Expose the folder's own outline color as CSS
-                         custom properties so the .folder-svg svg
-                         drop-shadow halo picks it up per-card (see
-                         globals.css → .folder-svg svg { filter: … }).
-                         Two alphas: tight rim (0.42) hugs the outline
-                         edge, wider ambient (0.22) grounds the card. */
                       style={{
                         ["--folder-halo" as string]:
                           hexToRgba(p.folder.outlines.folder, 0.42),
@@ -764,19 +647,11 @@ export default function ProjectsV2() {
                         thumbnail={p.thumbnail}
                         thumbnailAlt={p.thumbnailAlt}
                         coverVideo={p.coverVideo}
-                        /* isOpen drives the embedded cover video's
-                           play/pause. Only "hovered" phase plays —
-                           "leaving" pauses so a rapid unhover doesn't
-                           keep audio-less video decoding in the
-                           background during the fade-out. */
                         isOpen={phase === "hovered"}
                       />
                     </div>
                   </div>
                 </Link>
-                {/* Copy column — wrapped so the .folder grid can place
-                    all the text in one cell, with the artwork in the
-                    other. Inert: no link, no hover handlers. */}
                 <div className="folder-copy">
                   <div className="tag">
                     {p.tag}
@@ -787,18 +662,10 @@ export default function ProjectsV2() {
                       </span>
                     )}
                   </div>
-                  {/* Meta sits directly under the company · position tag,
-                      above the title + description — a quick topic
-                      read before the headline. */}
                   <div className="meta">
                     {p.meta.map((m) => (
                       <span key={m}>{m}</span>
                     ))}
-                    {/* Read-time chip — visible ONLY on touch / phone via CSS.
-                        Desktop users get the cursor-following .read-pill on
-                        folder hover; touch users have no hover, so without this
-                        chip they'd click into a case study with no idea of the
-                        read commitment. Mirrors the same info as the pill. */}
                     <span className="meta__read" aria-label="Estimated read time">
                       {p.readTime}
                     </span>
@@ -811,7 +678,6 @@ export default function ProjectsV2() {
         </div>
       </div>
 
-      {/* cursor-following read-time pill — bottom-right of cursor */}
       {hoverPill && (
         <div
           className="read-pill"
