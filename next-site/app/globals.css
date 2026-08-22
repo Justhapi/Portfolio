@@ -2997,6 +2997,16 @@ em.it { font-style: italic; }
   font-weight: 700;
   color: var(--fg);
 }
+
+/* Outcome inline within the TAG line — "sponsor · role · year · [WIN]".
+   Distinct from the rest of the tag (which is muted accent-on-cream
+   tone) via the site's brighter accent color, so the outcome pops as
+   the WIN moment while sitting in the tag's own visual rhythm — no new
+   section, no separate skim beat. */
+.folder .tag .tag-outcome {
+  color: var(--accent);
+  font-weight: 700;
+}
 .folder .meta {
   display: flex;
   flex-wrap: wrap;
@@ -3023,14 +3033,16 @@ em.it { font-style: italic; }
 }
 .folder .meta span:last-child::after { content: ""; }
 
-/* NDA emphasis in the META strip — GOLD text (no container / fill).
-   Uses the shared --chip-yellow token so the NDA moment reads with
-   the same gold color language as the case-page NDA badge. Bolder +
-   slightly heavier tracking than the surrounding muted activity chips
-   so it stands out at the 9px meta size without needing a chip fill. */
+/* NDA emphasis in the META strip — punchy GOLD text (no fill).
+   Swapped from --chip-yellow (which was reading as muted mustard) to
+   a more emphatically gold #D4A017. Bumped font-size back up to 11px
+   so the NDA reads clearly at meta-strip fine-print scale. Weight 900
+   + tracked so it visually dominates the muted 9px activity chips
+   around it. */
 .folder .meta .meta__nda {
-  color: var(--chip-yellow);
-  font-weight: 800;
+  color: #D4A017;
+  font-weight: 900;
+  font-size: 11px;
   letter-spacing: 0.24em;
 }
 
