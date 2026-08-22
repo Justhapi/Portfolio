@@ -877,13 +877,15 @@ body.on-paper .nav-pill {
      content stack fits comfortably inside ~70% of viewport height
      with room for the polaroid + both attached stickers below. */
   .hero-greet-lead {
-    font-size: clamp(16px, 5vw, 46px);
+    /* Mobile max updated to match the reduced desktop size (40px). */
+    font-size: clamp(16px, 5vw, 40px);
   }
   .hero-an {
     font-size: clamp(12px, 3.6vw, 36px);
   }
   .ribbon-artist .wordmark {
-    height: clamp(16px, 5vw, 45px);
+    /* Mobile max updated to match the enlarged desktop size (58px). */
+    height: clamp(20px, 6.2vw, 58px);
   }
   .hero-focus {
     font-size: clamp(8px, 2.2vw, 15px);
@@ -931,9 +933,12 @@ body.on-paper .nav-pill {
 }
 .hero-greet-lead {
   /* Fixed px — hero text no longer reacts to viewport width. Only
-     layout reactivity is the row→column flip at ≤820px. */
+     layout reactivity is the row→column flip at ≤820px.
+     Reduced 46 → 40px so the greeting doesn't compete with the now-
+     larger wordmark (58px). Greeting stays clearly readable but
+     visibly recedes, letting the wordmark carry hero prominence. */
   font-family: var(--f-hand);
-  font-size: 46px;
+  font-size: 40px;
   font-weight: 600;
   line-height: 1.15;
   color: var(--hero-fg);
@@ -1637,13 +1642,14 @@ em.it { font-style: italic; }
   animation: ribbonWriteIn 900ms cubic-bezier(0.7, 0, 0.25, 1) 1400ms backwards;
 }
 .ribbon-artist .wordmark {
-  /* Sized to roughly match the greeting line's visible width ("Hello,
-     I'm Kathleen 李曦" ends around ~360px). Height 48px + viewBox
-     1170×175 renders the SVG at ~321px wide; combined with "an "
-     (~40px) the whole line lands near ~361px — reads as visually
-     matched to the greeting above without overflowing past it. */
+  /* Bumped 45 → 58px (~30%) to make the wordmark the dominant type
+     moment on the hero. It's the H1 semantically and the closest thing
+     to a positioning signature the portfolio has; at 45px it was
+     visually recessive next to the greeting and stickers. Larger scale
+     lets the wordmark carry the hero the way the availability sticker
+     carries the recruiting fact — one dominant moment per role. */
   width: auto;
-  height: 45px;
+  height: 58px;
   max-width: 100%;
   flex: 0 1 auto;
   min-width: 0;
@@ -4460,7 +4466,9 @@ em.it { font-style: italic; }
   grid-column: 1 / -1;
   font-family: var(--f-hand);
   font-weight: 600;
-  font-size: 46px;
+  /* Kept in sync with .hero-greet-lead (46 → 40px) so the two hand-
+     written moments across the site remain visually matched. */
+  font-size: 40px;
   letter-spacing: 0;
   line-height: 1.15;
   text-align: center;
@@ -5054,7 +5062,11 @@ em.it { font-style: italic; }
   margin-bottom: 8px;
 }
 .case-subtitle {
-  font-family: var(--f-cookie);
+  /* Was CookieRun — swapped to K2D for crisper reading register.
+     Case-page body prose is now K2D throughout; the subtitle sits
+     directly above that body copy, so both should share the same
+     voice instead of shifting from warm (Cookie) to crisp (K2D). */
+  font-family: var(--f-sans);
   font-weight: 700;
   font-size: 22px;
   line-height: 1.35;
@@ -5211,7 +5223,8 @@ em.it { font-style: italic; }
   list-style: disc outside;
   margin: 0 0 24px 0;
   padding-left: 26px;
-  font-family: var(--f-cookie);
+  /* K2D to match the surrounding case-body prose (was Cookie). */
+  font-family: var(--f-sans);
   font-size: 16px;
   line-height: 1.6;
   color: var(--fg);
@@ -5451,10 +5464,13 @@ em.it { font-style: italic; }
    key phrase bolded in accent color. */
 .outcome-callout {
   margin: 8px 0 40px;
-  padding: 32px 40px;
+  /* Padding + gap tightened to match the smaller type inside — was
+     32px/40px/20px, now 24px/32px/14px so the card feels proportional
+     at the new type scale, not a large box holding small text. */
+  padding: 24px 32px;
   background: #EDE3D3;
   border-left: none;
-  border-radius: 22px;
+  border-radius: 18px;
   /* Card spans the same fluid width as the case body paragraphs
      (constrained only by .case-body's 1080px cap + horizontal
      padding). Removing the 720px cap so the card scales with the
@@ -5462,7 +5478,7 @@ em.it { font-style: italic; }
   width: 100%;
   display: flex;
   flex-direction: column-reverse;
-  gap: 20px;
+  gap: 14px;
 }
 /* Nested under .outcome-callout to raise specificity above
    `.case-section p` (0,1,1) and `.case-section strong` (0,1,1) which
@@ -5478,7 +5494,10 @@ em.it { font-style: italic; }
   margin: 0;
   font-family: var(--f-display);
   font-weight: 500;
-  font-size: clamp(19px, 1.7vw, 24px);
+  /* Shrunk from clamp(19px, 1.7vw, 24px) — outcome card now reads
+     less like a hero banner and more like an elevated sentence.
+     Still one step above body (17px) so it holds visual priority. */
+  font-size: clamp(17px, 1.3vw, 19px);
   line-height: 1.5;
   color: var(--fg);
   letter-spacing: -0.005em;
@@ -5495,11 +5514,10 @@ em.it { font-style: italic; }
   margin: 0;
   font-family: var(--f-mono);
   font-weight: 700;
-  /* Biggest text in the card — pulls the recruiter's eye first to the
-     hiring window / handoff status before dropping into the stat body
-     underneath. Line-height tightened so the tracked uppercase stays
-     compact at the larger sizes. */
-  font-size: clamp(20px, 2.2vw, 30px);
+  /* Shrunk from clamp(20px, 2.2vw, 30px). Still the biggest text in
+     the card so meta > stat > body hierarchy holds, but at a more
+     restrained scale that fits the overall smaller card. */
+  font-size: clamp(15px, 1.5vw, 22px);
   line-height: 1.2;
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -5543,13 +5561,14 @@ em.it { font-style: italic; }
 .case-section h2 {
   font-family: var(--f-display);
   font-weight: 800;
-  /* Bumped max from 56px → 88px so the section headings match the
-     display-scale weight in Kathleen's Outcome reference — huge chunky
-     type that carries the section like a poster title. */
-  font-size: clamp(44px, 6.6vw, 88px);
-  line-height: 0.95;
-  letter-spacing: -0.03em;
-  margin: 0 0 36px;
+  /* Scaled back from the poster-scale bump (clamp 44-88px) — that was
+     overwhelming the case body flow. Restored to a more restrained
+     display size that still commands attention without swallowing the
+     section it introduces. */
+  font-size: clamp(32px, 4vw, 48px);
+  line-height: 0.98;
+  letter-spacing: -0.02em;
+  margin: 0 0 32px;
   /* Heading sits next to the sticky-note number badge below */
   display: flex;
   flex-wrap: wrap;
@@ -5711,7 +5730,8 @@ em.it { font-style: italic; }
    slightly larger, accent-tinted, and bracketed with a faint top/bottom
    rule so it reads as a primer / pull-quote rather than body copy. */
 .case-section .research-throughline-lead {
-  font-family: var(--f-cookie);
+  /* K2D — matches surrounding case body prose. */
+  font-family: var(--f-sans);
   font-size: 18.5px;
   line-height: 1.55;
   color: var(--fg);
@@ -5809,9 +5829,16 @@ em.it { font-style: italic; }
   }
 }
 .case-section p {
-  font-family: var(--f-cookie);
+  /* Swapped from CookieRun (a rounded display face) to K2D. CookieRun
+     was slowing reading speed on multi-paragraph case narratives —
+     estimated ~180 wpm vs ~240 wpm for a proper text face. Case-study
+     prose is the highest-leverage read on the portfolio (recruiters
+     evaluate process depth here), so it gets the crisper register.
+     About / folder blurbs retain CookieRun for warmth where the copy
+     is short and personal. */
+  font-family: var(--f-sans);
   font-size: 17px;
-  line-height: 1.68;
+  line-height: 1.7;
   color: var(--fg-soft);
   margin: 0 0 16px;
   /* paragraphs fill the case-body container; the body itself caps reading width */
