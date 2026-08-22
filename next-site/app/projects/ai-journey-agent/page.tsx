@@ -63,7 +63,7 @@ export default function AIJourneyAgentCaseStudy() {
                 was moving into development,</strong> validating the direction the team had explored.
             </p>
             <p className="outcome-callout__meta">
-              Spring 2026 · Sponsor platform → Concept · Developement
+              Spring 2026 · Sponsor platform → Concept · Development
             </p>
           </aside>
 
@@ -334,55 +334,36 @@ export default function AIJourneyAgentCaseStudy() {
           </p>
 
         <h3>Dual Feature Wireframing</h3>
-          <p className="research-split-lead">
+          <p>
             Due to having two feature concepts approved for the AI agent, we split the team evenly to
             develop both concepts concurrently.
           </p>
-          <div className="parallel-tracks">
-            <div className="research-track">
-              <span className="track-label">Track 1 · My team</span>
-              <h3>Concept A</h3>
-              <p>
-                To translate the concept into interactive features, I <mark className="hl">led the team, sketching variations
-                of what concept A would look while maintaining the sponsor platform's UI patterns and providing access to 
-                concept B's features.</mark> The sketches were made to begin the later refinements on the wireframes for 
-                more compressed and decision-focused UI.
-              </p>
-              <figure>
-                <ZoomableImage
-                  src={conceptRefinement.src}
-                  alt="Timeline of the Concept A's refinement"
-                  aspectRatio={3975 / 2922}
-                  caption={
-                    <>
-                      Timeline of Concept A's gradual refinment into its finalized version (not shown due to NDA)
-                    </>
-                  }
-                />
-              </figure>
-            </div>
-            <div className="research-track">
-              <span className="track-label">Track 2 · Partner team</span>
-              <h3>Concept B</h3>
-              <p>
-                The partner team surveyed the AI components that a maintenance agent would require:{" "}
-                <mark className="hl">the types of AI, categories of monitoring, and user trust of AI</mark>.
-                {" "}
-              </p>
-              <figure>
-                <ZoomableImage
-                  src={agentComponents.src}
-                  alt="The agent-components synthesis the partner team authored, categorized into five focuses."
-                  aspectRatio={5128 / 3458}
-                  caption={
-                    <>
-                      The agent-components synthesis the partner team authored categorized into five focuses.
-                    </>
-                  }
-                />
-              </figure>
-            </div>
-          </div>
+
+          <h3>Concept A · My team</h3>
+          <p>
+            To translate the concept into interactive features, I <mark className="hl">led the team, sketching variations
+            of what concept A would look while maintaining the sponsor platform&rsquo;s UI patterns and providing access to
+            concept B&rsquo;s features.</mark> The sketches were made to begin refinements through feedback from 
+            the partner team and sponsor on the wireframes for more compressed and decision-focused UI.
+          </p>
+          <figure>
+            <ZoomableImage
+              src={conceptRefinement.src}
+              alt="Timeline of the Concept A's refinement"
+              aspectRatio={3975 / 2922}
+              caption={
+                <>
+                  Timeline of Concept A&rsquo;s gradual refinement into its finalized version (not shown due to NDA)
+                </>
+              }
+            />
+          </figure>
+
+          <h3>Concept B · Partner team</h3>
+          <p>
+            As my team focused on Concept A, the partner team focused on constructing the wireframes for Concept B.
+            Due to not contributing to the ideation and construction of wireframes for Concept B, images are not shown.
+          </p>
 
           <h3>Eventual Merging of Wireframes into One System</h3>
           <p>

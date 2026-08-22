@@ -5464,32 +5464,48 @@ em.it { font-style: italic; }
   flex-direction: column-reverse;
   gap: 20px;
 }
-.outcome-callout__stat {
+/* Nested under .outcome-callout to raise specificity above
+   `.case-section p` (0,1,1) and `.case-section strong` (0,1,1) which
+   sit later in this file and would otherwise override the colors
+   below on order tie-break. */
+/* Type hierarchy inside the outcome card (top → bottom of the read):
+   meta line (biggest)  >  stat body  >  case-section p (17px)
+   The meta is the loudest single fact — the hiring window / handoff
+   status — so it now owns the top position AT the biggest size. Stat
+   sits just above body copy, big enough to feel elevated but still
+   readable as a sentence. Body prose everywhere else stays at 17px. */
+.outcome-callout .outcome-callout__stat {
   margin: 0;
   font-family: var(--f-display);
   font-weight: 500;
-  font-size: clamp(18px, 1.6vw, 22px);
+  font-size: clamp(19px, 1.7vw, 24px);
   line-height: 1.5;
   color: var(--fg);
   letter-spacing: -0.005em;
   text-align: center;
 }
-.outcome-callout__stat strong {
-  /* Warm accent brown — matches the strong treatment used in
-     .about-prose p strong, so the bolded outcome phrase carries the
-     same "elevated highlight" color language used elsewhere on the
-     portfolio. */
+.outcome-callout .outcome-callout__stat strong {
+  /* Warm accent brown — matches .case-section .hl / .about-prose p
+     strong so bolded outcome phrases carry the same "elevated
+     highlight" language used elsewhere. */
   color: var(--accent-on-cream);
   font-weight: 700;
 }
-.outcome-callout__meta {
+.outcome-callout .outcome-callout__meta {
   margin: 0;
   font-family: var(--f-mono);
-  font-weight: 600;
-  font-size: clamp(12px, 1.05vw, 14px);
+  font-weight: 700;
+  /* Biggest text in the card — pulls the recruiter's eye first to the
+     hiring window / handoff status before dropping into the stat body
+     underneath. Line-height tightened so the tracked uppercase stays
+     compact at the larger sizes. */
+  font-size: clamp(20px, 2.2vw, 30px);
+  line-height: 1.2;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--fg);
+  /* Same accent brown as .hl marks so the meta line reads as visually
+     related to the highlighted strong phrase in the stat below it. */
+  color: var(--accent-on-cream);
   text-align: center;
 }
 
