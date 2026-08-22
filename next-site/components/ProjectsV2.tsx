@@ -781,10 +781,10 @@ export default function ProjectsV2() {
                   <div className="tag">
                     {p.tag}
                     {p.outcome && (
-                      <>
-                        {" · "}
-                        <span className="tag-outcome">{p.outcome}</span>
-                      </>
+                      <span className="tag-outcome">
+                        <span className="tag-outcome-arrow" aria-hidden="true">→</span>
+                        {p.outcome}
+                      </span>
                     )}
                   </div>
                   {/* Meta sits directly under the company · position tag,
