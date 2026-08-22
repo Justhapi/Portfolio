@@ -50,12 +50,25 @@ const FOLDER_COVER = {
   aiAgent:     `${BASE_PATH}/img/cover/Ai_Agent.webm`,
 } as const;
 
+/** Turn "#RRGGBB" into "rgba(r, g, b, a)" — used to derive the folder's
+ *  drop-shadow halo from its own outline color at two alpha levels. */
+function hexToRgba(hex: string, alpha: number): string {
+  const h = hex.replace("#", "");
+  const r = parseInt(h.slice(0, 2), 16);
+  const g = parseInt(h.slice(2, 4), 16);
+  const b = parseInt(h.slice(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
 const FolderClosed = ({
   front = "#FFDA85",
   shadow = "#9F5A45",
+  outline = "#FBF7EE",
 }: {
   front?: string;
   shadow?: string;
+  /** Per-project outline stroke color for the closed folder's edge. */
+  outline?: string;
 }) => {
   // Unique gradient id per render — otherwise three FolderClosed
   // instances on the page would collide on `fc_grad` and only the
@@ -82,7 +95,7 @@ const FolderClosed = ({
       />
       <path
         d="M87.9258 10.4043C88.9592 5.77375 93.5511 2.85743 98.1816 3.89062L202.989 27.2822C207.62 28.3157 210.536 32.9074 209.503 37.5381L206.048 53.0146L356.964 86.6973C367.548 89.0596 374.214 99.5544 371.852 110.139L332.955 284.419C330.593 295.003 320.097 301.669 309.513 299.307L19.0459 234.479C8.46147 232.117 1.79593 221.622 4.1582 211.037L43.0547 36.7568C45.417 26.1724 55.9126 19.5069 66.4971 21.8691L84.4717 25.8799L87.9258 10.4043Z"
-        stroke="#FBF7EE"
+        stroke={outline}
         strokeWidth="6"
         vectorEffect="non-scaling-stroke"
       />
@@ -109,6 +122,9 @@ const FolderOpen = ({
   front = "#FFDA85",
   back = "#E19F7E",
   shadow = "#9F5A45",
+  folderOutline = "#FBF7EE",
+  sponsorOutline = "#FBF7EE",
+  videoOutline = "#FBF7EE",
   thumbnail,
   thumbnailAlt = "",
   coverVideo,
@@ -119,6 +135,13 @@ const FolderOpen = ({
   front?: string;
   back?: string;
   shadow?: string;
+  /** Stroke on the folder's front + back cover paths. */
+  folderOutline?: string;
+  /** Stroke on the sponsor sticky (data-fx-i="0"). Per-project — tied
+   *  to the sponsor logo's own color, not the folder body. */
+  sponsorOutline?: string;
+  /** Stroke on the video/preview sticky (data-fx-i="1"). */
+  videoOutline?: string;
   /** When provided, overlays a sponsor logo (or the Anonymous mark) on
    *  top of the larger sticky. The colored sticky rect still renders
    *  underneath so the ~16px of horizontal padding around the 1:1 logo
@@ -173,7 +196,7 @@ const FolderOpen = ({
         <path
           d="M107.138 74.9883C109.281 65.3887 118.799 59.3439 128.399 61.4863L391.84 120.282C401.44 122.425 407.485 131.943 405.342 141.543L370.065 299.607C367.922 309.207 358.404 315.253 348.804 313.11L85.3628 254.314C75.7633 252.172 69.7186 242.653 71.8608 233.054L107.138 74.9883Z"
           fill={back}
-          stroke="#FBF7EE"
+          stroke={folderOutline}
           strokeWidth="6.6785"
         />
       </g>
@@ -198,26 +221,34 @@ const FolderOpen = ({
       <g className="fo-sticky" data-fx-i="0">
       {thumbnail ? (
         <>
+          {/* Sponsor icon rendered UPRIGHT (no rotate transform) at
+              coords pre-computed by rotating the sticky's centre
+              through the 112.879° transform around (373.685, 98.1076):
+                pre-rotation centre  = (434.31, 157.99)
+                post-rotation centre ≈ (295, 130.7)
+              Upright 119.764² square centred on that post-rotation
+              point → top-left at (235.12, 70.82). Both icon and its
+              outline are upright so the sponsor logo reads legibly
+              (was previously inheriting the sticky's 113° tilt, which
+              flipped the icon nearly upside-down). */}
           <image
             href={thumbnail}
-            x="373.685"
-            y="98.1076"
-            width="121.247"
+            x="235.12"
+            y="70.82"
+            width="119.764"
             height="119.764"
-            transform="rotate(112.879 373.685 98.1076)"
             preserveAspectRatio="xMidYMid meet"
           >
             {thumbnailAlt ? <title>{thumbnailAlt}</title> : null}
           </image>
           <rect
-            x="373.685"
-            y="98.1076"
-            width="121.247"
+            x="235.12"
+            y="70.82"
+            width="119.764"
             height="119.764"
-            rx="6.40023"
-            transform="rotate(112.879 373.685 98.1076)"
+            rx="9.9803"
             fill="none"
-            stroke="#FBF7EE"
+            stroke={sponsorOutline}
             strokeWidth="3.83596"
           />
         </>
@@ -230,7 +261,7 @@ const FolderOpen = ({
           rx="6.40023"
           transform="rotate(112.879 373.685 98.1076)"
           fill={tint}
-          stroke="#FBF7EE"
+          stroke={sponsorOutline}
           strokeWidth="3.83596"
         />
       )}
@@ -283,7 +314,7 @@ const FolderOpen = ({
             height="119.764"
             rx="9.9803"
             fill="none"
-            stroke="#FBF7EE"
+            stroke={videoOutline}
             strokeWidth="3.83596"
           />
         </>
@@ -306,7 +337,7 @@ const FolderOpen = ({
             height="119.764"
             rx="9.9803"
             fill="none"
-            stroke="#FBF7EE"
+            stroke={videoOutline}
             strokeWidth="3.83596"
           />
         </>
@@ -319,7 +350,7 @@ const FolderOpen = ({
           rx="6.40023"
           transform="rotate(87.5606 241.092 30.3229)"
           fill={tint2}
-          stroke="#FBF7EE"
+          stroke={videoOutline}
           strokeWidth="3.83596"
         />
       )}
@@ -337,7 +368,7 @@ const FolderOpen = ({
         />
         <path
           d="M74.3975 77.3926L74.7295 77.4268L74.8184 77.4395L74.9053 77.4561L175.14 96.6309C177.546 97.0187 179.333 98.7419 180.421 100.582C181.546 102.484 182.186 104.895 182.218 107.543L183.015 115.071L326.721 141.54L326.761 141.547L326.801 141.556C331.518 142.544 335.292 145.06 337.819 148.936C340.252 152.667 341.378 157.42 341.417 162.808L363.455 298.693L363.562 299.352L363.407 300.001C361.209 309.245 351.604 314.758 342.21 312.79L78.9277 257.625L78.8584 257.61L78.79 257.593C73.8675 256.342 69.5145 254.918 66.1172 251.907C62.644 248.829 60.5773 244.481 59.2158 238.3L23.7461 104.127L23.7236 104.042L23.7061 103.955C23.0214 100.672 22.4543 98.0073 22.1533 95.9756C22.0014 94.9502 21.8991 93.9714 21.8984 93.0771C21.8978 92.2038 21.991 91.1979 22.3828 90.2295C22.8136 89.1647 23.5605 88.2621 24.623 87.667C25.5928 87.1239 26.6135 86.9569 27.4502 86.9092C28.6362 86.8416 30.0529 86.9957 31.5518 87.2168L33.0732 87.4551L33.1094 87.4609L33.1465 87.4678L70.7285 94.3896L69.0938 87.958L69.0352 87.7266L69.0098 87.4893C68.8611 86.0936 68.7472 84.0296 69.0801 82.2334C69.2407 81.3668 69.5742 80.1582 70.3984 79.1396C71.3329 77.9848 72.752 77.2759 74.3975 77.3926Z"
-          stroke="#FBF7EE"
+          stroke={folderOutline}
           strokeWidth="6.6785"
         />
       </g>
@@ -364,6 +395,17 @@ type FolderTheme = {
   front: string;
   back: string;
   shadow: string;
+  /** Three hand-picked outline hex codes per project:
+   *    folder  → closed folder edge + open folder front/back covers.
+   *              Drives the folder's drop-shadow halo too (via CSS var
+   *              --folder-halo, derived from this hex at two alphas).
+   *    company → sponsor sticky outline (data-fx-i="0").
+   *    video   → video/preview sticky outline (data-fx-i="1"). */
+  outlines: {
+    folder: string;
+    company: string;
+    video: string;
+  };
 };
 
 type Project = {
@@ -398,20 +440,34 @@ type Project = {
    *  element that plays only while the folder is hovered. Files live in
    *  /public/img/cover/ — see FOLDER_COVER above. */
   coverVideo?: string;
+  /** Short deliverable + shipping status appended to the tag line —
+   *  "Report Handed Off", "Concept Shipped to Beta", etc. Rendered as
+   *  a .tag-outcome span in the tag, so the WIN is visible on the
+   *  projects-row skim without adding a new section to each card. */
+  outcome?: string;
 };
 
 const PROJECTS: Project[] = [
   {
-    tag: "inline · Product Design Intern · Handed Off · 2026",
+    tag: "inline · Product Design Intern · Recommended Features Handed Off · 2026",
     blurb: (
       <>
         Conducted <strong>early-stage exploration for a B2B2C consumer product</strong> by auditing the industry, then verifying{" "}
         <strong>popular patterns and opportunity gaps</strong> through prototyping and multiple rounds of usability testing.
       </>
     ),
-    meta: ["NDA", "Product Design", "Usability Testing"],
+    meta: ["NDA", "Product Design", "Competitive Analysis", "Usability Testing", "Iterations"],
     accent: ["#F5B8CB", "#9D9BF5"],
-    folder: { front: "#7C4A63", back: "#5E3349", shadow: "#39202F" },
+    folder: {
+      front: "#7C4A63",
+      back: "#5E3349",
+      shadow: "#39202F",
+      outlines: {
+        folder:  "#3B1A26", // ← folder body outline (hand-pick)
+        company: "#AF1408", // ← company sticky outline — inline
+        video:   "#CFA287", // ← video sticky outline (shared across all folders)
+      },
+    },
     href: "/projects/inline",
     readTime: "4 min read",
     thumbnail: FOLDER_THUMB.inline,
@@ -419,16 +475,25 @@ const PROJECTS: Project[] = [
     coverVideo: FOLDER_COVER.inline,
   },
   {
-    tag: "Customer Journey Platform · Shipped to Beta · 2026",
+    tag: "Customer Journey Platform · Concept Shipped to Beta · 2026",
     blurb: (
       <>
         Led concept ideation for an <strong>agentic AI maintenance agent</strong> for a <strong>customer journey
           management platform</strong>, with the sponsor taking the concept to beta a month after handoff.
       </>
     ),
-    meta: ["NDA", "UI", "Interaction", "User Research"],
+    meta: ["NDA", "UI", "Competitive Analysis", "User Research", "Wireframing", "User Testing"],
     accent: ["#D59B6E", "#E8C77C"],
-    folder: { front: "#C68D5F", back: "#9A6D45", shadow: "#5C3924" },
+    folder: {
+      front: "#C68D5F",
+      back: "#9A6D45",
+      shadow: "#5C3924",
+      outlines: {
+        folder:  "#6E4A28", // ← folder body outline (hand-pick)
+        company: "#544F4F", // ← company sticky outline — anonymous mark
+        video:   "#CFA287", // ← video sticky outline (shared across all folders)
+      },
+    },
     href: "/projects/ai-journey-agent",
     readTime: "3 min read",
     thumbnail: FOLDER_THUMB.anonymous,
@@ -436,18 +501,25 @@ const PROJECTS: Project[] = [
     coverVideo: FOLDER_COVER.aiAgent,
   },
   {
-    tag: "Purdue Stack · Design Engineer · Ships Fall · 2026",
+    tag: "Purdue Stack · Design Engineer · Platform Ships Fall · 2026",
     blurb: (
       <>
         Redesigned Purdue&rsquo;s <strong>student–faculty research collaboration platform</strong>, owning
         design decisions and also contributing <strong>front-end React</strong> alongside a 5-engineer team.
       </>
     ),
-    meta: ["Design Systems", "UI", "Design Engineering", "User Research"],
+    meta: ["Design Systems", "UI", "Design Engineering", "User Research", "User Interviews"],
     accent: ["#F5D967", "#F0707C"],
-    // Ocean Blue — the dark teal. Shadow held one notch above pitch-
-    // black so multiply doesn't drive the bottom edge to mud.
-    folder: { front: "#276866", back: "#1A4E4C", shadow: "#163838" },
+    folder: {
+      front: "#276866",
+      back: "#1A4E4C",
+      shadow: "#163838",
+      outlines: {
+        folder:  "#0C2E2D", // ← folder body outline (hand-pick)
+        company: "#283370", // ← company sticky outline — Stack
+        video:   "#CFA287", // ← video sticky outline (shared across all folders)
+      },
+    },
     href: "/projects/researchhub",
     readTime: "4 min read",
     thumbnail: FOLDER_THUMB.stack,
@@ -455,16 +527,25 @@ const PROJECTS: Project[] = [
     coverVideo: FOLDER_COVER.researchhub,
   },
   {
-    tag: "Frogslayer · Shipped · 2025",
+    tag: "Frogslayer · Guidelines Shipped · 2025",
     blurb: (
       <>
         Shipped a set of <strong>evidence-based design guidelines</strong> for entertainment and hospitality 
         kiosks, validated across <strong>three rounds of usability testing</strong>.
       </>
     ),
-    meta: ["UI", "Interaction Design", "Usability Testing"],
+    meta: ["UI", "Interaction Design", "User Research", "Prototyping" ,"Usability Testing"],
     accent: ["#84C0FA", "#53EC9D"],
-    folder: { front: "#262E3A", back: "#171C24", shadow: "#3F444E" },
+    folder: {
+      front: "#262E3A",
+      back: "#171C24",
+      shadow: "#3F444E",
+      outlines: {
+        folder:  "#10141C", // ← folder body outline (hand-pick)
+        company: "#897DD5", // ← company sticky outline — Frogslayer
+        video:   "#CFA287", // ← video sticky outline (shared across all folders)
+      },
+    },
     href: "/projects/frogslayer",
     readTime: "6 min read",
     thumbnail: FOLDER_THUMB.frogslayer,
@@ -651,10 +732,25 @@ export default function ProjectsV2() {
                     className="folder-tilt-wrap"
                     ref={(el) => { tiltRefs.current[p.tag] = el; }}
                   >
-                    <div className="folder-svg">
+                    <div
+                      className="folder-svg"
+                      /* Expose the folder's own outline color as CSS
+                         custom properties so the .folder-svg svg
+                         drop-shadow halo picks it up per-card (see
+                         globals.css → .folder-svg svg { filter: … }).
+                         Two alphas: tight rim (0.42) hugs the outline
+                         edge, wider ambient (0.22) grounds the card. */
+                      style={{
+                        ["--folder-halo" as string]:
+                          hexToRgba(p.folder.outlines.folder, 0.42),
+                        ["--folder-halo-far" as string]:
+                          hexToRgba(p.folder.outlines.folder, 0.22),
+                      } as CSSProperties}
+                    >
                       <FolderClosed
                         front={p.folder.front}
                         shadow={p.folder.shadow}
+                        outline={p.folder.outlines.folder}
                       />
                       <FolderOpen
                         tint={p.accent[0]}
@@ -662,6 +758,9 @@ export default function ProjectsV2() {
                         front={p.folder.front}
                         back={p.folder.back}
                         shadow={p.folder.shadow}
+                        folderOutline={p.folder.outlines.folder}
+                        sponsorOutline={p.folder.outlines.company}
+                        videoOutline={p.folder.outlines.video}
                         thumbnail={p.thumbnail}
                         thumbnailAlt={p.thumbnailAlt}
                         coverVideo={p.coverVideo}
@@ -679,7 +778,15 @@ export default function ProjectsV2() {
                     all the text in one cell, with the artwork in the
                     other. Inert: no link, no hover handlers. */}
                 <div className="folder-copy">
-                  <div className="tag">{p.tag}</div>
+                  <div className="tag">
+                    {p.tag}
+                    {p.outcome && (
+                      <>
+                        {" · "}
+                        <span className="tag-outcome">{p.outcome}</span>
+                      </>
+                    )}
+                  </div>
                   {/* Meta sits directly under the company · position tag,
                       above the title + description — a quick topic
                       read before the headline. */}
