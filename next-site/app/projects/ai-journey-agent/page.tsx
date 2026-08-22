@@ -335,17 +335,18 @@ export default function AIJourneyAgentCaseStudy() {
 
         <h3>Dual Feature Wireframing</h3>
           <p className="research-split-lead">
-            Due to having two feature concepts approved for the Ai agent, we decided to evenly split the team to work on either concept A or 
-            concept B.
+            Due to having two feature concepts approved for the AI agent, we split the team evenly to
+            develop both concepts concurrently.
           </p>
           <div className="parallel-tracks">
             <div className="research-track">
               <span className="track-label">Track 1 · My team</span>
               <h3>Concept A</h3>
               <p>
-                To translate the concept into interactive features, I <mark className="hl">led the team through sketches intent on 
-                encapsulating Concept A's contents while also providing access to features from Concept B.</mark> The sketches were made 
-                to begin the later refinements on the wireframes for more efficent ease of use.
+                To translate the concept into interactive features, I <mark className="hl">led the team, sketching variations
+                of what concept A would look while maintaining the sponsor platform's UI patterns and providing access to 
+                concept B's features.</mark> The sketches were made to begin the later refinements on the wireframes for 
+                more compressed and decision-focused UI.
               </p>
               <figure>
                 <ZoomableImage
