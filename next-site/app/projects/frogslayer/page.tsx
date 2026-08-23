@@ -36,11 +36,6 @@ const SECTIONS = [
   { id: "takeaways", label: "Takeaways" },
 ];
 
-/* Cover video — served from /public so static export (`output: "export"`)
-   copies it verbatim to /out. ES-module import via the asset/resource
-   webpack loader emitted the file to the server bundle, which the
-   static-export pipeline doesn't publish — 404 on GitHub Pages.
-   basePath prefix same pattern as HoverBag: /Portfolio in prod, "" in dev. */
 const BASE_PATH = process.env.NODE_ENV === "production" ? "/Portfolio" : "";
 const COVER_VIDEO = `${BASE_PATH}/img/cover/Frogslayer.webm`;
 
@@ -60,9 +55,9 @@ export default function FrogslayerCaseStudy() {
         <p className="case-disclaimer" aria-label="NDA notice">
           <span className="case-disclaimer__badge">NDA</span>
           <span className="case-disclaimer__text">
-            This case study covers sponsor work under a non-disclosure agreement.
-            The company&rsquo;s prototype visuals and analyzed competitor names are excluded.
-            Process narrative and personal takeaways are preserved.
+            This case study covers sponsor work protected by a non-disclosure agreement, 
+            specifically the <strong>company&rsquo;s prototype visuals and analyzed competitors
+            are excluded or generalized.</strong>
           </span>
         </p>
         <section id="outcome" className="case-section">

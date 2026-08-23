@@ -664,7 +664,12 @@ export default function ProjectsV2() {
                   </div>
                   <div className="meta">
                     {p.meta.map((m) => (
-                      <span key={m}>{m}</span>
+                      <span
+                        key={m}
+                        className={m === "NDA" ? "meta__nda" : undefined}
+                      >
+                        {m}
+                      </span>
                     ))}
                     <span className="meta__read" aria-label="Estimated read time">
                       {p.readTime}

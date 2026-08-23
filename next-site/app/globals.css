@@ -884,12 +884,12 @@ body.on-paper .nav-pill {
     font-size: clamp(12px, 3.6vw, 36px);
   }
   .ribbon-artist .wordmark {
-    /* Mobile max matched to greeting-line scale (desktop 42px). */
-    height: clamp(16px, 5vw, 42px);
+    /* Mobile max matched to reduced desktop size (34px). */
+    height: clamp(14px, 4.4vw, 34px);
   }
   .hero-focus {
-    /* Mobile max updated to match the new desktop size (20px). */
-    font-size: clamp(10px, 2.6vw, 20px);
+    /* Mobile max updated to match the reduced desktop size (16px). */
+    font-size: clamp(9px, 2.2vw, 16px);
     letter-spacing: 0.18em;
   }
   /* Polaroid bottoms out at 105px so with its two attached stickers
@@ -973,12 +973,12 @@ body.on-paper .nav-pill {
 .hero-focus {
   font-family: var(--f-mono);
   font-weight: 500;
-  /* Fixed px — no viewport reactivity. Bumped 15 → 20px so the
-     positioning statement ("Focusing on Product Design, Research,
-     and Cross-Functional Work") escapes caption-size and reads as
-     a proper hero subtitle. Critical for multi-role recruiters who
-     need to file the candidate's discipline on first glance. */
-  font-size: 20px;
+  /* Fixed px — no viewport reactivity. Tuned to 16px: big enough to
+     escape caption-tier (previously 15px felt like footnote) but small
+     enough to sit as a supporting subtitle beneath the wordmark rather
+     than competing with it. Recruiters can still read the positioning
+     statement on skim; the whole hero stack now reads restrained. */
+  font-size: 16px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: rgb(var(--hero-fg-rgb) / 0.66);
@@ -1647,13 +1647,12 @@ em.it { font-style: italic; }
   animation: ribbonWriteIn 900ms cubic-bezier(0.7, 0, 0.25, 1) 1400ms backwards;
 }
 .ribbon-artist .wordmark {
-  /* Sized down to visually match the .hero-greet-lead ("Hello, I'm
-     Kathleen 李曦") which sits at 40px. Wordmark at 42px SVG height
-     renders at a similar visible weight to the 40px Caveat greeting
-     above it, so the two hero lines read as a matched pair instead
-     of one dominating the other. */
+  /* Shrunk 42 → 34px so the "an Artist × Designer" line sits as a
+     lighter beat under the primary greeting. The whole hero copy stack
+     (greeting → wordmark → focus line) reads more restrained now —
+     no single element overbearing the recruiter's eye. */
   width: auto;
-  height: 42px;
+  height: 34px;
   max-width: 100%;
   flex: 0 1 auto;
   min-width: 0;
@@ -2464,11 +2463,17 @@ em.it { font-style: italic; }
   align-items: center;
   padding: 7px 16px;
   border-radius: 999px;
-  background: var(--fg);
-  color: var(--bg);
-  /* White outline so the dark pill holds its edge over any folder
-     color it floats above. */
-  border: 2px solid var(--paper);
+  /* Translucent dark glass — same visual language as the home nav +
+     case-page nav (rgba(6, 8, 10, 0.88) + backdrop-filter saturate
+     140% blur 14px). Reads as a floating overlay layer consistent
+     with the site's nav vocabulary, not a solid tag. */
+  background: rgba(6, 8, 10, 0.88);
+  backdrop-filter: saturate(140%) blur(14px);
+  -webkit-backdrop-filter: saturate(140%) blur(14px);
+  color: var(--paper);
+  /* Faint hairline outline for edge definition on any folder color the
+     pill floats above. Matches the case-nav's border-bottom hairline. */
+  border: 1px solid rgb(var(--hero-fg-rgb) / 0.08);
   font-family: var(--f-mono);
   font-size: 10.5px;
   letter-spacing: 0.2em;
@@ -4745,8 +4750,16 @@ em.it { font-style: italic; }
 
 /* sticky section nav at top of each case page */
 .case-nav {
-  position: sticky;
+  /* Fixed (not sticky) so the nav ALWAYS overlays the content below
+     it — case cover extends up UNDER the nav from first paint. Before
+     this, sticky-positioning meant the nav sat on its own row above
+     the cover pre-scroll, then joined the overlay after scroll. Now
+     the visual behavior is consistent from load: floating translucent
+     bar on top of whatever's under it. */
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 60;
   /* match the home nav's perceived darkness — the case-cover bg below is lighter,
      so we need a higher alpha to read at the same level. Alpha slightly
@@ -5027,7 +5040,12 @@ em.it { font-style: italic; }
 .case-cover {
   background: var(--hero-bg);
   color: var(--hero-fg);
-  padding: 16px 0 80px;
+  /* Top padding bumped 16 → 104px to clear the now-fixed .case-nav
+     (~88px tall at rest: 22px padding × 2 + ~44px content). The cover
+     extends up UNDER the nav (fixed → overlays), so the nav bar sits
+     as a translucent layer against the dark hero surface — same
+     rhythm at rest as when scrolled. */
+  padding: 104px 0 80px;
   /* Sticky so it pins to the top of the viewport while .case-body physically
      scrolls over it — creates the "content section rising over the hero" depth
      illusion. Mirrors the main page's .hero → .work pattern. z-index:0 keeps
@@ -5171,19 +5189,27 @@ em.it { font-style: italic; }
   padding: 0;
   margin: 0 0 56px;
   display: flex;
-  align-items: flex-start;
+  /* Text sits vertically centered against the NDA badge's height
+     rather than top-aligned — reads as a paired label + caption. */
+  align-items: center;
   gap: 18px;
   flex-wrap: wrap;
 }
 .case-disclaimer__badge {
   font-family: var(--f-mono);
-  font-weight: 800;
+  /* Bold golden text — matches the meta-strip NDA treatment on the
+     projects row, so the NDA color language reads as one thread from
+     card → case study. Same #D4A017 punchy yellow-gold + weight 900.
+     Kept as an outlined chip (gold-tinted border, no heavy fill) so
+     the text carries the visual weight. */
+  font-weight: 900;
   font-size: 13px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--chip-yellow-ink);
-  background: var(--chip-yellow);
-  padding: 10px 14px;
+  color: #D4A017;
+  background: color-mix(in srgb, #D4A017 10%, transparent);
+  border: 1.5px solid #D4A017;
+  padding: 9px 13px;
   border-radius: 8px;
   flex-shrink: 0;
   white-space: nowrap;
@@ -5197,7 +5223,6 @@ em.it { font-style: italic; }
 .case-disclaimer__text {
   flex: 1;
   min-width: 240px;
-  padding-top: 2px;
 }
 
 /* ── Case pull-quote — Klee One editorial callout ──────────────────────────

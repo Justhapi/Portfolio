@@ -25,7 +25,7 @@ export default function PopByInlineCaseStudy() {
     <div className="case">
       <CaseSectionNav sections={SECTIONS} />
       <CaseCover
-        title="Pop by inline — Designing Event Coordination Under Uncertainty"
+        title="Designing Features For An Event Coordination Uncertainties"
         meta="Summer 2026 · 10 weeks · Product Design Intern"
         subtitle="A lightweight B2B2C consumer tool for planning everyday gatherings"
         imageLabel="Pop by inline · cover animation"
@@ -36,9 +36,9 @@ export default function PopByInlineCaseStudy() {
         <p className="case-disclaimer" aria-label="NDA notice">
           <span className="case-disclaimer__badge">NDA</span>
           <span className="case-disclaimer__text">
-            This case study covers sponsor work protected by a non-disclosure agreement.
-            Specific product features, competitor names, and internal artifacts are excluded.
-            Process narrative and personal takeaways are preserved.
+            This case study covers sponsor work protected by a non-disclosure agreement, 
+            specifically <strong>product features, competitor names, and internal artifacts 
+            are excluded or generalized.</strong>
           </span>
         </p>
 

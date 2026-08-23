@@ -48,7 +48,7 @@ export default function ResearchHubCaseStudy() {
     <div className="case">
       <CaseSectionNav sections={SECTIONS} />
       <CaseCover
-        title="ResearchHub — Connecting Students with Faculty Research"
+        title="Expanding Upon a Research Platform Connecting Students with Faculty Research"
         meta="Spring 2026 · 6 weeks · 5 engineers + me · Design Engineer (sole designer)"
         subtitle="A redesigned student–faculty research platform, planned to ship fall 2026"
         imageLabel="ResearchHub · cover animation"
@@ -501,15 +501,13 @@ export default function ResearchHubCaseStudy() {
           <h2>Implementing</h2>
           <h3>Stepping In to Ship the Platform on Time</h3>
           <p>
-            As the wireframe designs were finalized, I then began to also contribute to the code
-            through <mark className="hl">front-end React coding</mark> to help build the platform on
-            time. During this phase, I also needed to address designs regarding the reactivity of features 
-            formatting to be adaptivable to any browser size.
-            { /* -give reasoning why - */}
+            As the wireframe designs were finalized, I then began to also contribute to the code, specifically 
+            <mark className="hl">front-end React coding.</mark> This distribution of work was so I completed 
+            simple yet tedious coding for my teammates who are more code-savy to focus on the more complex 
+            aspects of platform 
             <br></br><br></br>
-            The dynamic within the team also shifted, as design conversations became peer-to-peer
-            problem-solving for me to be able to fill in gaps of simple yet tedious coding for my
-            teammates who are more code-savy to focus on the more complex aspects of platform.
+            I also unexpectedly needed to add my current designs when moving onto a new page as I needed to account 
+            for the reactivity of features formatting to be adaptivable to any browser size.
           </p>
         </section>
 

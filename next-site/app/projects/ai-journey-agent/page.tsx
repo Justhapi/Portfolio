@@ -36,7 +36,7 @@ export default function AIJourneyAgentCaseStudy() {
     <div className="case">
       <CaseSectionNav sections={SECTIONS} />
       <CaseCover
-        title="Designing an AI Maintenance Agent for Customer Journey Maps"
+        title="Conceptualiing an AI Maintenance Agent for Customer Journey Maps"
         meta="Spring 2026 · 8 weeks · UX Designer & Researcher · Concept shipped to development"
         subtitle="An agentic AI concept for keeping customer journey maps accurate and trustworthy over time"
         imageLabel="AI maintenance agent · cover animation"
@@ -47,9 +47,9 @@ export default function AIJourneyAgentCaseStudy() {
         <p className="case-disclaimer" aria-label="NDA notice">
           <span className="case-disclaimer__badge">NDA</span>
           <span className="case-disclaimer__text">
-            This case study covers client work protected by a non-disclosure agreement.
-            Client identity, product name, and internal artifacts are anonymized. Process
-            narrative and personal takeaways are preserved.
+            This case study covers sponsor work protected by a non-disclosure agreement, 
+            specifically the <strong>sponsor company's identity, product name, and prototype featurea
+            are anonymized or generalized.</strong>
           </span>
         </p>
 
