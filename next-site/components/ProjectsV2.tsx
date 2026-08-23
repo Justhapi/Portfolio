@@ -369,7 +369,7 @@ const PROJECTS: Project[] = [
     tag: "inline · Product Design Intern · 2026 · Recommended Features Handed Off ",
     blurb: (
       <>
-        Conducted <strong>early-stage exploration for a B2B2C consumer product</strong> by auditing the industry, then verifying{" "}
+        I conducted <strong>early-stage exploration for a B2B2C consumer product</strong> by auditing the industry, then verifying{" "}
         <strong>popular patterns and opportunity gaps</strong> through prototyping and multiple rounds of usability testing.
       </>
     ),
@@ -395,7 +395,7 @@ const PROJECTS: Project[] = [
     tag: "Customer Journey Platform · 2026 · Concept Shipped to Beta",
     blurb: (
       <>
-        Led concept ideation for an <strong>agentic AI maintenance agent</strong> for a <strong>customer journey
+        I led concept ideation for an <strong>agentic AI maintenance agent</strong> for a <strong>customer journey
           management platform</strong>, with the sponsor taking the concept to beta a month after handoff.
       </>
     ),
@@ -421,7 +421,7 @@ const PROJECTS: Project[] = [
     tag: "Purdue Stack · Design Engineer · 2026 · Platform Ships Fall",
     blurb: (
       <>
-        Redesigned Purdue&rsquo;s <strong>student–faculty research collaboration platform</strong>, owning
+        I redesigned Purdue&rsquo;s <strong>student–faculty research collaboration platform</strong>, owning
         design decisions and also contributing <strong>front-end React</strong> alongside a 5-engineer team.
       </>
     ),
@@ -447,8 +447,8 @@ const PROJECTS: Project[] = [
     tag: "Frogslayer · Co-lead Designer and Researcher · 2025 · Guidelines Shipped ",
     blurb: (
       <>
-        Shipped a set of <strong>evidence-based design guidelines</strong> for entertainment and hospitality 
-        kiosks, validated across <strong>three rounds of usability testing</strong>.
+        I shipped a set of <strong>evidence-based design guidelines</strong> for entertainment and hospitality 
+        kiosks, verified from <strong>user research and three rounds of usability testing</strong>.
       </>
     ),
     meta: ["UI", "Interaction Design", "User Research", "Prototyping" ,"Usability Testing"],
