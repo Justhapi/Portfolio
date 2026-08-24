@@ -103,9 +103,9 @@ export default function AIJourneyAgentCaseStudy() {
             <br></br><br></br>
             In addition to leading ideation, I{" "} also
             <mark className="hl"> managed communication between the team, sponsor leads, and platform users</mark>
-            {" "}to ensure alignment on project progression, sponsor goals, and user needs — through
+            {" "}to ensure alignment on project progression, sponsor goals, and user needs through
             organizing update meetings, update emails, and interviews. I also mentored the junior
-            designers joining the studio on Figma onboarding and studio deliverable expectations.
+            designers regarding onboarding on Figma and studio deliverable expectations.
           </p>
         </section>
 
@@ -114,7 +114,7 @@ export default function AIJourneyAgentCaseStudy() {
           <h2>Researching</h2>
           <h3>Understanding What Makes an AI Maintenance Agent Effective in Existing Platform</h3>
           <p>
-            To effeciently conceptualize an AI maintenance agent, we explored four research focuses: the platform&rsquo;s current state,
+            To efficiently conceptualize an AI maintenance agent, we explored four research focuses: the platform&rsquo;s current state,
             the agent&rsquo;s required components, the current industry, and the current user
             needs.
           </p>

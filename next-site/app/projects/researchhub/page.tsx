@@ -448,7 +448,7 @@ export default function ResearchHubCaseStudy() {
                       <p className="rq-findings-lead"><strong>Key features:</strong></p>
                       <ul className="rq-findings-list">
                         <li>Standard file-attachment feature as the base affordance for familiarity to other platforms</li>
-                        <li>&ldquo;Pin board&rdquo; to pin and inform the other user of the user's workload and to link to external resources (Google Drive, Google Meet, and other communication tools) that spares the development team from additional integrations.</li>
+                        <li>&ldquo;Simplfied Kanban or pin board&rdquo; to track progression and links to external resources or tools also spares the development team from additional integrations into the platform.</li>
                         <li>Two-level navigation from projects down to individuals similar to Microsoft Teams' organization classes down to specific channels.</li>
                       </ul>
                     </div>
@@ -502,12 +502,12 @@ export default function ResearchHubCaseStudy() {
           <h3>Stepping In to Ship the Platform on Time</h3>
           <p>
             As the wireframe designs were finalized, I then began to also contribute to the code, specifically 
-            <mark className="hl">front-end React coding.</mark> This distribution of work was so I completed 
-            simple yet tedious coding for my teammates who are more code-savy to focus on the more complex 
+            <mark className="hl"> front-end React coding.</mark> This distribution of work was so I completed 
+            mundane yet tedious parts of code for my teammates who are more code-savy to focus on the more complex 
             aspects of platform 
             <br></br><br></br>
-            I also unexpectedly needed to add my current designs when moving onto a new page as I needed to account 
-            for the reactivity of features formatting to be adaptivable to any browser size.
+            I also unexpectedly needed to <mark className="hl">expand upon my current designs</mark> when moving onto a new page as I needed to account 
+            for the <mark className="hl">reactivity of features formatting to be adaptivable to any browser size.</mark>
           </p>
         </section>
 
@@ -519,11 +519,11 @@ export default function ResearchHubCaseStudy() {
             <mark className="hl">Directly building my own ideas significantly modified how I factor in limitations</mark>.
             Sometimes I would <mark className="hl">code while thinking, half-annoyed, &ldquo;Jeez, who is the designer who designed
             and requested all of these details&rdquo;</mark>. Working as both designer and engineer emphasized the need to ideate as
-            a <em>partner</em> to development rather than simply as an <em>ideater or documenter</em>.
+            a <em>development partner</em> rather than an <em>ideater.</em>
             <br></br><br></br>
-            From this project, I understand that a{" "}
-            <mark className="hl">high-quality design&rsquo;s demands include research and the building cost</mark>, and that a
-            designer who <mark className="hl">accounts for the cost is able to ensure a well-designed handoff is fully utilized.</mark>
+            From this project, I better understood that a{" "}
+            <mark className="hl"> design&rsquo;s demands include the building cost</mark>, and that a
+            designer who <mark className="hl">accounts for the cost is able to ensure a well-designed handoff would be fully utilized.</mark>
           </p>
 
           <h3>Adapting to Uneven User-Group Access</h3>
@@ -532,7 +532,7 @@ export default function ResearchHubCaseStudy() {
             <mark className="hl">unable to conduct user research on professors as in-depth as I did with students</mark>,
             since the two user groups offered very different levels of access. I had only one
             professor (our client) available and an entire campus of students readily available.
-            As a result, I prioritized the features Professor Reese had requested by how
+            As a result of the constrasting amount of specific user feedback, I prioritized the features Professor Reese had requested by how
             frequently students would interact with each, so the highest-student-impact
             professor-requested features would ship first.
             <br></br><br></br>
