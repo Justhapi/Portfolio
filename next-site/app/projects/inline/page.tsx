@@ -92,24 +92,21 @@ export default function PopByInlineCaseStudy() {
           <h2>Researching</h2>
           <h3>Mapping the Competitive Landscape</h3>
           <p>
-            I built a{" "}
-            <mark className="hl">single competitive-analysis framework</mark> covering
-            positioning, key features, strengths and weaknesses, business model, and end-to-end
-            host and guest walkthroughs. I then applied this framework consistently across{" "}
-            <mark className="hl">three event-coordination products</mark>, conducting audits
-            that focused mainly on user flows of hosts and guests.
+            I applied a single competitive-analysis framework across{" "}
+            <mark className="hl">three event-coordination products</mark>, conducting audits on apps
+            that focused on user flows of hosts and guests.
           </p>
 
           <h3>Gap Analysis with Category Discipline</h3>
           <p>
             After the analysis, I then cross-referenced each competitor&rsquo;s weaknesses against the team&rsquo;s{" "}
-            <mark className="hl">eight solution features proposed</mark> prior by the parallel branch team in a structured table.
-            For each competitor weakness, I verified if a proposed feature already addresses it,
+            <mark className="hl">eight solution features proposed</mark> prior by the parallel branch team.
+            For each competitor weakness I discovered, I verified if a proposed feature already addresses it,
             partially addresses it, or leaves it open.
             <br></br><br></br>
-            From the set of remaining unaddressed weaknesses that became opportunity gaps, I was able to modify
-            existing features and ideate additional features that would eventually <mark className="hl">determine the product's unique approach to solve
-            the same problem as competitors, but more efficiently.</mark>
+            From the set of remaining unaddressed weaknesses, I utilized them as opportunity gaps to ideate additional 
+            features that <mark className="hl">determines the product's ability to solve
+            the same problem as competitors, but a more unique and efficient approach.</mark>
           </p>
         </section>
 
@@ -119,15 +116,17 @@ export default function PopByInlineCaseStudy() {
 
           <h3>Ideating Scenario</h3>
           <p>
-            To narrow the scope to guide implementations and determine success, the scenario included
-            <mark className="hl"> factors regarding uncertainty</mark>. After the scenario was determined in detail,
-            I then went on to plan the user flow to determine where to implement the ideated features.
+            To narrow the scope to guide relevant feedback and success, the <mark className="hl"> user case scenario included event 
+            coordinating under uncertainty.</mark> After the scenario was determined in detail,
+            I then went on to <mark className="hl">ideate the user flow that would address the user case and determine
+            how features would be integrated</mark> into the prototype.
           </p>
           <h3>Prototyping</h3>
           <p>
-            Due to the scale of the user flow and interactions needed within the small window, I utilized AI-assisted
-            prototyping tools. Initially, I utilized Figma Make, but eventually <mark className="hl">swapped to Google AI Studio as
-            its daily prompting credit limits were more well-suited</mark> to future usability testing sessions and iterations.
+            Due to the <mark className="hl">scale of ideating and building the prototype within the small window before testing, I utilized AI-assisted
+            prototyping tools to build</mark> the core interactivity of the user flow. Initially, I utilized Figma Make, but eventually <mark className="hl">swapped 
+            to Google AI Studio as its daily prompting credit limits were more well-suited to the demands of iterating</mark> before and during the 
+            rounds of usability tests.
           </p>
         </section>
 
@@ -137,19 +136,19 @@ export default function PopByInlineCaseStudy() {
           <h3>Facilitating Usability Testing</h3>
           <p>
             During the 8 usability test sessions, I served as the facilitator. First, I would <mark className="hl">introduce the focus of the prototype by
-            asking each tester warm-up questions</mark> before directing them to <mark className="hl">complete tasks while navigating the prototype's user flows.</mark>
-            After they completed each flow, I would probe for their feedback and thoughts of the recently traversed user flow.
+            asking each tester warm-up questions</mark> before directing them to <mark className="hl">complete tasks while navigating the prototype's user flows. </mark>
+            After they completed each flow, I would probe for feedback and thoughts of the recently traversed user flow.
           </p>
 
           <h3>Addressing Insights and Feedback with Iterations</h3>
           <p>
-            After <mark className="hl">every sprint of 2 - 3 sessions to ensure that feedback reflected a general rather than a singular voice,</mark> I would 
+            After <mark className="hl"> sprints of 2 - 3 sessions to ensure that feedback reflected a general rather than a singular voice,</mark> I would 
             assess the feedback to <mark className="hl">identify iterations to implement into the prototype and tweak the usability protocol</mark> to probe 
             for feedback on those iterations.
             <br></br><br></br>
             Because of this structure, <mark className="hl">each sprint tested a prototype that had already responded to the previous sprint&rsquo;s feedback. </mark>
             As the rounds progressed, I noticed that the feedback from participants gradually <mark className="hl">shifted from usability issues to 
-            additive feature suggestions</mark> that would modify the prototype to be adaptable to other use cases.
+            additive feature suggestions</mark> that would enhance the prototype to be adaptable to other use cases and continued usage.
           </p>
         </section>
 
@@ -168,12 +167,13 @@ export default function PopByInlineCaseStudy() {
           <h3>Priorities in Implementation with AI</h3>
           <p>
             From this project, I understood how to better navigate a workflow that includes
-            implementing with AI. The AI tools I utilized (Figma Make and Google AI Studio)
-            limited the number of iterations I could implement at a time. To adapt, I made
-            sure to use the credits efficiently by{" "}
-            <mark className="hl">recognizing and prioritizing larger-scale implementations based on their impact on the 
+            implementing with AI. The <mark className="hl">AI tools I utilized (Figma Make and Google AI Studio)
+            limited the number of iterations I could implement at a time.</mark> To adapt, I made
+            <mark className="hl"> recognized and prioritized larger-scale implementations based on impact on the 
             prototype&rsquo;s efficiency</mark> during usability testing while{" "}
-            <mark className="hl">manually refining smaller and specific details afterwards.</mark>
+            <mark className="hl">manually refining smaller and specific details afterwards.</mark> As a result, I was 
+            able to utilize my prompting tokens while also being well informed of the prototype's abilities and limitations 
+            through manual involvements of altering the code.
           </p>
         </section>
       </main>
