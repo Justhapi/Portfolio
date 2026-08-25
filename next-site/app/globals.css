@@ -2466,58 +2466,39 @@ em.it { font-style: italic; }
    folder is clickable (the blurb sits ON the folder, so tapping the
    area feels like tapping the project). */
 @media (max-width: 820px) {
-  /* Wider spacing between projects — only on mobile. Desktop uses
-     the compact 72-144px gap so the row scans as related. Mobile
-     needs way more per-project breathing room because each project
-     stacks vertically and the blurb overlay + read-time chip bleed
-     below the folder into the gap below. Bumped from clamp(240,
-     36vw, 420) → clamp(400, 60vw, 600) because one project's blurb
-     was still visually running into the next project's tag. */
+  /* Mobile project spacing — reduced since the blurb is now
+     contained within .folder (bottom: 12px inside the folder art).
+     Each project is a discrete card; row-gap is pure breathing
+     room between them. */
   .folder-row {
-    gap: clamp(400px, 60vw, 600px);
+    gap: clamp(120px, 20vw, 200px);
   }
   .folder {
     grid-template-columns: 1fr;
-    /* Tightened from clamp(60, 10vw, 100) → clamp(20, 4vw, 40) so the
-       whole folder + chip + blurb cluster sits higher, closer to the
-       tag/meta above. Still enough to clear the SVG's upward bleed
-       (it's ~30px past its container box on typical mobile widths). */
-    row-gap: clamp(20px, 4vw, 40px);
+    /* Pulled folder-art even closer to tag/meta above — clamp(20,
+       4vw, 40) → clamp(4, 1vw, 12). Combined with the blurb bottom:
+       12px placement below, the whole folder cluster now sits higher
+       and reads as a compact contained unit. */
+    row-gap: clamp(4px, 1vw, 12px);
   }
   .folder > .folder-art { grid-column: 1; grid-row: 2; }
   .folder > .folder-copy { grid-column: 1; grid-row: 1; }
 
-  /* Pull blurb OUT of the copy column flow and overlay it on the
-     folder art's LOWER edge. Outline sits on the TEXT ITSELF (via
-     -webkit-text-stroke + paint-order) — no card, no fill, no border.
-     Cream stroke around each glyph so the dark text stays legible over
-     any folder color. pointer-events: none so taps pass through to the
-     folder-art Link beneath — the overlaid text visually caps the
-     folder while the whole surface remains one tap target. */
+  /* Blurb overlays the LOWER portion of the folder art — absolute
+     with bottom: 12px so it sits WITHIN the folder's grid bounds
+     (contained; each project card stays discrete). Text-outline
+     (cream stroke) restored so the dark text stays legible over
+     whatever folder color it overlaps. */
   .folder .blurb {
     position: absolute;
-    /* Center via left/right: 0 + margin-inline: auto + capped width.
-       Can't use transform: translateX(-50%) here — the entrance-state
-       rule `.folder-row > .folder.in .blurb { transform: none }`
-       (specificity 0,4,0) beats `.folder .blurb` (0,2,0) and wipes
-       any transform we set. This purely-margin-based centering
-       survives the transform reset. */
     left: 0;
     right: 0;
     margin-inline: auto;
-    /* Narrower still — fits within the folder body's inner width so
-       the text reads as tucked inside the folder frame, not spilling
-       past its edges. */
-    width: min(58%, 260px);
-    overflow-wrap: break-word;
-    word-break: break-word;
-    /* Sits closer to the folder's bottom edge now that the read-time
-       chip moved out of the blurb's vicinity. Was -80px hanging way
-       below; now -20px so the blurb spills only slightly out of the
-       folder — leaves more separation from the next project below. */
-    bottom: -20px;
+    width: min(80%, 340px);
+    max-width: none;
+    bottom: 12px;
     z-index: 5;
-    margin: 0;
+    margin-top: 0;
     padding: 0;
     background: none;
     border: none;
@@ -2525,22 +2506,24 @@ em.it { font-style: italic; }
     box-shadow: none;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
-    /* Text-only outline — cream stroke around each glyph, dark fill
-       inside. paint-order: stroke fill draws the stroke BEHIND the
-       fill so the fill glyph shape stays crisp. */
     color: var(--fg);
     -webkit-text-stroke: 3px var(--paper);
     text-stroke: 3px var(--paper);
     paint-order: stroke fill;
     font-weight: 700;
-    /* Shrunk further 11.5 → 10px so the blurb reads as fine-print
-       caption beneath the folder — cleanest visual weight when it's
-       sitting overlaid on the folder body. */
-    font-size: 10px;
-    line-height: 1.35;
+    font-size: 12px;
+    line-height: 1.4;
     text-align: center;
     pointer-events: none;
-    max-width: none;
+    overflow-wrap: break-word;
+    word-break: normal;
+  }
+  .folder .blurb strong {
+    color: var(--accent-on-cream);
+    font-weight: 800;
+    -webkit-text-stroke: 3px var(--paper);
+    text-stroke: 3px var(--paper);
+    paint-order: stroke fill;
   }
   /* Bump the meta strip type on mobile — was 10.5px inherited from
      the desktop rule, which felt too small under the enlarged tag
@@ -2549,13 +2532,14 @@ em.it { font-style: italic; }
   .folder .meta {
     font-size: 12.5px;
   }
-  /* Strong glyphs inside the overlay inherit the same stroke so
-     bolded key phrases stay legible against varied folder colors. */
+  /* Bolded key phrases in the blurb get the accent color, matching
+     the treatment used elsewhere on the site. */
   .folder .blurb strong {
     color: var(--accent-on-cream);
-    -webkit-text-stroke: 3px var(--paper);
-    text-stroke: 3px var(--paper);
-    paint-order: stroke fill;
+    font-weight: 700;
+    -webkit-text-stroke: 0;
+    text-stroke: 0;
+    paint-order: normal;
   }
 }
 /* cursor-following read-time pill */

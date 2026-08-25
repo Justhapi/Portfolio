@@ -579,11 +579,19 @@ export default function ProjectsV2() {
      enterFolder fires and the folder opens same as desktop hover. As
      the user scrolls past, leaveFolder fires and it closes. The chip
      visibility on mobile is gated on the same open state via CSS
-     (see .folder:has(.folder-art--hovered) .meta__read). */
+     (see .folder:has(.folder-art--hovered) .meta__read).
+
+     Touch detection uses (hover: none) OR (pointer: coarse) —
+     broader than either alone. iOS Safari can report (hover: hover)
+     in some contexts (external keyboard attached, iPadOS with mouse),
+     so relying on hover:none alone was leaving the observer
+     un-registered on real phones. */
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const hoverNone = window.matchMedia("(hover: none)").matches;
-    if (!hoverNone) return;
+    const isTouch =
+      window.matchMedia("(hover: none)").matches ||
+      window.matchMedia("(pointer: coarse)").matches;
+    if (!isTouch) return;
     const reduced = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
@@ -603,8 +611,18 @@ export default function ProjectsV2() {
       },
       { rootMargin: "-20% 0px -20% 0px", threshold: 0 }
     );
-    Object.values(folderEls.current).forEach((el) => el && io.observe(el));
-    return () => io.disconnect();
+
+    /* Observe on mount + one rAF later as a safety net for any ref
+       timing edge cases (rare, but cheap insurance). */
+    const observeAll = () => {
+      Object.values(folderEls.current).forEach((el) => el && io.observe(el));
+    };
+    observeAll();
+    const raf = requestAnimationFrame(observeAll);
+    return () => {
+      cancelAnimationFrame(raf);
+      io.disconnect();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
