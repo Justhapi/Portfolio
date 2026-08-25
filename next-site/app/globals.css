@@ -176,6 +176,14 @@
    redundant and it looks jarring against the interpolated movement. */
 html {
   scrollbar-width: none; /* Firefox */
+  /* Kill horizontal overscroll (iOS Safari swipe-past-edge that reveals
+     the page background as a gray/cream void). `overscroll-behavior:
+     none` prevents the rubber-band effect at page edges — critical on
+     iOS where a horizontal swipe was showing the site background void
+     around narrower sections. */
+  overflow-x: hidden;
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
 }
 html::-webkit-scrollbar {
   display: none; /* Chrome, Safari, Edge */
@@ -206,6 +214,7 @@ html, body {
 body {
   min-height: 100vh;
   overflow-x: hidden;
+  overscroll-behavior: none;
 }
 
 .portfolio-v2 { position: relative; width: 100%; }
@@ -622,10 +631,15 @@ body.on-paper .nav-pill {
 }
 
 @media (max-width: 720px) {
-  /* Re-layout nav-inner: mark left, toggle right, no center column */
+  /* Re-layout nav-inner: mark left, toggle right, no center column.
+     Padding uses max(20px, env(safe-area-inset-*)) so on iOS Safari
+     with a notch the hamburger doesn't press right up against the
+     safe-area boundary — matches the visible margin the .nav-mark
+     has on the left. */
   .nav-inner {
     grid-template-columns: 1fr auto;
-    padding: 0 20px;
+    padding-left: max(20px, env(safe-area-inset-left));
+    padding-right: max(20px, env(safe-area-inset-right));
   }
 
   /* Toggle button — same dark glass pill as nav-mark */
@@ -902,7 +916,10 @@ body.on-paper .nav-pill {
 @media (max-width: 640px) {
   .hero-stage {
     padding: clamp(56px, 8vh, 80px) 20px clamp(8px, 1.5vh, 20px);
-    gap: clamp(6px, 1.2vh, 16px);
+    /* Gap bumped from clamp(6, 1.2vh, 16) → clamp(24, 4.5vh, 56) so
+       the polaroid + attached stickers sit CLEAR of the focus line
+       above rather than overlapping it. */
+    gap: clamp(24px, 4.5vh, 56px);
   }
   .hero-greeting { gap: clamp(2px, 0.6vh, 8px); }
   /* Hide the polaroid CAPTION on mobile — the "LAST UPDATED" line
@@ -2453,9 +2470,11 @@ em.it { font-style: italic; }
      the compact 72-144px gap so the row scans as related. Mobile
      needs way more per-project breathing room because each project
      stacks vertically and the blurb overlay + read-time chip bleed
-     below the folder into the gap below. */
+     below the folder into the gap below. Bumped from clamp(240,
+     36vw, 420) → clamp(400, 60vw, 600) because one project's blurb
+     was still visually running into the next project's tag. */
   .folder-row {
-    gap: clamp(240px, 36vw, 420px);
+    gap: clamp(400px, 60vw, 600px);
   }
   .folder {
     grid-template-columns: 1fr;
@@ -2494,12 +2513,11 @@ em.it { font-style: italic; }
     width: min(58%, 260px);
     overflow-wrap: break-word;
     word-break: break-word;
-    /* Pushed BELOW the folder's bottom edge — the overlay bleeds out
-       of the folder-art container and into the cream space beneath.
-       Reads as text spilling out from under the folder, not sitting
-       on top of it. .folder-art already has overflow: visible so the
-       negative offset renders correctly. */
-    bottom: -40px;
+    /* Sits closer to the folder's bottom edge now that the read-time
+       chip moved out of the blurb's vicinity. Was -80px hanging way
+       below; now -20px so the blurb spills only slightly out of the
+       folder — leaves more separation from the next project below. */
+    bottom: -20px;
     z-index: 5;
     margin: 0;
     padding: 0;
@@ -2517,9 +2535,9 @@ em.it { font-style: italic; }
     text-stroke: 3px var(--paper);
     paint-order: stroke fill;
     font-weight: 700;
-    /* Shrunk 15 → 13px so the overlay reads as a compact caption
-       under the folder rather than a competing headline. */
-    font-size: 13px;
+    /* Shrunk 13 → 11.5px so the overlay reads even more compactly
+     — small caption beneath the folder rather than a headline. */
+    font-size: 11.5px;
     line-height: 1.35;
     text-align: center;
     pointer-events: none;
@@ -3170,42 +3188,24 @@ em.it { font-style: italic; }
   letter-spacing: 0.24em;
 }
 
-/* Read-time chip — hidden by default (desktop users see the cursor-
-   following .read-pill on folder hover). Revealed on touch / phone
-   viewports where hover doesn't exist, so recruiters can gauge case
-   commitment before tapping in. Uses accent-on-cream + weight bump
-   so it reads as distinct from the neutral topic chips (UI, Interaction,
-   etc.) — this chip is a COMMITMENT signal, not a topic. */
-.folder .meta .meta__read {
+/* Read-time chip — now lives INSIDE the .folder-art Link, positioned
+   absolute at top-right of the folder artwork. Hidden by default;
+   fades in on mobile when the folder enters the middle 60% of the
+   viewport (via .folder-in-middle class from the scroll observer). */
+.folder-art .meta__read {
   display: none;
 }
-/* When meta__read is DOM-present but hidden, the chip immediately before
-   it (e.g. "2025") would otherwise render a trailing "·" leading to
-   invisible content. Trim that dot on desktop; restore it on mobile
-   where meta__read is visible and needs the separator. */
-.folder .meta > span:has(+ .meta__read)::after {
-  content: "";
-}
-/* TRUE MOBILE ONLY — the read-time chip is shown only on hover-none
-   pointer-coarse devices (real phones / tablets). On laptop viewports
-   (even resized narrow), the cursor-following .read-pill on folder
-   hover already serves this purpose — the static chip is redundant.
-   Previous rule used (max-width: 720px OR pointer: coarse) which fired
-   on narrow laptop windows too. */
+/* TRUE MOBILE ONLY. Desktop has the cursor-following .read-pill on
+   hover — no static chip needed. */
 @media (hover: none) and (pointer: coarse) {
-  .folder .meta .meta__read {
-    /* Positioned just ABOVE the blurb overlay. Blurb sits at
-       bottom: -40px with ~80px height, so its top is ~40px above the
-       folder's bottom. This chip's bottom at 60px sits ~20px above
-       the blurb top — reads as a paired "read commitment → project
-       summary" beat right before the blurb text starts. */
+  .folder-art .meta__read {
+    /* Absolute top-right of the folder art. .folder-art has
+       position: relative, so this pins to its top-right corner
+       regardless of folder-copy layout above. */
     display: inline-flex;
     position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 60px;
-    margin-inline: auto;
-    width: max-content;
+    top: 12px;
+    right: 12px;
     color: var(--accent-on-cream);
     font-weight: 700;
     font-size: 11px;
@@ -3214,16 +3214,20 @@ em.it { font-style: italic; }
     border-radius: 999px;
     background: rgba(255, 253, 247, 0.94);
     border: 1.5px solid var(--accent-on-cream);
-    /* No trailing dot after the chip when standing alone — override
-       the .folder .meta span::after rule that would add a "·". */
+    z-index: 6;
+    /* Hidden until the folder enters the middle 60% of the viewport
+       (scroll observer toggles .folder-in-middle). Small transform
+       for a gentle appear/disappear beat. */
+    opacity: 0;
+    transform: translateY(-8px);
+    transition:
+      opacity 260ms var(--ease-snap),
+      transform 260ms var(--ease-snap);
+    pointer-events: none;
   }
-  .folder .meta .meta__read::after {
-    content: "";
-  }
-  /* No preceding dot either — the chip is out-of-strip, so the meta
-     span before it shouldn't render a trailing "· " into empty air. */
-  .folder .meta > span:has(+ .meta__read)::after {
-    content: "";
+  .folder.folder-in-middle .meta__read {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 

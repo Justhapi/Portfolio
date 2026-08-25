@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import CursorFollower from "@/components/CursorFollower";
@@ -75,6 +75,18 @@ const kleeOne = localFont({
    Instead it's loaded via a targeted <link> below with `text=李曦` —
    Google serves only those 2 glyphs (~2 KB), so the request is tiny.
    The --f-hand-zh token in globals.css uses the string name directly. */
+
+/* Viewport meta — width=device-width prevents iOS Safari from rendering
+   at the default 980px CSS width (which is why the hero was showing
+   with cream margins on the sides — the whole page was scaled down to
+   fit 980px into the actual viewport). maximumScale + userScalable let
+   users still zoom for accessibility. */
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://kathleenli.design"),
