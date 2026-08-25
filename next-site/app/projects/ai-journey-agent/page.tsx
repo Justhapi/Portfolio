@@ -36,9 +36,9 @@ export default function AIJourneyAgentCaseStudy() {
     <div className="case">
       <CaseSectionNav sections={SECTIONS} />
       <CaseCover
-        title="Conceptualiing an AI Maintenance Agent for Customer Journey Maps"
-        meta="Spring 2026 · 8 weeks · UX Designer & Researcher · Concept shipped to development"
-        subtitle="An agentic AI concept for keeping customer journey maps accurate and trustworthy over time"
+        title="Conceptualizing an AI Maintenance Agent for Customer Journey Maps"
+        meta="Spring 2026 · 8 weeks · UX Designer & Researcher"
+        subtitle="An agentic AI concept for keeping customer journey maps accurate over time"
         imageLabel="AI maintenance agent · cover animation"
         heroVideoSrc={COVER_VIDEO}
       />

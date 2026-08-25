@@ -49,8 +49,8 @@ export default function ResearchHubCaseStudy() {
       <CaseSectionNav sections={SECTIONS} />
       <CaseCover
         title="Expanding Upon a Research Platform Connecting Students with Faculty Research"
-        meta="Spring 2026 · 6 weeks · 5 engineers + me · Design Engineer (sole designer)"
-        subtitle="A redesigned student–faculty research platform, planned to ship fall 2026"
+        meta="Spring 2026 · 6 weeks · Design Engineer"
+        subtitle="A redesigned student–faculty research platform for a campus research community"
         imageLabel="ResearchHub · cover animation"
         heroVideoSrc={COVER_VIDEO}
       />

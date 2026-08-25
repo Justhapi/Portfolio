@@ -121,7 +121,12 @@ const PARALLAX_TARGETS: ParallaxConfig[] = [
   // Negative speed → row drifts DOWN as scroll increases (confirmed from
   // browser: translateY sign is inverted for scene-relative targets).
   // At ~0.55 the row exits the viewport bottom by end of the sticky range.
-  { selector: ".connect-row",           speed: -0.18, relativeToScene: true },
+  /* Reduced from -0.18 → -0.05: the larger drift was pulling the
+     heading/pitch cluster off-center by ~180px on final scroll into
+     Connect, so the content read as clipped at the top of the
+     viewport. -0.05 keeps a subtle depth cue without dragging the
+     cluster away from the true vertical center. */
+  { selector: ".connect-row",           speed: -0.05, relativeToScene: true },
   // Footer credits line — counter-drift vs .connect-row for depth.
   // Scene-END base so delta = 0 exactly when About finishes sliding off:
   // during the reveal the footer sits below its resting spot (~0.08 ×

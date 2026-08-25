@@ -1,7 +1,7 @@
 "use client";
 
 import type { CSSProperties, ReactNode } from "react";
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { saveHomeScroll } from "@/components/ScrollRestore";
 
@@ -475,6 +475,65 @@ const MORPH_MS = 460;
 
 type FolderPhase = "rest" | "hovered" | "leaving";
 
+/**
+ * ReadPill — cursor-following read-time pill with viewport clamping.
+ *
+ * Default position is bottom-right of the cursor (x+14, y+18) — reads as
+ * "attached to the pointer". When the cursor approaches the viewport
+ * right or bottom edge, the pill flips to the LEFT / UP side of the
+ * cursor so the pill body never spills off-screen. A small 12px safety
+ * margin keeps the pill visually inset from the browser edge.
+ *
+ * Measurement runs in useLayoutEffect on every position change: cheap
+ * getBoundingClientRect() reads, no layout thrash since the pill is
+ * position:fixed on its own layer.
+ */
+function ReadPill({ x, y, label }: { x: number; y: number; label: string }) {
+  const ref = useRef<HTMLDivElement | null>(null);
+  const [xy, setXy] = useState<{ left: number; top: number }>({
+    left: x + 14,
+    top: y + 18,
+  });
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const w = rect.width;
+    const h = rect.height;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const MARGIN = 12; // safety inset from the browser edge
+    const GAP = 14;    // default offset from the cursor tip
+    /* Smooth edge clamp — the pill sits at (cursor + GAP) most of the
+       time. As the cursor approaches the right/bottom edge, the pill
+       slides just enough to keep its far edge at (viewport - MARGIN),
+       so it appears to "brake" gracefully rather than flip to the
+       other side of the cursor. Math.min caps the position at that
+       boundary; Math.max prevents it from going past the near edge
+       when the pill is wider than the remaining viewport space. */
+    const left = Math.max(
+      MARGIN,
+      Math.min(x + GAP, vw - w - MARGIN)
+    );
+    const top = Math.max(
+      MARGIN,
+      Math.min(y + GAP + 4, vh - h - MARGIN)
+    );
+
+    setXy({ left, top });
+  }, [x, y, label]);
+  return (
+    <div
+      ref={ref}
+      className="read-pill"
+      style={{ left: xy.left, top: xy.top }}
+      aria-hidden="true"
+    >
+      {label}
+    </div>
+  );
+}
+
 export default function ProjectsV2() {
   const [hoverPill, setHoverPill] = useState<string | null>(null);
   const [pos, setPos] = useState({ x: 0, y: 0 });
@@ -574,28 +633,63 @@ export default function ProjectsV2() {
     return () => window.removeEventListener("mousemove", onMove);
   }, [hoverPill]);
 
-  /* Mobile-only auto-open on scroll. When a folder enters the middle
-     60% of the viewport (rootMargin -20% top/bottom shrinks the zone),
-     enterFolder fires and the folder opens same as desktop hover. As
-     the user scrolls past, leaveFolder fires and it closes. The chip
-     visibility on mobile is gated on the same open state via CSS
-     (see .folder:has(.folder-art--hovered) .meta__read).
+  /* Auto-open on scroll — fires on any layout that stacks the folder
+     vertically (single-column). When a folder enters the middle 60% of
+     the viewport, enterFolder fires and the folder opens same as
+     desktop hover. As the user scrolls past, leaveFolder fires and it
+     closes.
 
-     Touch detection uses (hover: none) OR (pointer: coarse) —
-     broader than either alone. iOS Safari can report (hover: hover)
-     in some contexts (external keyboard attached, iPadOS with mouse),
-     so relying on hover:none alone was leaving the observer
-     un-registered on real phones. */
+     Two gates trigger this behavior:
+       (a) Touch devices — (hover: none) OR (pointer: coarse). iOS
+           Safari can report (hover: hover) with an external keyboard
+           attached, so we broaden to (pointer: coarse) too.
+       (b) Narrow desktop viewports — (max-width: 820px). When the PC
+           browser is resized to a phone-width vertical shape, the
+           layout stacks to single-column and hover cursor targeting
+           becomes awkward on a small target; auto-open keeps the
+           experience continuous with the mobile-stacked layout.
+
+     The chip vs cursor-follow-pill split is handled purely in CSS:
+       - .folder .meta__read (the STATIC chip) is scoped inside
+         @media (hover: none) and (pointer: coarse) — so it only shows
+         on genuine touch devices.
+       - .read-pill (the cursor-following pill) works whenever hover
+         is capable, so narrow-desktop viewers still get the follow
+         pill behavior — matching what the user asked for. */
+  /* Track the narrow-stack breakpoint reactively so PC users who
+     RESIZE their browser between wide and narrow get the correct
+     behavior each time — without this, the effect would only sample
+     the breakpoint once at mount and stay stuck there for the whole
+     session. */
+  const [autoOpenEnabled, setAutoOpenEnabled] = useState(false);
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const isTouch =
-      window.matchMedia("(hover: none)").matches ||
-      window.matchMedia("(pointer: coarse)").matches;
-    if (!isTouch) return;
-    const reduced = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
-    if (reduced) return;
+    const touchQ = window.matchMedia("(hover: none)");
+    const coarseQ = window.matchMedia("(pointer: coarse)");
+    const narrowQ = window.matchMedia("(max-width: 820px)");
+    const reducedQ = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const update = () => {
+      const enabled =
+        !reducedQ.matches &&
+        (touchQ.matches || coarseQ.matches || narrowQ.matches);
+      setAutoOpenEnabled(enabled);
+    };
+    update();
+    touchQ.addEventListener("change", update);
+    coarseQ.addEventListener("change", update);
+    narrowQ.addEventListener("change", update);
+    reducedQ.addEventListener("change", update);
+    return () => {
+      touchQ.removeEventListener("change", update);
+      coarseQ.removeEventListener("change", update);
+      narrowQ.removeEventListener("change", update);
+      reducedQ.removeEventListener("change", update);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!autoOpenEnabled) return;
 
     /* Sequential open/close: the currently-open folder must fully
        finish closing BEFORE the newly-centered one opens. Avoids the
@@ -679,9 +773,15 @@ export default function ProjectsV2() {
       window.removeEventListener("scroll", onScroll);
       if (rafId !== null) cancelAnimationFrame(rafId);
       if (closeTimer !== null) window.clearTimeout(closeTimer);
+      /* If auto-open leaves a folder open when the user resizes to a
+         wide viewport, snap it closed so the desktop hover-driven flow
+         takes over from a clean slate. */
+      if (hoveredId.current) {
+        leaveFolder(hoveredId.current);
+      }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [autoOpenEnabled]);
 
   return (
     <section id="work" className="section work" data-screen-label="02 Work">
@@ -798,13 +898,7 @@ export default function ProjectsV2() {
       </div>
 
       {hoverPill && (
-        <div
-          className="read-pill"
-          style={{ left: pos.x + 10, top: pos.y + 15 }}
-          aria-hidden="true"
-        >
-          {hoverPill}
-        </div>
+        <ReadPill x={pos.x} y={pos.y} label={hoverPill} />
       )}
     </section>
   );

@@ -45,8 +45,8 @@ export default function FrogslayerCaseStudy() {
       <CaseSectionNav sections={SECTIONS} />
       <CaseCover
         title="Kiosk Interface Design Guidelines"
-        meta="Fall 2025 · 8 weeks · 6-person team · UX Designer & Researcher, Point of Communication"
-        subtitle="Adopted as Frogslayer's guideline reference + collaboration extended"
+        meta="Fall 2025 · 8 weeks · UX Designer & Researcher"
+        subtitle="A cross-industry kiosk design reference for a consultancy&rsquo;s client engagements"
         imageLabel="Frogslayer kiosk · cover animation"
         heroVideoSrc={COVER_VIDEO}
       />
