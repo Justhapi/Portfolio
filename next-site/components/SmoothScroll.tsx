@@ -225,19 +225,13 @@ export default function SmoothScroll() {
     rafId = requestAnimationFrame(raf);
 
     /* ── Parallax ──────────────────────────────────────────────────────── */
-    const isTouchDevice =
-      window.matchMedia("(pointer: coarse)").matches ||
-      "ontouchstart" in window;
-
-    // Skip parallax on touch — scroll behaviour already differs
-    if (isTouchDevice) {
-      return () => {
-        ro.disconnect();
-        cancelAnimationFrame(rafId);
-        lenis.destroy();
-        if (sceneEl) sceneEl.style.height = "";
-      };
-    }
+    /* Parallax now runs on touch devices too. Lenis's onScroll fires
+       on native touch scroll (Lenis doesn't smooth touch by default,
+       so its `scroll` value equals window.scrollY on mobile), which
+       means parallax transforms update on every scroll event — same
+       code path as desktop. Previously skipped on touch to avoid
+       jank, but modern mobile devices handle rAF-driven transform
+       writes at 60fps without issue. */
 
     type ParallaxEntry = {
       el: HTMLElement;

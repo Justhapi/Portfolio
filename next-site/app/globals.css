@@ -176,12 +176,13 @@
    redundant and it looks jarring against the interpolated movement. */
 html {
   scrollbar-width: none; /* Firefox */
-  /* Kill horizontal overscroll (iOS Safari swipe-past-edge that reveals
-     the page background as a gray/cream void). `overscroll-behavior:
-     none` prevents the rubber-band effect at page edges — critical on
-     iOS where a horizontal swipe was showing the site background void
-     around narrower sections. */
-  overflow-x: hidden;
+  /* Prevent horizontal overscroll (iOS swipe-past-edge void) without
+     breaking sticky descendants. `overflow-x: hidden` establishes a
+     new scroll container, which nukes `position: sticky` on children
+     — that's why Connect wasn't revealing after About on mobile.
+     `overflow-x: clip` gives the same "no horizontal overflow" visual
+     WITHOUT the scroll-container side effect, so sticky still works. */
+  overflow-x: clip;
   overscroll-behavior: none;
   -webkit-overflow-scrolling: touch;
 }
@@ -213,7 +214,9 @@ html, body {
 
 body {
   min-height: 100vh;
-  overflow-x: hidden;
+  /* Same rationale as html — clip instead of hidden so sticky
+     descendants (Connect / hero) keep working. */
+  overflow-x: clip;
   overscroll-behavior: none;
 }
 
@@ -2511,7 +2514,8 @@ em.it { font-style: italic; }
     text-stroke: 3px var(--paper);
     paint-order: stroke fill;
     font-weight: 700;
-    font-size: 12px;
+    /* Shrunk 12 → 10px to reduce the overlap area on the folder art. */
+    font-size: 10px;
     line-height: 1.4;
     text-align: center;
     pointer-events: none;
@@ -3182,27 +3186,29 @@ em.it { font-style: italic; }
 }
 @media (hover: none) and (pointer: coarse) {
   .folder .meta__read {
-    /* In-flow chip, small top margin so it sits just below the meta
-       strip when visible. visibility: hidden reserves the space so
-       there's no layout shift on open/close. */
-    display: inline-flex;
-    align-self: flex-start;
-    margin-top: 8px;
+    /* Plain label text — no fill, no border, no pill radius. Centered
+       in the copy column via block + margin auto. Sits just below
+       the meta strip when the folder opens. */
+    display: block;
+    margin: 8px auto 0;
+    padding: 0;
+    background: none;
+    border: none;
+    border-radius: 0;
+    text-align: center;
     color: var(--accent-on-cream);
     font-weight: 700;
     font-size: 11px;
     letter-spacing: 0.22em;
-    padding: 4px 10px;
-    border-radius: 999px;
-    background: rgba(255, 253, 247, 0.94);
-    border: 1.5px solid var(--accent-on-cream);
     opacity: 0;
     transform: translateY(-6px);
     visibility: hidden;
+    /* Slower fade — 720ms so the chip glides in/out more gently than
+       the 460ms folder morph, feels more atmospheric than snap-on. */
     transition:
-      opacity 260ms var(--ease-snap),
-      transform 260ms var(--ease-snap),
-      visibility 0s linear 260ms;
+      opacity 720ms var(--ease-out-quart),
+      transform 720ms var(--ease-out-quart),
+      visibility 0s linear 720ms;
     pointer-events: none;
   }
   /* Visible only when this folder is currently in its open (hovered)
@@ -3213,8 +3219,8 @@ em.it { font-style: italic; }
     transform: translateY(0);
     visibility: visible;
     transition:
-      opacity 260ms var(--ease-snap),
-      transform 260ms var(--ease-snap),
+      opacity 720ms var(--ease-out-quart),
+      transform 720ms var(--ease-out-quart),
       visibility 0s linear 0s;
   }
 }
@@ -7235,9 +7241,17 @@ em.it { font-style: italic; }
      link rows sit centered in the middle. Any leftover space now sits
      as breathing room between content clusters, not as dead space. */
   .connect > .container {
-    padding-top: clamp(200px, 24vh, 260px);
-    padding-bottom: clamp(32px, 5vh, 56px);
-    justify-content: space-between;
+    /* Center the Connect content block vertically instead of pinning
+       it to the bottom with padding-top pushing everything down.
+       Padding-top just needs to clear the fixed nav (~96px); the
+       flex column then centers its children within the remaining
+       viewport height. Footer follows naturally at bottom of the
+       content stack (no more `space-between` pushing content
+       against the bottom edge). */
+    padding-top: clamp(96px, 12vh, 128px);
+    padding-bottom: clamp(24px, 4vh, 48px);
+    justify-content: center;
+    gap: clamp(24px, 4vh, 40px);
   }
   /* Use dvh (dynamic viewport height) so mobile browser chrome
      collapsing doesn't leave dead space at the bottom. Falls back to

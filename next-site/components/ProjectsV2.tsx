@@ -597,31 +597,88 @@ export default function ProjectsV2() {
     ).matches;
     if (reduced) return;
 
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          const tag = (e.target as HTMLElement).dataset.folderTag;
-          if (!tag) return;
-          if (e.isIntersecting) {
-            enterFolder(tag);
-          } else {
-            leaveFolder(tag);
-          }
-        });
-      },
-      { rootMargin: "-20% 0px -20% 0px", threshold: 0 }
-    );
+    /* Sequential open/close: the currently-open folder must fully
+       finish closing BEFORE the newly-centered one opens. Avoids the
+       "two folders animating simultaneously" uncanny beat.
+       - pendingTagRef: the tag that WANTS to open (updated on every
+         pickCentered call, so if the centered folder changes mid-
+         close, the latest one wins when the close finishes).
+       - closeTimer: null unless a close is in progress. When null,
+         pickCentered can trigger a new close+open sequence. When set,
+         pickCentered only updates pendingTagRef — the timer callback
+         reads the latest value when it fires. */
+    let pendingTag: string | null = null;
+    let closeTimer: number | null = null;
+    const CLOSE_BUFFER_MS = MORPH_MS + 40;
 
-    /* Observe on mount + one rAF later as a safety net for any ref
-       timing edge cases (rare, but cheap insurance). */
-    const observeAll = () => {
-      Object.values(folderEls.current).forEach((el) => el && io.observe(el));
+    const pickCentered = () => {
+      const viewportCenter = window.innerHeight / 2;
+      const bandTop = window.innerHeight * 0.2;
+      const bandBottom = window.innerHeight * 0.8;
+      let bestTag: string | null = null;
+      let bestDistance = Infinity;
+      Object.entries(folderEls.current).forEach(([tag, el]) => {
+        if (!el) return;
+        const rect = el.getBoundingClientRect();
+        // Skip folders entirely outside the middle 60% band
+        if (rect.bottom < bandTop || rect.top > bandBottom) return;
+        const centerY = rect.top + rect.height / 2;
+        const distance = Math.abs(centerY - viewportCenter);
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          bestTag = tag;
+        }
+      });
+
+      // Update the target the sequence will resolve to.
+      pendingTag = bestTag;
+
+      // Already correctly open — nothing to do.
+      if (bestTag && bestTag === hoveredId.current) return;
+
+      // A close sequence is already running — the timer will pick up
+      // the latest pendingTag when it fires; don't stack more closes.
+      if (closeTimer !== null) return;
+
+      if (hoveredId.current) {
+        // Close currently-open folder, then open pendingTag after
+        // the close animation completes.
+        leaveFolder(hoveredId.current);
+        closeTimer = window.setTimeout(() => {
+          closeTimer = null;
+          if (pendingTag && pendingTag !== hoveredId.current) {
+            enterFolder(pendingTag);
+          }
+        }, CLOSE_BUFFER_MS);
+      } else if (bestTag) {
+        // Nothing open — open immediately.
+        enterFolder(bestTag);
+      }
     };
-    observeAll();
-    const raf = requestAnimationFrame(observeAll);
+
+    /* Scroll-driven tracking with rAF throttling. IntersectionObserver
+       was missing re-evaluations when two folders both sat inside the
+       middle 60% band simultaneously — the observer only fires on
+       band boundary crossings, so as the user kept scrolling and one
+       folder became MORE centered than the other, no callback fired
+       to update. Scroll listener fires on every scroll event, rAF-
+       throttled to once per frame max for perf. */
+    let rafId: number | null = null;
+    const onScroll = () => {
+      if (rafId !== null) return;
+      rafId = requestAnimationFrame(() => {
+        rafId = null;
+        pickCentered();
+      });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    /* Initial pick on mount so the first-centered folder opens
+       without waiting for a scroll event. */
+    requestAnimationFrame(pickCentered);
     return () => {
-      cancelAnimationFrame(raf);
-      io.disconnect();
+      window.removeEventListener("scroll", onScroll);
+      if (rafId !== null) cancelAnimationFrame(rafId);
+      if (closeTimer !== null) window.clearTimeout(closeTimer);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

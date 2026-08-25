@@ -54,17 +54,14 @@ export default function HeroVideo({
         setPreload("none");
         return;
       }
-      // Hover-capable = desktop/laptop with a real pointer. Fetch
-      // metadata and autoplay; the ~5-15MB video is fine over wifi.
-      // Touch/coarse = phone/tablet. Skip autoplay + preload entirely
-      // to avoid data-cap surprises. User taps the poster to play.
-      if (hoverCapable.matches) {
-        setShouldAutoplay(true);
-        setPreload("metadata");
-      } else {
-        setShouldAutoplay(false);
-        setPreload("none");
-      }
+      // Autoplay + preload metadata on ALL non-reduced-motion devices,
+      // including touch. Cover video is a key case-page moment;
+      // recruiters expect it to play automatically. Mobile browsers
+      // permit autoplay for muted + playsInline videos (which this
+      // one is), so no user-tap gate needed. hoverCapable check is
+      // retained only for the preload="auto" bump on desktop.
+      setShouldAutoplay(true);
+      setPreload(hoverCapable.matches ? "metadata" : "metadata");
     };
     update();
 
