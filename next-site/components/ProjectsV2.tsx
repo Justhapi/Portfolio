@@ -574,6 +574,42 @@ export default function ProjectsV2() {
     return () => window.removeEventListener("mousemove", onMove);
   }, [hoverPill]);
 
+  /* Touch/mobile auto-open — on hover-none devices there's no
+     mouse-hover trigger for the folder open state. Instead, watch
+     each folder card via IntersectionObserver and open it when it
+     enters the MIDDLE 60% of the viewport (rootMargin -20% top/
+     bottom shrinks the intersection zone to the middle 60% band).
+     When the card scrolls into the upper 20% or lower 20% of the
+     screen, close it. Skipped on hover-capable pointers (desktop
+     keeps hover-driven open/close) and on reduced-motion. */
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const hoverNone = window.matchMedia("(hover: none)").matches;
+    if (!hoverNone) return;
+    const reduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+    if (reduced) return;
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          const tag = (e.target as HTMLElement).dataset.folderTag;
+          if (!tag) return;
+          if (e.isIntersecting) {
+            enterFolder(tag);
+          } else {
+            leaveFolder(tag);
+          }
+        });
+      },
+      { rootMargin: "-20% 0px -20% 0px", threshold: 0 }
+    );
+    Object.values(folderEls.current).forEach((el) => el && io.observe(el));
+    return () => io.disconnect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <section id="work" className="section work" data-screen-label="02 Work">
       <div className="container">

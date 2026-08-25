@@ -2299,6 +2299,10 @@ em.it { font-style: italic; }
 .folder-row {
   display: grid;
   grid-template-columns: 1fr;
+  /* Desktop spacing (original) — projects sit close enough to scan
+     across as a related row. Mobile bumps this way up inside the
+     @media block below, since the vertical stack + blurb overlay
+     needs much more room per project. */
   gap: clamp(72px, 12vw, 144px);
   margin-top: 40px;
 }
@@ -2445,11 +2449,23 @@ em.it { font-style: italic; }
    folder is clickable (the blurb sits ON the folder, so tapping the
    area feels like tapping the project). */
 @media (max-width: 820px) {
+  /* Wider spacing between projects — only on mobile. Desktop uses
+     the compact 72-144px gap so the row scans as related. Mobile
+     needs way more per-project breathing room because each project
+     stacks vertically and the blurb overlay + read-time chip bleed
+     below the folder into the gap below. */
+  .folder-row {
+    gap: clamp(240px, 36vw, 420px);
+  }
   .folder {
     grid-template-columns: 1fr;
-    /* Tighter row-gap now that the blurb doesn't occupy its own row —
-       just enough space between tag/meta and the folder art below. */
-    row-gap: clamp(12px, 2vw, 20px);
+    /* Bumped from clamp(12, 2vw, 20) → clamp(60, 10vw, 100) so the
+       folder-art sits well below tag+meta. The SVG scales to 92% of
+       the full-width column and its intrinsic aspect ratio makes it
+       taller than its container box — meaning the SVG's TOP bleeds
+       upward past its own bounds. Larger row-gap clears the copy
+       column above so tag + meta don't visually overlap the SVG. */
+    row-gap: clamp(60px, 10vw, 100px);
   }
   .folder > .folder-art { grid-column: 1; grid-row: 2; }
   .folder > .folder-copy { grid-column: 1; grid-row: 1; }
@@ -2463,11 +2479,21 @@ em.it { font-style: italic; }
      folder while the whole surface remains one tap target. */
   .folder .blurb {
     position: absolute;
-    /* Match the tag + meta above — those fill the copy column's full
-       width with no horizontal insets, so the overlay text spans edge-
-       to-edge inside .folder the same way. */
+    /* Center via left/right: 0 + margin-inline: auto + capped width.
+       Can't use transform: translateX(-50%) here — the entrance-state
+       rule `.folder-row > .folder.in .blurb { transform: none }`
+       (specificity 0,4,0) beats `.folder .blurb` (0,2,0) and wipes
+       any transform we set. This purely-margin-based centering
+       survives the transform reset. */
     left: 0;
     right: 0;
+    margin-inline: auto;
+    /* Narrower still — fits within the folder body's inner width so
+       the text reads as tucked inside the folder frame, not spilling
+       past its edges. */
+    width: min(58%, 260px);
+    overflow-wrap: break-word;
+    word-break: break-word;
     /* Pushed BELOW the folder's bottom edge — the overlay bleeds out
        of the folder-art container and into the cream space beneath.
        Reads as text spilling out from under the folder, not sitting
@@ -2491,11 +2517,20 @@ em.it { font-style: italic; }
     text-stroke: 3px var(--paper);
     paint-order: stroke fill;
     font-weight: 700;
-    font-size: 15px;
+    /* Shrunk 15 → 13px so the overlay reads as a compact caption
+       under the folder rather than a competing headline. */
+    font-size: 13px;
     line-height: 1.35;
     text-align: center;
     pointer-events: none;
     max-width: none;
+  }
+  /* Bump the meta strip type on mobile — was 10.5px inherited from
+     the desktop rule, which felt too small under the enlarged tag
+     on mobile. 12.5px reads clearly and keeps the strip visually
+     under the tag without disappearing. */
+  .folder .meta {
+    font-size: 12.5px;
   }
   /* Strong glyphs inside the overlay inherit the same stroke so
      bolded key phrases stay legible against varied folder colors. */
@@ -3151,16 +3186,44 @@ em.it { font-style: italic; }
 .folder .meta > span:has(+ .meta__read)::after {
   content: "";
 }
-@media (max-width: 720px), (pointer: coarse) {
+/* TRUE MOBILE ONLY — the read-time chip is shown only on hover-none
+   pointer-coarse devices (real phones / tablets). On laptop viewports
+   (even resized narrow), the cursor-following .read-pill on folder
+   hover already serves this purpose — the static chip is redundant.
+   Previous rule used (max-width: 720px OR pointer: coarse) which fired
+   on narrow laptop windows too. */
+@media (hover: none) and (pointer: coarse) {
   .folder .meta .meta__read {
+    /* Positioned just ABOVE the blurb overlay. Blurb sits at
+       bottom: -40px with ~80px height, so its top is ~40px above the
+       folder's bottom. This chip's bottom at 60px sits ~20px above
+       the blurb top — reads as a paired "read commitment → project
+       summary" beat right before the blurb text starts. */
     display: inline-flex;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 60px;
+    margin-inline: auto;
+    width: max-content;
     color: var(--accent-on-cream);
-    font-weight: 600;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(255, 253, 247, 0.94);
+    border: 1.5px solid var(--accent-on-cream);
+    /* No trailing dot after the chip when standing alone — override
+       the .folder .meta span::after rule that would add a "·". */
   }
+  .folder .meta .meta__read::after {
+    content: "";
+  }
+  /* No preceding dot either — the chip is out-of-strip, so the meta
+     span before it shouldn't render a trailing "· " into empty air. */
   .folder .meta > span:has(+ .meta__read)::after {
-    content: "·";
-    margin-left: 10px;
-    color: color-mix(in srgb, var(--muted) 40%, transparent);
+    content: "";
   }
 }
 
