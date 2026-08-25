@@ -574,34 +574,38 @@ export default function ProjectsV2() {
     return () => window.removeEventListener("mousemove", onMove);
   }, [hoverPill]);
 
-  /* Mobile-only scroll visibility for the read-time chip. Tracks
-     which folder is currently in the MIDDLE 60% of the viewport
-     (rootMargin -20% top/bottom shrinks the intersection zone). The
-     .folder-in-middle class on the card gates the chip's opacity —
-     it fades in when the folder centers on screen and out as the
-     user scrolls past it. */
-  const [middleVisible, setMiddleVisible] = useState<Record<string, boolean>>({});
+  /* Mobile-only auto-open on scroll. When a folder enters the middle
+     60% of the viewport (rootMargin -20% top/bottom shrinks the zone),
+     enterFolder fires and the folder opens same as desktop hover. As
+     the user scrolls past, leaveFolder fires and it closes. The chip
+     visibility on mobile is gated on the same open state via CSS
+     (see .folder:has(.folder-art--hovered) .meta__read). */
   useEffect(() => {
     if (typeof window === "undefined") return;
     const hoverNone = window.matchMedia("(hover: none)").matches;
     if (!hoverNone) return;
+    const reduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+    if (reduced) return;
 
     const io = new IntersectionObserver(
       (entries) => {
-        setMiddleVisible((prev) => {
-          const next = { ...prev };
-          entries.forEach((e) => {
-            const tag = (e.target as HTMLElement).dataset.folderTag;
-            if (!tag) return;
-            next[tag] = e.isIntersecting;
-          });
-          return next;
+        entries.forEach((e) => {
+          const tag = (e.target as HTMLElement).dataset.folderTag;
+          if (!tag) return;
+          if (e.isIntersecting) {
+            enterFolder(tag);
+          } else {
+            leaveFolder(tag);
+          }
         });
       },
       { rootMargin: "-20% 0px -20% 0px", threshold: 0 }
     );
     Object.values(folderEls.current).forEach((el) => el && io.observe(el));
     return () => io.disconnect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -623,7 +627,7 @@ export default function ProjectsV2() {
                 : `folder-art folder-art--${phase}`;
             return (
               <div
-                className={`folder${revealed[p.tag] ? " in" : ""}${middleVisible[p.tag] ? " folder-in-middle" : ""}`}
+                className={`folder${revealed[p.tag] ? " in" : ""}`}
                 key={p.tag}
                 ref={(el) => {
                   folderEls.current[p.tag] = el;
@@ -681,18 +685,6 @@ export default function ProjectsV2() {
                       />
                     </div>
                   </div>
-                  {/* Read-time chip — sits INSIDE the .folder-art Link
-                      at absolute top-right of the folder artwork. On
-                      touch devices, visibility is toggled by the
-                      .folder-in-middle class (added by the scroll
-                      observer when the card enters the middle 60% of
-                      the viewport). Desktop hides it entirely — the
-                      cursor-following .read-pill on hover handles the
-                      same job there. pointer-events: none so taps go
-                      to the underlying Link. */}
-                  <span className="meta__read" aria-label="Estimated read time">
-                    {p.readTime}
-                  </span>
                 </Link>
                 <div className="folder-copy">
                   <div className="tag">
@@ -714,6 +706,14 @@ export default function ProjectsV2() {
                       </span>
                     ))}
                   </div>
+                  {/* Read-time chip — sits just BELOW the meta strip
+                      in the copy column flow. On mobile, only visible
+                      when the folder is in its "hovered" open state
+                      (from the scroll auto-open observer above). CSS
+                      gates visibility via .folder:has(.folder-art--hovered). */}
+                  <span className="meta__read" aria-label="Estimated read time">
+                    {p.readTime}
+                  </span>
                   <p className="blurb">{p.blurb}</p>
                 </div>
               </div>

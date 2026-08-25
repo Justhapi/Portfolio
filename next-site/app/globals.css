@@ -2478,13 +2478,11 @@ em.it { font-style: italic; }
   }
   .folder {
     grid-template-columns: 1fr;
-    /* Bumped from clamp(12, 2vw, 20) → clamp(60, 10vw, 100) so the
-       folder-art sits well below tag+meta. The SVG scales to 92% of
-       the full-width column and its intrinsic aspect ratio makes it
-       taller than its container box — meaning the SVG's TOP bleeds
-       upward past its own bounds. Larger row-gap clears the copy
-       column above so tag + meta don't visually overlap the SVG. */
-    row-gap: clamp(60px, 10vw, 100px);
+    /* Tightened from clamp(60, 10vw, 100) → clamp(20, 4vw, 40) so the
+       whole folder + chip + blurb cluster sits higher, closer to the
+       tag/meta above. Still enough to clear the SVG's upward bleed
+       (it's ~30px past its container box on typical mobile widths). */
+    row-gap: clamp(20px, 4vw, 40px);
   }
   .folder > .folder-art { grid-column: 1; grid-row: 2; }
   .folder > .folder-copy { grid-column: 1; grid-row: 1; }
@@ -2535,9 +2533,10 @@ em.it { font-style: italic; }
     text-stroke: 3px var(--paper);
     paint-order: stroke fill;
     font-weight: 700;
-    /* Shrunk 13 → 11.5px so the overlay reads even more compactly
-     — small caption beneath the folder rather than a headline. */
-    font-size: 11.5px;
+    /* Shrunk further 11.5 → 10px so the blurb reads as fine-print
+       caption beneath the folder — cleanest visual weight when it's
+       sitting overlaid on the folder body. */
+    font-size: 10px;
     line-height: 1.35;
     text-align: center;
     pointer-events: none;
@@ -3188,24 +3187,23 @@ em.it { font-style: italic; }
   letter-spacing: 0.24em;
 }
 
-/* Read-time chip — now lives INSIDE the .folder-art Link, positioned
-   absolute at top-right of the folder artwork. Hidden by default;
-   fades in on mobile when the folder enters the middle 60% of the
-   viewport (via .folder-in-middle class from the scroll observer). */
-.folder-art .meta__read {
+/* Read-time chip — sits in the copy column flow BELOW the meta strip.
+   Hidden by default (desktop hover already surfaces read-time via the
+   cursor-following .read-pill). On mobile it becomes visible ONLY
+   while the folder is in its "hovered" open state — the CSS uses
+   :has() to check for the .folder-art--hovered class inside .folder,
+   which is toggled by the auto-open scroll observer. */
+.folder .meta__read {
   display: none;
 }
-/* TRUE MOBILE ONLY. Desktop has the cursor-following .read-pill on
-   hover — no static chip needed. */
 @media (hover: none) and (pointer: coarse) {
-  .folder-art .meta__read {
-    /* Absolute top-right of the folder art. .folder-art has
-       position: relative, so this pins to its top-right corner
-       regardless of folder-copy layout above. */
+  .folder .meta__read {
+    /* In-flow chip, small top margin so it sits just below the meta
+       strip when visible. visibility: hidden reserves the space so
+       there's no layout shift on open/close. */
     display: inline-flex;
-    position: absolute;
-    top: 12px;
-    right: 12px;
+    align-self: flex-start;
+    margin-top: 8px;
     color: var(--accent-on-cream);
     font-weight: 700;
     font-size: 11px;
@@ -3214,20 +3212,26 @@ em.it { font-style: italic; }
     border-radius: 999px;
     background: rgba(255, 253, 247, 0.94);
     border: 1.5px solid var(--accent-on-cream);
-    z-index: 6;
-    /* Hidden until the folder enters the middle 60% of the viewport
-       (scroll observer toggles .folder-in-middle). Small transform
-       for a gentle appear/disappear beat. */
     opacity: 0;
-    transform: translateY(-8px);
+    transform: translateY(-6px);
+    visibility: hidden;
     transition:
       opacity 260ms var(--ease-snap),
-      transform 260ms var(--ease-snap);
+      transform 260ms var(--ease-snap),
+      visibility 0s linear 260ms;
     pointer-events: none;
   }
-  .folder.folder-in-middle .meta__read {
+  /* Visible only when this folder is currently in its open (hovered)
+     phase — auto-open on scroll from the middle-60% observer sets
+     .folder-art--hovered. */
+  .folder:has(.folder-art--hovered) .meta__read {
     opacity: 1;
     transform: translateY(0);
+    visibility: visible;
+    transition:
+      opacity 260ms var(--ease-snap),
+      transform 260ms var(--ease-snap),
+      visibility 0s linear 0s;
   }
 }
 
