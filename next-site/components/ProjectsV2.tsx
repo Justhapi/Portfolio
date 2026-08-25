@@ -241,22 +241,42 @@ const FolderOpen = ({
             width="119.764"
             height="119.764"
           >
-            <video
-              ref={videoRef}
-              src={coverVideo}
-              muted
-              loop
-              playsInline
-              preload="metadata"
-              aria-label={thumbnailAlt || undefined}
+            {/*
+             * iOS Safari doesn't reliably clip HTML descendants to a
+             * foreignObject's box — the raw <video> was rendering at
+             * its intrinsic dimensions and spilling onto the folder
+             * body. Wrapping the video in a plain HTML block with an
+             * XHTML namespace, explicit pixel sizing, and
+             * `overflow: hidden` forces the clip in browsers that
+             * don't honor foreignObject's implicit bounds.
+             */}
+            <div
+              xmlns="http://www.w3.org/1999/xhtml"
               style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
+                width: "119.764px",
+                height: "119.764px",
+                overflow: "hidden",
                 borderRadius: "9.98px",
                 display: "block",
+                position: "relative",
               }}
-            />
+            >
+              <video
+                ref={videoRef}
+                src={coverVideo}
+                muted
+                loop
+                playsInline
+                preload="metadata"
+                aria-label={thumbnailAlt || undefined}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  display: "block",
+                }}
+              />
+            </div>
           </foreignObject>
           <rect
             x="124.603"
