@@ -501,10 +501,10 @@ export default function ResearchHubCaseStudy() {
           <h2>Implementing</h2>
           <h3>Stepping In to Ship the Platform on Time</h3>
           <p>
-            As the wireframe designs were finalized, I then began to also contribute to the code, specifically 
-            <mark className="hl"> front-end React coding.</mark> This distribution of work was so I completed 
+            As the wireframe designs were finalized, I then began to also contribute through coding, specifically 
+            <mark className="hl"> front-end React.</mark> My distribution of work was the more 
             mundane yet tedious parts of code for my teammates who are more code-savy to focus on the more complex 
-            aspects of platform 
+            aspects of platform, ensuring efficent progression through optimizing our indivdual skills.
             <br></br><br></br>
             I also unexpectedly needed to <mark className="hl">expand upon my current designs</mark> when moving onto a new page as I needed to account 
             for the <mark className="hl">reactivity of features formatting to be adaptivable to any browser size.</mark>
@@ -536,8 +536,8 @@ export default function ResearchHubCaseStudy() {
             frequently students would interact with each, so the highest-student-impact
             professor-requested features would ship first.
             <br></br><br></br>
-            From adapting to this differing-access obstacle, I now recognize that working
-            across uneven user-group research requires <mark className="hl">sequencing the less-accessible group&rsquo;s
+            From adapting to this obstacle, I now recognize that working with uneven user-group research 
+            requires <mark className="hl">sequencing the less-accessible group&rsquo;s
             requests by how frequently the more-accessible group would interact with each</mark>,
             so I can prioritize the applicable ideas ahead of the impractical ones.
           </p>
