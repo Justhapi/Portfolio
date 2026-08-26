@@ -147,6 +147,50 @@ const FolderOpen = ({
     q.addEventListener("change", update);
     return () => q.removeEventListener("change", update);
   }, []);
+
+  /* Ref + measured pixel rect for the SVG element so the touch-only
+     HTML video overlay lands PIXEL-EXACT on the video sticky slot.
+     CSS `aspect-ratio` on the wrapper was producing misaligned/collapsed
+     boxes on some iOS Safari versions, so we bypass CSS math entirely:
+     measure the rendered SVG in pixels, then position the video via
+     inline `left/top/width/height` computed from viewBox fractions. */
+  const svgRef = useRef<SVGSVGElement | null>(null);
+  const [svgRect, setSvgRect] = useState<{
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+  } | null>(null);
+  useEffect(() => {
+    if (!isTouch) return;
+    const el = svgRef.current;
+    if (!el) return;
+    /* The overlay sits inside .folder-svg (the same positioned parent
+       the SVG is a child of), so we measure the SVG's bounding rect
+       and translate into .folder-svg-local coordinates by subtracting
+       the parent's rect origin. */
+    const measure = () => {
+      const parent = el.parentElement;
+      if (!parent) return;
+      const svgBox = el.getBoundingClientRect();
+      const parentBox = parent.getBoundingClientRect();
+      setSvgRect({
+        left: svgBox.left - parentBox.left,
+        top: svgBox.top - parentBox.top,
+        width: svgBox.width,
+        height: svgBox.height,
+      });
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    if (el.parentElement) ro.observe(el.parentElement);
+    window.addEventListener("resize", measure);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", measure);
+    };
+  }, [isTouch]);
   useEffect(() => {
     const v = videoRef.current;
     if (!v || !coverVideo) return;
@@ -169,6 +213,7 @@ const FolderOpen = ({
   return (
     <>
     <svg
+      ref={svgRef}
       className="open"
       width="410"
       height="324"
@@ -261,7 +306,6 @@ const FolderOpen = ({
             height="119.764"
           >
             <div
-              xmlns="http://www.w3.org/1999/xhtml"
               style={{
                 width: "119.764px",
                 height: "119.764px",
@@ -382,40 +426,33 @@ const FolderOpen = ({
      * fractions of the viewBox), so it lands pixel-exact on top of
      * the SVG image thumbnail underneath.
      */}
-    {isTouch && coverVideo && (
-      <div
+    {isTouch && coverVideo && svgRect && (
+      <video
+        ref={videoRef}
+        src={coverVideo}
+        muted
+        loop
+        playsInline
+        autoPlay
+        preload="metadata"
         aria-hidden="true"
+        aria-label={thumbnailAlt || undefined}
         style={{
           position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: "92%",
-          aspectRatio: "410 / 324",
+          /* Pixel positioning derived from the measured SVG bounding
+             rect + the sticky's viewBox fraction. Lands pixel-exact
+             on the video sticky slot regardless of SVG scale or
+             folder card aspect ratio. */
+          left: `${svgRect.left + (124.603 / 410) * svgRect.width}px`,
+          top: `${svgRect.top + (48.555 / 324) * svgRect.height}px`,
+          width: `${(119.764 / 410) * svgRect.width}px`,
+          height: `${(119.764 / 324) * svgRect.height}px`,
+          objectFit: "cover",
+          borderRadius: `${(9.9803 / 410) * svgRect.width}px`,
+          display: "block",
           pointerEvents: "none",
         }}
-      >
-        <video
-          ref={videoRef}
-          src={coverVideo}
-          muted
-          loop
-          playsInline
-          autoPlay
-          preload="metadata"
-          aria-label={thumbnailAlt || undefined}
-          style={{
-            position: "absolute",
-            left: `${(124.603 / 410) * 100}%`,
-            top: `${(48.555 / 324) * 100}%`,
-            width: `${(119.764 / 410) * 100}%`,
-            height: `${(119.764 / 324) * 100}%`,
-            objectFit: "cover",
-            borderRadius: "3%",
-            display: "block",
-          }}
-        />
-      </div>
+      />
     )}
     </>
   );
