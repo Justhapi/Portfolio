@@ -133,6 +133,20 @@ const FolderOpen = ({
   const gid = useId().replace(/:/g, "");
   const gradId = `fo_grad_${gid}`;
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  /* iOS Safari doesn't render HTML <video> inside SVG <foreignObject>
+     reliably — the video either shows an empty box or spills out. On
+     touch devices, fall back to a static SVG <image> tag (the sponsor
+     thumbnail), which iOS renders natively without any foreignObject
+     quirks. Desktop keeps the foreignObject video path. */
+  const [isTouch, setIsTouch] = useState(false);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const q = window.matchMedia("(hover: none), (pointer: coarse)");
+    const update = () => setIsTouch(q.matches);
+    update();
+    q.addEventListener("change", update);
+    return () => q.removeEventListener("change", update);
+  }, []);
   useEffect(() => {
     const v = videoRef.current;
     if (!v || !coverVideo) return;
@@ -153,6 +167,7 @@ const FolderOpen = ({
     }
   }, [isOpen, coverVideo]);
   return (
+    <>
     <svg
       className="open"
       width="410"
@@ -233,7 +248,11 @@ const FolderOpen = ({
       />
       </g>
       <g className="fo-sticky" data-fx-i="1">
-      {coverVideo ? (
+      {coverVideo && !isTouch ? (
+        /* DESKTOP path — foreignObject with HTML <video> works
+           reliably on desktop browsers. iOS Safari renders empty
+           foreignObject video, so touch devices fall through to the
+           SVG <image> branch below. */
         <>
           <foreignObject
             x="124.603"
@@ -241,15 +260,6 @@ const FolderOpen = ({
             width="119.764"
             height="119.764"
           >
-            {/*
-             * iOS Safari doesn't reliably clip HTML descendants to a
-             * foreignObject's box — the raw <video> was rendering at
-             * its intrinsic dimensions and spilling onto the folder
-             * body. Wrapping the video in a plain HTML block with an
-             * XHTML namespace, explicit pixel sizing, and
-             * `overflow: hidden` forces the clip in browsers that
-             * don't honor foreignObject's implicit bounds.
-             */}
             <div
               xmlns="http://www.w3.org/1999/xhtml"
               style={{
@@ -357,6 +367,57 @@ const FolderOpen = ({
         </linearGradient>
       </defs>
     </svg>
+    {/*
+     * Touch-device HTML VIDEO OVERLAY.
+     * iOS Safari renders SVG <foreignObject> HTML video as an empty
+     * box, so on touch devices we skip the foreignObject entirely
+     * (via `!isTouch` gate on the fo-sticky video branch above) and
+     * paint the video as a real HTML <video> layered on top of the
+     * SVG. The outer wrapper matches the SVG's exact rendered box:
+     *   - width: 92% (same as .folder-svg svg's width rule)
+     *   - aspect-ratio: 410/324 (same as SVG viewBox)
+     *   - centered via translate(-50%, -50%)
+     * The inner <video> is then placed in percentage coords that
+     * mirror the SVG's video sticky rect (x/y/width/height as
+     * fractions of the viewBox), so it lands pixel-exact on top of
+     * the SVG image thumbnail underneath.
+     */}
+    {isTouch && coverVideo && (
+      <div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: "92%",
+          aspectRatio: "410 / 324",
+          pointerEvents: "none",
+        }}
+      >
+        <video
+          ref={videoRef}
+          src={coverVideo}
+          muted
+          loop
+          playsInline
+          autoPlay
+          preload="metadata"
+          aria-label={thumbnailAlt || undefined}
+          style={{
+            position: "absolute",
+            left: `${(124.603 / 410) * 100}%`,
+            top: `${(48.555 / 324) * 100}%`,
+            width: `${(119.764 / 410) * 100}%`,
+            height: `${(119.764 / 324) * 100}%`,
+            objectFit: "cover",
+            borderRadius: "3%",
+            display: "block",
+          }}
+        />
+      </div>
+    )}
+    </>
   );
 };
 type FolderTheme = {
@@ -844,12 +905,16 @@ export default function ProjectsV2() {
                 }}
                 data-folder-tag={p.tag}
                 style={{
-                  /* Expose the folder's own hue at 30% opacity so the
-                     mobile blurb card (rendered as a child of .folder)
-                     can tint its background to match this folder's
-                     color language instead of a single warm brown. */
+                  /* Blurb tint uses the folder's SHADOW color (the
+                     darkest of front/back/shadow) at 55% opacity — the
+                     earlier `folder.front @ 30%` was too light on
+                     amber-toned folders like AI Journey, dropping the
+                     white blurb text well under WCAG AA 4.5:1 on cream.
+                     Shadow at 55% preserves per-folder color language
+                     while producing a rich, dark backdrop that carries
+                     white text at any of the 4 folder palettes. */
                   ["--folder-blurb-bg" as string]:
-                    hexToRgba(p.folder.front, 0.3),
+                    hexToRgba(p.folder.shadow, 0.55),
                 } as CSSProperties}
               >
                 <Link
@@ -879,6 +944,30 @@ export default function ProjectsV2() {
                     }
                     leaveFolder(p.tag);
                     handleTiltLeave(p.tag);
+                  }}
+                  /* Keyboard focus parity — a Tab-navigating user gets
+                     the same folder-open, blurb-reveal, follow-pill
+                     experience a mouse user does. Without this, the
+                     folder just sits closed and keyboard-only visitors
+                     have to click through blind. Focus is treated as
+                     a manual signal so auto-open on narrow PC also
+                     yields to the user's Tab position.
+                     Pill is anchored to the folder's top-right corner
+                     (via getBoundingClientRect) rather than to a
+                     cursor coordinate that focus events don't carry. */
+                  onFocus={(e) => {
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    setPos({ x: rect.right - 8, y: rect.top + 8 });
+                    setHoverPill(p.readTime);
+                    manualHoverRef.current = p.tag;
+                    enterFolder(p.tag);
+                  }}
+                  onBlur={() => {
+                    setHoverPill(null);
+                    if (manualHoverRef.current === p.tag) {
+                      manualHoverRef.current = null;
+                    }
+                    leaveFolder(p.tag);
                   }}
                 >
                   <div
