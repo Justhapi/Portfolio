@@ -148,43 +148,35 @@ const FolderOpen = ({
     return () => q.removeEventListener("change", update);
   }, []);
 
-  /* Ref + measured pixel rect for the SVG element so the touch-only
-     HTML video overlay lands PIXEL-EXACT on the video sticky slot.
-     CSS `aspect-ratio` on the wrapper was producing misaligned/collapsed
-     boxes on some iOS Safari versions, so we bypass CSS math entirely:
-     measure the rendered SVG in pixels, then position the video via
-     inline `left/top/width/height` computed from viewBox fractions. */
+  /* Measure the STABLE parent (.folder-svg) — NOT the SVG itself,
+     since the SVG's transform animates from a hidden/scaled state
+     into its rest pose. Measuring the SVG at mount time would sample
+     the hidden pose (translateY(-110px), scaleX(0.28)) and stick the
+     video overlay off-screen.
+     .folder-svg has position:absolute + inset:0 → dimensions match
+     .folder-art (its grid cell) and stay stable across folder morphs.
+     From folder-svg's dimensions we derive where the SVG renders
+     (width: 92% centered, height: preserves viewBox aspect 410:324)
+     and place the video overlay via CSS math — pixel-exact and
+     immune to the SVG's own animation transforms. */
   const svgRef = useRef<SVGSVGElement | null>(null);
-  const [svgRect, setSvgRect] = useState<{
-    left: number;
-    top: number;
-    width: number;
-    height: number;
+  const [wrapRect, setWrapRect] = useState<{
+    w: number;
+    h: number;
   } | null>(null);
   useEffect(() => {
     if (!isTouch) return;
     const el = svgRef.current;
     if (!el) return;
-    /* The overlay sits inside .folder-svg (the same positioned parent
-       the SVG is a child of), so we measure the SVG's bounding rect
-       and translate into .folder-svg-local coordinates by subtracting
-       the parent's rect origin. */
+    const parent = el.parentElement;
+    if (!parent) return;
     const measure = () => {
-      const parent = el.parentElement;
-      if (!parent) return;
-      const svgBox = el.getBoundingClientRect();
-      const parentBox = parent.getBoundingClientRect();
-      setSvgRect({
-        left: svgBox.left - parentBox.left,
-        top: svgBox.top - parentBox.top,
-        width: svgBox.width,
-        height: svgBox.height,
-      });
+      const box = parent.getBoundingClientRect();
+      setWrapRect({ w: box.width, h: box.height });
     };
     measure();
     const ro = new ResizeObserver(measure);
-    ro.observe(el);
-    if (el.parentElement) ro.observe(el.parentElement);
+    ro.observe(parent);
     window.addEventListener("resize", measure);
     return () => {
       ro.disconnect();
@@ -426,34 +418,50 @@ const FolderOpen = ({
      * fractions of the viewBox), so it lands pixel-exact on top of
      * the SVG image thumbnail underneath.
      */}
-    {isTouch && coverVideo && svgRect && (
-      <video
-        ref={videoRef}
-        src={coverVideo}
-        muted
-        loop
-        playsInline
-        autoPlay
-        preload="metadata"
-        aria-hidden="true"
-        aria-label={thumbnailAlt || undefined}
-        style={{
-          position: "absolute",
-          /* Pixel positioning derived from the measured SVG bounding
-             rect + the sticky's viewBox fraction. Lands pixel-exact
-             on the video sticky slot regardless of SVG scale or
-             folder card aspect ratio. */
-          left: `${svgRect.left + (124.603 / 410) * svgRect.width}px`,
-          top: `${svgRect.top + (48.555 / 324) * svgRect.height}px`,
-          width: `${(119.764 / 410) * svgRect.width}px`,
-          height: `${(119.764 / 324) * svgRect.height}px`,
-          objectFit: "cover",
-          borderRadius: `${(9.9803 / 410) * svgRect.width}px`,
-          display: "block",
-          pointerEvents: "none",
-        }}
-      />
-    )}
+    {isTouch && coverVideo && wrapRect && (() => {
+      /* Compute the SVG's rest-pose rect within .folder-svg from the
+         known geometry:
+           - SVG width  = 92% of folder-svg width
+           - SVG height = SVG width × (324/410)      (viewBox aspect)
+           - SVG left   = (folder-svg.w − SVG.w) / 2 (centered by flex)
+           - SVG top    = (folder-svg.h − SVG.h) / 2 (centered by flex)
+         Then place the video inside the SVG's rect at the video
+         sticky's viewBox coordinates (x=124.603, y=48.555,
+         width=height=119.764 of the 410×324 viewBox). */
+      const svgW = wrapRect.w * 0.92;
+      const svgH = svgW * (324 / 410);
+      const svgLeft = (wrapRect.w - svgW) / 2;
+      const svgTop = (wrapRect.h - svgH) / 2;
+      const videoLeft = svgLeft + (124.603 / 410) * svgW;
+      const videoTop = svgTop + (48.555 / 324) * svgH;
+      const videoW = (119.764 / 410) * svgW;
+      const videoH = (119.764 / 324) * svgH;
+      const videoRadius = (9.9803 / 410) * svgW;
+      return (
+        <video
+          ref={videoRef}
+          src={coverVideo}
+          muted
+          loop
+          playsInline
+          autoPlay
+          preload="metadata"
+          aria-hidden="true"
+          aria-label={thumbnailAlt || undefined}
+          style={{
+            position: "absolute",
+            left: `${videoLeft}px`,
+            top: `${videoTop}px`,
+            width: `${videoW}px`,
+            height: `${videoH}px`,
+            objectFit: "cover",
+            borderRadius: `${videoRadius}px`,
+            display: "block",
+            pointerEvents: "none",
+          }}
+        />
+      );
+    })()}
     </>
   );
 };
