@@ -148,41 +148,87 @@ const FolderOpen = ({
     return () => q.removeEventListener("change", update);
   }, []);
 
-  /* Measure the STABLE parent (.folder-svg) — NOT the SVG itself,
-     since the SVG's transform animates from a hidden/scaled state
-     into its rest pose. Measuring the SVG at mount time would sample
-     the hidden pose (translateY(-110px), scaleX(0.28)) and stick the
-     video overlay off-screen.
-     .folder-svg has position:absolute + inset:0 → dimensions match
-     .folder-art (its grid cell) and stay stable across folder morphs.
-     From folder-svg's dimensions we derive where the SVG renders
-     (width: 92% centered, height: preserves viewBox aspect 410:324)
-     and place the video overlay via CSS math — pixel-exact and
-     immune to the SVG's own animation transforms. */
+  /* SVG ref — measured when the folder OPENS so the touch-only
+     video overlay can be pixel-positioned onto the video sticky slot.
+     Measurement is deferred until after the openEnter animation
+     completes (500ms), because measuring while the SVG is still in
+     its hidden pose (translateY(-110px) scaleX(0.28) …) samples the
+     wrong rect and misplaces the overlay. */
   const svgRef = useRef<SVGSVGElement | null>(null);
-  const [wrapRect, setWrapRect] = useState<{
-    w: number;
-    h: number;
+  const [videoBox, setVideoBox] = useState<{
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+    radius: number;
   } | null>(null);
   useEffect(() => {
-    if (!isTouch) return;
+    if (!isTouch || !coverVideo) return;
+    if (!isOpen) {
+      // Closed → hide overlay. Overlay will re-measure and re-appear
+      // when the folder opens again.
+      setVideoBox(null);
+      return;
+    }
     const el = svgRef.current;
     if (!el) return;
-    const parent = el.parentElement;
-    if (!parent) return;
-    const measure = () => {
-      const box = parent.getBoundingClientRect();
-      setWrapRect({ w: box.width, h: box.height });
+    /* rAF loop while open — the parent .folder-svg has a continuous
+       folderFloat animation (±3–4px translation), so a single measure
+       would leave the video overlay drifting off the sticky. Sync the
+       overlay to each frame's SVG rect so it always sits on the slot. */
+    let raf = 0;
+    let cancelled = false;
+    const tick = () => {
+      if (cancelled) return;
+      const svg = svgRef.current;
+      const parent = svg?.parentElement;
+      if (svg && parent) {
+        const s = svg.getBoundingClientRect();
+        const p = parent.getBoundingClientRect();
+        // Skip degenerate measurements (mid-morph the scaleX(0.28)
+        // gives a very narrow rect — ignore anything under 40% of
+        // the parent's width).
+        if (s.width > p.width * 0.4) {
+          const videoLeft = s.left - p.left + (124.603 / 410) * s.width;
+          const videoTop = s.top - p.top + (48.555 / 324) * s.height;
+          const videoW = (119.764 / 410) * s.width;
+          const videoH = (119.764 / 324) * s.height;
+          const videoRadius = (9.9803 / 410) * s.width;
+          setVideoBox((prev) => {
+            // Only update on meaningful change (>0.5px) to avoid
+            // React re-render thrash every frame.
+            if (
+              prev &&
+              Math.abs(prev.left - videoLeft) < 0.5 &&
+              Math.abs(prev.top - videoTop) < 0.5 &&
+              Math.abs(prev.width - videoW) < 0.5 &&
+              Math.abs(prev.height - videoH) < 0.5
+            ) {
+              return prev;
+            }
+            return {
+              left: videoLeft,
+              top: videoTop,
+              width: videoW,
+              height: videoH,
+              radius: videoRadius,
+            };
+          });
+        }
+      }
+      raf = requestAnimationFrame(tick);
     };
-    measure();
-    const ro = new ResizeObserver(measure);
-    ro.observe(parent);
-    window.addEventListener("resize", measure);
+    // Wait for openEnter animation to complete (460ms + small buffer)
+    // before starting the rAF loop, so we don't measure mid-morph.
+    const startTimer = window.setTimeout(() => {
+      raf = requestAnimationFrame(tick);
+    }, 500);
     return () => {
-      ro.disconnect();
-      window.removeEventListener("resize", measure);
+      cancelled = true;
+      window.clearTimeout(startTimer);
+      if (raf) cancelAnimationFrame(raf);
     };
-  }, [isTouch]);
+  }, [isTouch, coverVideo, isOpen]);
   useEffect(() => {
     const v = videoRef.current;
     if (!v || !coverVideo) return;
@@ -418,50 +464,39 @@ const FolderOpen = ({
      * fractions of the viewBox), so it lands pixel-exact on top of
      * the SVG image thumbnail underneath.
      */}
-    {isTouch && coverVideo && wrapRect && (() => {
-      /* Compute the SVG's rest-pose rect within .folder-svg from the
-         known geometry:
-           - SVG width  = 92% of folder-svg width
-           - SVG height = SVG width × (324/410)      (viewBox aspect)
-           - SVG left   = (folder-svg.w − SVG.w) / 2 (centered by flex)
-           - SVG top    = (folder-svg.h − SVG.h) / 2 (centered by flex)
-         Then place the video inside the SVG's rect at the video
-         sticky's viewBox coordinates (x=124.603, y=48.555,
-         width=height=119.764 of the 410×324 viewBox). */
-      const svgW = wrapRect.w * 0.92;
-      const svgH = svgW * (324 / 410);
-      const svgLeft = (wrapRect.w - svgW) / 2;
-      const svgTop = (wrapRect.h - svgH) / 2;
-      const videoLeft = svgLeft + (124.603 / 410) * svgW;
-      const videoTop = svgTop + (48.555 / 324) * svgH;
-      const videoW = (119.764 / 410) * svgW;
-      const videoH = (119.764 / 324) * svgH;
-      const videoRadius = (9.9803 / 410) * svgW;
-      return (
-        <video
-          ref={videoRef}
-          src={coverVideo}
-          muted
-          loop
-          playsInline
-          autoPlay
-          preload="metadata"
-          aria-hidden="true"
-          aria-label={thumbnailAlt || undefined}
-          style={{
-            position: "absolute",
-            left: `${videoLeft}px`,
-            top: `${videoTop}px`,
-            width: `${videoW}px`,
-            height: `${videoH}px`,
-            objectFit: "cover",
-            borderRadius: `${videoRadius}px`,
-            display: "block",
-            pointerEvents: "none",
-          }}
-        />
-      );
-    })()}
+    {/* MOBILE VIDEO OVERLAY — tracks the SVG's video-sticky slot
+       via rAF-driven pixel measurement. Only mounts after the folder
+       has finished its openEnter morph (500ms delay in the effect
+       above), so we never measure the mid-transition scale. Sits on
+       top of the SVG <image> fallback thumbnail so if the video
+       fails to load, the underlying thumbnail still shows a valid
+       visual instead of an empty box.
+       autoPlay + muted + playsInline is the combination iOS honors
+       for autoplay without a user gesture. */}
+    {isTouch && coverVideo && videoBox && (
+      <video
+        ref={videoRef}
+        src={coverVideo}
+        muted
+        loop
+        playsInline
+        autoPlay
+        preload="auto"
+        aria-hidden="true"
+        aria-label={thumbnailAlt || undefined}
+        style={{
+          position: "absolute",
+          left: `${videoBox.left}px`,
+          top: `${videoBox.top}px`,
+          width: `${videoBox.width}px`,
+          height: `${videoBox.height}px`,
+          objectFit: "cover",
+          borderRadius: `${videoBox.radius}px`,
+          display: "block",
+          pointerEvents: "none",
+        }}
+      />
+    )}
     </>
   );
 };
