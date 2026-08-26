@@ -784,35 +784,26 @@ export default function ProjectsV2() {
        - .read-pill (the cursor-following pill) works whenever hover
          is capable, so narrow-desktop viewers still get the follow
          pill behavior — matching what the user asked for. */
-  /* Track the narrow-stack breakpoint reactively so PC users who
-     RESIZE their browser between wide and narrow get the correct
-     behavior each time — without this, the effect would only sample
-     the breakpoint once at mount and stay stuck there for the whole
-     session. */
-  const [autoOpenEnabled, setAutoOpenEnabled] = useState(false);
+  /* Auto-open now runs on ALL viewport widths — the wide-desktop
+     horizontal layout gets the same "folder nearest viewport center
+     opens" behavior that touch/narrow layouts already had. Manual
+     hover still wins over auto-open via `manualHoverRef` (see
+     pickCentered's early-return below), so a mouse user pointing at
+     a different folder immediately closes the auto-opened one and
+     opens the hovered one — the vertical-format interaction now
+     applies to horizontal-format too.
+
+     Reactive matchMedia listener on prefers-reduced-motion so users
+     who toggle their OS setting mid-session get the correct behavior
+     without a reload. */
+  const [autoOpenEnabled, setAutoOpenEnabled] = useState(true);
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const touchQ = window.matchMedia("(hover: none)");
-    const coarseQ = window.matchMedia("(pointer: coarse)");
-    const narrowQ = window.matchMedia("(max-width: 820px)");
     const reducedQ = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const update = () => {
-      const enabled =
-        !reducedQ.matches &&
-        (touchQ.matches || coarseQ.matches || narrowQ.matches);
-      setAutoOpenEnabled(enabled);
-    };
+    const update = () => setAutoOpenEnabled(!reducedQ.matches);
     update();
-    touchQ.addEventListener("change", update);
-    coarseQ.addEventListener("change", update);
-    narrowQ.addEventListener("change", update);
     reducedQ.addEventListener("change", update);
-    return () => {
-      touchQ.removeEventListener("change", update);
-      coarseQ.removeEventListener("change", update);
-      narrowQ.removeEventListener("change", update);
-      reducedQ.removeEventListener("change", update);
-    };
+    return () => reducedQ.removeEventListener("change", update);
   }, []);
 
   useEffect(() => {
