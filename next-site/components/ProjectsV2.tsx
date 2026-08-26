@@ -36,12 +36,21 @@ const FOLDER_THUMB = {
   anonymous:  `${BASE_PATH}/img/folders/anonymous.svg`,
 } as const;
 
+/* Each cover has both an MP4 (H.264) and a WebM (VP9) source. iOS
+   Safari's VP9-in-WebM decoding is unreliable — autoplay silently
+   fails and the video renders as an empty box on the folder sticky.
+   MP4/H.264 is universally supported on every browser we care about
+   (iOS Safari, Chrome, Firefox, Edge, macOS Safari). Providing both
+   as <source> elements lets the browser pick the format it can
+   actually decode. */
 const FOLDER_COVER = {
-  frogslayer:  `${BASE_PATH}/img/cover/Frogslayer.webm`,
-  researchhub: `${BASE_PATH}/img/cover/ResearchHub.webm`,
-  inline:      `${BASE_PATH}/img/cover/inline.webm`,
-  aiAgent:     `${BASE_PATH}/img/cover/Ai_Agent.webm`,
+  frogslayer:  { mp4: `${BASE_PATH}/img/cover/Frogslayer.mp4`,  webm: `${BASE_PATH}/img/cover/Frogslayer.webm` },
+  researchhub: { mp4: `${BASE_PATH}/img/cover/ResearchHub.mp4`, webm: `${BASE_PATH}/img/cover/ResearchHub.webm` },
+  inline:      { mp4: `${BASE_PATH}/img/cover/inline.mp4`,      webm: `${BASE_PATH}/img/cover/inline.webm` },
+  aiAgent:     { mp4: `${BASE_PATH}/img/cover/Ai_Agent.mp4`,    webm: `${BASE_PATH}/img/cover/Ai_Agent.webm` },
 } as const;
+
+type CoverVideo = { mp4: string; webm: string };
 
 function hexToRgba(hex: string, alpha: number): string {
   const h = hex.replace("#", "");
@@ -127,7 +136,7 @@ const FolderOpen = ({
   videoOutline?: string;
   thumbnail?: string;
   thumbnailAlt?: string;
-  coverVideo?: string;
+  coverVideo?: CoverVideo;
   isOpen?: boolean;
 }) => {
   const gid = useId().replace(/:/g, "");
@@ -237,6 +246,10 @@ const FolderOpen = ({
       return;
     }
     if (isOpen) {
+      /* Force load and play. iOS Safari sometimes ignores autoPlay on
+         a video whose position is being rewritten every frame; calling
+         .load() then .play() explicitly kicks it into gear. */
+      try { v.load(); } catch { void 0; }
       v.play().catch(() => {});
     } else {
       v.pause();
@@ -247,7 +260,7 @@ const FolderOpen = ({
         void 0;
       }
     }
-  }, [isOpen, coverVideo]);
+  }, [isOpen, coverVideo, videoBox]);
   return (
     <>
     <svg
@@ -355,7 +368,6 @@ const FolderOpen = ({
             >
               <video
                 ref={videoRef}
-                src={coverVideo}
                 muted
                 loop
                 playsInline
@@ -367,7 +379,12 @@ const FolderOpen = ({
                   objectFit: "cover",
                   display: "block",
                 }}
-              />
+              >
+                {/* MP4 first — universally supported; WebM fallback for
+                    Chrome/Firefox that prefer VP9 for smaller size. */}
+                <source src={coverVideo.mp4} type="video/mp4" />
+                <source src={coverVideo.webm} type="video/webm" />
+              </video>
             </div>
           </foreignObject>
           <rect
@@ -476,7 +493,6 @@ const FolderOpen = ({
     {isTouch && coverVideo && videoBox && (
       <video
         ref={videoRef}
-        src={coverVideo}
         muted
         loop
         playsInline
@@ -495,7 +511,13 @@ const FolderOpen = ({
           display: "block",
           pointerEvents: "none",
         }}
-      />
+      >
+        {/* MP4 first — iOS Safari's VP9-in-WebM decoding is unreliable
+            and was the root cause of the video not playing on mobile.
+            H.264/MP4 is universally supported and autoplays on iOS. */}
+        <source src={coverVideo.mp4} type="video/mp4" />
+        <source src={coverVideo.webm} type="video/webm" />
+      </video>
     )}
     </>
   );
@@ -521,7 +543,7 @@ type Project = {
   readTime: string;
   thumbnail?: string;
   thumbnailAlt?: string;
-  coverVideo?: string;
+  coverVideo?: CoverVideo;
   outcome?: string;
 };
 
