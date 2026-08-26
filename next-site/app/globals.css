@@ -3100,10 +3100,11 @@ em.it { font-style: italic; }
     padding: 10px 14px;
     border: none;
     border-radius: 12px;
-    /* Warm accent-on-cream (#93613A) tint at ~55% — matches the
-       "X min read" chip color language while remaining translucent
-       enough for the folder art to show through. */
-    background: rgba(147, 97, 58, 0.55);
+    /* Tinted with the folder's own front-color at 30% opacity — set
+       inline as --folder-blurb-bg per-card in ProjectsV2's map render
+       so each project's blurb card matches its folder's hue. Falls
+       back to the warm accent brown for any card missing the var. */
+    background: var(--folder-blurb-bg, rgba(147, 97, 58, 0.55));
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
     box-shadow: none;

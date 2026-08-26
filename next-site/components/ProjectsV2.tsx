@@ -622,6 +622,16 @@ export default function ProjectsV2() {
     return () => io.disconnect();
   }, []);
 
+  /* Manual-hover override — set when a user actively hovers a folder
+     on any device with hover capability (including narrow PC where
+     auto-open is also enabled). While set, the scroll-driven
+     pickCentered() below no-ops so the user's explicit choice wins
+     over the "which folder is at viewport center" heuristic. Cleared
+     the moment the mouse leaves that folder — auto-open then resumes
+     and re-selects the currently-centered folder on the next scroll
+     tick. */
+  const manualHoverRef = useRef<string | null>(null);
+
   const leaveFolder = (id: string) => {
     if (hoveredId.current === id) hoveredId.current = null;
     setPhases((p) => ({ ...p, [id]: "leaving" }));
@@ -726,6 +736,11 @@ export default function ProjectsV2() {
     const CLOSE_BUFFER_MS = MORPH_MS + 40;
 
     const pickCentered = () => {
+      /* Manual-hover override — the user is actively hovering a folder
+         on a narrow PC (auto-open + hover both enabled). Their explicit
+         choice wins; skip the "which folder is centered" logic entirely
+         until the mouse leaves that folder. */
+      if (manualHoverRef.current) return;
       const viewportCenter = window.innerHeight / 2;
       const bandTop = window.innerHeight * 0.2;
       const bandBottom = window.innerHeight * 0.8;
@@ -828,6 +843,14 @@ export default function ProjectsV2() {
                   folderEls.current[p.tag] = el;
                 }}
                 data-folder-tag={p.tag}
+                style={{
+                  /* Expose the folder's own hue at 30% opacity so the
+                     mobile blurb card (rendered as a child of .folder)
+                     can tint its background to match this folder's
+                     color language instead of a single warm brown. */
+                  ["--folder-blurb-bg" as string]:
+                    hexToRgba(p.folder.front, 0.3),
+                } as CSSProperties}
               >
                 <Link
                   href={p.href}
@@ -837,11 +860,23 @@ export default function ProjectsV2() {
                   onMouseEnter={(e) => {
                     setPos({ x: e.clientX, y: e.clientY });
                     setHoverPill(p.readTime);
+                    /* Flag this as a MANUAL hover so pickCentered
+                       (auto-open on narrow PC) yields to the user's
+                       explicit choice for as long as the cursor stays
+                       on this folder. */
+                    manualHoverRef.current = p.tag;
                     enterFolder(p.tag);
                   }}
                   onMouseMove={(e) => handleTiltMove(e, p.tag)}
                   onMouseLeave={() => {
                     setHoverPill(null);
+                    /* Release the manual override — the next scroll
+                       tick's pickCentered() will re-select whichever
+                       folder currently sits closest to viewport
+                       center and re-open it. */
+                    if (manualHoverRef.current === p.tag) {
+                      manualHoverRef.current = null;
+                    }
                     leaveFolder(p.tag);
                     handleTiltLeave(p.tag);
                   }}
