@@ -289,6 +289,25 @@ const FolderOpen = ({
            be layer-promoted by iOS Safari and paint in front of the
            whole folder — the bug this replaces.) */
         <>
+          {/* clipPath rounds the poster's corners. The clip rect is
+              INSET by half the outline's stroke-width (3.83596 / 2 ≈
+              1.92) and given a correspondingly larger corner radius,
+              because an SVG stroke straddles its path — half paints
+              outward, half inward. Clipping to the exact same rect as
+              the stroke leaves the image's square corner visible in
+              that inner half. Insetting tucks the image fully under
+              the stroke so no corner can poke out. */}
+          <defs>
+            <clipPath id={`fo_clip_${gid}`}>
+              <rect
+                x="126.521"
+                y="50.473"
+                width="115.928"
+                height="115.928"
+                rx="11.9"
+              />
+            </clipPath>
+          </defs>
           <image
             href={coverVideo.poster}
             x="124.603"
@@ -296,6 +315,7 @@ const FolderOpen = ({
             width="119.764"
             height="119.764"
             preserveAspectRatio="xMidYMid slice"
+            clipPath={`url(#fo_clip_${gid})`}
           >
             {thumbnailAlt ? <title>{thumbnailAlt}</title> : null}
           </image>
