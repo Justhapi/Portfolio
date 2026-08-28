@@ -27,9 +27,15 @@ const SECTIONS = [
 ];
 
 /* Cover video — served from /public/img/cover so static export copies
-   it verbatim. Same pattern as the other case studies. */
+   it verbatim. Same pattern as the other case studies. MP4 first —
+   VP9-in-WebM decode support is inconsistent across browsers/engines,
+   which was causing this cover to render blank or inconsistently. */
 const BASE_PATH = process.env.NODE_ENV === "production" ? "/Portfolio" : "";
-const COVER_VIDEO = `${BASE_PATH}/img/cover/Ai_Agent.webm`;
+const COVER_VIDEO = {
+  mp4: `${BASE_PATH}/img/cover/Ai_Agent.mp4`,
+  webm: `${BASE_PATH}/img/cover/Ai_Agent.webm`,
+};
+const COVER_POSTER = `${BASE_PATH}/img/cover/Ai_Agent-poster.webp`;
 
 export default function AIJourneyAgentCaseStudy() {
   return (
@@ -41,6 +47,7 @@ export default function AIJourneyAgentCaseStudy() {
         subtitle="An agentic AI concept for keeping customer journey maps accurate over time"
         imageLabel="AI maintenance agent · cover animation"
         heroVideoSrc={COVER_VIDEO}
+        heroVideoPoster={COVER_POSTER}
       />
 
       <main id="main" className="case-body">

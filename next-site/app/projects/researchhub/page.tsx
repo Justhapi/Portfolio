@@ -39,9 +39,16 @@ const SECTIONS = [
 
 /* Cover video — served from /public/img/cover so the static export
    pipeline copies it verbatim to /out. basePath prefix same pattern
-   as HoverBag and the Frogslayer cover: /Portfolio in prod, "" in dev. */
+   as HoverBag and the Frogslayer cover: /Portfolio in prod, "" in dev.
+   MP4 first — VP9-in-WebM decode support is inconsistent across
+   browsers/engines, which was causing this cover to render blank or
+   inconsistently. */
 const BASE_PATH = process.env.NODE_ENV === "production" ? "/Portfolio" : "";
-const COVER_VIDEO = `${BASE_PATH}/img/cover/ResearchHub.webm`;
+const COVER_VIDEO = {
+  mp4: `${BASE_PATH}/img/cover/ResearchHub.mp4`,
+  webm: `${BASE_PATH}/img/cover/ResearchHub.webm`,
+};
+const COVER_POSTER = `${BASE_PATH}/img/cover/ResearchHub-poster.webp`;
 
 export default function ResearchHubCaseStudy() {
   return (
@@ -53,6 +60,7 @@ export default function ResearchHubCaseStudy() {
         subtitle="A redesigned student–faculty research platform for a campus research community"
         imageLabel="ResearchHub · cover animation"
         heroVideoSrc={COVER_VIDEO}
+        heroVideoPoster={COVER_POSTER}
       />
 
       <main id="main" className="case-body">

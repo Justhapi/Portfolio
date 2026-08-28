@@ -19,11 +19,13 @@ export default function CaseCover({
   /** Suppress the hero image slot — used when NDA or other constraints prevent showing visuals. */
   hideHero?: boolean;
   /** When provided, render a looping muted autoplay video as the hero
-   *  instead of the placeholder image slot. Pass an ES-imported .webm
-   *  / .mp4 asset (e.g. `import cover from './Cover.webm'` → pass
-   *  `cover` here — webpack's asset/resource loader outputs a string
-   *  URL). */
-  heroVideoSrc?: string;
+   *  instead of the placeholder image slot. Accepts either a plain
+   *  string (single WebM URL — legacy) or a `{ mp4, webm }` pair.
+   *  Pass the pair whenever both encodes exist: MP4/H.264 is
+   *  universally decodable while WebM/VP9 support varies by browser
+   *  and was the cause of case covers rendering blank/inconsistently
+   *  across engines. */
+  heroVideoSrc?: string | { mp4: string; webm: string };
   /** Optional still image shown before the video loads / as fallback for
    *  browsers that don't support the video format. */
   heroVideoPoster?: string;

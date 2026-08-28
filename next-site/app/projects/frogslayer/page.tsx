@@ -37,7 +37,14 @@ const SECTIONS = [
 ];
 
 const BASE_PATH = process.env.NODE_ENV === "production" ? "/Portfolio" : "";
-const COVER_VIDEO = `${BASE_PATH}/img/cover/Frogslayer.webm`;
+/* MP4 first — VP9-in-WebM decode support is inconsistent across
+   browsers/engines, which was causing this cover to render blank or
+   inconsistently. MP4/H.264 is universally supported. */
+const COVER_VIDEO = {
+  mp4: `${BASE_PATH}/img/cover/Frogslayer.mp4`,
+  webm: `${BASE_PATH}/img/cover/Frogslayer.webm`,
+};
+const COVER_POSTER = `${BASE_PATH}/img/cover/Frogslayer-poster.webp`;
 
 export default function FrogslayerCaseStudy() {
   return (
@@ -49,6 +56,7 @@ export default function FrogslayerCaseStudy() {
         subtitle="A cross-industry kiosk design reference for a consultancy&rsquo;s client engagements"
         imageLabel="Frogslayer kiosk · cover animation"
         heroVideoSrc={COVER_VIDEO}
+        heroVideoPoster={COVER_POSTER}
       />
 
       <main id="main" className="case-body">

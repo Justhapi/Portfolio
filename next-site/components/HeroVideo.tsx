@@ -20,13 +20,24 @@ import { useEffect, useRef, useState } from "react";
  *      Autoplay still fires on mobile hover-capable devices, but not on
  *      touch — touch users see the poster and can tap to play.
  *   3. Poster fallback for any browser that can't play WebM.
+ *
+ * `src` accepts either a plain string (single WebM source — legacy
+ * path) or a `{ mp4, webm }` pair. WebM here is VP9-encoded, and VP9
+ * decode support is unreliable across browsers/engines (notably iOS
+ * Safari, but not exclusively — this was also the source of the
+ * inconsistent/blank case-cover renders across different browsers).
+ * When given the pair, MP4/H.264 is listed first via <source> so
+ * every engine picks the format it can actually decode; WebM remains
+ * as the smaller-file fallback for browsers that prefer it.
  */
+type VideoSrc = string | { mp4: string; webm: string };
+
 export default function HeroVideo({
   src,
   poster,
   label,
 }: {
-  src: string;
+  src: VideoSrc;
   poster?: string;
   label?: string;
 }) {
@@ -73,12 +84,18 @@ export default function HeroVideo({
     };
   }, []);
 
+  const isSrcSet = typeof src === "object";
+
   return (
     /* eslint-disable-next-line jsx-a11y/media-has-caption */
     <video
       ref={videoRef}
       className="case-hero-video"
-      src={src}
+      // Only set the plain `src` attribute for the legacy single-URL
+      // path — when we have an { mp4, webm } pair, <source> children
+      // below handle it (setting both `src` AND <source> children
+      // makes the `src` attribute win and the sources get ignored).
+      src={isSrcSet ? undefined : src}
       poster={poster}
       autoPlay={shouldAutoplay}
       loop
@@ -87,6 +104,13 @@ export default function HeroVideo({
       preload={preload}
       controls={!shouldAutoplay && !!src}
       aria-label={label}
-    />
+    >
+      {isSrcSet && (
+        <>
+          <source src={src.mp4} type="video/mp4" />
+          <source src={src.webm} type="video/webm" />
+        </>
+      )}
+    </video>
   );
 }

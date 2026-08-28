@@ -16,9 +16,15 @@ const SECTIONS = [
 ];
 
 /* Cover video — served from /public/img/cover so static export copies
-   it verbatim. Same pattern as Frogslayer + ResearchHub. */
+   it verbatim. Same pattern as Frogslayer + ResearchHub. MP4 first —
+   VP9-in-WebM decode support is inconsistent across browsers/engines,
+   which was causing this cover to render blank or inconsistently. */
 const BASE_PATH = process.env.NODE_ENV === "production" ? "/Portfolio" : "";
-const COVER_VIDEO = `${BASE_PATH}/img/cover/inline.webm`;
+const COVER_VIDEO = {
+  mp4: `${BASE_PATH}/img/cover/inline.mp4`,
+  webm: `${BASE_PATH}/img/cover/inline.webm`,
+};
+const COVER_POSTER = `${BASE_PATH}/img/cover/inline-poster.webp`;
 
 export default function PopByInlineCaseStudy() {
   return (
@@ -30,6 +36,7 @@ export default function PopByInlineCaseStudy() {
         subtitle="A lightweight B2B2C consumer tool for planning everyday gatherings"
         imageLabel="Pop by inline · cover animation"
         heroVideoSrc={COVER_VIDEO}
+        heroVideoPoster={COVER_POSTER}
       />
 
       <main id="main" className="case-body">
