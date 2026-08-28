@@ -142,102 +142,14 @@ const FolderOpen = ({
   const gid = useId().replace(/:/g, "");
   const gradId = `fo_grad_${gid}`;
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  /* iOS Safari doesn't render HTML <video> inside SVG <foreignObject>
-     reliably — the video either shows an empty box or spills out. On
-     touch devices, fall back to a static SVG <image> tag (the sponsor
-     thumbnail), which iOS renders natively without any foreignObject
-     quirks. Desktop keeps the foreignObject video path. */
-  const [isTouch, setIsTouch] = useState(false);
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const q = window.matchMedia("(hover: none), (pointer: coarse)");
-    const update = () => setIsTouch(q.matches);
-    update();
-    q.addEventListener("change", update);
-    return () => q.removeEventListener("change", update);
-  }, []);
 
-  /* SVG ref — measured when the folder OPENS so the touch-only
-     video overlay can be pixel-positioned onto the video sticky slot.
-     Measurement is deferred until after the openEnter animation
-     completes (500ms), because measuring while the SVG is still in
-     its hidden pose (translateY(-110px) scaleX(0.28) …) samples the
-     wrong rect and misplaces the overlay. */
-  const svgRef = useRef<SVGSVGElement | null>(null);
-  const [videoBox, setVideoBox] = useState<{
-    left: number;
-    top: number;
-    width: number;
-    height: number;
-    radius: number;
-  } | null>(null);
-  useEffect(() => {
-    if (!isTouch || !coverVideo) return;
-    if (!isOpen) {
-      // Closed → hide overlay. Overlay will re-measure and re-appear
-      // when the folder opens again.
-      setVideoBox(null);
-      return;
-    }
-    const el = svgRef.current;
-    if (!el) return;
-    /* rAF loop while open — the parent .folder-svg has a continuous
-       folderFloat animation (±3–4px translation), so a single measure
-       would leave the video overlay drifting off the sticky. Sync the
-       overlay to each frame's SVG rect so it always sits on the slot. */
-    let raf = 0;
-    let cancelled = false;
-    const tick = () => {
-      if (cancelled) return;
-      const svg = svgRef.current;
-      const parent = svg?.parentElement;
-      if (svg && parent) {
-        const s = svg.getBoundingClientRect();
-        const p = parent.getBoundingClientRect();
-        // Skip degenerate measurements (mid-morph the scaleX(0.28)
-        // gives a very narrow rect — ignore anything under 40% of
-        // the parent's width).
-        if (s.width > p.width * 0.4) {
-          const videoLeft = s.left - p.left + (124.603 / 410) * s.width;
-          const videoTop = s.top - p.top + (48.555 / 324) * s.height;
-          const videoW = (119.764 / 410) * s.width;
-          const videoH = (119.764 / 324) * s.height;
-          const videoRadius = (9.9803 / 410) * s.width;
-          setVideoBox((prev) => {
-            // Only update on meaningful change (>0.5px) to avoid
-            // React re-render thrash every frame.
-            if (
-              prev &&
-              Math.abs(prev.left - videoLeft) < 0.5 &&
-              Math.abs(prev.top - videoTop) < 0.5 &&
-              Math.abs(prev.width - videoW) < 0.5 &&
-              Math.abs(prev.height - videoH) < 0.5
-            ) {
-              return prev;
-            }
-            return {
-              left: videoLeft,
-              top: videoTop,
-              width: videoW,
-              height: videoH,
-              radius: videoRadius,
-            };
-          });
-        }
-      }
-      raf = requestAnimationFrame(tick);
-    };
-    // Wait for openEnter animation to complete (460ms + small buffer)
-    // before starting the rAF loop, so we don't measure mid-morph.
-    const startTimer = window.setTimeout(() => {
-      raf = requestAnimationFrame(tick);
-    }, 500);
-    return () => {
-      cancelled = true;
-      window.clearTimeout(startTimer);
-      if (raf) cancelAnimationFrame(raf);
-    };
-  }, [isTouch, coverVideo, isOpen]);
+  /* Play the cover video when the folder opens; pause and rewind
+     when it closes. Reduced-motion users never see the video play.
+     Both desktop and mobile hit this same effect — the video lives
+     inside a foreignObject sticky slot in the SVG regardless of
+     device, so there's one code path. iOS Safari renders the
+     foreignObject correctly because the video element sets its
+     xhtml xmlns via ref (see the fo-sticky[data-fx-i="1"] group). */
   useEffect(() => {
     const v = videoRef.current;
     if (!v || !coverVideo) return;
@@ -246,25 +158,19 @@ const FolderOpen = ({
       return;
     }
     if (isOpen) {
-      /* Force load and play. iOS Safari sometimes ignores autoPlay on
-         a video whose position is being rewritten every frame; calling
-         .load() then .play() explicitly kicks it into gear. */
-      try { v.load(); } catch { void 0; }
       v.play().catch(() => {});
     } else {
       v.pause();
-      // seek can throw before metadata loads — safe to swallow
       try {
         v.currentTime = 0;
       } catch {
         void 0;
       }
     }
-  }, [isOpen, coverVideo, videoBox]);
+  }, [isOpen, coverVideo]);
   return (
     <>
     <svg
-      ref={svgRef}
       className="open"
       width="410"
       height="324"
@@ -343,12 +249,18 @@ const FolderOpen = ({
         strokeWidth="3.83596"
       />
       </g>
+      {/* VIDEO STICKY — reimplemented as a single foreignObject with a
+         raw HTML <video> whose xhtml namespace is set via ref callback.
+         iOS Safari refuses to render HTML descendants inside a
+         foreignObject unless the outermost HTML element carries the
+         XHTML xmlns attribute, and TypeScript's HTMLVideoElement type
+         doesn't expose that attribute — so we set it imperatively.
+         MP4 source is listed first so iOS Safari (which can't decode
+         VP9-in-WebM reliably) picks the format it can actually play.
+         The outline rect sits on top so the sticky border wraps the
+         video cleanly at any scale. */}
       <g className="fo-sticky" data-fx-i="1">
-      {coverVideo && !isTouch ? (
-        /* DESKTOP path — foreignObject with HTML <video> works
-           reliably on desktop browsers. iOS Safari renders empty
-           foreignObject video, so touch devices fall through to the
-           SVG <image> branch below. */
+      {coverVideo ? (
         <>
           <foreignObject
             x="124.603"
@@ -356,18 +268,44 @@ const FolderOpen = ({
             width="119.764"
             height="119.764"
           >
+            {/*
+             * WRAPPER DIV — MUST exist between the foreignObject and
+             * the video, and MUST have explicit width/height +
+             * overflow:hidden. iOS Safari's foreignObject renderer
+             * DOES NOT clip HTML descendants to the foreignObject's
+             * box: without this wrapper the video is drawn at its
+             * intrinsic pixel size (720p+), spilling outside the
+             * sticky note and covering the folder body. The wrapper
+             * is a real box the browser can clip against.
+             *
+             * xmlns is set via ref callback because TS's div type
+             * doesn't declare it, but iOS Safari requires the
+             * outermost foreignObject child to be namespaced as
+             * XHTML for its layout engine to recognize it as HTML.
+             */}
             <div
+              ref={(el) => {
+                if (el) {
+                  el.setAttribute(
+                    "xmlns",
+                    "http://www.w3.org/1999/xhtml"
+                  );
+                }
+              }}
               style={{
                 width: "119.764px",
                 height: "119.764px",
                 overflow: "hidden",
                 borderRadius: "9.98px",
-                display: "block",
                 position: "relative",
+                display: "block",
               }}
             >
               <video
-                ref={videoRef}
+                ref={(el) => {
+                  videoRef.current = el;
+                }}
+                autoPlay
                 muted
                 loop
                 playsInline
@@ -380,36 +318,11 @@ const FolderOpen = ({
                   display: "block",
                 }}
               >
-                {/* MP4 first — universally supported; WebM fallback for
-                    Chrome/Firefox that prefer VP9 for smaller size. */}
                 <source src={coverVideo.mp4} type="video/mp4" />
                 <source src={coverVideo.webm} type="video/webm" />
               </video>
             </div>
           </foreignObject>
-          <rect
-            x="124.603"
-            y="48.555"
-            width="119.764"
-            height="119.764"
-            rx="9.9803"
-            fill="none"
-            stroke={videoOutline}
-            strokeWidth="3.83596"
-          />
-        </>
-      ) : thumbnail ? (
-        <>
-          <image
-            href={thumbnail}
-            x="124.603"
-            y="48.555"
-            width="119.764"
-            height="119.764"
-            preserveAspectRatio="xMidYMid meet"
-          >
-            {thumbnailAlt ? <title>{thumbnailAlt}</title> : null}
-          </image>
           <rect
             x="124.603"
             y="48.555"
@@ -466,59 +379,6 @@ const FolderOpen = ({
         </linearGradient>
       </defs>
     </svg>
-    {/*
-     * Touch-device HTML VIDEO OVERLAY.
-     * iOS Safari renders SVG <foreignObject> HTML video as an empty
-     * box, so on touch devices we skip the foreignObject entirely
-     * (via `!isTouch` gate on the fo-sticky video branch above) and
-     * paint the video as a real HTML <video> layered on top of the
-     * SVG. The outer wrapper matches the SVG's exact rendered box:
-     *   - width: 92% (same as .folder-svg svg's width rule)
-     *   - aspect-ratio: 410/324 (same as SVG viewBox)
-     *   - centered via translate(-50%, -50%)
-     * The inner <video> is then placed in percentage coords that
-     * mirror the SVG's video sticky rect (x/y/width/height as
-     * fractions of the viewBox), so it lands pixel-exact on top of
-     * the SVG image thumbnail underneath.
-     */}
-    {/* MOBILE VIDEO OVERLAY — tracks the SVG's video-sticky slot
-       via rAF-driven pixel measurement. Only mounts after the folder
-       has finished its openEnter morph (500ms delay in the effect
-       above), so we never measure the mid-transition scale. Sits on
-       top of the SVG <image> fallback thumbnail so if the video
-       fails to load, the underlying thumbnail still shows a valid
-       visual instead of an empty box.
-       autoPlay + muted + playsInline is the combination iOS honors
-       for autoplay without a user gesture. */}
-    {isTouch && coverVideo && videoBox && (
-      <video
-        ref={videoRef}
-        muted
-        loop
-        playsInline
-        autoPlay
-        preload="auto"
-        aria-hidden="true"
-        aria-label={thumbnailAlt || undefined}
-        style={{
-          position: "absolute",
-          left: `${videoBox.left}px`,
-          top: `${videoBox.top}px`,
-          width: `${videoBox.width}px`,
-          height: `${videoBox.height}px`,
-          objectFit: "cover",
-          borderRadius: `${videoBox.radius}px`,
-          display: "block",
-          pointerEvents: "none",
-        }}
-      >
-        {/* MP4 first — iOS Safari's VP9-in-WebM decoding is unreliable
-            and was the root cause of the video not playing on mobile.
-            H.264/MP4 is universally supported and autoplays on iOS. */}
-        <source src={coverVideo.mp4} type="video/mp4" />
-        <source src={coverVideo.webm} type="video/webm" />
-      </video>
-    )}
     </>
   );
 };
