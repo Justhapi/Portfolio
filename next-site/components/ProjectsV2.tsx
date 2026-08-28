@@ -44,13 +44,13 @@ const FOLDER_THUMB = {
    as <source> elements lets the browser pick the format it can
    actually decode. */
 const FOLDER_COVER = {
-  frogslayer:  { mp4: `${BASE_PATH}/img/cover/Frogslayer.mp4`,  webm: `${BASE_PATH}/img/cover/Frogslayer.webm` },
-  researchhub: { mp4: `${BASE_PATH}/img/cover/ResearchHub.mp4`, webm: `${BASE_PATH}/img/cover/ResearchHub.webm` },
-  inline:      { mp4: `${BASE_PATH}/img/cover/inline.mp4`,      webm: `${BASE_PATH}/img/cover/inline.webm` },
-  aiAgent:     { mp4: `${BASE_PATH}/img/cover/Ai_Agent.mp4`,    webm: `${BASE_PATH}/img/cover/Ai_Agent.webm` },
+  frogslayer:  { mp4: `${BASE_PATH}/img/cover/Frogslayer.mp4`,  webm: `${BASE_PATH}/img/cover/Frogslayer.webm`,  poster: `${BASE_PATH}/img/cover/Frogslayer-poster.webp` },
+  researchhub: { mp4: `${BASE_PATH}/img/cover/ResearchHub.mp4`, webm: `${BASE_PATH}/img/cover/ResearchHub.webm`, poster: `${BASE_PATH}/img/cover/ResearchHub-poster.webp` },
+  inline:      { mp4: `${BASE_PATH}/img/cover/inline.mp4`,      webm: `${BASE_PATH}/img/cover/inline.webm`,      poster: `${BASE_PATH}/img/cover/inline-poster.webp` },
+  aiAgent:     { mp4: `${BASE_PATH}/img/cover/Ai_Agent.mp4`,    webm: `${BASE_PATH}/img/cover/Ai_Agent.webm`,    poster: `${BASE_PATH}/img/cover/Ai_Agent-poster.webp` },
 } as const;
 
-type CoverVideo = { mp4: string; webm: string };
+type CoverVideo = { mp4: string; webm: string; poster: string };
 
 function hexToRgba(hex: string, alpha: number): string {
   const h = hex.replace("#", "");
@@ -142,6 +142,28 @@ const FolderOpen = ({
   const gid = useId().replace(/:/g, "");
   const gradId = `fo_grad_${gid}`;
   const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  /* iOS Safari promotes <foreignObject> contents into their own
+     compositing layer that paints ON TOP OF the entire SVG, ignoring
+     document paint order. That's why the cover video was rendering in
+     FRONT of the folder body on mobile instead of tucked behind the
+     front flap like it does on desktop. No amount of clipping or
+     wrapper markup fixes it — it's a layer-order problem, not a
+     bounds problem.
+     Solution: on touch devices, render the cover as a native SVG
+     <image> (a poster frame extracted from the video). SVG <image>
+     is a real SVG element, so it obeys paint order and sits behind
+     the fo-flap-front group exactly like the company sticky does.
+     Desktop keeps the live foreignObject video. */
+  const [isTouch, setIsTouch] = useState(false);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const q = window.matchMedia("(hover: none), (pointer: coarse)");
+    const update = () => setIsTouch(q.matches);
+    update();
+    q.addEventListener("change", update);
+    return () => q.removeEventListener("change", update);
+  }, []);
 
   /* Play the cover video when the folder opens; pause and rewind
      when it closes. Reduced-motion users never see the video play.
@@ -260,7 +282,35 @@ const FolderOpen = ({
          The outline rect sits on top so the sticky border wraps the
          video cleanly at any scale. */}
       <g className="fo-sticky" data-fx-i="1">
-      {coverVideo ? (
+      {coverVideo && isTouch ? (
+        /* TOUCH — native SVG <image> poster frame. Obeys SVG paint
+           order, so it sits BEHIND the fo-flap-front group exactly
+           like the desktop video does. (A foreignObject here would
+           be layer-promoted by iOS Safari and paint in front of the
+           whole folder — the bug this replaces.) */
+        <>
+          <image
+            href={coverVideo.poster}
+            x="124.603"
+            y="48.555"
+            width="119.764"
+            height="119.764"
+            preserveAspectRatio="xMidYMid slice"
+          >
+            {thumbnailAlt ? <title>{thumbnailAlt}</title> : null}
+          </image>
+          <rect
+            x="124.603"
+            y="48.555"
+            width="119.764"
+            height="119.764"
+            rx="9.9803"
+            fill="none"
+            stroke={videoOutline}
+            strokeWidth="3.83596"
+          />
+        </>
+      ) : coverVideo ? (
         <>
           <foreignObject
             x="124.603"
@@ -268,21 +318,6 @@ const FolderOpen = ({
             width="119.764"
             height="119.764"
           >
-            {/*
-             * WRAPPER DIV — MUST exist between the foreignObject and
-             * the video, and MUST have explicit width/height +
-             * overflow:hidden. iOS Safari's foreignObject renderer
-             * DOES NOT clip HTML descendants to the foreignObject's
-             * box: without this wrapper the video is drawn at its
-             * intrinsic pixel size (720p+), spilling outside the
-             * sticky note and covering the folder body. The wrapper
-             * is a real box the browser can clip against.
-             *
-             * xmlns is set via ref callback because TS's div type
-             * doesn't declare it, but iOS Safari requires the
-             * outermost foreignObject child to be namespaced as
-             * XHTML for its layout engine to recognize it as HTML.
-             */}
             <div
               ref={(el) => {
                 if (el) {
@@ -310,6 +345,7 @@ const FolderOpen = ({
                 loop
                 playsInline
                 preload="metadata"
+                poster={coverVideo.poster}
                 aria-label={thumbnailAlt || undefined}
                 style={{
                   width: "100%",
