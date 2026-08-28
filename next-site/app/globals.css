@@ -563,6 +563,7 @@ body.on-paper .nav-pill {
     opacity: 1;
   }
 }
+ /* before svg video */
 .nav-link.active {
   opacity: 1;
   color: var(--hero-fg); /* cream text on the dark active pill */
