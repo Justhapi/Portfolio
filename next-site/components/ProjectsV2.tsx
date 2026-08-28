@@ -43,14 +43,25 @@ const FOLDER_THUMB = {
    (iOS Safari, Chrome, Firefox, Edge, macOS Safari). Providing both
    as <source> elements lets the browser pick the format it can
    actually decode. */
+/* Each cover ships in three forms:
+     mp4/webm — live <video> for the desktop <foreignObject> path.
+     anim     — ANIMATED WebP for the touch path. This is the key to
+                getting motion AND correct layering on iOS: a native
+                SVG <image> obeys SVG paint order (so it tucks behind
+                the folder's front flap), and Safari 14+ animates
+                animated-WebP inside <image>. A <foreignObject> video
+                would animate but iOS layer-promotes it in front of
+                the whole folder.
+     poster   — static first frame, used as the <video> poster on
+                desktop and as a graceful fallback. */
 const FOLDER_COVER = {
-  frogslayer:  { mp4: `${BASE_PATH}/img/cover/Frogslayer.mp4`,  webm: `${BASE_PATH}/img/cover/Frogslayer.webm`,  poster: `${BASE_PATH}/img/cover/Frogslayer-poster.webp` },
-  researchhub: { mp4: `${BASE_PATH}/img/cover/ResearchHub.mp4`, webm: `${BASE_PATH}/img/cover/ResearchHub.webm`, poster: `${BASE_PATH}/img/cover/ResearchHub-poster.webp` },
-  inline:      { mp4: `${BASE_PATH}/img/cover/inline.mp4`,      webm: `${BASE_PATH}/img/cover/inline.webm`,      poster: `${BASE_PATH}/img/cover/inline-poster.webp` },
-  aiAgent:     { mp4: `${BASE_PATH}/img/cover/Ai_Agent.mp4`,    webm: `${BASE_PATH}/img/cover/Ai_Agent.webm`,    poster: `${BASE_PATH}/img/cover/Ai_Agent-poster.webp` },
+  frogslayer:  { mp4: `${BASE_PATH}/img/cover/Frogslayer.mp4`,  webm: `${BASE_PATH}/img/cover/Frogslayer.webm`,  anim: `${BASE_PATH}/img/cover/Frogslayer-anim.webp`,  poster: `${BASE_PATH}/img/cover/Frogslayer-poster.webp` },
+  researchhub: { mp4: `${BASE_PATH}/img/cover/ResearchHub.mp4`, webm: `${BASE_PATH}/img/cover/ResearchHub.webm`, anim: `${BASE_PATH}/img/cover/ResearchHub-anim.webp`, poster: `${BASE_PATH}/img/cover/ResearchHub-poster.webp` },
+  inline:      { mp4: `${BASE_PATH}/img/cover/inline.mp4`,      webm: `${BASE_PATH}/img/cover/inline.webm`,      anim: `${BASE_PATH}/img/cover/inline-anim.webp`,      poster: `${BASE_PATH}/img/cover/inline-poster.webp` },
+  aiAgent:     { mp4: `${BASE_PATH}/img/cover/Ai_Agent.mp4`,    webm: `${BASE_PATH}/img/cover/Ai_Agent.webm`,    anim: `${BASE_PATH}/img/cover/Ai_Agent-anim.webp`,    poster: `${BASE_PATH}/img/cover/Ai_Agent-poster.webp` },
 } as const;
 
-type CoverVideo = { mp4: string; webm: string; poster: string };
+type CoverVideo = { mp4: string; webm: string; anim: string; poster: string };
 
 function hexToRgba(hex: string, alpha: number): string {
   const h = hex.replace("#", "");
@@ -156,13 +167,22 @@ const FolderOpen = ({
      the fo-flap-front group exactly like the company sticky does.
      Desktop keeps the live foreignObject video. */
   const [isTouch, setIsTouch] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState(false);
   useEffect(() => {
     if (typeof window === "undefined") return;
     const q = window.matchMedia("(hover: none), (pointer: coarse)");
-    const update = () => setIsTouch(q.matches);
+    const rm = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const update = () => {
+      setIsTouch(q.matches);
+      setReducedMotion(rm.matches);
+    };
     update();
     q.addEventListener("change", update);
-    return () => q.removeEventListener("change", update);
+    rm.addEventListener("change", update);
+    return () => {
+      q.removeEventListener("change", update);
+      rm.removeEventListener("change", update);
+    };
   }, []);
 
   /* Play the cover video when the folder opens; pause and rewind
@@ -283,11 +303,13 @@ const FolderOpen = ({
          video cleanly at any scale. */}
       <g className="fo-sticky" data-fx-i="1">
       {coverVideo && isTouch ? (
-        /* TOUCH — native SVG <image> poster frame. Obeys SVG paint
-           order, so it sits BEHIND the fo-flap-front group exactly
-           like the desktop video does. (A foreignObject here would
-           be layer-promoted by iOS Safari and paint in front of the
-           whole folder — the bug this replaces.) */
+        /* TOUCH — native SVG <image> pointing at an ANIMATED WebP.
+           This gets motion AND correct layering: <image> is a real
+           SVG element so it obeys paint order (tucks behind the
+           fo-flap-front group like the desktop video does), and
+           Safari 14+ / Chrome / Firefox all animate animated-WebP
+           inside an SVG <image>. Reduced-motion users get the static
+           poster instead. */
         <>
           {/* clipPath rounds the poster's corners. The clip rect is
               INSET by half the outline's stroke-width (3.83596 / 2 ≈
@@ -309,7 +331,7 @@ const FolderOpen = ({
             </clipPath>
           </defs>
           <image
-            href={coverVideo.poster}
+            href={reducedMotion ? coverVideo.poster : coverVideo.anim}
             x="124.603"
             y="48.555"
             width="119.764"
