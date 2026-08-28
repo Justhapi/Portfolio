@@ -609,18 +609,44 @@ type FolderPhase = "rest" | "hovered" | "leaving";
  * getBoundingClientRect() reads, no layout thrash since the pill is
  * position:fixed on its own layer.
  */
-function ReadPill({ x, y, label }: { x: number; y: number; label: string }) {
+function ReadPill({
+  x,
+  y,
+  label,
+  frozen = false,
+}: {
+  x: number;
+  y: number;
+  label: string;
+  /** When true the pill stops re-measuring and holds its last good
+   *  position. Set on click so the pill doesn't veer across the
+   *  screen while Next.js tears down the page during navigation. */
+  frozen?: boolean;
+}) {
   const ref = useRef<HTMLDivElement | null>(null);
   const [xy, setXy] = useState<{ left: number; top: number }>({
     left: x + 14,
     top: y + 18,
   });
+  /* Cache the last VALID measured size. During a route transition the
+     pill's own getBoundingClientRect() can momentarily return 0×0 as
+     React tears the tree down — feeding 0 into the clamp below makes
+     `vw - 0 - MARGIN` the winning term and slams the pill to the far
+     right edge. That was the "veering off" on click. Reusing the last
+     known-good size keeps the math stable. */
+  const lastSize = useRef<{ w: number; h: number } | null>(null);
   useLayoutEffect(() => {
+    if (frozen) return; // hold last position through navigation
     const el = ref.current;
     if (!el) return;
     const rect = el.getBoundingClientRect();
-    const w = rect.width;
-    const h = rect.height;
+    // Only trust a measurement with real dimensions; otherwise fall
+    // back to the last good one (or skip entirely on first paint).
+    if (rect.width > 0 && rect.height > 0) {
+      lastSize.current = { w: rect.width, h: rect.height };
+    }
+    if (!lastSize.current) return;
+    const { w, h } = lastSize.current;
     const vw = window.innerWidth;
     const vh = window.innerHeight;
     const MARGIN = 12; // safety inset from the browser edge
@@ -642,7 +668,7 @@ function ReadPill({ x, y, label }: { x: number; y: number; label: string }) {
     );
 
     setXy({ left, top });
-  }, [x, y, label]);
+  }, [x, y, label, frozen]);
   return (
     <div
       ref={ref}
@@ -756,13 +782,21 @@ export default function ProjectsV2() {
     setPhases((p) => ({ ...p, [id]: "hovered" }));
   };
 
-  // track mouse globally only while a pill is showing
+  /* Freeze the pill on click. Once the user commits to a folder,
+     Next.js begins tearing down the home page — scroll position,
+     layout, and the pill's own box all churn during that window,
+     which made the pill visibly veer across the screen. Freezing
+     pins it at its last position next to the cursor until the new
+     page takes over. */
+  const [pillFrozen, setPillFrozen] = useState(false);
+
+  // track mouse globally only while a pill is showing AND not frozen
   useEffect(() => {
-    if (!hoverPill) return;
+    if (!hoverPill || pillFrozen) return;
     const onMove = (e: MouseEvent) => setPos({ x: e.clientX, y: e.clientY });
     window.addEventListener("mousemove", onMove);
     return () => window.removeEventListener("mousemove", onMove);
-  }, [hoverPill]);
+  }, [hoverPill, pillFrozen]);
 
   /* Auto-open on scroll — fires on any layout that stacks the folder
      vertically (single-column). When a folder enters the middle 60% of
@@ -952,7 +986,13 @@ export default function ProjectsV2() {
                   href={p.href}
                   className={folderArtClass}
                   aria-label={`${p.tag} — ${p.readTime}`}
-                  onClick={saveHomeScroll}
+                  onClick={() => {
+                    saveHomeScroll();
+                    /* Pin the pill where it is — the page is about to
+                       navigate and the layout churn during teardown
+                       was making it fly off across the viewport. */
+                    setPillFrozen(true);
+                  }}
                   onMouseEnter={(e) => {
                     setPos({ x: e.clientX, y: e.clientY });
                     setHoverPill(p.readTime);
@@ -1073,7 +1113,12 @@ export default function ProjectsV2() {
       </div>
 
       {hoverPill && (
-        <ReadPill x={pos.x} y={pos.y} label={hoverPill} />
+        <ReadPill
+          x={pos.x}
+          y={pos.y}
+          label={hoverPill}
+          frozen={pillFrozen}
+        />
       )}
     </section>
   );
