@@ -6,27 +6,14 @@ import Link from "next/link";
 import { saveHomeScroll } from "@/components/ScrollRestore";
 
 /**
- * ProjectsV2 — port of Claude Design Portoflio/work.jsx
- * Folder cards (closed → open on hover) with sparkle accents.
- */
-
-/**
- * Folder-card thumbnails — sponsor / project marks that peek out of the
- * opened folder. Each file in /public/img/folders/ is a pre-framed 120×120
- * square SVG with its own rounded corners (rx=10) — vector, infinitely
- * crisp at any display size, no raster resolution ceiling.
+ * ProjectsV2 — folder cards (closed → open on hover) with sparkle accents.
  *
- * Per-project NDA rationale:
- *   - Frogslayer / Purdue Stack / inline: sponsors named publicly on the
- *     site (folder tag, case body, or a public HoverWord link), so brand
- *     marks are fine.
- *   - JT / AI Journey Agent: sponsor deliberately anonymized on the site,
- *     so a hand-designed "Anonymous" sticky replaces a brand logo (a real
- *     logo would break the anonymization via reverse image search).
+ * Folder-card thumbnails are pre-framed 120×120 SVGs in /public/img/folders/.
+ * AI Journey Agent's sponsor is anonymized under NDA, so it gets a
+ * hand-designed "Anonymous" sticky instead of a brand logo.
  *
  * BASE_PATH — raw <img>/<image> srcs need the /Portfolio prefix in
- * production (Next auto-applies to next/image and routing but NOT to raw
- * SVG <image> href attributes). Same pattern used in HoverBag.
+ * production (Next's basePath doesn't cover raw SVG <image> hrefs).
  */
 const BASE_PATH = process.env.NODE_ENV === "production" ? "/Portfolio" : "";
 const FOLDER_THUMB = {
@@ -36,24 +23,12 @@ const FOLDER_THUMB = {
   anonymous:  `${BASE_PATH}/img/folders/anonymous.svg`,
 } as const;
 
-/* Each cover has both an MP4 (H.264) and a WebM (VP9) source. iOS
-   Safari's VP9-in-WebM decoding is unreliable — autoplay silently
-   fails and the video renders as an empty box on the folder sticky.
-   MP4/H.264 is universally supported on every browser we care about
-   (iOS Safari, Chrome, Firefox, Edge, macOS Safari). Providing both
-   as <source> elements lets the browser pick the format it can
-   actually decode. */
-/* Each cover ships in three forms:
-     mp4/webm — live <video> for the desktop <foreignObject> path.
-     anim     — ANIMATED WebP for the touch path. This is the key to
-                getting motion AND correct layering on iOS: a native
-                SVG <image> obeys SVG paint order (so it tucks behind
-                the folder's front flap), and Safari 14+ animates
-                animated-WebP inside <image>. A <foreignObject> video
-                would animate but iOS layer-promotes it in front of
-                the whole folder.
-     poster   — static first frame, used as the <video> poster on
-                desktop and as a graceful fallback. */
+/* Each cover ships as mp4/webm (desktop <foreignObject> <video>, MP4
+   first since VP9-in-WebM decoding is unreliable on iOS Safari), anim
+   (animated WebP for the touch path — a native SVG <image> obeys SVG
+   paint order so it tucks behind the folder's front flap, unlike a
+   foreignObject video which iOS layer-promotes in front of it), and
+   poster (static first frame, used as the <video> poster + fallback). */
 const FOLDER_COVER = {
   frogslayer:  { mp4: `${BASE_PATH}/img/cover/Frogslayer.mp4`,  webm: `${BASE_PATH}/img/cover/Frogslayer.webm`,  anim: `${BASE_PATH}/img/cover/Frogslayer-anim.webp`,  poster: `${BASE_PATH}/img/cover/Frogslayer-poster.webp` },
   researchhub: { mp4: `${BASE_PATH}/img/cover/ResearchHub.mp4`, webm: `${BASE_PATH}/img/cover/ResearchHub.webm`, anim: `${BASE_PATH}/img/cover/ResearchHub-anim.webp`, poster: `${BASE_PATH}/img/cover/ResearchHub-poster.webp` },
@@ -155,17 +130,10 @@ const FolderOpen = ({
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
   /* iOS Safari promotes <foreignObject> contents into their own
-     compositing layer that paints ON TOP OF the entire SVG, ignoring
-     document paint order. That's why the cover video was rendering in
-     FRONT of the folder body on mobile instead of tucked behind the
-     front flap like it does on desktop. No amount of clipping or
-     wrapper markup fixes it — it's a layer-order problem, not a
-     bounds problem.
-     Solution: on touch devices, render the cover as a native SVG
-     <image> (a poster frame extracted from the video). SVG <image>
-     is a real SVG element, so it obeys paint order and sits behind
-     the fo-flap-front group exactly like the company sticky does.
-     Desktop keeps the live foreignObject video. */
+     compositing layer that paints on top of the entire SVG, ignoring
+     document paint order — so on touch devices we render the cover as
+     a native SVG <image> instead, which obeys paint order and sits
+     behind the fo-flap-front group. Desktop keeps the live video. */
   const [isTouch, setIsTouch] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
   useEffect(() => {
@@ -185,13 +153,8 @@ const FolderOpen = ({
     };
   }, []);
 
-  /* Play the cover video when the folder opens; pause and rewind
-     when it closes. Reduced-motion users never see the video play.
-     Both desktop and mobile hit this same effect — the video lives
-     inside a foreignObject sticky slot in the SVG regardless of
-     device, so there's one code path. iOS Safari renders the
-     foreignObject correctly because the video element sets its
-     xhtml xmlns via ref (see the fo-sticky[data-fx-i="1"] group). */
+  /* Play the cover video when the folder opens; pause and rewind on
+     close. Reduced-motion users never see it play. */
   useEffect(() => {
     const v = videoRef.current;
     if (!v || !coverVideo) return;
@@ -291,34 +254,21 @@ const FolderOpen = ({
         strokeWidth="3.83596"
       />
       </g>
-      {/* VIDEO STICKY — reimplemented as a single foreignObject with a
-         raw HTML <video> whose xhtml namespace is set via ref callback.
-         iOS Safari refuses to render HTML descendants inside a
-         foreignObject unless the outermost HTML element carries the
-         XHTML xmlns attribute, and TypeScript's HTMLVideoElement type
-         doesn't expose that attribute — so we set it imperatively.
-         MP4 source is listed first so iOS Safari (which can't decode
-         VP9-in-WebM reliably) picks the format it can actually play.
-         The outline rect sits on top so the sticky border wraps the
-         video cleanly at any scale. */}
+      {/* Video sticky — the outermost HTML element inside the
+         foreignObject needs the XHTML xmlns attribute for iOS Safari to
+         render it, set imperatively via ref since TS's HTMLVideoElement
+         type doesn't expose it. MP4 is listed first since iOS Safari
+         can't decode VP9-in-WebM reliably. */}
       <g className="fo-sticky" data-fx-i="1">
       {coverVideo && isTouch ? (
-        /* TOUCH — native SVG <image> pointing at an ANIMATED WebP.
-           This gets motion AND correct layering: <image> is a real
-           SVG element so it obeys paint order (tucks behind the
-           fo-flap-front group like the desktop video does), and
-           Safari 14+ / Chrome / Firefox all animate animated-WebP
-           inside an SVG <image>. Reduced-motion users get the static
-           poster instead. */
+        /* Touch — native SVG <image> pointing at an animated WebP, for
+           motion with correct paint-order layering (see note above).
+           Reduced-motion users get the static poster instead. */
         <>
-          {/* clipPath rounds the poster's corners. The clip rect is
-              INSET by half the outline's stroke-width (3.83596 / 2 ≈
-              1.92) and given a correspondingly larger corner radius,
-              because an SVG stroke straddles its path — half paints
-              outward, half inward. Clipping to the exact same rect as
-              the stroke leaves the image's square corner visible in
-              that inner half. Insetting tucks the image fully under
-              the stroke so no corner can poke out. */}
+          {/* Clip rect is inset by half the outline's stroke-width
+              (~1.92px) with a larger corner radius to match, since an
+              SVG stroke straddles its path — clipping to the same rect
+              as the stroke would leave a square corner poking out. */}
           <defs>
             <clipPath id={`fo_clip_${gid}`}>
               <rect
@@ -598,16 +548,8 @@ type FolderPhase = "rest" | "hovered" | "leaving";
 
 /**
  * ReadPill — cursor-following read-time pill with viewport clamping.
- *
- * Default position is bottom-right of the cursor (x+14, y+18) — reads as
- * "attached to the pointer". When the cursor approaches the viewport
- * right or bottom edge, the pill flips to the LEFT / UP side of the
- * cursor so the pill body never spills off-screen. A small 12px safety
- * margin keeps the pill visually inset from the browser edge.
- *
- * Measurement runs in useLayoutEffect on every position change: cheap
- * getBoundingClientRect() reads, no layout thrash since the pill is
- * position:fixed on its own layer.
+ * Sits bottom-right of the cursor by default; brakes smoothly near the
+ * viewport edge (see the clamp math below) rather than flipping sides.
  */
 function ReadPill({
   x,
@@ -628,20 +570,15 @@ function ReadPill({
     left: x + 14,
     top: y + 18,
   });
-  /* Cache the last VALID measured size. During a route transition the
-     pill's own getBoundingClientRect() can momentarily return 0×0 as
-     React tears the tree down — feeding 0 into the clamp below makes
-     `vw - 0 - MARGIN` the winning term and slams the pill to the far
-     right edge. That was the "veering off" on click. Reusing the last
-     known-good size keeps the math stable. */
+  /* Cache the last valid measured size — during a route transition
+     getBoundingClientRect() can momentarily return 0×0 as React tears
+     the tree down, which would otherwise slam the pill to the far edge. */
   const lastSize = useRef<{ w: number; h: number } | null>(null);
   useLayoutEffect(() => {
     if (frozen) return; // hold last position through navigation
     const el = ref.current;
     if (!el) return;
     const rect = el.getBoundingClientRect();
-    // Only trust a measurement with real dimensions; otherwise fall
-    // back to the last good one (or skip entirely on first paint).
     if (rect.width > 0 && rect.height > 0) {
       lastSize.current = { w: rect.width, h: rect.height };
     }
@@ -651,13 +588,9 @@ function ReadPill({
     const vh = window.innerHeight;
     const MARGIN = 12; // safety inset from the browser edge
     const GAP = 14;    // default offset from the cursor tip
-    /* Smooth edge clamp — the pill sits at (cursor + GAP) most of the
-       time. As the cursor approaches the right/bottom edge, the pill
-       slides just enough to keep its far edge at (viewport - MARGIN),
-       so it appears to "brake" gracefully rather than flip to the
-       other side of the cursor. Math.min caps the position at that
-       boundary; Math.max prevents it from going past the near edge
-       when the pill is wider than the remaining viewport space. */
+    /* Smooth edge clamp — the pill sits at (cursor + GAP) normally, and
+       brakes toward (viewport - MARGIN) near the edge instead of
+       flipping to the other side of the cursor. */
     const left = Math.max(
       MARGIN,
       Math.min(x + GAP, vw - w - MARGIN)
@@ -749,14 +682,9 @@ export default function ProjectsV2() {
     return () => io.disconnect();
   }, []);
 
-  /* Manual-hover override — set when a user actively hovers a folder
-     on any device with hover capability (including narrow PC where
-     auto-open is also enabled). While set, the scroll-driven
-     pickCentered() below no-ops so the user's explicit choice wins
-     over the "which folder is at viewport center" heuristic. Cleared
-     the moment the mouse leaves that folder — auto-open then resumes
-     and re-selects the currently-centered folder on the next scroll
-     tick. */
+  /* Set while a user actively hovers/focuses a folder — makes
+     pickCentered() below no-op so explicit hover always wins over
+     auto-open. Cleared on mouse-leave/blur. */
   const manualHoverRef = useRef<string | null>(null);
 
   const leaveFolder = (id: string) => {
@@ -782,12 +710,8 @@ export default function ProjectsV2() {
     setPhases((p) => ({ ...p, [id]: "hovered" }));
   };
 
-  /* Freeze the pill on click. Once the user commits to a folder,
-     Next.js begins tearing down the home page — scroll position,
-     layout, and the pill's own box all churn during that window,
-     which made the pill visibly veer across the screen. Freezing
-     pins it at its last position next to the cursor until the new
-     page takes over. */
+  /* Freezes the pill's position on click — Next.js tears down the page
+     on navigation, which was making the pill visibly veer. */
   const [pillFrozen, setPillFrozen] = useState(false);
 
   // track mouse globally only while a pill is showing AND not frozen
@@ -798,41 +722,13 @@ export default function ProjectsV2() {
     return () => window.removeEventListener("mousemove", onMove);
   }, [hoverPill, pillFrozen]);
 
-  /* Auto-open on scroll — fires on any layout that stacks the folder
-     vertically (single-column). When a folder enters the middle 60% of
-     the viewport, enterFolder fires and the folder opens same as
-     desktop hover. As the user scrolls past, leaveFolder fires and it
-     closes.
-
-     Two gates trigger this behavior:
-       (a) Touch devices — (hover: none) OR (pointer: coarse). iOS
-           Safari can report (hover: hover) with an external keyboard
-           attached, so we broaden to (pointer: coarse) too.
-       (b) Narrow desktop viewports — (max-width: 820px). When the PC
-           browser is resized to a phone-width vertical shape, the
-           layout stacks to single-column and hover cursor targeting
-           becomes awkward on a small target; auto-open keeps the
-           experience continuous with the mobile-stacked layout.
-
-     The chip vs cursor-follow-pill split is handled purely in CSS:
-       - .folder .meta__read (the STATIC chip) is scoped inside
-         @media (hover: none) and (pointer: coarse) — so it only shows
-         on genuine touch devices.
-       - .read-pill (the cursor-following pill) works whenever hover
-         is capable, so narrow-desktop viewers still get the follow
-         pill behavior — matching what the user asked for. */
-  /* Auto-open now runs on ALL viewport widths — the wide-desktop
-     horizontal layout gets the same "folder nearest viewport center
-     opens" behavior that touch/narrow layouts already had. Manual
-     hover still wins over auto-open via `manualHoverRef` (see
-     pickCentered's early-return below), so a mouse user pointing at
-     a different folder immediately closes the auto-opened one and
-     opens the hovered one — the vertical-format interaction now
-     applies to horizontal-format too.
-
-     Reactive matchMedia listener on prefers-reduced-motion so users
-     who toggle their OS setting mid-session get the correct behavior
-     without a reload. */
+  /* Auto-open on scroll — the folder nearest viewport center opens on
+     scroll, on every viewport width (mobile stack, narrow desktop, and
+     wide desktop horizontal). Manual hover always wins over auto-open
+     via `manualHoverRef` (see pickCentered's early-return below), so
+     hovering a different folder immediately closes the auto-opened
+     one. Disabled for prefers-reduced-motion, tracked reactively so a
+     mid-session OS toggle takes effect without a reload. */
   const [autoOpenEnabled, setAutoOpenEnabled] = useState(true);
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -847,26 +743,16 @@ export default function ProjectsV2() {
     if (typeof window === "undefined") return;
     if (!autoOpenEnabled) return;
 
-    /* Sequential open/close: the currently-open folder must fully
-       finish closing BEFORE the newly-centered one opens. Avoids the
-       "two folders animating simultaneously" uncanny beat.
-       - pendingTagRef: the tag that WANTS to open (updated on every
-         pickCentered call, so if the centered folder changes mid-
-         close, the latest one wins when the close finishes).
-       - closeTimer: null unless a close is in progress. When null,
-         pickCentered can trigger a new close+open sequence. When set,
-         pickCentered only updates pendingTagRef — the timer callback
-         reads the latest value when it fires. */
+    /* Sequential open/close: the currently-open folder fully closes
+       before the newly-centered one opens, avoiding two folders
+       animating at once. pendingTag tracks the latest target while a
+       close is in progress; closeTimer gates a new sequence starting. */
     let pendingTag: string | null = null;
     let closeTimer: number | null = null;
     const CLOSE_BUFFER_MS = MORPH_MS + 40;
 
     const pickCentered = () => {
-      /* Manual-hover override — the user is actively hovering a folder
-         on a narrow PC (auto-open + hover both enabled). Their explicit
-         choice wins; skip the "which folder is centered" logic entirely
-         until the mouse leaves that folder. */
-      if (manualHoverRef.current) return;
+      if (manualHoverRef.current) return; // explicit hover wins
       const viewportCenter = window.innerHeight / 2;
       const bandTop = window.innerHeight * 0.2;
       const bandBottom = window.innerHeight * 0.8;
@@ -911,13 +797,8 @@ export default function ProjectsV2() {
       }
     };
 
-    /* Scroll-driven tracking with rAF throttling. IntersectionObserver
-       was missing re-evaluations when two folders both sat inside the
-       middle 60% band simultaneously — the observer only fires on
-       band boundary crossings, so as the user kept scrolling and one
-       folder became MORE centered than the other, no callback fired
-       to update. Scroll listener fires on every scroll event, rAF-
-       throttled to once per frame max for perf. */
+    /* rAF-throttled scroll listener (IntersectionObserver alone can't
+       tell which of two folders both inside the band is more centered). */
     let rafId: number | null = null;
     const onScroll = () => {
       if (rafId !== null) return;
@@ -970,14 +851,9 @@ export default function ProjectsV2() {
                 }}
                 data-folder-tag={p.tag}
                 style={{
-                  /* Blurb tint uses the folder's SHADOW color (the
-                     darkest of front/back/shadow) at 55% opacity — the
-                     earlier `folder.front @ 30%` was too light on
-                     amber-toned folders like AI Journey, dropping the
-                     white blurb text well under WCAG AA 4.5:1 on cream.
-                     Shadow at 55% preserves per-folder color language
-                     while producing a rich, dark backdrop that carries
-                     white text at any of the 4 folder palettes. */
+                  /* Blurb background uses the folder's shadow color at
+                     55% opacity — dark enough to carry white text at
+                     WCAG AA contrast across all 4 folder palettes. */
                   ["--folder-blurb-bg" as string]:
                     hexToRgba(p.folder.shadow, 0.55),
                 } as CSSProperties}
@@ -988,44 +864,28 @@ export default function ProjectsV2() {
                   aria-label={`${p.tag} — ${p.readTime}`}
                   onClick={() => {
                     saveHomeScroll();
-                    /* Pin the pill where it is — the page is about to
-                       navigate and the layout churn during teardown
-                       was making it fly off across the viewport. */
-                    setPillFrozen(true);
+                    setPillFrozen(true); // pin pill through the route teardown
                   }}
                   onMouseEnter={(e) => {
                     setPos({ x: e.clientX, y: e.clientY });
                     setHoverPill(p.readTime);
-                    /* Flag this as a MANUAL hover so pickCentered
-                       (auto-open on narrow PC) yields to the user's
-                       explicit choice for as long as the cursor stays
-                       on this folder. */
                     manualHoverRef.current = p.tag;
                     enterFolder(p.tag);
                   }}
                   onMouseMove={(e) => handleTiltMove(e, p.tag)}
                   onMouseLeave={() => {
                     setHoverPill(null);
-                    /* Release the manual override — the next scroll
-                       tick's pickCentered() will re-select whichever
-                       folder currently sits closest to viewport
-                       center and re-open it. */
                     if (manualHoverRef.current === p.tag) {
                       manualHoverRef.current = null;
                     }
                     leaveFolder(p.tag);
                     handleTiltLeave(p.tag);
                   }}
-                  /* Keyboard focus parity — a Tab-navigating user gets
-                     the same folder-open, blurb-reveal, follow-pill
-                     experience a mouse user does. Without this, the
-                     folder just sits closed and keyboard-only visitors
-                     have to click through blind. Focus is treated as
-                     a manual signal so auto-open on narrow PC also
-                     yields to the user's Tab position.
-                     Pill is anchored to the folder's top-right corner
-                     (via getBoundingClientRect) rather than to a
-                     cursor coordinate that focus events don't carry. */
+                  /* Keyboard focus parity — Tab-navigating users get the
+                     same folder-open/blurb/pill experience as hover.
+                     Pill anchors to the folder's corner via
+                     getBoundingClientRect since focus carries no cursor
+                     coordinate. */
                   onFocus={(e) => {
                     const rect = e.currentTarget.getBoundingClientRect();
                     setPos({ x: rect.right - 8, y: rect.top + 8 });
@@ -1096,11 +956,8 @@ export default function ProjectsV2() {
                       </span>
                     ))}
                   </div>
-                  {/* Read-time chip — sits just BELOW the meta strip
-                      in the copy column flow. On mobile, only visible
-                      when the folder is in its "hovered" open state
-                      (from the scroll auto-open observer above). CSS
-                      gates visibility via .folder:has(.folder-art--hovered). */}
+                  {/* Read-time chip — on mobile, only visible while the
+                      folder is open (CSS: .folder:has(.folder-art--hovered)). */}
                   <span className="meta__read" aria-label="Estimated read time">
                     {p.readTime}
                   </span>

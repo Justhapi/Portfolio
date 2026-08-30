@@ -3,25 +3,17 @@
 import { useEffect, useRef, useState } from "react";
 
 /**
- * HoverBag — layered bag illustration with hoverable items.
+ * HoverBag — layered bag illustration.
  *
- * The bag is composed of 10 transparent PNG layers stacked in z-order
- * (one_earbud_1 on top, ten_back_bag at the bottom). Six of the items
- * (earbuds, ticket, usagi, phone, laptop, ipad) are interactive:
- * hovering the item's bounding zone shows a pill near the cursor
- * (same interaction model as HoverWord in the About body), and the
- * hovered item's layer(s) animate per its own hoverEffect:
- *   - laptop, ipad → lift straight up
- *   - earbuds, ticket, phone, usagi → tilt around a specific corner
- *
- * Entrance: the whole stack slides in from the left with a cartoonish
- * bounce on scroll-into-view (via .reveal / .in from RevealOnScroll).
- * No per-layer drag — the stack moves as a rigid unit.
- *
- * Debug mode: pass `debug` prop to outline hit zones with dashed
- * borders + labels — for tuning zone positions without inspecting
- * DevTools.
+ * The bag is composed of 10 transparent PNG layers stacked in z-order.
+ * The hover pill interaction is temporarily disabled (see
+ * HOVER_POPUPS_ENABLED below) — the bag renders as static art only.
  */
+
+/** Hover-pill popups are disabled for now (portfolio is going out for
+ *  job applications and the pills still use placeholder content/assets).
+ *  Flip back to true once the real pill content is ready. */
+const HOVER_POPUPS_ENABLED = false;
 
 type HoverEffect = "lift" | "tilt-left" | "tilt-right";
 
@@ -31,12 +23,7 @@ type Item = {
   layers: string[];
   hoverEffect: HoverEffect;
   zone: { x: number; y: number; w: number; h: number };
-  /* Per-item pill placement — tuned by hand so each item's pill sits
-     in a visually pleasing spot that doesn't cover the item itself.
-     xPct / yPct are percentages of the .hover-bag__stack bounds (same
-     coordinate system as `zone`), and describe where the pill's CENTRE
-     should land. E.g. { xPct: 50, yPct: 42 } → pill centre sits at the
-     illustration's horizontal middle, 42% down. */
+  /** Pill centre, as % of the .hover-bag__stack bounds. */
   pillOffset: { xPct: number; yPct: number };
 };
 
@@ -58,21 +45,6 @@ const LAYERS: Layer[] = [
   { key: "one_earbud_1",     src: "/img/bag/one_earbud_1.webp" },
 ];
 
-/* ITEMS — per-item hit zone + per-item pill placement.
-   ───────────────────────────────────────────────────────────────────
-   `pillOffset` = { xPct, yPct } is the pill CENTRE, expressed as
-   percentages of the .hover-bag__stack rect (same coord system as
-   `zone`). Tune these visually per item — starting values below place
-   each pill in the bag's empty pocket area, away from the item's own
-   position. Adjust in browser (Cmd+R to reload after each tweak).
-
-   Reference for eyeballing (zones in stack %):
-     ipad     — top-center-left    (x 23-47, y  2-19)
-     laptop   — top-center-right   (x 48-85, y  0-18)
-     phone    — right-mid          (x 67-84, y 36-59)
-     ticket   — front pocket       (x 44-58, y 54-74)
-     usagi    — right-bottom hang  (x 63-73, y 63-98)
-     earbuds  — left-bottom hang   (x  4-24, y 60-87)                */
 const ITEMS: Item[] = [
   {
     key: "ipad",
@@ -134,28 +106,15 @@ const EFFECT_CLASS: Record<HoverEffect, string> = {
    the ITEMS array below. No shared anchor / no algorithmic overlap
    avoidance — each item's pill position is hand-tuned. */
 
-/**
- * GitHub Pages serves the site under /Portfolio/, so raw <img src="/…"> paths
- * 404 in production. Next's basePath is applied to routing / next/link / next/image
- * automatically, but NOT to plain <img> tags. Prepend manually to match the
- * pattern already used elsewhere in the repo (see HANDOVER.md → GitHub Pages / basePath).
- */
+/** GitHub Pages serves the site under /Portfolio/ — Next's basePath
+ *  covers routing/next/image but not plain <img> tags, so it's
+ *  prepended manually here (same pattern as elsewhere in the repo). */
 const BASE_PATH = process.env.NODE_ENV === "production" ? "/Portfolio" : "";
 
 export default function HoverBag({ debug = false }: { debug?: boolean }) {
   const [active, setActive] = useState<string | null>(null);
   const pillRef = useRef<HTMLDivElement | null>(null);
-  /* Anchor for pill positioning — the direct visual container of the
-     bag illustration (parent of the layer <img>s). Using this instead
-     of the outer .hover-bag container avoids the pill drifting into
-     the empty grid space to the right of the artwork. */
   const stackRef = useRef<HTMLDivElement | null>(null);
-  /* Gate the entire pill interaction to hover-capable pointers. Touch
-     users can't hover, so all 6 pill variants + the cursor-follow shell
-     are dead weight on mobile — no display + no listeners saves CSS
-     evaluation and JS work on the platform that most needs both.
-     Default true (SSR + before hydration) so hover-capable devices see
-     the pill instantly on first hover; useEffect corrects on touch. */
   const [hoverCapable, setHoverCapable] = useState<boolean>(true);
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -166,38 +125,20 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
     return () => mq.removeEventListener("change", update);
   }, []);
 
-  /**
-   * Position the pill using the hovered item's hand-tuned pillOffset.
-   * X/Y are read as percentages of the .hover-bag__stack rect (same
-   * coord system as `zone`) and describe the pill's CENTRE. Anchoring
-   * to the stack (not the outer .hover-bag) keeps the pill visually
-   * pinned to the bag artwork regardless of surrounding whitespace.
-   *
-   * Called on hover-enter / focus and on resize — NOT on mousemove.
-   * Viewport clamp is the only safety net; per-item positions are the
-   * source of truth. Tune the numbers in ITEMS[].pillOffset above.
-   */
   const positionPill = (item: Item | null | undefined) => {
     const pill = pillRef.current;
     const stack = stackRef.current;
     if (!pill || !stack || !item) return;
     const pillRect = pill.getBoundingClientRect();
-    // getBoundingClientRect can return 0×0 on first paint before the
-    // pill has been laid out. Fall back to shell dimensions (240×170)
-    // matching the CSS so positioning still works on the very first frame.
     const pillW = pillRect.width || 240;
     const pillH = pillRect.height || 170;
     const stackRect = stack.getBoundingClientRect();
 
-    // Pill centre lands at (xPct, yPct) of the stack; convert to the
-    // pill's top-left for style.left/top writes.
     const centreX = stackRect.left + stackRect.width * (item.pillOffset.xPct / 100);
     const centreY = stackRect.top + stackRect.height * (item.pillOffset.yPct / 100);
     const desiredX = centreX - pillW / 2;
     const desiredY = centreY - pillH / 2;
 
-    // Viewport clamp — safety net so the pill never leaves the screen
-    // even if a hand-tuned offset overflows on small viewports.
     const margin = 8;
     const maxX = Math.max(margin, window.innerWidth - pillW - margin);
     const maxY = Math.max(margin, window.innerHeight - pillH - margin);
@@ -207,9 +148,6 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
     pill.style.top = `${clampedY}px`;
   };
 
-  /* Reposition on window resize while a pill is active — the stack's
-     size / position changes with the viewport, so the cached pill spot
-     would otherwise drift. Only bound while a pill is showing. */
   useEffect(() => {
     if (!active) return;
     const item = ITEMS.find((i) => i.key === active);
@@ -240,11 +178,7 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
             draggable={false}
           />
         ))}
-        {/* Hit zones + mouse listeners: only rendered on hover-capable
-            pointers. On touch, the bag illustration stays visible as
-            static art but has no interactive hotspots — pointer events
-            on the bag are moot without a pill to reveal. */}
-        {hoverCapable && ITEMS.map((item) => (
+        {HOVER_POPUPS_ENABLED && hoverCapable && ITEMS.map((item) => (
           <button
             key={item.key}
             type="button"
@@ -270,11 +204,11 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
           />
         ))}
       </div>
-      {/* Pill wrapper: gated on hover-capable so the entire cursor-
-          follow overlay is skipped on touch. Removes the pill's DOM
-          node entirely so its continuous CSS keyframe animations don't
-          run in the background either — meaningful battery win. */}
-      {hoverCapable && (
+      {/* Pill wrapper: gated on hover-capable so the cursor-follow
+          overlay is skipped on touch, and on HOVER_POPUPS_ENABLED so its
+          DOM node (and CSS keyframe animations) don't mount at all
+          while popups are disabled. */}
+      {HOVER_POPUPS_ENABLED && hoverCapable && (
         <div
           ref={pillRef}
           className={`hover-bag__pill hover-bag__pill--${activeItem?.key ?? "none"}${active ? " is-on" : ""}`}
