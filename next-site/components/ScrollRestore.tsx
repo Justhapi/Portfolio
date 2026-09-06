@@ -21,6 +21,21 @@ import { useEffect } from "react";
  * SmoothScroll.tsx. A single scrollTo can miss the final layout because
  * the page is still growing. Reapplying after rAF + a 90ms timer covers
  * the settle window without feeling jumpy.
+ *
+ * Why NOT document.referrer (previous approach, now removed):
+ * this site navigates between "/" and "/projects/*" as an SPA — Link
+ * clicks are pushState navigations, not full page loads. document.referrer
+ * is a browser/HTTP concept that only reflects the referrer of the
+ * original hard navigation into the tab; it does NOT update when the
+ * route changes via the History API. So "was the previous route a case
+ * study" was always false for the actual back-navigation path this is
+ * meant to handle, and the restore silently never ran — every "back"
+ * fell through to the fresh-visit branch and snapped to the hero.
+ * The saved sessionStorage key is written ONLY by saveHomeScroll(), which
+ * only ever runs from a project folder's onClick. So the key's mere
+ * presence is already proof the visitor is returning from a case study —
+ * no referrer check needed. It's consumed (removed) immediately after a
+ * successful restore so a later plain refresh of "/" doesn't replay it.
  */
 
 const KEY = "portfolio:home-scroll";
@@ -41,18 +56,6 @@ export default function ScrollRestore() {
       window.history.scrollRestoration = "manual";
     }
 
-    /* Only restore the saved scroll position when the visitor is
-       RETURNING FROM A CASE STUDY (referrer starts with the site's own
-       origin and includes /projects/). Every other entry — first visit,
-       direct URL, external referrer, opening a new tab — snaps to the
-       top so the hero is always the first thing seen on a fresh
-       arrival. This prevents sessionStorage carryover from ever
-       landing a first-time visitor on the projects row. */
-    const referrer = document.referrer;
-    const origin = window.location.origin;
-    const isFromCaseStudy =
-      referrer.startsWith(origin) && referrer.includes("/projects/");
-
     const clearHash = () => {
       if (window.location.hash) {
         history.replaceState(
@@ -63,10 +66,13 @@ export default function ScrollRestore() {
       }
     };
 
-    if (!isFromCaseStudy) {
-      /* Fresh visit / external referrer — force hero, clear any stale
-         hash + any stored scroll position. */
-      sessionStorage.removeItem(KEY);
+    const saved = sessionStorage.getItem(KEY);
+    const y = saved !== null ? parseInt(saved, 10) : NaN;
+
+    if (saved === null || Number.isNaN(y)) {
+      /* No saved position — fresh visit, external referrer, new tab, or
+         a position already consumed by an earlier restore. Force hero,
+         clear any stale hash. */
       clearHash();
       const goTop = () => window.scrollTo(0, 0);
       goTop();
@@ -79,11 +85,10 @@ export default function ScrollRestore() {
     }
 
     /* Returning from a case study — restore the saved scroll position
-       so the visitor lands right back on the folder they clicked. */
-    const saved = sessionStorage.getItem(KEY);
-    if (!saved) return;
-    const y = parseInt(saved, 10);
-    if (Number.isNaN(y)) return;
+       so the visitor lands right back on the folder they clicked. Consume
+       the key right away so a later plain refresh of "/" (no new project
+       click in between) doesn't replay a stale position. */
+    sessionStorage.removeItem(KEY);
 
     // Three-pass restore handles layout settle (paint → Lenis init →
     // sticky scene height).

@@ -244,7 +244,11 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
             draggable={false}
           />
         ))}
-        {hoverCapable && ITEMS.map((item) => (
+        {/* Rendered on every device now — touch devices get a tap-to-toggle
+            popup (centered in the bag, see the mobile pill block below)
+            instead of the cursor-follow hover pill, so the six items are
+            actually reachable on mobile instead of not rendering at all. */}
+        {ITEMS.map((item) => (
           <button
             key={item.key}
             type="button"
@@ -255,19 +259,25 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
               width: `${item.zone.w}%`,
               height: `${item.zone.h}%`,
             }}
-            onMouseEnter={(e) => {
+            onMouseEnter={hoverCapable ? (e) => {
               placePill(e.clientX, e.clientY, item.key);
               setActive(item.key);
-            }}
-            onMouseMove={(e) => placePill(e.clientX, e.clientY, item.key)}
-            onMouseLeave={() => setActive(null)}
-            onFocus={(e) => {
+            } : undefined}
+            onMouseMove={hoverCapable ? (e) => placePill(e.clientX, e.clientY, item.key) : undefined}
+            onMouseLeave={hoverCapable ? () => setActive(null) : undefined}
+            onFocus={hoverCapable ? (e) => {
               const r = e.currentTarget.getBoundingClientRect();
               placePill(r.left + r.width / 2, r.top + r.height / 2, item.key);
               setActive(item.key);
-            }}
-            onBlur={() => setActive(null)}
+            } : undefined}
+            onBlur={hoverCapable ? () => setActive(null) : undefined}
+            /* Touch path: tap toggles the centered popup — tap the same
+               item again (or it's already active) to fade it back out. */
+            onClick={!hoverCapable ? () => {
+              setActive((prev) => (prev === item.key ? null : item.key));
+            } : undefined}
             aria-label={item.label}
+            aria-pressed={!hoverCapable ? active === item.key : undefined}
             data-debug-label={debug ? item.label : undefined}
           />
         ))}
@@ -288,6 +298,19 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
           </div>
         </div>,
         document.body
+      )}
+      {/* Touch path: same pill content, but fixed in the middle of the bag
+          container and driven purely by fade (no cursor-follow, no
+          portal — it only ever needs to sit centered over the bag). */}
+      {!hoverCapable && mounted && (
+        <div
+          className={`hover-bag__pill hover-bag__pill--mobile hover-bag__pill--${activeItem?.key ?? "none"}${active ? " is-on" : ""}`}
+          aria-hidden="true"
+        >
+          <div className="hover-bag__pill-inner">
+            {activeItem && renderPillVariant(activeItem.key)}
+          </div>
+        </div>
       )}
     </div>
   );

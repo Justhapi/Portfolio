@@ -35,9 +35,18 @@ export default function HeroV2() {
   const [flipped, setFlipped] = useState(false);
   const [animDir, setAnimDir] = useState<"fwd" | "bwd" | null>(null);
   const [isRaised, setIsRaised] = useState(false);
+  /* isShiftAnim — a short window (raise duration + the shift-back
+     transition) during which the attached stickers' CSS transition is
+     turned on via .is-shift-anim (see globals.css). Outside this window
+     the transition is off entirely, so the SmoothScroll.tsx parallax
+     system's per-frame inline transform writes apply instantly instead
+     of being eased — that eased chase is what read as the stickers
+     "lagging"/"glitching" behind the scroll on mobile. */
+  const [isShiftAnim, setIsShiftAnim] = useState(false);
   const targetRef = useRef(false);
   const riseTimerRef = useRef<number | null>(null);
   const animEndTimerRef = useRef<number | null>(null);
+  const shiftTimerRef = useRef<number | null>(null);
   const liftRef = useRef<HTMLDivElement | null>(null);
   const hoverRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
@@ -63,15 +72,21 @@ export default function HeroV2() {
 
   const RISE_HOLD_MS = 460;
   const ANIM_END_MS = 580;
+  // Covers the raise hold plus the 220ms shift-back transition (see
+  // .is-shift-anim in globals.css) so the sticker transition stays on
+  // long enough to animate the return trip too, not just the raise.
+  const SHIFT_ANIM_MS = RISE_HOLD_MS + 240;
 
   const handlePhotoClick = () => {
     if (riseTimerRef.current) window.clearTimeout(riseTimerRef.current);
     if (animEndTimerRef.current) window.clearTimeout(animEndTimerRef.current);
+    if (shiftTimerRef.current) window.clearTimeout(shiftTimerRef.current);
 
     targetRef.current = !targetRef.current;
     const dir: "fwd" | "bwd" = targetRef.current ? "fwd" : "bwd";
 
     setIsRaised(true);
+    setIsShiftAnim(true);
     setAnimDir(dir);
 
     riseTimerRef.current = window.setTimeout(() => {
@@ -83,12 +98,17 @@ export default function HeroV2() {
       setAnimDir(null);
       animEndTimerRef.current = null;
     }, ANIM_END_MS);
+    shiftTimerRef.current = window.setTimeout(() => {
+      setIsShiftAnim(false);
+      shiftTimerRef.current = null;
+    }, SHIFT_ANIM_MS);
   };
 
   useEffect(() => {
     return () => {
       if (riseTimerRef.current) window.clearTimeout(riseTimerRef.current);
       if (animEndTimerRef.current) window.clearTimeout(animEndTimerRef.current);
+      if (shiftTimerRef.current) window.clearTimeout(shiftTimerRef.current);
     };
   }, []);
 
@@ -166,7 +186,7 @@ export default function HeroV2() {
           <SparkleField count={5} slowdown={1.6} lifeScale={1.3} />
         </div>
         <div
-          className={`hero-polaroid${isRaised ? " is-raised" : ""}`}
+          className={`hero-polaroid${isRaised ? " is-raised" : ""}${isShiftAnim ? " is-shift-anim" : ""}`}
           data-cursor="polaroid"
         >
           <div ref={liftRef} className={`polaroid-lift${isRaised ? " is-raised" : ""}`}>

@@ -121,12 +121,20 @@ const PARALLAX_TARGETS: ParallaxConfig[] = [
   // Negative speed → row drifts DOWN as scroll increases (confirmed from
   // browser: translateY sign is inverted for scene-relative targets).
   // At ~0.55 the row exits the viewport bottom by end of the sticky range.
-  /* Reduced from -0.18 → -0.05: the larger drift was pulling the
-     heading/pitch cluster off-center by ~180px on final scroll into
-     Connect, so the content read as clipped at the top of the
-     viewport. -0.05 keeps a subtle depth cue without dragging the
-     cluster away from the true vertical center. */
-  { selector: ".connect-row",           speed: -0.05, relativeToScene: true },
+  /* Reduced from -0.18 → -0.05 previously helped, but ANY nonzero drift
+     measured from the scene START keeps growing for as long as the user
+     keeps scrolling — it never settles. On mobile, where the fixed nav
+     pill sits close to the top of the viewport, that residual upward
+     drift at full/final scroll was enough to pull the heading/pitch/
+     links cluster up and under the nav, with the freed-up space showing
+     up as a gap above the footer instead.
+     Switched to relativeToSceneEnd (same basis `.foot` already uses
+     below) so delta = 0 exactly when About finishes sliding off / the
+     page is scrolled all the way down — the cluster settles at its
+     natural centered position (closer to the footer, no nav overlap)
+     right when "fully scrolled" is reached, while still drifting for
+     depth during the reveal itself. */
+  { selector: ".connect-row",           speed: -0.05, relativeToSceneEnd: true },
   // Footer credits line — counter-drift vs .connect-row for depth.
   // Scene-END base so delta = 0 exactly when About finishes sliding off:
   // during the reveal the footer sits below its resting spot (~0.08 ×

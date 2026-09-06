@@ -2001,13 +2001,20 @@ em.it { font-style: italic; }
    in the flip arc. transition-delay applies both ways, so on unraise
    the top slides back first and the bottom follows — same wave, reverse.
    Values bumped from ±36 → ±48 for a more visible read. */
-.sticker.school-note.polaroid-attached {
+/* No transition by default on EITHER attached sticker — the parallax
+   scroll system (SmoothScroll.tsx) writes each sticker's transform
+   inline every scroll frame. A permanently-on CSS transition would ease
+   between those per-frame values instead of applying them instantly,
+   which reads as the sticker "lagging"/glitching behind the actual
+   scroll position (this was previously happening to BOTH stickers,
+   despite an old comment here claiming designing-green had none — the
+   transition below was unconditional). The transition is switched on
+   ONLY for the brief .is-shift-anim window (raise + shift-back, see
+   HeroV2.tsx) so the pick-up/put-down shift still animates smoothly. */
+.hero-polaroid.is-shift-anim .sticker.school-note.polaroid-attached,
+.hero-polaroid.is-shift-anim .sticker.designing-green.polaroid-attached {
   transition: transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1) 0ms !important;
 }
-/* No transition on designing-green — the parallax scroll system writes
-   its transform inline every frame; a CSS transition would try to
-   interpolate between those frames, causing perceived lag. Instant
-   application matches how parallax expects to drive the element. */
 .hero-polaroid.is-raised .sticker.school-note.polaroid-attached {
   transform: rotate(-8deg) translate(-48px, -24px) !important;
 }
@@ -2021,8 +2028,7 @@ em.it { font-style: italic; }
   transform:
     translate(var(--raise-x, 0px), calc(var(--parallax-y, 0px) + var(--raise-y, 0px)))
     rotate(-4deg) !important;
-  transition:
-    transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1) 0ms;
+  /* No unconditional transition here — see .is-shift-anim rule above. */
 }
 /* When the polaroid raises, the availability sticker shifts OUTWARD
    (down-right, away from the polaroid center — mirroring the school-
@@ -3835,6 +3841,30 @@ em.it { font-style: italic; }
   .hover-bag__pill.is-on {
     opacity: 0;
     transform: scale(0.94);
+  }
+}
+/* Touch variant — same shell, but centered inside .hover-bag itself
+   (which is position: relative) instead of cursor-anchored + portaled
+   to <body>. Tap-to-toggle fade in/out only; no position tracking. */
+.hover-bag__pill--mobile {
+  position: absolute;
+  inset: 0;
+  top: 50%;
+  left: 50%;
+  right: auto;
+  bottom: auto;
+  margin: 0;
+  transform: translate(-50%, -50%) scale(0.94);
+  transform-origin: 50% 50%;
+  z-index: 30;
+}
+.hover-bag__pill--mobile.is-on {
+  transform: translate(-50%, -50%) scale(1);
+}
+@starting-style {
+  .hover-bag__pill--mobile.is-on {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.94);
   }
 }
 /* Pause ALL pill variant animations while the pill is hidden. Every
