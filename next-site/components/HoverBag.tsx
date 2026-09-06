@@ -222,6 +222,25 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active]);
 
+  /* Touch path: tapping anywhere outside the active zone closes the
+     centered popup. Only armed while a popup is actually open, and only
+     on non-hover-capable devices — desktop already closes on
+     onMouseLeave. Checking `.closest(".hover-bag__zone")` lets a tap on
+     ANY zone button (the active one, to toggle off, or a different one,
+     to switch) fall through to that button's own onClick instead of
+     being fought here — this listener only ever fires setActive(null)
+     for taps that land outside every zone. */
+  useEffect(() => {
+    if (hoverCapable || !active) return;
+    const onDocClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (target?.closest(".hover-bag__zone")) return;
+      setActive(null);
+    };
+    document.addEventListener("click", onDocClick);
+    return () => document.removeEventListener("click", onDocClick);
+  }, [hoverCapable, active]);
+
   const activeItem = ITEMS.find((i) => i.key === active);
   const liftedLayers = new Set(activeItem?.layers ?? []);
   const activeEffectClass = activeItem ? EFFECT_CLASS[activeItem.hoverEffect] : "";
