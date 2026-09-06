@@ -36,7 +36,8 @@ const SECTIONS = [
   { id: "takeaways", label: "Takeaways" },
 ];
 
-const BASE_PATH = process.env.NODE_ENV === "production" ? "/Portfolio" : "";
+// Custom domain (kathleenli.tech) serves from the root — no prefix needed.
+const BASE_PATH = "";
 /* MP4 first — VP9-in-WebM decode support is inconsistent across
    browsers/engines, which was causing this cover to render blank or
    inconsistently. MP4/H.264 is universally supported. */

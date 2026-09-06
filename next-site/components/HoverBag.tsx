@@ -1,19 +1,15 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 /**
  * HoverBag — layered bag illustration.
  *
  * The bag is composed of 10 transparent PNG layers stacked in z-order.
- * The hover pill interaction is temporarily disabled (see
- * HOVER_POPUPS_ENABLED below) — the bag renders as static art only.
+ * Hovering one of the 6 item hit-zones lifts/tilts that layer and shows
+ * a themed pill card that follows the cursor (see `placePill` below).
  */
-
-/** Hover-pill popups are disabled for now (portfolio is going out for
- *  job applications and the pills still use placeholder content/assets).
- *  Flip back to true once the real pill content is ready. */
-const HOVER_POPUPS_ENABLED = false;
 
 type HoverEffect = "lift" | "tilt-left" | "tilt-right";
 
@@ -23,8 +19,6 @@ type Item = {
   layers: string[];
   hoverEffect: HoverEffect;
   zone: { x: number; y: number; w: number; h: number };
-  /** Pill centre, as % of the .hover-bag__stack bounds. */
-  pillOffset: { xPct: number; yPct: number };
 };
 
 type Layer = {
@@ -52,7 +46,6 @@ const ITEMS: Item[] = [
     layers: ["eight_ipad"],
     hoverEffect: "lift",
     zone: { x: 23, y:  2, w: 24, h: 17 },
-    pillOffset: { xPct: 50, yPct: 55 },
   },
   {
     key: "laptop",
@@ -60,7 +53,6 @@ const ITEMS: Item[] = [
     layers: ["nine_laptop"],
     hoverEffect: "lift",
     zone: { x: 48, y:  0, w: 37, h: 18 },
-    pillOffset: { xPct: 45, yPct: 55 },
   },
   {
     key: "phone",
@@ -68,7 +60,6 @@ const ITEMS: Item[] = [
     layers: ["five_phone"],
     hoverEffect: "lift",
     zone: { x: 67, y: 36, w: 17, h: 23 },
-    pillOffset: { xPct: 35, yPct: 40 },
   },
   {
     key: "ticket",
@@ -76,7 +67,6 @@ const ITEMS: Item[] = [
     layers: ["six_ticket"],
     hoverEffect: "tilt-right",
     zone: { x: 44, y: 54, w: 14, h: 20 },
-    pillOffset: { xPct: 50, yPct: 25 },
   },
   {
     key: "usagi",
@@ -84,7 +74,6 @@ const ITEMS: Item[] = [
     layers: ["three_usagi"],
     hoverEffect: "tilt-right",
     zone: { x: 63, y: 63, w: 10, h: 35 },
-    pillOffset: { xPct: 35, yPct: 35 },
   },
   {
     key: "earbuds",
@@ -92,7 +81,6 @@ const ITEMS: Item[] = [
     layers: ["one_earbud_1", "two_earbud_2"],
     hoverEffect: "tilt-left",
     zone: { x:  4, y: 60, w: 20, h: 27 },
-    pillOffset: { xPct: 55, yPct: 35 },
   },
 ];
 
@@ -102,19 +90,52 @@ const EFFECT_CLASS: Record<HoverEffect, string> = {
   "tilt-right": "is-tilted-right",
 };
 
-/* Pill placement is now driven per-item via ITEMS[i].pillOffset — see
-   the ITEMS array below. No shared anchor / no algorithmic overlap
-   avoidance — each item's pill position is hand-tuned. */
+/** Custom domain (kathleenli.tech) serves from the root — no path
+ *  prefix needed. Kept as a named constant (rather than inlining "")
+ *  since plain <img> tags don't pick up next.config's basePath
+ *  automatically, so if that ever changes again, this is the one
+ *  place to update (same pattern as elsewhere in the repo). */
+const BASE_PATH = "";
 
-/** GitHub Pages serves the site under /Portfolio/ — Next's basePath
- *  covers routing/next/image but not plain <img> tags, so it's
- *  prepended manually here (same pattern as elsewhere in the repo). */
-const BASE_PATH = process.env.NODE_ENV === "production" ? "/Portfolio" : "";
+/* Visible painted bounds of everything under `root`: each descendant is
+   intersected with every clipping ancestor up to (but not including)
+   root's own parent, so content hidden inside an overflow:hidden shell
+   (the friends film-strip, the food wheel's oversized disc) isn't
+   counted. Used to catch content that bleeds past the nominal pill box
+   (art's cloud, music's flanking notes) so it can be nudged fully
+   on-screen rather than clipped by the viewport edge. */
+function getPaintedBounds(root: HTMLElement) {
+  let L = Infinity, T = Infinity, R = -Infinity, B = -Infinity;
+  const clips = (n: Element) => {
+    const s = getComputedStyle(n);
+    return /hidden|clip|auto|scroll/.test(s.overflow + " " + s.overflowX + " " + s.overflowY);
+  };
+  root.querySelectorAll("*").forEach((n) => {
+    const r = n.getBoundingClientRect();
+    if (!r.width && !r.height) return;
+    let { left, top, right, bottom } = r;
+    for (let p = n.parentElement; p && p !== root.parentElement; p = p.parentElement) {
+      if (!clips(p)) continue;
+      const c = p.getBoundingClientRect();
+      left = Math.max(left, c.left);
+      top = Math.max(top, c.top);
+      right = Math.min(right, c.right);
+      bottom = Math.min(bottom, c.bottom);
+    }
+    if (right <= left || bottom <= top) return;
+    if (left < L) L = left;
+    if (top < T) T = top;
+    if (right > R) R = right;
+    if (bottom > B) B = bottom;
+  });
+  return L === Infinity ? null : { left: L, top: T, right: R, bottom: B };
+}
 
 export default function HoverBag({ debug = false }: { debug?: boolean }) {
   const [active, setActive] = useState<string | null>(null);
   const pillRef = useRef<HTMLDivElement | null>(null);
   const stackRef = useRef<HTMLDivElement | null>(null);
+  const lastPos = useRef<{ x: number; y: number } | null>(null);
   const [hoverCapable, setHoverCapable] = useState<boolean>(true);
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -125,35 +146,80 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
     return () => mq.removeEventListener("change", update);
   }, []);
 
-  const positionPill = (item: Item | null | undefined) => {
+  /* The pill is portaled straight to <body> (see the render below).
+     .hover-bag's own entrance animation leaves a lingering, non-"none"
+     `transform` on it after finishing (animation-fill-mode: forwards
+     holds the final translateX(0)/rotate(0)/scale(1,1) frame) — and
+     per spec ANY non-"none" transform on an ancestor makes it the
+     containing block for position:fixed descendants. Left nested, the
+     pill's "fixed" coordinates would be measured from .hover-bag's box
+     instead of the viewport, landing it however far .hover-bag sits
+     from the viewport origin — which grows/shrinks with scroll. A
+     portal sidesteps that (and any other transformed ancestor)
+     entirely, since document.body isn't affected by section-level
+     entrance/reveal animations. Only portal after mount so SSR and the
+     first client render match (no document on the server). */
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  /* Mouse-anchored placement: the pill always sits top-right of the
+     cursor (consistent everywhere on the page, no left/below flip) —
+     clamped, not flipped, so it never overshoots the viewport but
+     stays on the same side of the cursor throughout a hover. */
+  const placePill = (clientX: number, clientY: number, key: string | null) => {
     const pill = pillRef.current;
-    const stack = stackRef.current;
-    if (!pill || !stack || !item) return;
-    const pillRect = pill.getBoundingClientRect();
-    const pillW = pillRect.width || 240;
-    const pillH = pillRect.height || 170;
-    const stackRect = stack.getBoundingClientRect();
+    if (!pill || !key) return;
+    lastPos.current = { x: clientX, y: clientY };
+    const card = pill.firstElementChild as HTMLElement | null;
+    const w = card?.offsetWidth || 268;
+    const h = card?.offsetHeight || 190;
+    const margin = 12;
+    const gap = key === "music" ? 4 : 16;
+    const vw = window.innerWidth, vh = window.innerHeight;
 
-    const centreX = stackRect.left + stackRect.width * (item.pillOffset.xPct / 100);
-    const centreY = stackRect.top + stackRect.height * (item.pillOffset.yPct / 100);
-    const desiredX = centreX - pillW / 2;
-    const desiredY = centreY - pillH / 2;
+    const x = Math.min(Math.max(clientX + gap, margin), Math.max(margin, vw - w - margin));
+    const y = Math.min(Math.max(clientY - h - gap, margin), Math.max(margin, vh - h - margin));
 
-    const margin = 8;
-    const maxX = Math.max(margin, window.innerWidth - pillW - margin);
-    const maxY = Math.max(margin, window.innerHeight - pillH - margin);
-    const clampedX = Math.min(Math.max(desiredX, margin), maxX);
-    const clampedY = Math.min(Math.max(desiredY, margin), maxY);
-    pill.style.left = `${clampedX}px`;
-    pill.style.top = `${clampedY}px`;
+    pill.style.left = `${x}px`;
+    pill.style.top = `${y}px`;
+    pill.style.transformOrigin = "0% 100%";
+
+    // Nudge for content that bleeds outside the nominal box (art's
+    // cloud, music's notes) — measure real painted bounds and shift
+    // just enough to keep them fully on-screen.
+    const bounds = getPaintedBounds(pill);
+    if (bounds) {
+      let dx = 0, dy = 0;
+      if (bounds.left < margin) dx = margin - bounds.left;
+      else if (bounds.right > vw - margin) dx = Math.max(vw - margin - bounds.right, margin - bounds.left);
+      if (bounds.top < margin) dy = margin - bounds.top;
+      else if (bounds.bottom > vh - margin) dy = Math.max(vh - margin - bounds.bottom, margin - bounds.top);
+      if (dx || dy) {
+        pill.style.left = `${x + dx}px`;
+        pill.style.top = `${y + dy}px`;
+      }
+    }
   };
+
+  // Re-place once the newly-active variant's markup has painted, so
+  // bleeding elements are measured for real rather than against the
+  // previous variant's bounds.
+  useEffect(() => {
+    if (!active || !lastPos.current) return;
+    const pos = lastPos.current;
+    const id = requestAnimationFrame(() => placePill(pos.x, pos.y, active));
+    return () => cancelAnimationFrame(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [active]);
 
   useEffect(() => {
     if (!active) return;
-    const item = ITEMS.find((i) => i.key === active);
-    const onResize = () => positionPill(item);
+    const onResize = () => {
+      if (lastPos.current) placePill(lastPos.current.x, lastPos.current.y, active);
+    };
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active]);
 
   const activeItem = ITEMS.find((i) => i.key === active);
@@ -178,7 +244,7 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
             draggable={false}
           />
         ))}
-        {HOVER_POPUPS_ENABLED && hoverCapable && ITEMS.map((item) => (
+        {hoverCapable && ITEMS.map((item) => (
           <button
             key={item.key}
             type="button"
@@ -189,14 +255,16 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
               width: `${item.zone.w}%`,
               height: `${item.zone.h}%`,
             }}
-            onMouseEnter={() => {
+            onMouseEnter={(e) => {
+              placePill(e.clientX, e.clientY, item.key);
               setActive(item.key);
-              positionPill(item);
             }}
+            onMouseMove={(e) => placePill(e.clientX, e.clientY, item.key)}
             onMouseLeave={() => setActive(null)}
-            onFocus={() => {
+            onFocus={(e) => {
+              const r = e.currentTarget.getBoundingClientRect();
+              placePill(r.left + r.width / 2, r.top + r.height / 2, item.key);
               setActive(item.key);
-              positionPill(item);
             }}
             onBlur={() => setActive(null)}
             aria-label={item.label}
@@ -205,10 +273,11 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
         ))}
       </div>
       {/* Pill wrapper: gated on hover-capable so the cursor-follow
-          overlay is skipped on touch, and on HOVER_POPUPS_ENABLED so its
-          DOM node (and CSS keyframe animations) don't mount at all
-          while popups are disabled. */}
-      {HOVER_POPUPS_ENABLED && hoverCapable && (
+          overlay (and its DOM node / CSS keyframe animations) is
+          skipped entirely on touch. Portaled to <body> — see the
+          `mounted` comment above — so its position:fixed coordinates
+          are always relative to the real viewport. */}
+      {hoverCapable && mounted && createPortal(
         <div
           ref={pillRef}
           className={`hover-bag__pill hover-bag__pill--${activeItem?.key ?? "none"}${active ? " is-on" : ""}`}
@@ -217,7 +286,8 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
           <div className="hover-bag__pill-inner">
             {activeItem && renderPillVariant(activeItem.key)}
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
@@ -227,18 +297,7 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
    Each hoverable item on the bag reveals a themed pill card, not the
    same generic label. Variants share the cursor-follow shell but each
    has distinctive layout + typography so the six items feel like six
-   different peeks into Kathleen's world rather than six labels.
-
-   ASSET PLACEHOLDERS — the following are visually complete via CSS/SVG
-   but need real assets swapped in when available:
-     - PillFriends: 4 grey photo placeholders → swap with actual friend
-       polaroid photos in /public/img/hoverbag/friends/*.webp
-     - PillFood: 4 grey circle slices → swap with actual food photos
-       in /public/img/hoverbag/food/*.webp
-     - PillGames: text-initial icons → swap with actual game logo SVGs
-       in /public/img/hoverbag/games/{lol,tft,pokemon}.svg
-     - PillArt: geometric doodle placeholder → swap with actual doodle
-       thumbnail in /public/img/hoverbag/art/*.webp */
+   different peeks into Kathleen's world rather than six labels. */
 
 function renderPillVariant(key: string): React.ReactNode {
   switch (key) {
@@ -252,211 +311,217 @@ function renderPillVariant(key: string): React.ReactNode {
   }
 }
 
-/* Music — iPod frame in the middle of the shell with two flanking
+/* Music — iPod frame with an animated 5-bar equalizer, flanked by two
    handwritten notes (CPOP/KPOP/JPOP on the left, LBI on the right)
-   about Kathleen's music taste. */
+   that idle-bob in place. */
 function PillMusic() {
+  const BARS = [
+    { name: "musicBar1", dur: 1850, delay: 0,    hue: "#C68D5F" },
+    { name: "musicBar2", dur: 1480, delay: -320, hue: "#C68D5F" },
+    { name: "musicBar3", dur: 2220, delay: -640, hue: "#D9A277" },
+    { name: "musicBar4", dur: 1620, delay: -180, hue: "#C68D5F" },
+    { name: "musicBar5", dur: 2030, delay: -900, hue: "#C68D5F" },
+  ];
   return (
     <div className="pill-music">
-      <span className="pill-music__note pill-music__note--left">
-        I listen to<br /><strong>CPOP · KPOP · JPOP</strong>
-      </span>
       <div className="pill-music__ipod">
         <div className="pill-music__screen">
-          <span className="pill-music__track">LBI</span>
-          <span className="pill-music__wave" />
+          <span className="pill-music__track">坏坏</span>
+          <span className="pill-music__bars">
+            {BARS.map((b) => (
+              <i
+                key={b.name}
+                className="pill-music__bar"
+                style={{
+                  background: b.hue,
+                  animationName: b.name,
+                  animationDuration: `${b.dur}ms`,
+                  animationDelay: `${b.delay}ms`,
+                }}
+              />
+            ))}
+          </span>
         </div>
         <div className="pill-music__wheel">
-          <span className="pill-music__wheel-btn">◁</span>
-          <span className="pill-music__wheel-btn pill-music__wheel-btn--center">▶</span>
-          <span className="pill-music__wheel-btn">▷</span>
+          <span>◁</span>
+          <span className="pill-music__wheel-btn--center" />
+          <span>▷</span>
         </div>
       </div>
+      <span className="pill-music__note pill-music__note--left">
+        I tend to listen to <strong>CPOP / KPOP / JPOP</strong>
+      </span>
       <span className="pill-music__note pill-music__note--right">
-        On repeat:<br /><strong>LBI</strong>
+        The artist I listen to the most is <strong>LBI利比</strong>
       </span>
     </div>
   );
 }
 
-/* Friends — polaroids scroll UPWARD continuously through the pill,
-   with new photos entering from the bottom as older ones exit at the
-   top. Each card has its own horizontal offset + rotation so they
-   read as a dispersed pile (not a single column), so multiple names
-   are visible in the pill at any moment. */
+/* Friends — polaroids scroll UPWARD continuously through the pill as a
+   film-strip, new photos entering from the bottom and leaving at the
+   top by crossing straight out of the frame's overflow:hidden bounds —
+   no fade, just a hard clip, like the strip is longer than the window
+   showing it.
+   Back to the 3-lane structure (-80/0/80), but each card adds a small
+   +/- jitter to both its lane (--x) and its vertical travel (--y) so
+   the columns are still recognizably 3 columns, just not perfectly
+   aligned — same idea as the row stagger, applied to the columns too. */
 function PillFriends() {
+  const LANES = [-80, 0, 80];
+  const HUES = ["#8E3A3A", "#276866", "#C7A24A", "#93613A", "#87BAAB", "#6B5F55"];
+  // rot, x-jitter, y-jitter per card, cycling through the 3 lanes.
   const FRIENDS = [
-    { name: "Sam",   rot: -8, x: -55 },
-    { name: "Alex",  rot:  6, x:  50 },
-    { name: "Jamie", rot: -3, x:  -5 },
-    { name: "Chris", rot:  9, x: -40 },
-    { name: "Ren",   rot: -5, x:  45 },
-    { name: "Kai",   rot:  4, x:  15 },
-  ];
+    { rot: -8, jx: -8,  jy: 8   },
+    { rot: 6,  jx: 6,   jy: -6  },
+    { rot: -4, jx: -10, jy: 10  },
+    { rot: 8,  jx: 9,   jy: -9  },
+    { rot: -6, jx: -6,  jy: 5   },
+    { rot: 5,  jx: 8,   jy: -8  },
+    { rot: -7, jx: -9,  jy: 7   },
+    { rot: 7,  jx: 5,   jy: -5  },
+    { rot: -5, jx: -7,  jy: 9   },
+  ].map((f, i) => ({
+    ...f,
+    x: LANES[i % LANES.length] + f.jx,
+    hue: HUES[i % HUES.length],
+  }));
   return (
     <div className="pill-friends">
+      <span className="pill-tag">friends</span>
       <div className="pill-friends__frame">
         {FRIENDS.map((f, i) => (
           <div
-            key={f.name}
+            key={i}
             className="pill-friends__card"
             style={{
               animationDelay: `${(i * -12) / FRIENDS.length}s`,
               ["--rot" as string]: `${f.rot}deg`,
               ["--x" as string]: `${f.x}px`,
+              ["--y" as string]: `${f.jy}px`,
             }}
           >
             <div className="pill-friends__photo" />
-            <span className="pill-friends__name">{f.name}</span>
+            <span className="pill-friends__pin" style={{ background: f.hue }} />
           </div>
         ))}
       </div>
+      <span className="pill-friends__caption">photos of friends</span>
     </div>
   );
 }
 
-/* Food — lazy-Susan wheel: 4 plates arranged around a rotating disc.
-   The disc spins continuously, plates counter-rotate to stay upright.
-   Only the plate at the FRONT position (bottom of the visible arc) is
-   spotlighted; others rotate through as they cycle around. */
+/* Food — a lazy-Susan wheel of 4 plates spinning behind the pill's top
+   edge, pausing on each cardinal position before advancing to the
+   next — same rhythm as a real lazy Susan being turned to share a
+   dish. */
 function PillFood() {
-  const FOODS = [
-    { label: "boba",      hue: "#C68D5F" },
-    { label: "ramen",     hue: "#B5533A" },
-    { label: "dumplings", hue: "#D9A983" },
-    { label: "dim sum",   hue: "#7EA07B" },
-  ];
+  const PLATES = [0, 90, 180, 270];
   return (
     <div className="pill-food">
-      <span className="pill-food__caption">recent bites</span>
+      <span className="pill-tag">food</span>
       <div className="pill-food__wheel">
-        {FOODS.map((f, i) => {
-          const angle = (i * 360) / FOODS.length;
-          return (
-            <div
-              key={f.label}
-              className="pill-food__slot"
-              style={{
-                transform: `rotate(${angle}deg) translateY(-118px)`,
-              }}
-            >
-              <div
-                className="pill-food__counter"
-                style={{ transform: `rotate(${-angle}deg)` }}
-              >
-                <span
-                  className="pill-food__plate"
-                  style={{
-                    background: `radial-gradient(circle, ${f.hue} 0%, color-mix(in oklch, ${f.hue}, black 32%) 100%)`,
-                  }}
-                />
-                <span className="pill-food__label">{f.label}</span>
-              </div>
+        {PLATES.map((angle) => (
+          <div
+            key={angle}
+            className="pill-food__slot"
+            style={{ transform: `rotate(${angle}deg) translateY(-152px)` }}
+          >
+            <div className="pill-food__counter">
+              <span className="pill-food__plate" />
             </div>
-          );
-        })}
+          </div>
+        ))}
+      </div>
+      <div className="pill-food__footer">
+        <span className="pill-food__caption">one dish at a time</span>
       </div>
     </div>
   );
 }
 
-/* Travel — pinboard with 3 destination pins (purple/China,
-   red/Japan, yellow/HK). A "camera" zooms into each pin in turn,
-   holding on it before panning to the next. Cycles purple → red →
-   yellow → back to purple, repeat. */
+/* Travel — a pinboard that PANS across 3 labeled destinations (China,
+   Japan, Hong Kong) connected by a dashed route, rather than zooming
+   a camera into each pin. */
 function PillTravel() {
+  const PINS = [
+    { name: "China",     note: "where it started", hue: "#8E3A3A", left:   0, top:  63 },
+    { name: "Japan",     note: "spring trip",       hue: "#276866", left: 262, top: 188 },
+    { name: "Hong Kong", note: "food + family",     hue: "#C7A24A", left: 530, top:   0 },
+  ];
   return (
     <div className="pill-travel">
-      <span className="pill-travel__caption">recent trips</span>
-      {/* Camera-scale wrapper — animated to translate + scale into
-          each pin position sequentially. */}
-      <div className="pill-travel__camera">
+      <span className="pill-tag">travel</span>
+      <div className="pill-travel__board">
         <svg
           className="pill-travel__web"
-          viewBox="0 0 240 170"
-          aria-hidden="true"
+          viewBox="0 0 820 380"
           preserveAspectRatio="none"
+          aria-hidden="true"
         >
           <path
-            d="M 50 70 Q 100 50 130 100 Q 165 140 200 60"
+            d="M 128 158 L 396 283 L 664 95"
             fill="none"
             stroke="#4C3C2E"
-            strokeWidth="1.2"
-            strokeDasharray="4 4"
-            opacity="0.4"
+            strokeWidth="1.6"
+            strokeDasharray="6 5"
+            opacity="0.5"
           />
         </svg>
-        {/* Purple frame around China */}
-        <span
-          className="pill-travel__pin pill-travel__pin--purple"
-          style={{ top: "42%", left: "20%" }}
-        >
-          <span className="pill-travel__dot" />
-          China
-        </span>
-        {/* Red frame around Japan */}
-        <span
-          className="pill-travel__pin pill-travel__pin--red"
-          style={{ top: "60%", left: "54%" }}
-        >
-          <span className="pill-travel__dot" />
-          Japan
-        </span>
-        {/* Yellow frame around HK */}
-        <span
-          className="pill-travel__pin pill-travel__pin--yellow"
-          style={{ top: "36%", left: "82%" }}
-        >
-          <span className="pill-travel__dot" />
-          HK
-        </span>
+        {PINS.map((p) => (
+          <div key={p.name} className="pill-travel__slot" style={{ left: p.left, top: p.top }}>
+            <span className="pill-travel__label">{p.name}</span>
+            <span className="pill-travel__dot" style={{ background: p.hue }} />
+            <span className="pill-travel__note">{p.note}</span>
+          </div>
+        ))}
       </div>
+      <div className="pill-travel__frame" aria-hidden="true" />
     </div>
   );
 }
 
-/* Games — 3 dispersed icons + a cursor that visits each. The story
-   overlay always appears in the CENTER of the pill, showing the
-   currently-focused game's history — a single unified reveal spot
-   rather than one popup per icon. Story text is placeholder until
-   Kathleen provides the real copy. */
+/* Games — a dark "what I'm playing" panel. A cursor sprite visits each
+   of 3 icons in turn, pulsing it and revealing its name below. */
 function PillGames() {
   const GAMES = [
-    { key: "lol", name: "LoL",     hue: "#3273fa", story: "played since Season 3 — mained mid" },
-    { key: "tft", name: "TFT",     hue: "#c78d2e", story: "gold since Set 8 — comp obsessed" },
-    { key: "pkm", name: "Pokémon", hue: "#e2564b", story: "living dex sword & shield" },
+    { key: "pkm", initial: "P", name: "Pokémon", from: "#C0433C", to: "#8E2A28", delay: "0s" },
+    { key: "lol", initial: "L", name: "League",  from: "#2C6E8F", to: "#1B4459", delay: "-8s" },
+    { key: "tft", initial: "T", name: "TFT",     from: "#C68D5F", to: "#8A5A31", delay: "-4s" },
   ];
   return (
     <div className="pill-games">
-      {GAMES.map((g, i) => (
-        <div key={g.key} className="pill-games__slot" data-idx={i}>
-          <span className="pill-games__icon" style={{ background: g.hue }}>
-            {g.name[0]}
-          </span>
-          <span className="pill-games__label">{g.name}</span>
-        </div>
-      ))}
-      {/* Centered story overlay — content rotates through each game's
-          story in sync with the cursor's orbit. */}
-      <div className="pill-games__stage" aria-hidden="true">
-        {GAMES.map((g, i) => (
-          <span
-            key={g.key}
-            className="pill-games__story"
-            data-idx={i}
-            style={{ animationDelay: `${i * -3}s` }}
-          >
-            {g.story}
-          </span>
+      <span className="pill-games__caption">what i&rsquo;m playing</span>
+      <div className="pill-games__row">
+        {GAMES.map((g) => (
+          <div key={g.key} className="pill-games__slot">
+            <div
+              className="pill-games__icon"
+              style={{
+                background: `linear-gradient(160deg, ${g.from}, ${g.to})`,
+                animationDelay: g.delay,
+              }}
+            >
+              {g.initial}
+            </div>
+            <span className="pill-games__label" style={{ animationDelay: g.delay }}>
+              {g.name}
+            </span>
+          </div>
         ))}
       </div>
-      {/* Cursor sprite — orbits between the 3 icons */}
+      <div className="pill-games__taskbar">
+        <span className="pill-games__taskbar-dot pill-games__taskbar-dot--active" />
+        <span className="pill-games__taskbar-dot" />
+        <span className="pill-games__taskbar-dot" />
+        <span className="pill-games__clock">11:42 PM</span>
+      </div>
       <span className="pill-games__cursor" aria-hidden="true">
         <svg viewBox="0 0 16 20" width="14" height="18">
           <path
             d="M 2 2 L 14 12 L 8 12 L 11 18 L 8 19 L 5 13 L 2 16 Z"
-            fill="#2A302F"
-            stroke="#FFFDF7"
+            fill="#F6EEE6"
+            stroke="#2A302F"
             strokeWidth="1"
             strokeLinejoin="round"
           />
@@ -466,15 +531,14 @@ function PillGames() {
   );
 }
 
-/* Art — large cloud-shaped bubble sized bigger than the shell so its
-   wobbly edges extend past the pill perimeter (per Kathleen's sketch).
-   Caption sits on top of the cloud, doodle inside the cloud. */
+/* Art — a cloud-shaped card drifting gently above the pill's top edge
+   (bleeding past the shell — the placement system's painted-bounds
+   nudge keeps it fully on-screen), with a placeholder doodle swatch
+   and a caption below. */
 function PillArt() {
   return (
     <div className="pill-art">
-      {/* Cloud SVG — sized larger than the shell (280×220 for a
-          240×170 shell), positioned via top/left negatives so its
-          bumpy edges bleed past all four sides of the pill. */}
+      <span className="pill-tag">art</span>
       <svg
         className="pill-art__cloud"
         viewBox="0 0 280 220"
@@ -482,42 +546,19 @@ function PillArt() {
         preserveAspectRatio="xMidYMid meet"
       >
         <path
-          d="
-            M 60 100
-            C 40 100, 24 84, 32 66
-            C 20 52, 30 30, 52 32
-            C 60 14, 90 12, 100 30
-            C 112 18, 140 20, 148 40
-            C 168 28, 200 40, 200 60
-            C 224 60, 244 76, 236 100
-            C 256 110, 254 138, 232 144
-            C 240 168, 216 186, 196 178
-            C 190 200, 158 204, 148 186
-            C 138 200, 108 200, 100 184
-            C 84 196, 56 190, 56 170
-            C 32 168, 20 148, 34 130
-            C 20 122, 30 100, 60 100 Z
-          "
+          d="M 60 100 C 40 100, 24 84, 32 66 C 20 52, 30 30, 52 32 C 60 14, 90 12, 100 30 C 112 18, 140 20, 148 40 C 168 28, 200 40, 200 60 C 224 60, 244 76, 236 100 C 256 110, 254 138, 232 144 C 240 168, 216 186, 196 178 C 190 200, 158 204, 148 186 C 138 200, 108 200, 100 184 C 84 196, 56 190, 56 170 C 32 168, 20 148, 34 130 C 20 122, 30 100, 60 100 Z"
           fill="#FFFDF7"
           stroke="rgba(76, 60, 46, 0.22)"
           strokeWidth="2"
         />
       </svg>
-      <div className="pill-art__inner">
-        <div className="pill-art__doodle">
-          <svg viewBox="0 0 60 60" aria-hidden="true">
-            <path
-              d="M 12 42 Q 20 18 32 26 T 48 20 M 18 48 Q 30 52 44 46"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-            />
-            <circle cx="26" cy="14" r="2" fill="currentColor" />
-          </svg>
-        </div>
+      <div className="pill-art__doodle">
+        <span className="pill-art__doodle-tag">doodle</span>
+      </div>
+      <div className="pill-art__footer">
+        <span className="pill-art__kicker">doodles of college to rmr</span>
         <p className="pill-art__caption">
-          I capture memories<br />by sharing my vision.
+          I like to capture memories through sharing my vision with others
         </p>
       </div>
     </div>

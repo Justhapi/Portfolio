@@ -12,10 +12,12 @@ import { saveHomeScroll } from "@/components/ScrollRestore";
  * AI Journey Agent's sponsor is anonymized under NDA, so it gets a
  * hand-designed "Anonymous" sticky instead of a brand logo.
  *
- * BASE_PATH — raw <img>/<image> srcs need the /Portfolio prefix in
- * production (Next's basePath doesn't cover raw SVG <image> hrefs).
+ * BASE_PATH — custom domain (kathleenli.tech) serves from the root,
+ * so this is empty. Kept as a named constant since raw <img>/<image>
+ * srcs don't pick up next.config's basePath automatically (Next's
+ * basePath doesn't cover raw SVG <image> hrefs).
  */
-const BASE_PATH = process.env.NODE_ENV === "production" ? "/Portfolio" : "";
+const BASE_PATH = "";
 const FOLDER_THUMB = {
   frogslayer: `${BASE_PATH}/img/folders/frogslayer.svg`,
   stack:      `${BASE_PATH}/img/folders/stack.svg`,

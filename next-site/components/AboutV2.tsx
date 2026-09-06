@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import HoverBag from "@/components/HoverBag";
 
 type View = "stack" | "mentor" | "illos" | "food" | "sketch";
@@ -177,6 +177,155 @@ function HoverWord({
   );
 }
 
+/** Draggable "Look through my bag" sticky note. Picking it up (mouse
+ *  or touch) enlarges it slightly, like lifting a real note off the
+ *  page; it follows the pointer while held and stays wherever it's
+ *  dropped.
+ *  `translate`/`scale` (CSS longhands, distinct from the `transform`
+ *  shorthand the entrance/idle-bob animation targets) drive the drag —
+ *  they compose with `transform` rather than fighting it. Only `scale`
+ *  has a CSS transition, so the pick-up/drop size change eases while
+ *  dragging itself tracks the pointer with zero lag. On first grab the
+ *  animation is switched off so JS fully owns the note's position from
+ *  then on. */
+function BagNote() {
+  const noteRef = useRef<HTMLDivElement>(null);
+  const offset = useRef({ x: 0, y: 0 }); // cumulative drag offset (px)
+  const dragOrigin = useRef({ x: 0, y: 0 });
+  const draggingRef = useRef(false);
+  const movedRef = useRef(false); // has CSS animation been handed off yet?
+  const workSectionRef = useRef<HTMLElement | null>(null);
+  const bagElRef = useRef<HTMLElement | null>(null);
+  const folderElsRef = useRef<HTMLElement[]>([]);
+  const arrowRef = useRef<HTMLSpanElement>(null);
+  const [dragging, setDragging] = useState(false);
+  // Which caption reads true right now — flips live while dragging
+  // based on whether the note is currently sitting over the work
+  // section, and stays wherever it lands once you let go.
+  const [overWork, setOverWork] = useState(false);
+
+  useEffect(() => {
+    workSectionRef.current = document.getElementById("work");
+    bagElRef.current = document.querySelector(".hover-bag");
+    folderElsRef.current = Array.from(document.querySelectorAll<HTMLElement>(".folder"));
+  }, []);
+
+  /** Point the arrow glyph from the note's current position at whichever
+   *  is relevant — the bag normally, or the nearest project folder once
+   *  the note is sitting over the work section — overriding the
+   *  CSS-authored resting rotation. `isOverWork` is passed in rather
+   *  than read from state so it reflects THIS move event, not last
+   *  render's (React state updates aren't synchronous). */
+  const pointArrowAt = (noteRect: DOMRect, isOverWork: boolean) => {
+    const arrowEl = arrowRef.current;
+    if (!arrowEl) return;
+
+    let targetEl: HTMLElement | null = bagElRef.current;
+    if (isOverWork) {
+      const fromX = noteRect.left + noteRect.width / 2;
+      const fromY = noteRect.top + noteRect.height / 2;
+      let closest: HTMLElement | null = null;
+      let closestDist = Infinity;
+      for (const folder of folderElsRef.current) {
+        const r = folder.getBoundingClientRect();
+        const dx = r.left + r.width / 2 - fromX;
+        const dy = r.top + r.height / 2 - fromY;
+        const dist = dx * dx + dy * dy;
+        if (dist < closestDist) {
+          closestDist = dist;
+          closest = folder;
+        }
+      }
+      targetEl = closest;
+    }
+    if (!targetEl) return;
+
+    const targetRect = targetEl.getBoundingClientRect();
+    const fromX = noteRect.left + noteRect.width / 2;
+    const fromY = noteRect.top + noteRect.height / 2;
+    const toX = targetRect.left + targetRect.width / 2;
+    const toY = targetRect.top + targetRect.height / 2;
+    const angle = Math.atan2(toY - fromY, toX - fromX) * (180 / Math.PI);
+    arrowEl.style.transform = `rotate(${angle}deg)`;
+  };
+
+  const handlePointerDown = (e: React.PointerEvent) => {
+    const el = noteRef.current;
+    if (!el) return;
+    e.preventDefault();
+    el.setPointerCapture(e.pointerId);
+    if (!movedRef.current) {
+      // First-ever pick-up: freeze whatever the CSS animation last
+      // rendered and switch to manual control. Cancelling the
+      // animation reverts `opacity` to the base rule's pre-entrance
+      // value (0 — only the animation's forwards-fill was holding it
+      // at 1), so that has to be pinned back explicitly or the note
+      // vanishes the instant it's grabbed. `transform`'s static
+      // fallback (translateX(-50%) rotate(-6deg)) is already correct,
+      // so it doesn't need the same treatment.
+      movedRef.current = true;
+      el.style.animation = "none";
+      el.style.opacity = "1";
+      el.style.zIndex = "50";
+    }
+    dragOrigin.current = { x: e.clientX - offset.current.x, y: e.clientY - offset.current.y };
+    draggingRef.current = true;
+    setDragging(true);
+    el.style.scale = "1.18";
+  };
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    const el = noteRef.current;
+    if (!el || !draggingRef.current) return;
+    offset.current = {
+      x: e.clientX - dragOrigin.current.x,
+      y: e.clientY - dragOrigin.current.y,
+    };
+    el.style.translate = `${offset.current.x}px ${offset.current.y}px`;
+
+    const noteRect = el.getBoundingClientRect();
+
+    const work = workSectionRef.current;
+    let isOverWork = false;
+    if (work) {
+      const workRect = work.getBoundingClientRect();
+      const cx = noteRect.left + noteRect.width / 2;
+      const cy = noteRect.top + noteRect.height / 2;
+      isOverWork =
+        cx >= workRect.left && cx <= workRect.right &&
+        cy >= workRect.top && cy <= workRect.bottom;
+    }
+    pointArrowAt(noteRect, isOverWork);
+    setOverWork(isOverWork);
+  };
+
+  const endDrag = (e: React.PointerEvent) => {
+    const el = noteRef.current;
+    if (!el || !draggingRef.current) return;
+    draggingRef.current = false;
+    setDragging(false);
+    el.style.scale = "1";
+    if (el.hasPointerCapture(e.pointerId)) el.releasePointerCapture(e.pointerId);
+  };
+
+  return (
+    <div
+      ref={noteRef}
+      className={`about-bag-note${dragging ? " is-dragging" : ""}`}
+      aria-hidden="true"
+      style={{ touchAction: "none" }}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={endDrag}
+      onPointerCancel={endDrag}
+    >
+      <span className="about-bag-note__pin" />
+      {overWork ? "Look through my work" : "Look through my bag"}{" "}
+      <span ref={arrowRef} className="about-bag-note__arrow-glyph">→</span>
+    </div>
+  );
+}
+
 export default function AboutV2() {
   return (
     <section id="about" className="section about" data-screen-label="03 About">
@@ -194,7 +343,10 @@ export default function AboutV2() {
             A designer who avoids being the <em className="de">architect</em> in a <em className="de">room of engineers</em>
           </h3>
           <div className="about-body-split">
-            <HoverBag />
+            <div className="about-bag-wrap">
+              <HoverBag />
+              <BagNote />
+            </div>
             <div className="about-body">
               <p>
                 Once I realized I can keep{" "} designing

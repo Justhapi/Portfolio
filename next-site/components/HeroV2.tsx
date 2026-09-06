@@ -129,7 +129,8 @@ export default function HeroV2() {
     el.style.transition = "transform var(--dur-slow) var(--ease-spring)";
     el.style.transform = "rotate(0deg)";
   };
-  const basePath = process.env.NODE_ENV === "production" ? "/Portfolio" : "";
+  // Custom domain (kathleenli.tech) serves from the root — no prefix needed.
+  const basePath = "";
   const photoSrc = `${basePath}/img/polaroid/polaroid_real.webp`;
   const drawingSrc = `${basePath}/img/polaroid/polaroid_drawing.webp`;
 

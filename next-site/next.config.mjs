@@ -1,13 +1,12 @@
 /** @type {import('next').NextConfig} */
-const isProd = process.env.NODE_ENV === "production";
-
 const nextConfig = {
   reactStrictMode: true,
   // Static export — writes to out/ on `next build`
   output: "export",
-  // GitHub Pages serves from /Portfolio (repo name); prefix all asset paths.
-  // Only apply in production so local dev works at localhost:3000
-  basePath: isProd ? "/Portfolio" : "",
+  // Custom domain (kathleenli.tech) serves from the root, so no path
+  // prefix is needed — previously "/Portfolio" back when the site only
+  // lived at justhapi.github.io/Portfolio.
+  basePath: "",
   // Image optimisation requires a server, disable for static export
   images: {
     unoptimized: true,

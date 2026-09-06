@@ -38,12 +38,11 @@ const SECTIONS = [
 ];
 
 /* Cover video — served from /public/img/cover so the static export
-   pipeline copies it verbatim to /out. basePath prefix same pattern
-   as HoverBag and the Frogslayer cover: /Portfolio in prod, "" in dev.
-   MP4 first — VP9-in-WebM decode support is inconsistent across
-   browsers/engines, which was causing this cover to render blank or
-   inconsistently. */
-const BASE_PATH = process.env.NODE_ENV === "production" ? "/Portfolio" : "";
+   pipeline copies it verbatim to /out. Custom domain (kathleenli.tech)
+   serves from the root, so BASE_PATH is empty. MP4 first — VP9-in-WebM
+   decode support is inconsistent across browsers/engines, which was
+   causing this cover to render blank or inconsistently. */
+const BASE_PATH = "";
 const COVER_VIDEO = {
   mp4: `${BASE_PATH}/img/cover/ResearchHub.mp4`,
   webm: `${BASE_PATH}/img/cover/ResearchHub.webm`,

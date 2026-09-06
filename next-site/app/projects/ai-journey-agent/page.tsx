@@ -30,7 +30,8 @@ const SECTIONS = [
    it verbatim. Same pattern as the other case studies. MP4 first —
    VP9-in-WebM decode support is inconsistent across browsers/engines,
    which was causing this cover to render blank or inconsistently. */
-const BASE_PATH = process.env.NODE_ENV === "production" ? "/Portfolio" : "";
+// Custom domain (kathleenli.tech) serves from the root — no prefix needed.
+const BASE_PATH = "";
 const COVER_VIDEO = {
   mp4: `${BASE_PATH}/img/cover/Ai_Agent.mp4`,
   webm: `${BASE_PATH}/img/cover/Ai_Agent.webm`,
