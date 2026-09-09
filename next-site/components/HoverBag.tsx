@@ -171,10 +171,16 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
     if (!pill || !key) return;
     lastPos.current = { x: clientX, y: clientY };
     const card = pill.firstElementChild as HTMLElement | null;
-    const w = card?.offsetWidth || 268;
-    const h = card?.offsetHeight || 190;
+    // Fallback matches .pill-polaroid / .pill-deck's own width (190)
+    // and roughly the polaroid's natural rendered height — only used
+    // for the very first frame, before the real DOM has been measured.
+    const w = card?.offsetWidth || 190;
+    const h = card?.offsetHeight || 250;
     const margin = 12;
-    const gap = key === "music" ? 4 : 16;
+    // Every popup is a uniform polaroid now, so a single gap works
+    // for all six (the old per-key tighter gap was tuned for the
+    // music pill's flanking notes, which no longer exist).
+    const gap = 16;
     const vw = window.innerWidth, vh = window.innerHeight;
 
     const x = Math.min(Math.max(clientX + gap, margin), Math.max(margin, vw - w - margin));
@@ -353,256 +359,143 @@ function renderPillVariant(key: string): React.ReactNode {
   }
 }
 
-/* Music — iPod frame with an animated 5-bar equalizer, flanked by two
-   handwritten notes (CPOP/KPOP/JPOP on the left, LBI on the right)
-   that idle-bob in place. */
-function PillMusic() {
-  const BARS = [
-    { name: "musicBar1", dur: 1850, delay: 0,    hue: "#C68D5F" },
-    { name: "musicBar2", dur: 1480, delay: -320, hue: "#C68D5F" },
-    { name: "musicBar3", dur: 2220, delay: -640, hue: "#D9A277" },
-    { name: "musicBar4", dur: 1620, delay: -180, hue: "#C68D5F" },
-    { name: "musicBar5", dur: 2030, delay: -900, hue: "#C68D5F" },
-  ];
-  return (
-    <div className="pill-music">
-      <div className="pill-music__ipod">
-        <div className="pill-music__screen">
-          <span className="pill-music__track">坏坏</span>
-          <span className="pill-music__bars">
-            {BARS.map((b) => (
-              <i
-                key={b.name}
-                className="pill-music__bar"
-                style={{
-                  background: b.hue,
-                  animationName: b.name,
-                  animationDuration: `${b.dur}ms`,
-                  animationDelay: `${b.delay}ms`,
-                }}
-              />
-            ))}
-          </span>
-        </div>
-        <div className="pill-music__wheel">
-          <span>◁</span>
-          <span className="pill-music__wheel-btn--center" />
-          <span>▷</span>
-        </div>
-      </div>
-      <span className="pill-music__note pill-music__note--left">
-        I tend to listen to <strong>CPOP / KPOP / JPOP</strong>
-      </span>
-      <span className="pill-music__note pill-music__note--right">
-        The artist I listen to the most is <strong>LBI利比</strong>
-      </span>
-    </div>
-  );
-}
+/* All six popups now share one shape — a polaroid: a photo area
+   (currently an .image-slot placeholder, ready for real photos later)
+   over a hand-captioned line, matching the hero polaroid's look.
+   Friends and travel use a "deck" of these instead of one — a couple
+   of static polaroids peek out behind as texture while the real cards
+   take turns flipping to the front on a timer. */
 
-/* Friends — polaroids scroll UPWARD continuously through the pill as a
-   film-strip, new photos entering from the bottom and leaving at the
-   top by crossing straight out of the frame's overflow:hidden bounds —
-   no fade, just a hard clip, like the strip is longer than the window
-   showing it.
-   Back to the 3-lane structure (-80/0/80), but each card adds a small
-   +/- jitter to both its lane (--x) and its vertical travel (--y) so
-   the columns are still recognizably 3 columns, just not perfectly
-   aligned — same idea as the row stagger, applied to the columns too. */
-function PillFriends() {
-  const LANES = [-80, 0, 80];
-  const HUES = ["#8E3A3A", "#276866", "#C7A24A", "#93613A", "#87BAAB", "#6B5F55"];
-  // rot, x-jitter, y-jitter per card, cycling through the 3 lanes.
-  const FRIENDS = [
-    { rot: -8, jx: -8,  jy: 8   },
-    { rot: 6,  jx: 6,   jy: -6  },
-    { rot: -4, jx: -10, jy: 10  },
-    { rot: 8,  jx: 9,   jy: -9  },
-    { rot: -6, jx: -6,  jy: 5   },
-    { rot: 5,  jx: 8,   jy: -8  },
-    { rot: -7, jx: -9,  jy: 7   },
-    { rot: 7,  jx: 5,   jy: -5  },
-    { rot: -5, jx: -7,  jy: 9   },
-  ].map((f, i) => ({
-    ...f,
-    x: LANES[i % LANES.length] + f.jx,
-    hue: HUES[i % HUES.length],
-  }));
+function PillPolaroid({
+  label,
+  caption,
+  meta,
+  rotate = 0,
+}: {
+  label: string;
+  caption: React.ReactNode;
+  meta?: string;
+  rotate?: number;
+}) {
   return (
-    <div className="pill-friends">
-      <span className="pill-tag">friends</span>
-      <div className="pill-friends__frame">
-        {FRIENDS.map((f, i) => (
-          <div
-            key={i}
-            className="pill-friends__card"
-            style={{
-              animationDelay: `${(i * -12) / FRIENDS.length}s`,
-              ["--rot" as string]: `${f.rot}deg`,
-              ["--x" as string]: `${f.x}px`,
-              ["--y" as string]: `${f.jy}px`,
-            }}
-          >
-            <div className="pill-friends__photo" />
-            <span className="pill-friends__pin" style={{ background: f.hue }} />
-          </div>
-        ))}
+    <div className="pill-polaroid" style={{ ["--rot" as string]: `${rotate}deg` }}>
+      <div className="pill-polaroid__photo">
+        <span className="image-slot">{label}</span>
       </div>
-      <span className="pill-friends__caption">photos of friends</span>
-    </div>
-  );
-}
-
-/* Food — a lazy-Susan wheel of 4 plates spinning behind the pill's top
-   edge, pausing on each cardinal position before advancing to the
-   next — same rhythm as a real lazy Susan being turned to share a
-   dish. */
-function PillFood() {
-  const PLATES = [0, 90, 180, 270];
-  return (
-    <div className="pill-food">
-      <span className="pill-tag">food</span>
-      <div className="pill-food__wheel">
-        {PLATES.map((angle) => (
-          <div
-            key={angle}
-            className="pill-food__slot"
-            style={{ transform: `rotate(${angle}deg) translateY(-152px)` }}
-          >
-            <div className="pill-food__counter">
-              <span className="pill-food__plate" />
-            </div>
-          </div>
-        ))}
-      </div>
-      <div className="pill-food__footer">
-        <span className="pill-food__caption">one dish at a time</span>
+      <div className="pill-polaroid__caption">
+        {meta && <span className="pill-polaroid__meta">{meta}</span>}
+        <span className="pill-polaroid__line">{caption}</span>
       </div>
     </div>
   );
 }
 
-/* Travel — a pinboard that PANS across 3 labeled destinations (China,
-   Japan, Hong Kong) connected by a dashed route, rather than zooming
-   a camera into each pin. */
-function PillTravel() {
-  const PINS = [
-    { name: "China",     note: "where it started", hue: "#8E3A3A", left:   0, top:  63 },
-    { name: "Japan",     note: "spring trip",       hue: "#276866", left: 262, top: 188 },
-    { name: "Hong Kong", note: "food + family",     hue: "#C7A24A", left: 530, top:   0 },
-  ];
+type DeckCard = {
+  label: string;
+  caption: React.ReactNode;
+  meta?: string;
+  rotate?: number;
+};
+
+/* Each card in a deck runs the same 3-position shuffle (front / mid /
+   back — see @keyframes deckShuffle in globals.css), offset by a
+   negative delay of one DECK_SLOT_SECONDS window per card so they're
+   always a step apart in the cycle — one card is front, one is mid,
+   one is back, and they continuously rotate through those slots like
+   a hand of cards being worked through. */
+const DECK_SLOT_SECONDS = 3.6;
+
+function PillPolaroidDeck({ cards }: { cards: DeckCard[] }) {
+  const cycle = cards.length * DECK_SLOT_SECONDS;
   return (
-    <div className="pill-travel">
-      <span className="pill-tag">travel</span>
-      <div className="pill-travel__board">
-        <svg
-          className="pill-travel__web"
-          viewBox="0 0 820 380"
-          preserveAspectRatio="none"
-          aria-hidden="true"
+    <div className="pill-deck">
+      {cards.map((c, i) => (
+        <div
+          key={i}
+          className="pill-deck__front pill-polaroid"
+          style={{
+            ["--rot" as string]: `${c.rotate ?? 0}deg`,
+            animationDuration: `${cycle}s`,
+            animationDelay: `${-(i * DECK_SLOT_SECONDS)}s`,
+          }}
         >
-          <path
-            d="M 128 158 L 396 283 L 664 95"
-            fill="none"
-            stroke="#4C3C2E"
-            strokeWidth="1.6"
-            strokeDasharray="6 5"
-            opacity="0.5"
-          />
-        </svg>
-        {PINS.map((p) => (
-          <div key={p.name} className="pill-travel__slot" style={{ left: p.left, top: p.top }}>
-            <span className="pill-travel__label">{p.name}</span>
-            <span className="pill-travel__dot" style={{ background: p.hue }} />
-            <span className="pill-travel__note">{p.note}</span>
+          <div className="pill-polaroid__photo">
+            <span className="image-slot">{c.label}</span>
           </div>
-        ))}
-      </div>
-      <div className="pill-travel__frame" aria-hidden="true" />
+          <div className="pill-polaroid__caption">
+            {c.meta && <span className="pill-polaroid__meta">{c.meta}</span>}
+            <span className="pill-polaroid__line">{c.caption}</span>
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
 
-/* Games — a dark "what I'm playing" panel. A cursor sprite visits each
-   of 3 icons in turn, pulsing it and revealing its name below. */
-function PillGames() {
-  const GAMES = [
-    { key: "pkm", initial: "P", name: "Pokémon", from: "#C0433C", to: "#8E2A28", delay: "0s" },
-    { key: "lol", initial: "L", name: "League",  from: "#2C6E8F", to: "#1B4459", delay: "-8s" },
-    { key: "tft", initial: "T", name: "TFT",     from: "#C68D5F", to: "#8A5A31", delay: "-4s" },
-  ];
+function PillMusic() {
   return (
-    <div className="pill-games">
-      <span className="pill-games__caption">what i&rsquo;m playing</span>
-      <div className="pill-games__row">
-        {GAMES.map((g) => (
-          <div key={g.key} className="pill-games__slot">
-            <div
-              className="pill-games__icon"
-              style={{
-                background: `linear-gradient(160deg, ${g.from}, ${g.to})`,
-                animationDelay: g.delay,
-              }}
-            >
-              {g.initial}
-            </div>
-            <span className="pill-games__label" style={{ animationDelay: g.delay }}>
-              {g.name}
-            </span>
-          </div>
-        ))}
-      </div>
-      <div className="pill-games__taskbar">
-        <span className="pill-games__taskbar-dot pill-games__taskbar-dot--active" />
-        <span className="pill-games__taskbar-dot" />
-        <span className="pill-games__taskbar-dot" />
-        <span className="pill-games__clock">11:42 PM</span>
-      </div>
-      <span className="pill-games__cursor" aria-hidden="true">
-        <svg viewBox="0 0 16 20" width="14" height="18">
-          <path
-            d="M 2 2 L 14 12 L 8 12 L 11 18 L 8 19 L 5 13 L 2 16 Z"
-            fill="#F6EEE6"
-            stroke="#2A302F"
-            strokeWidth="1"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </span>
-    </div>
+    <PillPolaroid
+      label="Photo — music"
+      meta="now playing"
+      rotate={-3}
+      caption={<>Mostly <strong>CPOP / KPOP / JPOP</strong> — <strong>LBI利比</strong> on repeat</>}
+    />
   );
 }
 
-/* Art — a cloud-shaped card drifting gently above the pill's top edge
-   (bleeding past the shell — the placement system's painted-bounds
-   nudge keeps it fully on-screen), with a placeholder doodle swatch
-   and a caption below. */
+function PillFriends() {
+  return (
+    <PillPolaroidDeck
+      cards={[
+        { label: "Photo — friends 1", meta: "friends", caption: "photos of friends", rotate: -3 },
+        { label: "Photo — friends 2", meta: "friends", caption: "photos of friends", rotate: 2 },
+        { label: "Photo — friends 3", meta: "friends", caption: "photos of friends", rotate: -2 },
+      ]}
+    />
+  );
+}
+
+function PillFood() {
+  return (
+    <PillPolaroid
+      label="Photo — food"
+      meta="one dish at a time"
+      rotate={4}
+      caption="always down to share a plate"
+    />
+  );
+}
+
+function PillTravel() {
+  return (
+    <PillPolaroidDeck
+      cards={[
+        { label: "Photo — China", meta: "China", caption: "where it started", rotate: -3 },
+        { label: "Photo — Japan", meta: "Japan", caption: "spring trip", rotate: 2 },
+        { label: "Photo — Hong Kong", meta: "Hong Kong", caption: "food + family", rotate: -2 },
+      ]}
+    />
+  );
+}
+
+function PillGames() {
+  return (
+    <PillPolaroid
+      label="Photo — games"
+      meta="what i'm playing"
+      rotate={-2}
+      caption="Pokémon, League, and TFT"
+    />
+  );
+}
+
 function PillArt() {
   return (
-    <div className="pill-art">
-      <span className="pill-tag">art</span>
-      <svg
-        className="pill-art__cloud"
-        viewBox="0 0 280 220"
-        aria-hidden="true"
-        preserveAspectRatio="xMidYMid meet"
-      >
-        <path
-          d="M 60 100 C 40 100, 24 84, 32 66 C 20 52, 30 30, 52 32 C 60 14, 90 12, 100 30 C 112 18, 140 20, 148 40 C 168 28, 200 40, 200 60 C 224 60, 244 76, 236 100 C 256 110, 254 138, 232 144 C 240 168, 216 186, 196 178 C 190 200, 158 204, 148 186 C 138 200, 108 200, 100 184 C 84 196, 56 190, 56 170 C 32 168, 20 148, 34 130 C 20 122, 30 100, 60 100 Z"
-          fill="#FFFDF7"
-          stroke="rgba(76, 60, 46, 0.22)"
-          strokeWidth="2"
-        />
-      </svg>
-      <div className="pill-art__doodle">
-        <span className="pill-art__doodle-tag">doodle</span>
-      </div>
-      <div className="pill-art__footer">
-        <span className="pill-art__kicker">doodles of college to rmr</span>
-        <p className="pill-art__caption">
-          I like to capture memories through sharing my vision with others
-        </p>
-      </div>
-    </div>
+    <PillPolaroid
+      label="Photo — art"
+      meta="doodles of college to rmr"
+      rotate={3}
+      caption="I like to capture memories through sharing my vision with others"
+    />
   );
 }

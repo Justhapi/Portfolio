@@ -162,6 +162,18 @@
      personality moments — never on mousemove-driven or continuous
      animations where overshoot compounds into jitter. */
   --ease-spring:    cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* --ease-spring-soft: a gentler overshoot for small LOOPING accents
+     (equalizer bars, lazy-Susan wheel, cursor hops, cloud bob) — same
+     family as --ease-spring but dialed down so a repeating cycle reads
+     as a light bounce rather than the full-strength personality-moment
+     spring used for one-shot entrances. Safe on infinite animations
+     because each keyframe segment still resolves exactly to its target
+     value by the next stop — the overshoot happens mid-segment, not as
+     residual drift, so held/paused segments stay perfectly still. */
+  /* Bumped 1.28 → 1.45 — more overshoot per user request, still a
+     notch under --ease-spring's 1.56 since this rides on infinite
+     loops rather than a single one-shot moment. */
+  --ease-spring-soft: cubic-bezier(0.34, 1.45, 0.64, 1);
 
   /* duration tokens */
   --dur-instant: 100ms;   /* button press feedback */
@@ -3882,593 +3894,135 @@ em.it { font-style: italic; }
 .hover-bag__pill.is-on {
   animation-play-state: running;
 }
-/* ── Unified pill shell — every variant renders inside the same
-   fixed-size solid rectangle. Shell overflow is VISIBLE so the art
-   cloud can drift past the top edge and the music notes can flank
-   past the sides; carousel pills (food/friends) clip their own inner
-   frames to keep contents inside the rectangle. */
+/* ── Unified pill shell — now just a sizing/positioning wrapper. Every
+   variant is a .pill-polaroid (or a .pill-deck of them), which carries
+   its OWN paper-card background/shadow (matching the hero polaroid),
+   so the shell itself stays transparent instead of drawing a second
+   card behind it. Overflow visible so a slightly-tilted polaroid's
+   corners never get clipped. */
 .hover-bag__pill-inner {
-  width: 268px;
-  height: 190px;
-  border-radius: 14px;
-  background: #F6EEE6;
-  border: 1.5px solid rgb(var(--fg-rgb) / 0.12);
-  box-shadow:
-    0 10px 22px rgba(0, 0, 0, 0.16),
-    0 2px 5px rgba(0, 0, 0, 0.08);
+  width: 190px;
   position: relative;
   color: var(--fg-soft);
   overflow: visible;
 }
 
-/* Every variant absolutely fills the shell so layouts can position
-   from the shell's edges consistently. */
-.hover-bag__pill-inner > div[class^="pill-"] {
-  position: absolute;
-  inset: 0;
+/* ---- Polaroid (shared shape for every bag popup) -------------------
+   Every popup — music, friends, food, travel, games, art — now
+   renders as this same shape: a photo area on top, a hand-captioned
+   line below, matching the hero polaroid's look. The photo is an
+   .image-slot placeholder (striped pattern + mono label) ready for
+   real photos to be dropped in later. --rot gives each item its own
+   slight tilt for personality, same idea as the site's stickers. */
+.pill-polaroid {
+  width: 190px;
+  padding: 8px 8px 28px;
+  border-radius: 12px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0) 30%),
+    #FBF7EE;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    inset 0 -1px 0 rgb(var(--fg-rgb) / 0.06),
+    0 10px 22px rgba(0, 0, 0, 0.16),
+    0 2px 5px rgba(0, 0, 0, 0.08);
+  transform: rotate(var(--rot, 0deg));
 }
-
-/* Music pill has no outer card of its own — the ipod and its two
-   flanking notes each carry their own background/border/shadow and
-   float directly over the page, matching the original design (no
-   unified card container behind them). */
-.hover-bag__pill--earbuds .hover-bag__pill-inner {
-  background: transparent;
-  border: 0;
-  box-shadow: none;
-}
-
-/* Shared top-left category tag, reused by friends/food/travel/art. */
-.pill-tag {
-  position: absolute;
-  top: 0;
-  left: 14px;
-  padding: 1px 8px;
-  border-radius: 0 0 999px 999px;
-  background: #93613A;
-  color: #FBF7EE;
-  font-family: var(--f-mono);
-  font-size: 8px;
-  font-weight: 500;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  z-index: 9;
-}
-
-/* ---- Music (iPod centered, animated equalizer, flanking notes) --- */
-.pill-music {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8px;
-}
-.pill-music__ipod {
-  width: 104px;
-  padding: 10px 9px 11px;
-  border-radius: 13px;
-  background: #FFFDF7;
-  border: 1.5px solid rgb(var(--fg-rgb) / 0.16);
-  box-shadow: 0 6px 14px rgba(0,0,0,0.16);
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  flex-shrink: 0;
-  z-index: 2;
-}
-.pill-music__screen {
-  height: 112px;
-  border-radius: 3px;
-  background: linear-gradient(180deg, #2A302F, #1A1F1E);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  color: #F6EEE6;
-}
-.pill-music__track {
-  font-family: var(--f-hand);
-  font-size: 17px;
-  font-weight: 600;
-  line-height: 1;
-}
-.pill-music__bars {
-  display: flex;
-  align-items: flex-end;
-  gap: 3px;
-  height: 38px;
-}
-.pill-music__bar {
-  display: block;
-  width: 4px;
-  border-radius: 2px 2px 0 0;
-  animation-timing-function: cubic-bezier(0.35, 0, 0.35, 1);
-  animation-iteration-count: infinite;
-}
-.pill-music__wheel {
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  height: 30px;
-  border-radius: 999px;
-  background: #EADDD0;
-  color: var(--fg-soft);
-  font-size: 10px;
-}
-.pill-music__wheel-btn--center {
-  display: block;
-  width: 13px;
-  height: 13px;
-  border-radius: 50%;
-  border: 1.5px solid #93613A;
-}
-.pill-music__note {
-  position: absolute;
-  width: 78px;
-  padding: 6px 7px;
-  background: #FFFDF7;
-  border: 1px solid rgb(var(--fg-rgb) / 0.16);
-  border-radius: 8px;
-  font-family: var(--f-hand);
-  font-size: 13px;
-  line-height: 1.12;
-  color: var(--fg-soft);
-  box-shadow: 0 5px 12px rgba(0,0,0,0.14);
-  z-index: 3;
-  animation: noteBob 3600ms ease-in-out infinite;
-}
-.pill-music__note strong { color: var(--accent-on-cream); font-weight: 600; }
-.pill-music__note--left  { top: 0; left: -10px; --rot: rotate(-6deg); }
-.pill-music__note--right { bottom: 2px; right: -10px; --rot: rotate(5deg); animation-delay: 700ms; }
-/* 5-bar equalizer — each bar loops its own height keyframe at a
-   slightly different duration/offset so they don't pulse in lockstep. */
-@keyframes musicBar1 { 0% { height: 6px; } 10% { height: 22px; } 20% { height: 10px; } 30% { height: 30px; } 40% { height: 8px; } 50% { height: 16px; } 60% { height: 12px; } 70% { height: 26px; } 80% { height: 7px; } 90% { height: 14px; } 100% { height: 6px; } }
-@keyframes musicBar2 { 0% { height: 14px; } 10% { height: 8px; } 20% { height: 27px; } 30% { height: 12px; } 40% { height: 33px; } 50% { height: 18px; } 60% { height: 9px; } 70% { height: 24px; } 80% { height: 15px; } 90% { height: 30px; } 100% { height: 14px; } }
-@keyframes musicBar3 { 0% { height: 30px; } 10% { height: 17px; } 20% { height: 36px; } 30% { height: 9px; } 40% { height: 21px; } 50% { height: 34px; } 60% { height: 13px; } 70% { height: 28px; } 80% { height: 38px; } 90% { height: 20px; } 100% { height: 30px; } }
-@keyframes musicBar4 { 0% { height: 11px; } 10% { height: 29px; } 20% { height: 15px; } 30% { height: 23px; } 40% { height: 37px; } 50% { height: 12px; } 60% { height: 26px; } 70% { height: 10px; } 80% { height: 32px; } 90% { height: 18px; } 100% { height: 11px; } }
-@keyframes musicBar5 { 0% { height: 8px; } 10% { height: 13px; } 20% { height: 24px; } 30% { height: 7px; } 40% { height: 19px; } 50% { height: 28px; } 60% { height: 16px; } 70% { height: 9px; } 80% { height: 21px; } 90% { height: 12px; } 100% { height: 8px; } }
-/* Idle bob for the two flanking notes — --rot holds the note's fixed
-   tilt (set per note above) since the transform is fully driven here. */
-@keyframes noteBob {
-  0%, 100% { transform: var(--rot) translateY(0); }
-  50%      { transform: var(--rot) translateY(-3px); }
-}
-
-/* ---- Friends (film-strip scrolls upward continuously) ------------
-   Polaroids cascade up through the pill on a shared rise keyframe,
-   staggered so new photos enter from the bottom as older ones exit
-   at the top — no fade at either edge, they just cross out of the
-   frame's overflow:hidden bounds, like a filmstrip longer than the
-   window showing it. Each card has its own hand-picked x offset and
-   rotation (--x/--rot), built as overlapping pairs so the pile reads
-   as a dense corkboard rather than a tidy grid, with a colored
-   pin-dot cycling through the site's accent palette. All cards share
-   the same size. */
-.pill-friends {
-  border-radius: 14px;
-  overflow: hidden;
-  background: repeating-linear-gradient(38deg, #E3D5BE 0 7px, #DCCDB4 7px 14px);
-}
-.pill-friends__frame {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-}
-.pill-friends__card {
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  width: 74.8px; /* 68px + 10% */
-  /* Extra bottom padding gives each card the classic Polaroid look —
-     a blank white margin below the photo instead of a symmetric
-     border. */
-  padding: 4px 4px 12px;
-  background: #FFFDF7;
-  border-radius: 3px;
-  box-shadow: 0 3px 7px rgba(0,0,0,0.18);
-  animation: friendsRise 12s linear infinite;
-}
-.pill-friends__photo {
-  width: 100%;
-  aspect-ratio: 1;
-  border-radius: 2px;
-  background: repeating-linear-gradient(45deg, #DED3C4 0 4px, #E9E0D3 4px 8px);
-}
-.pill-friends__pin {
-  position: absolute;
-  top: -4px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.35);
-}
-.pill-friends__caption {
-  position: absolute;
-  bottom: 7px;
-  left: 12px;
-  z-index: 8;
-  font-family: var(--f-hand);
-  font-size: 14px;
-  color: #FBF7EE;
-  background: rgba(26,23,20,0.62);
-  padding: 1px 8px;
-  border-radius: 999px;
-}
-/* Continuous rise — enters at bottom of frame (translateY 120%),
-   drifts UP through the pill, exits at top (translateY -260%). No
-   opacity animation — cards stay fully opaque the whole way and
-   simply leave through the frame's overflow:hidden edge.
-   -260% (not -220%) is deliberate: percentages here resolve against
-   the CARD's own height (~76px), not the frame's. At -220% the card's
-   bottom edge was still ~23px inside the 190px-tall frame when the
-   animation hit 100% and looped back to 0% — a chunk of the card was
-   still visibly on-screen the instant it snapped back to its starting
-   position below the frame, which read as an abrupt disappearance.
-   -260% clears the card's bottom edge past y=0 (frame top) with a few
-   px to spare before the loop, so it's genuinely fully offscreen —
-   clipped by overflow:hidden — before it ever jumps back to the
-   bottom. --y is a small constant px offset added on top of the
-   percentage-based travel — it nudges the whole path up or down a
-   little so same-lane cards don't line up on an identical vertical
-   rhythm. The card's horizontal offset (--x) and rotation (--rot)
-   stay constant so it moves straight up rather than swinging. */
-@keyframes friendsRise {
-  0%   { transform: translate(calc(-50% + var(--x, 0px)),  calc(120% + var(--y, 0px))) rotate(var(--rot, 0deg)); }
-  100% { transform: translate(calc(-50% + var(--x, 0px)), calc(-260% + var(--y, 0px))) rotate(var(--rot, 0deg)); }
-}
-
-/* ---- Food (lazy-Susan wheel, 4 plates on cardinal points) --------
-   A large disc spins behind/above the pill's top edge; each plate
-   counter-rotates to stay upright as it swings through. Steps 90° at
-   a time with a pause on each position — the rhythm of turning a real
-   lazy Susan to share a dish. */
-.pill-food { overflow: hidden; border-radius: 14px; }
-.pill-food__wheel {
-  position: absolute;
-  top: -315px;
-  left: 50%;
-  margin-left: -210px;
-  width: 420px;
-  height: 420px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 50% 72%, #EDE2D3 0%, #DFD1BC 60%);
-  border: 2px solid rgb(var(--fg-rgb) / 0.18);
-  box-shadow: inset 0 -3px 10px rgba(0,0,0,0.10);
-  /* cubic-bezier(0.65, 0, 0.35, 1) accelerate-decelerate makes each
-     90° step feel intentional (glide → settle → glide). */
-  animation: susanSpin 16s cubic-bezier(0.65, 0, 0.35, 1) infinite;
-}
-.pill-food__slot {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-}
-.pill-food__counter {
-  position: absolute;
-  translate: -50% -50%;
-  animation: susanCounter 16s cubic-bezier(0.65, 0, 0.35, 1) infinite;
-}
-.pill-food__plate {
-  display: block;
-  width: 96px;
-  height: 96px;
-  border-radius: 50%;
-  background: repeating-linear-gradient(45deg, #DED3C4 0 5px, #E9E0D3 5px 10px);
-  border: 2px solid rgb(var(--fg-rgb) / 0.16);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-}
-.pill-food__footer {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 74px;
-  padding: 0 14px 12px;
-  background: linear-gradient(180deg, rgba(246,238,230,0) 0%, #F6EEE6 34%);
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 10px;
-}
-.pill-food__caption {
-  font-family: var(--f-hand);
-  font-size: 16px;
-  line-height: 1.1;
-  color: var(--accent-on-cream);
-}
-.pill-food__badge {
-  font-family: var(--f-mono);
-  font-size: 8px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--fg-soft);
-  padding-bottom: 2px;
-}
-@keyframes susanSpin {
-  0%,  17% { transform: rotate(0deg); }
-  25%, 42% { transform: rotate(-90deg); }
-  50%, 67% { transform: rotate(-180deg); }
-  75%, 92% { transform: rotate(-270deg); }
-  100%     { transform: rotate(-360deg); }
-}
-/* Counter-rotate in matching stepped rhythm so plates stay upright
-   during the wheel's paused holds AND during its transitions. */
-@keyframes susanCounter {
-  0%,  17% { rotate: 0deg; }
-  25%, 42% { rotate: 90deg; }
-  50%, 67% { rotate: 180deg; }
-  75%, 92% { rotate: 270deg; }
-  100%     { rotate: 360deg; }
-}
-
-/* ---- Travel (board pans across 3 labeled destinations) -----------
-   The board (pinboard background + all 3 pins) pans as a single unit
-   via `boardPan`, so each destination drifts into center in turn,
-   rather than a camera zooming into fixed pins. */
-.pill-travel {
-  border-radius: 14px;
-  overflow: hidden;
-  background: repeating-linear-gradient(38deg, #E3D5BE 0 7px, #DCCDB4 7px 14px);
-  color: var(--accent-on-cream);
-}
-.pill-travel__board {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 820px;
-  height: 380px;
-  animation: boardPan 15s cubic-bezier(0.66, 0, 0.34, 1) infinite;
-}
-.pill-travel__web {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-}
-.pill-travel__slot {
-  position: absolute;
-  width: 268px;
-  height: 190px;
-}
-.pill-travel__label {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) rotate(-3deg);
-  padding: 5px 14px;
-  border-radius: 5px;
-  background: #FFFDF7;
-  border: 1.5px solid rgb(var(--fg-rgb) / 0.18);
-  box-shadow: 0 4px 9px rgba(0,0,0,0.22);
-  font-family: var(--f-hand);
-  font-size: 22px;
-  font-weight: 600;
-  line-height: 1.05;
-  white-space: nowrap;
-  color: var(--fg-soft);
-}
-.pill-travel__dot {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) translateY(-26px);
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.4);
-  z-index: 3;
-}
-.pill-travel__note {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) translateY(28px);
-  font-family: var(--f-mono);
-  font-size: 8px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: #4C3C2E;
-  white-space: nowrap;
-}
-.pill-travel__frame {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  box-shadow: inset 0 0 0 6px rgba(147,97,58,0.35);
-}
-@keyframes boardPan {
-  0%,  24% { transform: translate(-6px, -63px); }
-  32%, 56% { transform: translate(-268px, -188px); }
-  64%, 90% { transform: translate(-536px, 0px); }
-  100%     { transform: translate(-6px, -63px); }
-}
-
-/* ---- Games (dark "what I'm playing" panel + icon-visiting cursor) */
-.pill-games {
-  overflow: hidden;
-  border-radius: 14px;
-  background: linear-gradient(165deg, #2A3338 0%, #171B1E 70%);
-  border: 1.5px solid rgba(26,23,20,0.4);
-  box-shadow: inset 0 1px 0 rgba(246,238,230,0.12);
-}
-.pill-games__caption {
-  position: absolute;
-  top: 12px;
-  left: 14px;
-  font-family: var(--f-mono);
-  font-size: 8px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: rgba(246,238,230,0.6);
-}
-.pill-games__row {
-  position: absolute;
-  top: 44px;
-  left: 24px;
-  right: 24px;
-  display: flex;
-  justify-content: space-between;
-}
-.pill-games__slot {
+.pill-polaroid__photo {
   position: relative;
-  width: 46px;
-  height: 46px;
-}
-.pill-games__icon {
-  width: 46px;
-  height: 46px;
-  border-radius: 10px;
-  border: 1px solid rgba(246,238,230,0.28);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--f-display);
-  font-weight: 800;
-  font-size: 15px;
-  color: #F6EEE6;
-  letter-spacing: 0.02em;
-  animation: iconHi 12s ease-in-out infinite;
-}
-.pill-games__label {
-  position: absolute;
-  top: 52px;
-  left: 50%;
-  transform: translateX(-50%);
-  white-space: nowrap;
-  padding: 2px 7px;
-  border-radius: 5px;
-  background: rgba(12,14,16,0.9);
-  color: #F6EEE6;
-  font-family: var(--f-mono);
-  font-size: 8px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  opacity: 0;
-  animation: iconLabel 12s ease-in-out infinite;
-}
-.pill-games__taskbar {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 22px;
-  background: rgba(246,238,230,0.1);
-  border-top: 1px solid rgba(246,238,230,0.14);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 0 10px;
-}
-.pill-games__taskbar-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 2px;
-  background: rgba(246,238,230,0.22);
-}
-.pill-games__taskbar-dot--active { background: #C68D5F; }
-.pill-games__clock {
-  margin-left: auto;
-  font-family: var(--f-mono);
-  font-size: 8px;
-  color: rgba(246,238,230,0.55);
-}
-.pill-games__cursor {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 6;
-  filter: drop-shadow(0 2px 3px rgba(0,0,0,0.5));
-  animation: gameCursor4 12s cubic-bezier(0.5, 0, 0.3, 1) infinite;
-}
-/* Icon highlight — pulses once per 12s cycle, staggered per icon via
-   the JSX-supplied animation-delay so the three highlight in turn. */
-@keyframes iconHi {
-  0%, 4%    { transform: scale(1); box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
-  10%, 26%  { transform: scale(1.14); box-shadow: 0 0 0 2px #C68D5F, 0 6px 12px rgba(0,0,0,0.4); }
-  31%, 100% { transform: scale(1); box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
-}
-@keyframes iconLabel {
-  0%, 6%    { opacity: 0; }
-  12%, 26%  { opacity: 1; }
-  31%, 100% { opacity: 0; }
-}
-/* Cursor sprite — visits the 3 icon x-positions in turn (y fixed). */
-@keyframes gameCursor4 {
-  0%,  26% { transform: translate(56px, 78px); }
-  33%, 59% { transform: translate(130px, 78px); }
-  66%, 92% { transform: translate(204px, 78px); }
-  100%     { transform: translate(56px, 78px); }
-}
-
-/* ---- Art (cloud drifts above the pill, doodle + caption below) --- */
-.pill-art { display: block; }
-.pill-art__cloud {
-  position: absolute;
-  top: -46px;
-  left: 50%;
-  width: 268px;
-  height: 172px;
-  transform: translateX(-50%);
-  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.14));
-  animation: cloudDrift 6000ms ease-in-out infinite;
-}
-.pill-art__doodle {
-  position: absolute;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 104px;
-  height: 66px;
+  width: 100%;
+  aspect-ratio: 1 / 1;
   border-radius: 6px;
-  background: repeating-linear-gradient(45deg, #DED3C4 0 4px, #E9E0D3 4px 8px);
-  border: 1px solid rgb(var(--fg-rgb) / 0.14);
+  overflow: hidden;
+  background: #2A302F;
+  box-shadow:
+    inset 0 2px 6px rgba(0, 0, 0, 0.4),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.25);
+}
+.pill-polaroid__caption {
+  margin-top: 8px;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2;
-}
-.pill-art__doodle-tag {
-  font-family: var(--f-mono);
-  font-size: 8px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--fg-soft);
-  background: rgba(255,253,247,0.85);
-  padding: 1px 5px;
-  border-radius: 2px;
-}
-.pill-art__footer {
-  position: absolute;
-  left: 14px;
-  right: 14px;
-  bottom: 12px;
-  z-index: 3;
+  flex-direction: column;
+  gap: 3px;
   text-align: center;
 }
-.pill-art__kicker {
-  display: block;
+.pill-polaroid__meta {
   font-family: var(--f-mono);
+  font-weight: 500;
   font-size: 8px;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--accent-on-cream);
-  margin-bottom: 4px;
+  color: #7A6F66;
 }
-.pill-art__caption {
-  margin: 0;
+.pill-polaroid__line {
   font-family: var(--f-hand);
-  font-size: 15px;
-  line-height: 1.15;
-  color: var(--fg-soft);
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.2;
+  color: #2C2520;
 }
-@keyframes cloudDrift {
-  0%, 100% { transform: translate(-50%, 0) rotate(-0.6deg); }
-  50%      { transform: translate(-50%, -4px) rotate(0.6deg); }
+.pill-polaroid__line strong { color: var(--accent-on-cream); font-weight: 600; }
+
+/* ---- Deck (friends / travel) — all 3 cards stay visible at all times
+   and physically SHUFFLE through 3 stack positions (front / back /
+   mid), like actually working through a hand of cards: the FRONT card
+   lifts up and to the side — clear of the stack, above everything —
+   then comes back DOWN directly into the BACK slot (most offset, most
+   tilted, lowest z-index): the "moved to the bottom of the deck"
+   beat. The other two cards each get a quick opposite-direction nudge
+   (down-right, away from the lifting card's up-left path) right as
+   that lift happens, reading as them scooting aside to clear room for
+   it to swoop through, before the BACK card settles up into MID and
+   the MID card settles up into FRONT.
+   Every card runs this identical cycle, staggered by exactly a third
+   of the total duration — so at any instant, whichever card is 33.3%
+   or 66.7% further along than the lifting card is the one doing the
+   corresponding "make room" nudge below (63%/97%, i.e. 30% + 33.3%
+   and 30% + 66.7%). z-index is keyframed alongside the transform so
+   stacking order swaps with position, not just the visual offset.
+   Duration/delay come from HoverBag.tsx (DECK_SLOT_SECONDS); the
+   keyframe below assumes exactly 3 cards per deck (both friends and
+   travel use 3). */
+.pill-deck {
+  position: relative;
+  width: 190px;
+  height: 250px;
+}
+.pill-deck__front {
+  position: absolute;
+  inset: 0;
+  animation-name: deckShuffle;
+  animation-timing-function: cubic-bezier(0.34, 1.15, 0.64, 1);
+  animation-iteration-count: infinite;
+}
+@keyframes deckShuffle {
+  /* FRONT — resting at the top of the stack. */
+  0%, 26%   { transform: translate(0, 0)        rotate(var(--rot, 0deg))                      scale(1);    z-index: 5; }
+  /* LIFT — pulled up and off to the side, above the whole stack, on
+     its way to being placed at the bottom. This is the "shuffled
+     out" beat. */
+  30%       { transform: translate(-36px, -32px) rotate(calc(var(--rot, 0deg) - 9deg))  scale(1.06); z-index: 6; }
+  /* BACK — placed down at the bottom of the stack. */
+  38%, 60%  { transform: translate(16px, 18px)   rotate(calc(var(--rot, 0deg) + 11deg)) scale(0.92); z-index: 1; }
+  /* MAKE ROOM (this card is currently BACK) — nudges further
+     down-right, opposite the lifting card's up-left path, timed to
+     land right as another card is mid-lift. */
+  63%       { transform: translate(26px, 28px)   rotate(calc(var(--rot, 0deg) + 16deg)) scale(0.89); z-index: 2; }
+  /* MID — settles into the middle slot. */
+  70%, 94%  { transform: translate(9px, 10px)    rotate(calc(var(--rot, 0deg) + 6deg))  scale(0.96); z-index: 3; }
+  /* MAKE ROOM (this card is currently MID) — same idea, a smaller
+     nudge since it's already closer to the front. */
+  97%       { transform: translate(15px, 14px)   rotate(calc(var(--rot, 0deg) + 9deg))  scale(0.94); z-index: 4; }
+  /* Back to FRONT. */
+  100%      { transform: translate(0, 0)        rotate(var(--rot, 0deg))                      scale(1);    z-index: 5; }
+}
+/* Static fanned deck (front/mid/back, no motion) — order follows DOM
+   order, i.e. the same order the shuffle would start from at t=0. */
+@media (prefers-reduced-motion: reduce) {
+  .pill-deck__front { animation: none !important; }
+  .pill-deck__front:nth-child(1) { transform: translate(0, 0) rotate(var(--rot, 0deg)) scale(1); z-index: 5; }
+  .pill-deck__front:nth-child(2) { transform: translate(9px, 10px) rotate(calc(var(--rot, 0deg) + 6deg)) scale(0.96); z-index: 3; }
+  .pill-deck__front:nth-child(3) { transform: translate(16px, 18px) rotate(calc(var(--rot, 0deg) + 11deg)) scale(0.92); z-index: 1; }
 }
 
 /* Entrance: two-stage stagger — heading first, body text follows.
