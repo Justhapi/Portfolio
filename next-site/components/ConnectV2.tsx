@@ -87,7 +87,7 @@ export default function ConnectV2() {
             {/* Email row — click opens a Gmail compose draft in a new tab.
                 The neighbouring copy button lets visitors who don't use
                 Gmail grab the address directly. */}
-            <div className="c-link c-email">
+            <div className="c-link c-email" data-slug="email">
               <a
                 href={GMAIL_COMPOSE_URL}
                 className="c-email-main"
@@ -124,6 +124,7 @@ export default function ConnectV2() {
 
             <a
               className="c-link"
+              data-slug="linkedin"
               href="https://www.linkedin.com/in/kathleen-li-564a13328"
               target="_blank"
               rel="noopener noreferrer"
@@ -136,6 +137,7 @@ export default function ConnectV2() {
             </a>
             <a
               className="c-link"
+              data-slug="resume"
               href="/resume.pdf"
               target="_blank"
               rel="noopener noreferrer"

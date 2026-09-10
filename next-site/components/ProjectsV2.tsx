@@ -866,6 +866,7 @@ export default function ProjectsV2() {
                   folderEls.current[p.tag] = el;
                 }}
                 data-folder-tag={p.tag}
+                data-slug={p.href.split("/").pop()}
                 style={{
                   /* Blurb background uses the folder's shadow color at
                      55% opacity — dark enough to carry white text at
@@ -878,6 +879,17 @@ export default function ProjectsV2() {
                   href={p.href}
                   className={folderArtClass}
                   aria-label={`${p.tag} — ${p.readTime}`}
+                  onMouseDown={() => {
+                    // Freeze as early as physically possible — click only
+                    // fires after mouseup, and a human hand rarely holds
+                    // perfectly still for the length of a press. Any
+                    // mousemove during that mousedown→mouseup window was
+                    // still slipping through (pillFrozenRef was only set
+                    // true on click), producing a last-instant "flick" of
+                    // the pill to wherever the cursor drifted right before
+                    // release. Freezing on mousedown closes that gap.
+                    pillFrozenRef.current = true;
+                  }}
                   onClick={() => {
                     saveHomeScroll();
                     // Set synchronously (ref) so an in-flight mousemove
@@ -894,8 +906,22 @@ export default function ProjectsV2() {
                     manualHoverRef.current = p.tag;
                     enterFolder(p.tag);
                   }}
-                  onMouseMove={(e) => handleTiltMove(e, p.tag)}
+                  onMouseMove={(e) => {
+                    if (pillFrozenRef.current) return;
+                    handleTiltMove(e, p.tag);
+                  }}
                   onMouseLeave={() => {
+                    // Once frozen (mousedown/click armed this), a page
+                    // transition sliding/scaling the folder out from
+                    // under a now-static cursor can fire a real
+                    // mouseleave on the way out — which was unmounting
+                    // ReadPill (setHoverPill(null)) and untilting the
+                    // folder mid-navigation, reading as one last "flick"
+                    // right as the click landed. Once frozen, none of
+                    // that should react to further mouse events at all —
+                    // just hold still until the route actually tears
+                    // the tree down.
+                    if (pillFrozenRef.current) return;
                     setHoverPill(null);
                     if (manualHoverRef.current === p.tag) {
                       manualHoverRef.current = null;

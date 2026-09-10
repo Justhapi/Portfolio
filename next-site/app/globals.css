@@ -610,6 +610,126 @@ body.on-paper .nav-pill {
 }
 /* nav-status (CT clock) removed — kept this comment so the section is easy to find later */
 
+/* ── Work / Connect hover submenus ────────────────────────────────────
+   Validated in the /prototypes/nav-menu exploration (Cards variant).
+   Desktop hover/focus only — the mobile hamburger's own vertical
+   dropdown isn't rebuilt to nest this, so .nav-dropdown-mask is force-
+   hidden under the same breakpoint that swaps .nav-pill for the mobile
+   menu (see @media (max-width: 720px) below). */
+.nav-dropdown-trigger {
+  position: relative;
+  display: inline-flex;
+}
+/* Mask — overflow:hidden is a pure safety backstop (never actually
+   clips anything in normal operation — see the panel comment below),
+   guaranteeing the submenu can never visually reach into the nav bar
+   above regardless of how its animation is tuned later. The panel/mask
+   itself carries no background — it's just an invisible positioning +
+   animation wrapper; each tile below supplies its own visible surface. */
+.nav-dropdown-mask {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  overflow: hidden;
+  padding-bottom: 10px;
+  pointer-events: none;
+  z-index: 60;
+}
+.nav-dropdown-mask.is-open { pointer-events: auto; }
+/* Panel — the container itself fades and grows in with a bounce (the
+   site's --ease-spring signature overshoot easing), anchored at the
+   top so the top edge never moves — nothing is ever positioned outside
+   the mask, so there's nothing for the overflow clip to cut mid-
+   transition. */
+.nav-dropdown-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 140px;
+  padding: 6px;
+  opacity: 0;
+  transform: scale(0.94);
+  transform-origin: top center;
+  transition:
+    opacity 260ms ease-out,
+    transform 340ms var(--ease-spring, cubic-bezier(0.34, 1.56, 0.64, 1));
+}
+.nav-dropdown-mask.is-open .nav-dropdown-panel {
+  opacity: 1;
+  transform: scale(1);
+}
+/* Each tile carries its own dark-glass background (same material as
+   the nav pill) — the only visible surface in this menu. */
+.nav-dropdown-tile {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 9px;
+  border-radius: 9px;
+  text-decoration: none;
+  color: var(--hero-fg);
+  background:
+    linear-gradient(rgb(var(--hero-fg-rgb) / 0.04), rgb(var(--hero-fg-rgb) / 0.04)),
+    var(--hero-bg-deep);
+  border: 1px solid rgb(var(--hero-fg-rgb) / 0.18);
+  backdrop-filter: saturate(140%) blur(14px);
+  -webkit-backdrop-filter: saturate(140%) blur(14px);
+  transition: background 160ms ease, opacity 260ms ease-out, transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.nav-dropdown-mask:not(.is-open) .nav-dropdown-tile {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+.nav-dropdown-mask.is-open .nav-dropdown-tile {
+  opacity: 1;
+  transform: translateY(0);
+}
+/* Scoped under .nav-dropdown-mask.is-open so this beats the is-open
+   rule above on specificity (a bare .nav-dropdown-tile:hover would
+   otherwise lose to it and never visibly lift). */
+.nav-dropdown-mask.is-open .nav-dropdown-tile:hover,
+.nav-dropdown-mask.is-open .nav-dropdown-tile:focus-visible {
+  background:
+    linear-gradient(rgb(var(--hero-fg-rgb) / 0.1), rgb(var(--hero-fg-rgb) / 0.1)),
+    var(--hero-bg-deep);
+  outline: none;
+  transform: translateY(-1px);
+}
+.nav-dropdown-mask.is-open .nav-dropdown-tile:hover .nav-dropdown-icon,
+.nav-dropdown-mask.is-open .nav-dropdown-tile:focus-visible .nav-dropdown-icon {
+  transform: scale(1.15);
+  color: var(--hero-fg);
+}
+.nav-dropdown-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  color: var(--accent-soft);
+  transition: transform 320ms cubic-bezier(0.34, 1.4, 0.64, 1), color 200ms ease;
+}
+.nav-dropdown-tile-name {
+  font-family: var(--f-mono);
+  font-size: 10px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--hero-fg);
+  white-space: nowrap;
+}
+@media (max-width: 720px) {
+  .nav-dropdown-trigger { display: contents; }
+  .nav-dropdown-mask { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nav-dropdown-panel, .nav-dropdown-tile, .nav-dropdown-icon {
+    transition: opacity 120ms ease !important;
+    transform: none !important;
+  }
+}
+
 /* ── Mobile menu toggle ───────────────────────────────────────────────
    Hidden on desktop; replaces the pill on viewports ≤ 720px (moved
    down from 980px so the nav stays in its horizontal pill form on
@@ -3998,10 +4118,13 @@ em.it { font-style: italic; }
 @keyframes deckShuffle {
   /* FRONT — resting at the top of the stack. */
   0%, 26%   { transform: translate(0, 0)        rotate(var(--rot, 0deg))                      scale(1);    z-index: 5; }
-  /* LIFT — pulled up and off to the side, above the whole stack, on
-     its way to being placed at the bottom. This is the "shuffled
-     out" beat. */
-  30%       { transform: translate(-36px, -32px) rotate(calc(var(--rot, 0deg) - 9deg))  scale(1.06); z-index: 6; }
+  /* LIFT — pulled all the way out to the left, clear of the whole
+     stack (MID/BACK only ever sit 9-18px right/down of center, so the
+     stack's own left edge is basically the deck's left edge — a small
+     nudge here still grazed it), on its way to being placed at the
+     bottom. -190px is the deck's own width, i.e. a full card-width
+     clearance. This is the "shuffled out" beat. */
+  30%       { transform: translate(-190px, -24px) rotate(calc(var(--rot, 0deg) - 9deg))  scale(1.06); z-index: 6; }
   /* BACK — placed down at the bottom of the stack. */
   38%, 60%  { transform: translate(16px, 18px)   rotate(calc(var(--rot, 0deg) + 11deg)) scale(0.92); z-index: 1; }
   /* MAKE ROOM (this card is currently BACK) — nudges further
