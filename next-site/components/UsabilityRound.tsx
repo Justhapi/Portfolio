@@ -6,10 +6,13 @@ import ZoomableImage from "@/components/ZoomableImage";
 /**
  * UsabilityRound — round wrapper around an insight-card carousel.
  *
- * Renders the round header (title + meta + progress dots) and a
- * horizontal carousel of insight cards. Only one card is visible at a
- * time via CSS scroll-snap; the progress dots reflect which card is
- * currently centered and let the user click to jump.
+ * Renders the round header (title + meta) and a horizontal carousel of
+ * insight cards. Only one card is visible at a time via CSS
+ * scroll-snap; a centered prev/next text nav (matching ResearchCarousel's)
+ * reflects which card is currently centered and lets the user jump.
+ * Each InsightCard's optional `label` names it in that nav — no
+ * infinite wrap here (this is a scroll-snap carousel, not the
+ * phantom-slide one), so prev/next simply clamp at the first/last card.
  *
  * Implemented as a client component because the active-card index
  * needs to track scroll position on every frame. The cards themselves
@@ -38,7 +41,15 @@ export default function UsabilityRound({
   findings?: React.ReactNode;
   children?: React.ReactNode;
 }) {
-  const total = Children.count(children);
+  const childArray = Children.toArray(children);
+  const total = childArray.length;
+  // Pull each InsightCard's `label` prop for the prev/next nav — falls
+  // back to a generic "Insight N" if a card doesn't set one.
+  const labels = childArray.map((child, i) =>
+    React.isValidElement(child)
+      ? ((child.props as { label?: string }).label ?? `Insight ${i + 1}`)
+      : `Insight ${i + 1}`
+  );
   const carouselRef = useRef<HTMLDivElement | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -48,6 +59,14 @@ export default function UsabilityRound({
   useEffect(() => {
     const carousel = carouselRef.current;
     if (!carousel) return;
+    // Force the leftmost (first) card on every mount — some browsers
+    // restore a scrollable element's previous scrollLeft on
+    // back/forward navigation (bfcache), which would otherwise leave
+    // the carousel sitting wherever the user last scrolled it instead
+    // of always opening on card 1.
+    if (carousel.scrollLeft !== 0) {
+      carousel.scrollTo({ left: 0, behavior: "auto" });
+    }
     const update = () => {
       const center = carousel.scrollLeft + carousel.clientWidth / 2;
       let closest = 0;
@@ -96,17 +115,30 @@ export default function UsabilityRound({
       {total > 0 ? (
         <div className="ur-carousel-wrapper">
           {total > 1 && (
-            <nav className="ur-progress" aria-label={`${title} insight progress`}>
-              {Array.from({ length: total }).map((_, i) => (
+            <nav className="ur-nav" aria-label={`${title} insight progress`}>
+              {activeIndex > 0 && (
                 <button
-                  key={i}
                   type="button"
-                  className={`ur-dot ${i === activeIndex ? "is-active" : ""}`}
-                  aria-label={`Show insight ${i + 1} of ${total}`}
-                  aria-current={i === activeIndex ? "true" : undefined}
-                  onClick={() => scrollToCard(i)}
-                />
-              ))}
+                  className="ur-nav-link ur-nav-link--prev"
+                  onClick={() => scrollToCard(activeIndex - 1)}
+                  aria-label={`Show previous: ${labels[activeIndex - 1]}`}
+                >
+                  <span aria-hidden="true">‹</span> {labels[activeIndex - 1]}
+                </button>
+              )}
+              {activeIndex > 0 && activeIndex < total - 1 && (
+                <span className="ur-nav-sep" aria-hidden="true">|</span>
+              )}
+              {activeIndex < total - 1 && (
+                <button
+                  type="button"
+                  className="ur-nav-link ur-nav-link--next"
+                  onClick={() => scrollToCard(activeIndex + 1)}
+                  aria-label={`Show next: ${labels[activeIndex + 1]}`}
+                >
+                  {labels[activeIndex + 1]} <span aria-hidden="true">›</span>
+                </button>
+              )}
             </nav>
           )}
           <div className="ur-insight-cards" ref={carouselRef}>
@@ -154,6 +186,10 @@ export function InsightCard({
   imageAlt?: string;
   imageAspectRatio?: number;
   imageCaption?: React.ReactNode;
+  /** Short plain-text name for this card, read by the parent
+   *  UsabilityRound for its prev/next nav link (e.g. "Payment
+   *  Buttons"). Not rendered inside the card itself. */
+  label?: string;
 }) {
   const hasImage = Boolean(imageSrc);
   return (

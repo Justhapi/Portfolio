@@ -26,8 +26,14 @@ import { useCallback, useEffect, useRef, useState } from "react";
  * realize it was a slideshow because the buttons were small and out
  * of the way") with a centered prev/next text link above the track,
  * naming the actual adjacent slide instead of an abstract symbol.
- * Since the carousel wraps infinitely, prev/next always resolve to a
- * real slide — no disabled/end state to handle.
+ *
+ * Infinite wrap only kicks in at 3+ slides. With exactly 2, "wrapping"
+ * means prev and next both resolve to the same other slide — the nav
+ * would show that slide's name mirrored on both sides at once, which
+ * reads as a glitch, not a feature. So 2-slide carousels clamp instead
+ * (prev hidden on the first slide, next hidden on the last) and only
+ * 3+ slide carousels get the true infinite loop with both links always
+ * present.
  */
 
 type Slide = {
@@ -51,7 +57,9 @@ const TRANSITION_MS = 380;    // must match the CSS transition duration on .rc-t
 
 export default function ResearchCarousel({ slides, title }: Props) {
   const total = slides.length;
-  const hasPhantoms = total > 1;
+  // Only 3+ slides get the phantom-based infinite wrap — see the
+  // "Infinite wrap" note above for why exactly 2 clamps instead.
+  const hasPhantoms = total > 2;
 
   // Extended track:  [phantomLast, ...slides, phantomFirst]
   // Real slide N lives at track index N + 1 (offset by the prepended phantom).
@@ -139,7 +147,12 @@ export default function ResearchCarousel({ slides, title }: Props) {
   }, []);
 
   const advance = useCallback(() => {
-    if (!hasPhantoms) return;
+    if (!hasPhantoms) {
+      // No wrap at 2 slides — clamp at the last one instead of no-op,
+      // so the (single) next link still works.
+      setTrackIdx((i) => Math.min(i + 1, total - 1));
+      return;
+    }
     // If we're currently on a phantom, don't advance further — wait
     // for the pending silent-reset to complete first. This guards
     // against rapid double-triggers pushing us off the extended track.
@@ -148,7 +161,10 @@ export default function ResearchCarousel({ slides, title }: Props) {
   }, [trackIdx, goToTrack, hasPhantoms, total]);
 
   const retreat = useCallback(() => {
-    if (!hasPhantoms) return;
+    if (!hasPhantoms) {
+      setTrackIdx((i) => Math.max(i - 1, 0));
+      return;
+    }
     if (trackIdx === 0 || trackIdx === total + 1) return;
     goToTrack(trackIdx - 1);
   }, [trackIdx, goToTrack, hasPhantoms, total]);
@@ -249,27 +265,39 @@ export default function ResearchCarousel({ slides, title }: Props) {
     >
       <header className="rc-header">
         {title && <h4 className="rc-title">{title}</h4>}
-        {total > 1 && (
-          <nav className="rc-nav" aria-label="Select research activity">
-            <button
-              type="button"
-              className="rc-nav-link rc-nav-link--prev"
-              onClick={retreat}
-              aria-label={`Show previous: ${slides[(realIndex - 1 + total) % total].label}`}
-            >
-              <span aria-hidden="true">‹</span> {slides[(realIndex - 1 + total) % total].label}
-            </button>
-            <span className="rc-nav-sep" aria-hidden="true">|</span>
-            <button
-              type="button"
-              className="rc-nav-link rc-nav-link--next"
-              onClick={advance}
-              aria-label={`Show next: ${slides[(realIndex + 1) % total].label}`}
-            >
-              {slides[(realIndex + 1) % total].label} <span aria-hidden="true">›</span>
-            </button>
-          </nav>
-        )}
+        {total > 1 && (() => {
+          const showPrev = hasPhantoms || realIndex > 0;
+          const showNext = hasPhantoms || realIndex < total - 1;
+          const prevLabel = slides[(realIndex - 1 + total) % total].label;
+          const nextLabel = slides[(realIndex + 1) % total].label;
+          return (
+            <nav className="rc-nav" aria-label="Select research activity">
+              {showPrev && (
+                <button
+                  type="button"
+                  className="rc-nav-link rc-nav-link--prev"
+                  onClick={retreat}
+                  aria-label={`Show previous: ${prevLabel}`}
+                >
+                  <span aria-hidden="true">‹</span> {prevLabel}
+                </button>
+              )}
+              {showPrev && showNext && (
+                <span className="rc-nav-sep" aria-hidden="true">|</span>
+              )}
+              {showNext && (
+                <button
+                  type="button"
+                  className="rc-nav-link rc-nav-link--next"
+                  onClick={advance}
+                  aria-label={`Show next: ${nextLabel}`}
+                >
+                  {nextLabel} <span aria-hidden="true">›</span>
+                </button>
+              )}
+            </nav>
+          );
+        })()}
       </header>
 
       <div

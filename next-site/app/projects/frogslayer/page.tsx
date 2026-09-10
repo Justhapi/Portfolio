@@ -440,6 +440,7 @@ export default function FrogslayerCaseStudy() {
               }
             >
               <InsightCard
+                label="Card-Loading Page"
                 insight="“Cognitive overload on the card-loading selection page”"
                 change="Simplified the card-loading page to match the rest of the flow"
                 imageSrc={round1CardLoading.src}
@@ -447,6 +448,7 @@ export default function FrogslayerCaseStudy() {
                 imageAspectRatio={1983 / 1282}
               />
               <InsightCard
+                label="Loyalty Pop-up"
                 insight="“Consistent resistance to signup, plus confusion that loyalty required an entry fee”"
                 change="Loyalty pop-up with a clear comparison of member tiers and deals to compel interaction"
                 imageSrc={round1Loyalty.src}
@@ -454,6 +456,7 @@ export default function FrogslayerCaseStudy() {
                 imageAspectRatio={2017 / 2302}
               />
               <InsightCard
+                label="Ending Page"
                 insight="“Ending-page orientation broke layout consistency”"
                 change="Flipped the end page from vertical to horizontal"
                 imageSrc={round1Ending.src}
@@ -461,6 +464,7 @@ export default function FrogslayerCaseStudy() {
                 imageAspectRatio={1943 / 1282}
               />
               <InsightCard
+                label="Payment Buttons"
                 insight="“Payment buttons read as different elements from the rest of the screens”"
                 change="Redesigned payment buttons to match the site&rsquo;s button system"
                 imageSrc={round1PaymentButton.src}
@@ -483,6 +487,7 @@ export default function FrogslayerCaseStudy() {
               }
             >
               <InsightCard
+                label="Loyalty Upsells"
                 insight="Upsells engaged even hesitant users, but a recurring “might be a catch” mistrust surfaced around unclear deals and member pricing"
                 change="Selected upsells over tiers as the loyalty model, then modified upsell prices and deals for clarity to build trust"
                 imageSrc={round2Upsell.src}
@@ -490,6 +495,7 @@ export default function FrogslayerCaseStudy() {
                 imageAspectRatio={2392 / 1742}
               />
               <InsightCard
+                label="Reset Button"
                 insight="“Reset button unused in every observed session”"
                 change="Replaced the unused reset button with a sign-in button"
                 imageSrc={round2Reset.src}

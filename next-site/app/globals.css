@@ -6135,11 +6135,15 @@ em.it { font-style: italic; }
 
 /* ── Research carousel (Frogslayer secondary-research fold) ───────
    Styled to match the UsabilityRound pattern:
-     - Header at top with title on the left, progress dots aligned right
+     - Header at top with a centered prev/next text nav naming the
+       adjacent slide (see .rc-nav below)
      - Swipeable card viewport below (no arrow buttons)
-     - Infinite wrap on swipe (past last → first, before first → last)
-   Dot styling intentionally mirrors .ur-dot so both carousels feel
-   like part of the same interaction system across the case study. */
+     - Infinite wrap on swipe at 3+ slides only (past last → first,
+       before first → last); exactly 2 slides clamp instead — see the
+       comment in ResearchCarousel.tsx for why
+   Nav styling intentionally mirrors .ur-nav (UsabilityRound.tsx) so
+   both carousels feel like part of the same interaction system across
+   the case study. */
 .research-carousel {
   /* Bottom margin was 40px — halved to 20px since the h3 that follows
      already carries its own 44px top-margin (see .case-section h3),
@@ -6474,44 +6478,54 @@ em.it { font-style: italic; }
   line-height: 1.45;
   color: var(--fg);
 }
-/* Carousel wrapper — contains progress dots (top-right) + insight
-   card viewport. Dots sit ABOVE the cards, right-aligned, reading as
-   "controls for this card viewport" instead of "chapter decoration". */
+/* Carousel wrapper — contains the prev/next nav + insight card
+   viewport. Nav sits ABOVE the cards, reading as "controls for this
+   card viewport" instead of "chapter decoration". */
 .usability-rounds .ur-carousel-wrapper {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
-/* Progress dots — one circle per card. Right-aligned above the
-   card viewport. Same visual as before, just re-parented. */
-.usability-rounds .ur-progress {
+/* Prev/next nav — matches ResearchCarousel's .rc-nav (centered text
+   links naming the adjacent card, "|" divider). No wrap: prev is
+   omitted on the first card, next on the last. */
+.usability-rounds .ur-nav {
   display: flex;
-  gap: 8px;
+  justify-content: center;
   align-items: center;
-  justify-content: flex-end;
+  gap: 14px;
 }
-.usability-rounds .ur-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: rgb(var(--fg-rgb) / 0.2);
-  border: none;
-  padding: 0;
+.usability-rounds .ur-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  padding: 6px 2px;
+  background: transparent;
+  font-family: var(--f-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgb(var(--fg-rgb) / 0.55);
   cursor: pointer;
-  transition:
-    background 200ms ease,
-    transform 200ms cubic-bezier(0.45, 0, 0.55, 1);
+  transition: color 160ms ease, transform 160ms cubic-bezier(0.34, 1.4, 0.64, 1);
 }
-.usability-rounds .ur-dot:hover {
-  background: rgb(var(--fg-rgb) / 0.42);
-}
-.usability-rounds .ur-dot.is-active {
-  background: var(--accent-on-cream);
-  transform: scale(1.35);
-}
-.usability-rounds .ur-dot:focus-visible {
+.usability-rounds .ur-nav-link:hover { color: var(--accent-on-cream); }
+.usability-rounds .ur-nav-link--prev:hover { transform: translateX(-2px); }
+.usability-rounds .ur-nav-link--next:hover { transform: translateX(2px); }
+.usability-rounds .ur-nav-link:focus-visible {
   outline: 2px solid var(--accent-on-cream);
   outline-offset: 3px;
+}
+.usability-rounds .ur-nav-sep {
+  font-family: var(--f-mono);
+  font-size: 13px;
+  line-height: 1;
+  color: rgb(var(--fg-rgb) / 0.2);
+}
+@media (max-width: 720px) {
+  .usability-rounds .ur-nav-link { font-size: 10px; }
 }
 .usability-rounds .ur-round-header h4 {
   font-family: var(--f-display);
@@ -6533,11 +6547,11 @@ em.it { font-style: italic; }
   margin: 0;
 }
 /* Horizontal carousel of insight cards — one card visible at a time
-   via mandatory scroll-snap. The progress dots in the round header
-   (UsabilityRound.tsx) reflect which card is currently centered and
-   let the user jump between cards. Keeps each round compact and
-   forces the viewer to engage with one insight at a time rather
-   than visually scanning past four. */
+   via mandatory scroll-snap. The prev/next nav above (UsabilityRound.tsx)
+   reflects which card is currently centered and lets the user jump
+   between cards. Keeps each round compact and forces the viewer to
+   engage with one insight at a time rather than visually scanning
+   past four. */
 .usability-rounds .ur-insight-cards {
   display: flex;
   flex-direction: row;
