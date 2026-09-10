@@ -713,13 +713,27 @@ export default function ProjectsV2() {
   };
 
   /* Freezes the pill's position on click — Next.js tears down the page
-     on navigation, which was making the pill visibly veer. */
+     on navigation, which was making the pill visibly veer.
+
+     Both a ref AND state track "frozen": the ref is read directly
+     inside the mousemove handler so a stray mousemove that fires in
+     the gap between setPillFrozen(true) committing and React actually
+     detaching this effect's listener (passive-effect cleanup runs
+     asynchronously, after the click handler returns — the browser can
+     dispatch another mousemove in that window) is a no-op immediately,
+     with no dependency on effect-cleanup timing. The state value still
+     drives the `frozen` prop so ReadPill's own layout effect also
+     bails out and never recomputes its clamped position. */
   const [pillFrozen, setPillFrozen] = useState(false);
+  const pillFrozenRef = useRef(false);
 
   // track mouse globally only while a pill is showing AND not frozen
   useEffect(() => {
     if (!hoverPill || pillFrozen) return;
-    const onMove = (e: MouseEvent) => setPos({ x: e.clientX, y: e.clientY });
+    const onMove = (e: MouseEvent) => {
+      if (pillFrozenRef.current) return;
+      setPos({ x: e.clientX, y: e.clientY });
+    };
     window.addEventListener("mousemove", onMove);
     return () => window.removeEventListener("mousemove", onMove);
   }, [hoverPill, pillFrozen]);
@@ -866,9 +880,15 @@ export default function ProjectsV2() {
                   aria-label={`${p.tag} — ${p.readTime}`}
                   onClick={() => {
                     saveHomeScroll();
+                    // Set synchronously (ref) so an in-flight mousemove
+                    // can't slip a position update past this — plus the
+                    // state value to drive ReadPill's own `frozen` prop.
+                    pillFrozenRef.current = true;
                     setPillFrozen(true); // pin pill through the route teardown
                   }}
                   onMouseEnter={(e) => {
+                    pillFrozenRef.current = false; // fresh hover — allow tracking again
+                    setPillFrozen(false);
                     setPos({ x: e.clientX, y: e.clientY });
                     setHoverPill(p.readTime);
                     manualHoverRef.current = p.tag;
@@ -889,6 +909,8 @@ export default function ProjectsV2() {
                      getBoundingClientRect since focus carries no cursor
                      coordinate. */
                   onFocus={(e) => {
+                    pillFrozenRef.current = false;
+                    setPillFrozen(false);
                     const rect = e.currentTarget.getBoundingClientRect();
                     setPos({ x: rect.right - 8, y: rect.top + 8 });
                     setHoverPill(p.readTime);

@@ -176,6 +176,7 @@ export default function FrogslayerCaseStudy() {
             slides={[
               {
                 key: "makes-up",
+                label: "Secondary Research",
                 content: (
                   <div className="rq-block">
                     <div className="rq-block__body">
@@ -212,6 +213,7 @@ export default function FrogslayerCaseStudy() {
               },
               {
                 key: "conventions",
+                label: "Competitive Analysis",
                 content: (
                   <div className="rq-block">
                     <div className="rq-block__body">
@@ -260,6 +262,7 @@ export default function FrogslayerCaseStudy() {
             slides={[
               {
                 key: "interviews",
+                label: "Interviews & Survey",
                 content: (
                   <div className="rq-block">
                     <div className="rq-block__body">
@@ -298,6 +301,7 @@ export default function FrogslayerCaseStudy() {
               },
               {
                 key: "observations",
+                label: "Field Observations",
                 content: (
                   <div className="rq-block">
                     <div className="rq-block__body">

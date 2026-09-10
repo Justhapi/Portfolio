@@ -19,13 +19,24 @@ import { useCallback, useEffect, useRef, useState } from "react";
  *   - Touch swipe (mobile / tablet)
  *   - Mouse click-and-drag (desktop with mouse)
  *   - Trackpad two-finger horizontal swipe (desktop trackpad)
- *   - Click a progress dot to jump to a specific real slide
+ *   - Click the prev/next nav link (names the adjacent slide directly)
  *   - Keyboard arrows navigate when focus is inside the carousel
+ *
+ * Nav — replaced the original small dot row (feedback: "did not
+ * realize it was a slideshow because the buttons were small and out
+ * of the way") with a centered prev/next text link above the track,
+ * naming the actual adjacent slide instead of an abstract symbol.
+ * Since the carousel wraps infinitely, prev/next always resolve to a
+ * real slide — no disabled/end state to handle.
  */
 
 type Slide = {
   key: string;
   content: React.ReactNode;
+  /** Short plain-text name shown in the prev/next nav link (e.g.
+   *  "Secondary Research"). Kept separate from `content` since content
+   *  is often rich JSX and the nav needs plain text. */
+  label: string;
 };
 
 type Props = {
@@ -46,9 +57,9 @@ export default function ResearchCarousel({ slides, title }: Props) {
   // Real slide N lives at track index N + 1 (offset by the prepended phantom).
   const trackSlides = hasPhantoms
     ? [
-        { key: `${slides[total - 1].key}__phantomStart`, content: slides[total - 1].content },
+        { key: `${slides[total - 1].key}__phantomStart`, content: slides[total - 1].content, label: "" },
         ...slides,
-        { key: `${slides[0].key}__phantomEnd`, content: slides[0].content },
+        { key: `${slides[0].key}__phantomEnd`, content: slides[0].content, label: "" },
       ]
     : slides;
 
@@ -141,20 +152,6 @@ export default function ResearchCarousel({ slides, title }: Props) {
     if (trackIdx === 0 || trackIdx === total + 1) return;
     goToTrack(trackIdx - 1);
   }, [trackIdx, goToTrack, hasPhantoms, total]);
-
-  const goToRealIdx = useCallback(
-    (realIdx: number) => {
-      if (!hasPhantoms) {
-        setTrackIdx(realIdx);
-        return;
-      }
-      // Dot clicks jump straight to the requested real slide without
-      // routing through phantoms.
-      const clamped = ((realIdx % total) + total) % total;
-      setTrackIdx(clamped + 1);
-    },
-    [total, hasPhantoms],
-  );
 
   const handleKey = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === "ArrowLeft") {
@@ -253,17 +250,24 @@ export default function ResearchCarousel({ slides, title }: Props) {
       <header className="rc-header">
         {title && <h4 className="rc-title">{title}</h4>}
         {total > 1 && (
-          <nav className="rc-progress" aria-label="Select research activity">
-            {slides.map((s, i) => (
-              <button
-                key={s.key}
-                type="button"
-                className={`rc-dot${i === realIndex ? " is-active" : ""}`}
-                aria-label={`Show activity ${i + 1} of ${total}`}
-                aria-current={i === realIndex ? "true" : undefined}
-                onClick={() => goToRealIdx(i)}
-              />
-            ))}
+          <nav className="rc-nav" aria-label="Select research activity">
+            <button
+              type="button"
+              className="rc-nav-link rc-nav-link--prev"
+              onClick={retreat}
+              aria-label={`Show previous: ${slides[(realIndex - 1 + total) % total].label}`}
+            >
+              <span aria-hidden="true">‹</span> {slides[(realIndex - 1 + total) % total].label}
+            </button>
+            <span className="rc-nav-sep" aria-hidden="true">|</span>
+            <button
+              type="button"
+              className="rc-nav-link rc-nav-link--next"
+              onClick={advance}
+              aria-label={`Show next: ${slides[(realIndex + 1) % total].label}`}
+            >
+              {slides[(realIndex + 1) % total].label} <span aria-hidden="true">›</span>
+            </button>
           </nav>
         )}
       </header>
