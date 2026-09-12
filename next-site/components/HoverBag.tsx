@@ -146,6 +146,28 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
     return () => mq.removeEventListener("change", update);
   }, []);
 
+  const prefersReducedMotionRef = useRef(false);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const update = () => { prefersReducedMotionRef.current = mq.matches; };
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
+  /* Sideways "lean" — the pill tips opposite the cursor's horizontal
+     motion, like a sign swinging from where it's held (its
+     transform-origin is the bottom-left corner, same anchor the cursor
+     sits at — see the entrance-scale comment below), settling back
+     level a beat after the mouse stops moving. Kept on the individual
+     `rotate` property, set directly via the DOM ref rather than
+     through React state, so it never triggers a re-render and never
+     fights `.hover-bag__pill`'s own `transform: scale()` entrance. */
+  const leanTimeout = useRef<number | null>(null);
+  const LEAN_SENSITIVITY = 0.6; // deg of lean per px of horizontal movement
+  const LEAN_MAX = 7; // deg, clamped so a fast swipe can't over-rotate it
+
   /* The pill is portaled straight to <body> (see the render below).
      .hover-bag's own entrance animation leaves a lingering, non-"none"
      `transform` on it after finishing (animation-fill-mode: forwards
@@ -169,6 +191,21 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
   const placePill = (clientX: number, clientY: number, key: string | null) => {
     const pill = pillRef.current;
     if (!pill || !key) return;
+
+    if (!prefersReducedMotionRef.current) {
+      // No previous position for THIS hover session (fresh mouseenter,
+      // since onMouseLeave/onBlur null it out below) means no lean yet
+      // — otherwise the jump between two different bag items would
+      // read as one big spurious kick.
+      const dx = lastPos.current ? clientX - lastPos.current.x : 0;
+      const lean = Math.max(-LEAN_MAX, Math.min(LEAN_MAX, -dx * LEAN_SENSITIVITY));
+      pill.style.rotate = `${lean}deg`;
+      if (leanTimeout.current) window.clearTimeout(leanTimeout.current);
+      leanTimeout.current = window.setTimeout(() => {
+        if (pillRef.current) pillRef.current.style.rotate = "0deg";
+      }, 140);
+    }
+
     lastPos.current = { x: clientX, y: clientY };
     const card = pill.firstElementChild as HTMLElement | null;
     // Fallback matches .pill-polaroid / .pill-deck's own width (190)
@@ -289,13 +326,25 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
               setActive(item.key);
             } : undefined}
             onMouseMove={hoverCapable ? (e) => placePill(e.clientX, e.clientY, item.key) : undefined}
-            onMouseLeave={hoverCapable ? () => setActive(null) : undefined}
+            onMouseLeave={hoverCapable ? () => {
+              setActive(null);
+              // Fresh start for whichever item is hovered next — see
+              // the comment in placePill on why this matters for lean.
+              lastPos.current = null;
+              if (leanTimeout.current) window.clearTimeout(leanTimeout.current);
+              if (pillRef.current) pillRef.current.style.rotate = "0deg";
+            } : undefined}
             onFocus={hoverCapable ? (e) => {
               const r = e.currentTarget.getBoundingClientRect();
               placePill(r.left + r.width / 2, r.top + r.height / 2, item.key);
               setActive(item.key);
             } : undefined}
-            onBlur={hoverCapable ? () => setActive(null) : undefined}
+            onBlur={hoverCapable ? () => {
+              setActive(null);
+              lastPos.current = null;
+              if (leanTimeout.current) window.clearTimeout(leanTimeout.current);
+              if (pillRef.current) pillRef.current.style.rotate = "0deg";
+            } : undefined}
             /* Touch path: tap toggles the centered popup — tap the same
                item again (or it's already active) to fade it back out. */
             onClick={!hoverCapable ? () => {
@@ -390,6 +439,96 @@ function PillPolaroid({
   );
 }
 
+type OrbitIcon = {
+  label: string;
+  top: string;
+  left?: string;
+  right?: string;
+  rotate: number;
+};
+
+/* Independent float timing per icon/caption slot, so the three icons
+   and the caption card each bob at their own pace instead of moving
+   together as one rigid unit. Set via inline animation-duration/-delay
+   plus a --icon-float-amp custom property (read by the shared
+   @keyframes floatBob in globals.css, which animates the `translate`
+   property — kept separate from `rotate`/`transform` so it never
+   fights each element's own static tilt). */
+const ICON_FLOAT = [
+  { dur: 3.0, amp: 5, delay: 0 },
+  { dur: 3.7, amp: 7, delay: 0.35 },
+  { dur: 4.3, amp: 4, delay: 0.6 },
+];
+const CAPTION_FLOAT = { dur: 3.9, amp: 3, delay: 0.15 };
+
+/* Music + Games only — instead of one photo in a paper card, three
+   equal-size bare "icon" squares (each its own shadowed silhouette, no
+   shared card) sit in a loose, hand-set triangle, with the caption
+   nested as its own small card in the negative space between them.
+   The icon shape itself is the pill; there's no outer wrapper card. */
+function PillOrbit({
+  icons,
+  meta,
+  caption,
+  rotate = 0,
+  captionTop,
+  captionLeft,
+  captionRotate = 0,
+}: {
+  icons: OrbitIcon[];
+  meta?: string;
+  caption: React.ReactNode;
+  rotate?: number;
+  captionTop: string;
+  captionLeft: string;
+  captionRotate?: number;
+}) {
+  return (
+    <div className="pill-orbit" style={{ ["--rot" as string]: `${rotate}deg` }}>
+      {icons.map((icon, i) => {
+        const float = ICON_FLOAT[i % ICON_FLOAT.length];
+        return (
+          <div
+            key={i}
+            className="pill-orbit__item"
+            style={{
+              top: icon.top,
+              left: icon.left,
+              right: icon.right,
+              // Static tilt on the individual `rotate` property — kept
+              // apart from the `translate` property that floatBob
+              // animates, so the two never override each other.
+              rotate: `${icon.rotate}deg`,
+              ["--icon-float-amp" as string]: `${float.amp}px`,
+              animationDuration: `${float.dur}s`,
+              animationDelay: `${float.delay}s`,
+            }}
+          >
+            <span className="image-slot">{icon.label}</span>
+          </div>
+        );
+      })}
+      <div
+        className="pill-orbit__caption"
+        style={{
+          top: captionTop,
+          left: captionLeft,
+          // Centering + tilt stay on the `transform` shorthand; the
+          // bob runs on the separate `translate` property, which
+          // composes on top instead of overriding this.
+          transform: `translate(-50%, -50%) rotate(${captionRotate}deg)`,
+          ["--icon-float-amp" as string]: `${CAPTION_FLOAT.amp}px`,
+          animationDuration: `${CAPTION_FLOAT.dur}s`,
+          animationDelay: `${CAPTION_FLOAT.delay}s`,
+        }}
+      >
+        {meta && <span className="pill-polaroid__meta">{meta}</span>}
+        <span className="pill-polaroid__line">{caption}</span>
+      </div>
+    </div>
+  );
+}
+
 type DeckCard = {
   label: string;
   caption: React.ReactNode;
@@ -405,18 +544,33 @@ type DeckCard = {
    a hand of cards being worked through. */
 const DECK_SLOT_SECONDS = 3.6;
 
+/* Independent float timing per card slot, layered on top of each
+   card's own deckShuffle choreography — see the shared @keyframes
+   floatBob comment on ICON_FLOAT above for how this composes without
+   fighting deckShuffle's `transform`. */
+const CARD_FLOAT = [
+  { dur: 3.2, amp: 5, delay: 0 },
+  { dur: 3.9, amp: 4, delay: 0.3 },
+  { dur: 4.5, amp: 6, delay: 0.55 },
+];
+
 function PillPolaroidDeck({ cards }: { cards: DeckCard[] }) {
   const cycle = cards.length * DECK_SLOT_SECONDS;
   return (
     <div className="pill-deck">
-      {cards.map((c, i) => (
+      {cards.map((c, i) => {
+        const float = CARD_FLOAT[i % CARD_FLOAT.length];
+        return (
         <div
           key={i}
           className="pill-deck__front pill-polaroid"
           style={{
             ["--rot" as string]: `${c.rotate ?? 0}deg`,
-            animationDuration: `${cycle}s`,
-            animationDelay: `${-(i * DECK_SLOT_SECONDS)}s`,
+            ["--icon-float-amp" as string]: `${float.amp}px`,
+            // Comma-paired: deckShuffle's duration/delay first, then
+            // floatBob's — matches the animation-name order in CSS.
+            animationDuration: `${cycle}s, ${float.dur}s`,
+            animationDelay: `${-(i * DECK_SLOT_SECONDS)}s, ${float.delay}s`,
           }}
         >
           <div className="pill-polaroid__photo">
@@ -427,18 +581,26 @@ function PillPolaroidDeck({ cards }: { cards: DeckCard[] }) {
             <span className="pill-polaroid__line">{c.caption}</span>
           </div>
         </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
 
 function PillMusic() {
   return (
-    <PillPolaroid
-      label="Photo — music"
-      meta="now playing"
+    <PillOrbit
       rotate={-3}
+      meta="now playing"
       caption={<>Mostly <strong>CPOP / KPOP / JPOP</strong> — <strong>LBI利比</strong> on repeat</>}
+      icons={[
+        { label: "Photo — music 1", top: "5%", left: "-3%", rotate: -13 },
+        { label: "Photo — music 2", top: "-7%", right: "8%", rotate: 7 },
+        { label: "Photo — music 3", top: "40%", left: "37%", rotate: 8 },
+      ]}
+      captionTop="39%"
+      captionLeft="46%"
+      captionRotate={-2}
     />
   );
 }
@@ -480,11 +642,18 @@ function PillTravel() {
 
 function PillGames() {
   return (
-    <PillPolaroid
-      label="Photo — games"
-      meta="what i'm playing"
+    <PillOrbit
       rotate={-2}
+      meta="what i'm playing"
       caption="Pokémon, League, and TFT"
+      icons={[
+        { label: "Photo — Pokémon", top: "-4%", left: "8%", rotate: -8 },
+        { label: "Photo — League", top: "6%", right: "-2%", rotate: 11 },
+        { label: "Photo — TFT", top: "37%", left: "23%", rotate: 6 },
+      ]}
+      captionTop="41%"
+      captionLeft="55%"
+      captionRotate={1.5}
     />
   );
 }

@@ -3951,11 +3951,15 @@ em.it { font-style: italic; }
      Kowalski's rule: ease-out for entering/exiting UI, under 300ms. */
   transition:
     opacity   160ms ease-out,
-    transform 200ms cubic-bezier(0.23, 1, 0.32, 1);
+    transform 200ms cubic-bezier(0.23, 1, 0.32, 1),
+    rotate    220ms cubic-bezier(0.23, 1, 0.32, 1);
   /* Origin at bottom-left so the pill scales from the cursor position
      (cursor sits at pill's lower-left corner via PILL_OFFSET_X:14,
      PILL_OFFSET_Y:-182 in HoverBag.tsx). Origin-aware popover = feels
-     like it grows FROM the cursor, not from an arbitrary center. */
+     like it grows FROM the cursor, not from an arbitrary center. Also
+     the pivot for the sideways "lean" set via the individual `rotate`
+     property in HoverBag.tsx's placePill — composes with the scale
+     `transform` above instead of fighting it. */
   transform-origin: 0 100%;
   z-index: 100;
 }
@@ -4025,6 +4029,44 @@ em.it { font-style: italic; }
   position: relative;
   color: var(--fg-soft);
   overflow: visible;
+  /* Gentle idle float, shared by every popup variant since they all
+     render inside this one shell — a slow, subtle bob so the pill
+     reads as lightly hovering rather than pasted in place. Speed and
+     travel distance come from --float-dur/--float-amp, overridden per
+     item below so the six popups don't all bob in lockstep. Paused
+     automatically while hidden by the animation-play-state rule
+     above (it targets every descendant of a non-.is-on pill). */
+  --float-dur: 3.6s;
+  --float-amp: 6px;
+  animation: pillFloat var(--float-dur) ease-in-out infinite;
+}
+@keyframes pillFloat {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(calc(-1 * var(--float-amp))); }
+}
+/* Per-item float personality for the two single-card popups (art,
+   food) — distinct speed + travel so they don't match each other. */
+.hover-bag__pill--ipad  .hover-bag__pill-inner { --float-dur: 3.9s; --float-amp: 5px; }
+.hover-bag__pill--usagi .hover-bag__pill-inner { --float-dur: 4.7s; --float-amp: 5px; }
+/* Music, games, friends, and travel are multi-piece popups (a deck of
+   cards, or an icon cluster) — each individual piece floats on its own
+   below instead of the whole shell bobbing as one rigid unit, so the
+   container-level float is switched off for these four. */
+.hover-bag__pill--earbuds .hover-bag__pill-inner,
+.hover-bag__pill--laptop  .hover-bag__pill-inner,
+.hover-bag__pill--phone   .hover-bag__pill-inner,
+.hover-bag__pill--ticket  .hover-bag__pill-inner {
+  animation: none;
+}
+/* Shared bob used by every individually-floating piece below (deck
+   cards, orbit icons, orbit caption) — pure vertical translate via the
+   individual `translate` property so it composes with whatever
+   `transform`/`rotate` that piece already has instead of fighting it.
+   Speed/delay come from animation-duration/-delay (set inline per
+   piece); travel distance comes from --icon-float-amp. */
+@keyframes floatBob {
+  0%, 100% { translate: 0 0; }
+  50%      { translate: 0 calc(-1 * var(--icon-float-amp, 6px)); }
 }
 
 /* ---- Polaroid (shared shape for every bag popup) -------------------
@@ -4083,6 +4125,67 @@ em.it { font-style: italic; }
 }
 .pill-polaroid__line strong { color: var(--accent-on-cream); font-weight: 600; }
 
+/* ---- Orbit (music / games) — these two replace the standard photo +
+   caption-strip polaroid with three equal-size "icon" squares (each
+   its own bare rounded-square silhouette and shadow, no shared paper
+   card) arranged in a loose, hand-set triangle. The caption nests as
+   its own small card in the negative space between them instead of
+   living in a strip below — the icon shape itself is the pill. */
+.pill-orbit {
+  position: relative;
+  width: 190px;
+  aspect-ratio: 1 / 1;
+  transform: rotate(var(--rot, 0deg));
+}
+.pill-orbit__item {
+  position: absolute;
+  width: 42%;
+  aspect-ratio: 1 / 1;
+  border-radius: 22%;
+  overflow: hidden;
+  background: #2A302F;
+  box-shadow:
+    inset 0 2px 6px rgba(0, 0, 0, 0.4),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.25),
+    0 10px 18px -8px rgba(0, 0, 0, 0.4);
+  /* Each icon's static tilt is set inline via the individual `rotate`
+     property (not `transform`), so this bob — on the separate
+     `translate` property — never fights it. Duration/delay set inline
+     per icon; see ICON_FLOAT in HoverBag.tsx. */
+  animation-name: floatBob;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+.pill-orbit__item .image-slot {
+  font-size: 6.5px;
+  letter-spacing: 0.1em;
+}
+.pill-orbit__caption {
+  position: absolute;
+  width: 60%;
+  padding: 5px 6px;
+  border-radius: 9px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  text-align: center;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0) 30%),
+    #FBF7EE;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    inset 0 -1px 0 rgb(var(--fg-rgb) / 0.06),
+    0 6px 12px -4px rgba(0, 0, 0, 0.3);
+  /* Static centering + tilt stay on the `transform` shorthand (set
+     inline); the bob runs on `translate` so it layers on top instead
+     of overriding the centering. */
+  animation-name: floatBob;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+.pill-orbit__caption .pill-polaroid__line { font-size: 9.5px; line-height: 1.15; }
+.pill-orbit__caption .pill-polaroid__meta { font-size: 6.5px; }
+
 /* ---- Deck (friends / travel) — all 3 cards stay visible at all times
    and physically SHUFFLE through 3 stack positions (front / back /
    mid), like actually working through a hand of cards: the FRONT card
@@ -4111,8 +4214,15 @@ em.it { font-style: italic; }
 .pill-deck__front {
   position: absolute;
   inset: 0;
-  animation-name: deckShuffle;
-  animation-timing-function: cubic-bezier(0.34, 1.15, 0.64, 1);
+  /* deckShuffle drives the shuffle choreography via `transform`
+     (translate + rotate + scale + z-index); floatBob layers an
+     independent bob on top via the separate `translate` property, so
+     the two never fight over the same property. Durations/delays for
+     each are set inline per card as comma pairs (see CARD_FLOAT in
+     HoverBag.tsx) — animation-iteration-count's single "infinite"
+     value applies to both per the shorthand list-repeat rule. */
+  animation-name: deckShuffle, floatBob;
+  animation-timing-function: cubic-bezier(0.34, 1.15, 0.64, 1), ease-in-out;
   animation-iteration-count: infinite;
 }
 @keyframes deckShuffle {
@@ -4146,6 +4256,8 @@ em.it { font-style: italic; }
   .pill-deck__front:nth-child(1) { transform: translate(0, 0) rotate(var(--rot, 0deg)) scale(1); z-index: 5; }
   .pill-deck__front:nth-child(2) { transform: translate(9px, 10px) rotate(calc(var(--rot, 0deg) + 6deg)) scale(0.96); z-index: 3; }
   .pill-deck__front:nth-child(3) { transform: translate(16px, 18px) rotate(calc(var(--rot, 0deg) + 11deg)) scale(0.92); z-index: 1; }
+  .hover-bag__pill-inner { animation: none !important; }
+  .pill-orbit__item, .pill-orbit__caption { animation: none !important; }
 }
 
 /* Entrance: two-stage stagger — heading first, body text follows.
