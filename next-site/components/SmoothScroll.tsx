@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import Lenis from "lenis";
+import { setLenis } from "@/components/lenisInstance";
 
 /**
  * SmoothScroll — global Lenis smooth-scroll + parallax.
@@ -230,6 +231,11 @@ export default function SmoothScroll() {
       touchMultiplier: 1.2,
     });
 
+    /* Published so scroll restoration can go THROUGH Lenis rather than
+       around it — a bare window.scrollTo gets overwritten on Lenis's
+       next frame. */
+    setLenis(lenis);
+
     let rafId: number;
     function raf(time: number) {
       lenis.raf(time);
@@ -427,6 +433,7 @@ export default function SmoothScroll() {
       cancelAnimationFrame(rafId);
       lenis.off("scroll", onScroll);
       lenis.destroy();
+      setLenis(null);
       window.removeEventListener("resize", onResize);
       document.removeEventListener("visibilitychange", onVisibility);
       if (sceneEl) sceneEl.style.height = "";

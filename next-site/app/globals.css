@@ -4148,6 +4148,9 @@ em.it { font-style: italic; }
     inset 0 2px 6px rgba(0, 0, 0, 0.4),
     inset 0 0 0 1px rgba(0, 0, 0, 0.25),
     0 10px 18px -8px rgba(0, 0, 0, 0.4);
+  /* Games tiles override this per game (and the Pokémon tile changes
+     colour as its art crossfades) — see OrbitTile in HoverBag.tsx. */
+  transition: background-color 420ms ease-out;
   /* Each icon's static tilt is set inline via the individual `rotate`
      property (not `transform`), so this bob — on the separate
      `translate` property — never fights it. Duration/delay set inline
@@ -4159,8 +4162,45 @@ em.it { font-style: italic; }
 .pill-orbit__item .image-slot {
   font-size: 6.5px;
   letter-spacing: 0.1em;
+  /* Containing block for the stacked, crossfading artwork below. */
+  position: relative;
 }
-.pill-orbit__caption {
+/* Any .image-slot holding a real image drops the diagonal-stripe
+   placeholder, same convention as the hero polaroid's .has-image. */
+.image-slot.has-image {
+  background: none;
+}
+/* Tile artwork — all of a tile's images are stacked and crossfaded
+   (the Pokémon tile alternates between titles; the others hold one
+   image, which just sits at opacity 1 forever). */
+.pill-orbit__art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  opacity: 0;
+  transition: opacity 420ms ease-out;
+}
+.pill-orbit__art.is-on { opacity: 1; }
+/* Wide wordmark art gets breathing room instead of running edge to
+   edge like square cover art does. The padding is deliberately
+   heavier on top: `contain` centres the art in its content box, so
+   the uneven inset sits it slightly below the tile's true centre,
+   which reads as better balanced in a rounded square (the source
+   images are tight-cropped, so nothing else is nudging them). */
+.pill-orbit__art-inset .pill-orbit__art {
+  padding: 16% 10% 6%;
+  box-sizing: border-box;
+}
+@media (prefers-reduced-motion: reduce) {
+  .pill-orbit__art { transition: none; }
+}
+/* Small caption card — nested in the orbit cluster's negative space
+   for music/games, tucked at the bottom right of the friends photo
+   pile. Same paper recipe either way; only the anchoring differs. */
+.pill-orbit__caption,
+.pill-deck__caption {
   position: absolute;
   width: 60%;
   padding: 5px 6px;
@@ -4183,8 +4223,10 @@ em.it { font-style: italic; }
   animation-timing-function: ease-in-out;
   animation-iteration-count: infinite;
 }
-.pill-orbit__caption .pill-polaroid__line { font-size: 9.5px; line-height: 1.15; }
-.pill-orbit__caption .pill-polaroid__meta { font-size: 6.5px; }
+.pill-orbit__caption .pill-polaroid__line,
+.pill-deck__caption .pill-polaroid__line { font-size: 9.5px; line-height: 1.15; }
+.pill-orbit__caption .pill-polaroid__meta,
+.pill-deck__caption .pill-polaroid__meta { font-size: 6.5px; }
 
 /* ---- Deck (friends / travel) — all 3 cards stay visible at all times
    and physically SHUFFLE through 3 stack positions (front / back /
@@ -4257,7 +4299,107 @@ em.it { font-style: italic; }
   .pill-deck__front:nth-child(2) { transform: translate(9px, 10px) rotate(calc(var(--rot, 0deg) + 6deg)) scale(0.96); z-index: 3; }
   .pill-deck__front:nth-child(3) { transform: translate(16px, 18px) rotate(calc(var(--rot, 0deg) + 11deg)) scale(0.92); z-index: 1; }
   .hover-bag__pill-inner { animation: none !important; }
-  .pill-orbit__item, .pill-orbit__caption { animation: none !important; }
+  .pill-orbit__item, .pill-orbit__caption, .pill-deck__caption { animation: none !important; }
+  /* The scatter stops shuffling in JS too (see PillScatter), so the
+     prints keep whatever places they were dealt. */
+  .pill-scatter__print { transition: none !important; }
+  .pill-orbit__item { transition: none !important; }
+}
+
+/* ---- Scattered prints (friends) — four photos at a time laid on a
+   table around a fixed caption, drawn from twelve places. Each print is
+   the photograph itself rather than a polaroid: no cream card around
+   it, no caption strip inside it, and its shape comes from the photo's
+   own proportions. Positions, tilts and the corner each print travels
+   towards are all set per-print in HoverBag.tsx, where the collision
+   maths lives; this file only describes how one looks and moves. */
+.pill-scatter {
+  /* Refined ease-outs rather than the CSS defaults. */
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  width: 300px;
+  height: 288px;
+  transform: rotate(-1deg);
+}
+.pill-scatter__print {
+  position: absolute;
+  border-radius: 3px;
+  overflow: hidden;
+  opacity: 1;
+  transform: rotate(var(--rot, 0deg));
+  /* Stands in for the photo for the frame or two before it decodes, so
+     a print is never a transparent hole on the table. */
+  background: #2A302F;
+  /* A print's paper edge, then a hairline to separate it from whatever
+     it's lying on, then the drop shadow. */
+  box-shadow:
+    0 0 0 3px #FBF7EE,
+    0 0 0 4px rgb(var(--fg-rgb) / 0.12),
+    0 10px 20px -8px rgba(0, 0, 0, 0.44);
+  /* Coming back: the slow half, so the arrival is what you watch.
+     Position itself is never transitioned — it changes while the print
+     is invisible, so no arrival path can cross the caption. */
+  transition:
+    opacity 260ms var(--ease-out-quint),
+    transform 380ms var(--ease-out-expo);
+}
+.pill-scatter__print > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  /* The print already matches the photo's ratio, so cover and contain
+     resolve identically — cover just guarantees no hairline gap from
+     rounding. */
+  object-fit: cover;
+  user-select: none;
+}
+/* Going out: diagonally towards whichever corner of the card this
+   print is nearest, tipping the way it travels so the diagonal reads
+   as a direction. Putting a transition on the out-state itself is what
+   lets the two directions be timed differently — and matching the
+   travel to the fade is what makes the exit visible at all, rather
+   than the print vanishing before it has finished moving. */
+.pill-scatter__print.is-out {
+  opacity: 0;
+  transform:
+    translate(var(--to-x, 0), var(--to-y, 0))
+    rotate(calc(var(--rot, 0deg) + var(--spin, 0deg)))
+    scale(0.94);
+  transition:
+    opacity 190ms ease-out,
+    transform 190ms var(--ease-out-quint);
+}
+.pill-scatter__caption {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  top: 50%;
+  left: 50%;
+  width: 100px;
+  padding: 5px 6px;
+  border-radius: 9px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  text-align: center;
+  /* Above the prints, which tuck under its edges. */
+  z-index: 20;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0) 30%),
+    #FBF7EE;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    inset 0 -1px 0 rgb(var(--fg-rgb) / 0.06),
+    0 6px 12px -4px rgba(0, 0, 0, 0.3);
+}
+.pill-scatter__caption .pill-polaroid__line { font-size: 9.5px; line-height: 1.15; }
+.pill-scatter__caption .pill-polaroid__meta { font-size: 6.5px; }
+/* Phones show this popup centred over the bag rather than following a
+   cursor, on a much narrower screen. The layout is a fixed pixel
+   composition, so it scales as a whole rather than reflowing. */
+@media (max-width: 720px) {
+  .pill-scatter { transform: rotate(-1deg) scale(0.62); }
 }
 
 /* Entrance: two-stage stagger — heading first, body text follows.

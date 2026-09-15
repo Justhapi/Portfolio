@@ -935,6 +935,15 @@ export default function ProjectsV2() {
                      getBoundingClientRect since focus carries no cursor
                      coordinate. */
                   onFocus={(e) => {
+                    /* Clicking a link focuses it too, and this handler
+                       was then undoing the freeze that onMouseDown had
+                       just set AND repositioning the pill to the
+                       folder's corner — which is the "pill flies off"
+                       on click. Only a keyboard focus should drive the
+                       pill; :focus-visible is exactly that distinction,
+                       so a mouse-triggered focus bails out here and
+                       leaves the frozen pill where it was. */
+                    if (!e.currentTarget.matches(":focus-visible")) return;
                     pillFrozenRef.current = false;
                     setPillFrozen(false);
                     const rect = e.currentTarget.getBoundingClientRect();
@@ -944,6 +953,10 @@ export default function ProjectsV2() {
                     enterFolder(p.tag);
                   }}
                   onBlur={() => {
+                    /* Same reasoning as onMouseLeave: once frozen, the
+                       blur fired by the route teardown must not unmount
+                       the pill mid-navigation. */
+                    if (pillFrozenRef.current) return;
                     setHoverPill(null);
                     if (manualHoverRef.current === p.tag) {
                       manualHoverRef.current = null;
