@@ -4,6 +4,7 @@ import "./globals.css";
 import CursorFollower from "@/components/CursorFollower";
 import SmoothScroll from "@/components/SmoothScroll";
 import ClickSound from "@/components/ClickSound";
+import Clarity from "@/components/Clarity";
 
 /* ── Self-hosted fonts via next/font/local ─────────────────────────────
    All four typefaces are shipped with the site under /public/fonts/,
@@ -161,6 +162,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <SmoothScroll />
         <CursorFollower />
         <ClickSound />
+        {/* Analytics last — it's the only thing here that isn't part of
+            the experience, and it self-disables in development. */}
+        <Clarity />
       </body>
     </html>
   );
