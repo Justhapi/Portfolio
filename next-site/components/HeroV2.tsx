@@ -220,7 +220,7 @@ export default function HeroV2() {
                 />
               </div>
               <div className="caption-block">
-                <div className="caption-meta">Last Updated · 05/07/26</div>
+                <div className="caption-meta">Last Updated · 09/01/26</div>
                 <div className="caption-line">
                   <span className="cap-write">I design <strong>solutions</strong> with</span>
                   <span className="cap-write">moments worth <strong>lingering</strong> on</span>
