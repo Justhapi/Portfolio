@@ -714,14 +714,21 @@ const TOP_BAND_MAX_Y = 100;
 
 type ScatterSpot = { x: number; y: number; rot: number };
 
-/* Six places above the caption, six below, both bands hugging it. */
+/* Six places above the caption, six below. The top band's y values are
+   the bottom band's distances from the caption, mirrored — so a print
+   above the text sits exactly as close to it as one below. They were
+   previously anchored near the top of the stage, which left them
+   14-26px off the caption while the bottom band was 10px under to 2px
+   off it: the lower prints read as hugging the text and the upper ones
+   as floating away from it. Both bands now range from 10px tucked
+   under to 2px clear. */
 const SCATTER_SPOTS: ScatterSpot[] = [
-  { x: 0, y: 0, rot: -7 },
-  { x: 12, y: 5, rot: 5 },
-  { x: 24, y: 10, rot: -3 },
-  { x: 136, y: 2, rot: 6 },
-  { x: 146, y: 7, rot: -5 },
-  { x: 156, y: 12, rot: 3 },
+  { x: 0, y: 36, rot: -7 },
+  { x: 12, y: 31, rot: 5 },
+  { x: 24, y: 26, rot: -3 },
+  { x: 136, y: 34, rot: 6 },
+  { x: 146, y: 29, rot: -5 },
+  { x: 156, y: 24, rot: 3 },
   { x: 6, y: 150, rot: 4 },
   { x: 18, y: 155, rot: -6 },
   { x: 30, y: 160, rot: 3 },
@@ -976,13 +983,51 @@ function PillGames() {
   );
 }
 
+/* The programs the doodles are drawn in, stamped down the print's right
+   edge like tabs on a folder — which keeps the whole bottom of the card
+   clear for the caption. Each is its own stamp with its own paper edge
+   and tilt; they deliberately don't overlap. */
+const ART_TOOLS = [
+  /* Each badge drifts on its own speed and travel, distinct from each
+     other and from the print's 4.4s — that difference is the whole
+     point: matching rhythms would read as one rigid object again. */
+  {
+    name: "Procreate",
+    src: `${POP_UP}/doodles/Procreate.webp`,
+    float: { dur: 3.1, amp: 7, delay: 0.25 },
+  },
+  {
+    name: "Clip Studio Paint",
+    src: `${POP_UP}/doodles/CSP.webp`,
+    float: { dur: 3.8, amp: 5, delay: 0.55 },
+  },
+];
+
 function PillArt() {
   return (
-    <PillPolaroid
-      label="Photo — art"
-      meta="doodles of college to rmr"
-      rotate={3}
-      caption="I like to capture memories through sharing my vision with others"
-    />
+    <div className="pill-art">
+      <PillPolaroid
+        label="Photo — art"
+        meta="doodles of college to rmr"
+        rotate={3}
+        caption="I like to capture memories through sharing my vision with others"
+      />
+      {ART_TOOLS.map((tool, i) => (
+        <span
+          key={tool.src}
+          className={`pill-art__badge pill-art__badge--${i === 0 ? "a" : "b"}`}
+          style={{
+            ["--icon-float-amp" as string]: `${tool.float.amp}px`,
+            // Comma-paired: the entrance first, then the idle float —
+            // matching the animation-name order in globals.css.
+            animationDuration: `260ms, ${tool.float.dur}s`,
+            animationDelay: `${i * 80}ms, ${tool.float.delay}s`,
+          }}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={`${BASE_PATH}${tool.src}`} alt="" draggable={false} />
+        </span>
+      ))}
+    </div>
   );
 }

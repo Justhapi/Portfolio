@@ -4044,18 +4044,19 @@ em.it { font-style: italic; }
   0%, 100% { transform: translateY(0); }
   50%      { transform: translateY(calc(-1 * var(--float-amp))); }
 }
-/* Per-item float personality for the two single-card popups (art,
-   food) — distinct speed + travel so they don't match each other. */
-.hover-bag__pill--ipad  .hover-bag__pill-inner { --float-dur: 3.9s; --float-amp: 5px; }
+/* Food is the only single-card popup left, so it's the only one the
+   shell still bobs as a whole. */
 .hover-bag__pill--usagi .hover-bag__pill-inner { --float-dur: 4.7s; --float-amp: 5px; }
-/* Music, games, friends, and travel are multi-piece popups (a deck of
-   cards, or an icon cluster) — each individual piece floats on its own
-   below instead of the whole shell bobbing as one rigid unit, so the
-   container-level float is switched off for these four. */
+/* Music, games, friends, travel and art are multi-piece popups (a deck
+   of cards, an icon cluster, or a print with program badges stuck to
+   it) — each individual piece floats on its own below instead of the
+   whole shell bobbing as one rigid unit, so the container-level float
+   is switched off for these. */
 .hover-bag__pill--earbuds .hover-bag__pill-inner,
 .hover-bag__pill--laptop  .hover-bag__pill-inner,
 .hover-bag__pill--phone   .hover-bag__pill-inner,
-.hover-bag__pill--ticket  .hover-bag__pill-inner {
+.hover-bag__pill--ticket  .hover-bag__pill-inner,
+.hover-bag__pill--ipad    .hover-bag__pill-inner {
   animation: none;
 }
 /* Shared bob used by every individually-floating piece below (deck
@@ -4304,6 +4305,71 @@ em.it { font-style: italic; }
      prints keep whatever places they were dealt. */
   .pill-scatter__print { transition: none !important; }
   .pill-orbit__item { transition: none !important; }
+}
+
+/* ---- Art program stamps — the two programs the doodles are drawn in,
+   stuck down the right edge of the art polaroid like tabs on a folder.
+   Each sits half off the card so it reads as applied to the print
+   rather than laid out beside it, and the print's whole lower half
+   stays clear for the caption. They're deliberately separated rather
+   than clustered: each is its own stamp. */
+.pill-art {
+  position: relative;
+  width: 190px;
+}
+.pill-art__badge {
+  position: absolute;
+  right: -18px;
+  width: 40px;
+  height: 40px;
+  border-radius: 26%;
+  overflow: hidden;
+  background: #2A302F;
+  /* Above the polaroid, which carries no z-index of its own. */
+  z-index: 5;
+  /* Its own paper edge and hairline, matching the prints elsewhere in
+     the bag, then a shadow so it sits above the card. */
+  box-shadow:
+    0 0 0 2.5px #FBF7EE,
+    0 0 0 3.5px rgb(var(--fg-rgb) / 0.12),
+    0 6px 12px -4px rgba(0, 0, 0, 0.42);
+  /* Two animations on one element, on different properties so neither
+     clobbers the other: artStampIn handles the entrance (opacity and
+     the individual `scale`), floatBob the idle drift (the individual
+     `translate`), while the badge's tilt stays on `transform`.
+     Durations and delays are comma-paired per badge in HoverBag.tsx —
+     the entrance staggers so the two arrive a beat apart, and the
+     floats run at different speeds so each badge drifts on its own
+     rather than in lockstep with its neighbour or the print. */
+  animation-name: artStampIn, floatBob;
+  animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1), ease-in-out;
+  animation-iteration-count: 1, infinite;
+  animation-fill-mode: both, none;
+}
+/* The print drifts too, on its own slower rhythm — the badges reading
+   as separate objects depends on them NOT sharing its motion. */
+.pill-art .pill-polaroid {
+  --icon-float-amp: 5px;
+  animation: floatBob 4.4s ease-in-out infinite;
+}
+.pill-art__badge img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+/* Tilted against each other so the pair doesn't read as aligned. */
+.pill-art__badge--a { top: 30px; transform: rotate(6deg); }
+.pill-art__badge--b { top: 88px; transform: rotate(-7deg); }
+/* Scale only — the tilt lives on `transform`, so the entrance uses the
+   individual `scale` property and the two compose instead of one
+   clobbering the other. */
+@keyframes artStampIn {
+  from { opacity: 0; scale: 0.8; }
+  to   { opacity: 1; scale: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pill-art__badge,
+  .pill-art .pill-polaroid { animation: none; }
 }
 
 /* ---- Scattered prints (friends) — four photos at a time laid on a
