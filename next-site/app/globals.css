@@ -4304,62 +4304,203 @@ em.it { font-style: italic; }
   /* The scatter stops shuffling in JS too (see PillScatter), so the
      prints keep whatever places they were dealt. */
   .pill-scatter__print { transition: none !important; }
+  .pill-scatter__print,
+  .pill-scatter__caption { animation: none !important; }
   .pill-orbit__item { transition: none !important; }
 }
 
-/* ---- Art program stamps — the two programs the doodles are drawn in,
-   stuck down the right edge of the art polaroid like tabs on a folder.
-   Each sits half off the card so it reads as applied to the print
-   rather than laid out beside it, and the print's whole lower half
-   stays clear for the caption. They're deliberately separated rather
-   than clustered: each is its own stamp. */
+/* ---- Doodles (art) — a taped-down print of a comic strip, with two
+   smaller doodles clipped to its lower-left and the two programs they
+   were drawn in stuck to its upper-right edge.
+
+   Everything below is sized from one --u multiplier off a 212px base,
+   so the whole composition rescales from a single number (and does, on
+   phones) without any of its clearances changing.
+
+   Colour: a printed photo is a cooler, greyer white than the bag's
+   stationery cream (#FBF7EE), and its border and image paper sit close
+   together in value — hence the two near-adjacent neutrals below
+   rather than the cream used elsewhere.
+
+   Motion: every loose piece runs the bag's shared floatBob (vertical,
+   rising from rest) on its own amplitude/duration/delay, set inline in
+   HoverBag.tsx. The one exception is the tape, which is physically
+   stuck to the paper and therefore shares the sheet's numbers exactly
+   — see the note on .pill-art__tape. */
 .pill-art {
+  --u: 1.34;
+  --pol-paper: #EBEAE5;
+  --pol-photo: #F3F2EF;
+  --pol-edge: rgb(24 26 24 / 0.16);
+  --print-w: calc(58px * var(--u));
+  /* Hoisted so the tape can read the sheet's exact float and the two
+     can never drift out of phase. */
+  --sheet-amp: calc(5px * var(--u));
+  --sheet-float-dur: 4.4s;
   position: relative;
-  width: 190px;
+  width: calc(212px * var(--u));
+  padding: calc(12px * var(--u));
 }
-.pill-art__badge {
-  position: absolute;
-  right: -18px;
-  width: 40px;
-  height: 40px;
-  border-radius: 26%;
-  overflow: hidden;
-  background: #2A302F;
-  /* Above the polaroid, which carries no z-index of its own. */
-  z-index: 5;
-  /* Its own paper edge and hairline, matching the prints elsewhere in
-     the bag, then a shadow so it sits above the card. */
+
+.pill-art__sheet {
+  position: relative;
+  z-index: 4;
+  --icon-float-amp: var(--sheet-amp);
+  padding: calc(14px * var(--u)) calc(14px * var(--u)) calc(17px * var(--u));
+  border-radius: calc(2px * var(--u));
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.42) 0%, rgba(255, 255, 255, 0) 26%),
+    var(--pol-paper);
   box-shadow:
-    0 0 0 2.5px #FBF7EE,
-    0 0 0 3.5px rgb(var(--fg-rgb) / 0.12),
-    0 6px 12px -4px rgba(0, 0, 0, 0.42);
-  /* Two animations on one element, on different properties so neither
-     clobbers the other: artStampIn handles the entrance (opacity and
-     the individual `scale`), floatBob the idle drift (the individual
-     `translate`), while the badge's tilt stays on `transform`.
-     Durations and delays are comma-paired per badge in HoverBag.tsx —
-     the entrance staggers so the two arrive a beat apart, and the
-     floats run at different speeds so each badge drifts on its own
-     rather than in lockstep with its neighbour or the print. */
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    inset 0 0 0 1px var(--pol-edge),
+    0 calc(10px * var(--u)) calc(18px * var(--u)) calc(-6px * var(--u)) rgba(0, 0, 0, 0.3);
+  transform: rotate(-1.5deg);
+  animation:
+    artSheetIn 290ms cubic-bezier(0.23, 1, 0.32, 1) both,
+    floatBob var(--sheet-float-dur) ease-in-out infinite;
+}
+@keyframes artSheetIn {
+  from { opacity: 0; scale: 0.95; }
+  to   { opacity: 1; scale: 1; }
+}
+
+/* The comic window. 11:10 rather than square for a measured reason:
+   the strip's setup panel spans 824px of its own 1786px width, and a
+   square window at this height is only 794px — it physically cannot
+   hold both speech bubbles, and starting the crop further right just
+   clips the other one. At 11:10 both fit with air either side. */
+.pill-art__window {
+  position: relative;
+  aspect-ratio: 11 / 10;
+  overflow: hidden;
+  border-radius: calc(2px * var(--u));
+  background: var(--pol-photo);
+  box-shadow: inset 0 0 0 1px var(--pol-edge);
+}
+.pill-art__window img {
+  display: block;
+  height: 100%;
+  width: auto;
+  max-width: none;
+  animation: lostPan 7s cubic-bezier(0.33, 0, 0.2, 1) infinite;
+}
+/* The gag is a two-beat one — setup on the left, reveal on the right,
+   and returning to the setup is the callback. So: hold the setup,
+   travel, LET THE REVEAL SIT (the longest hold), then come back
+   quicker than we left. -5.6%/-51% are where the window has to start
+   and stop for each panel's text to sit fully inside it. */
+@keyframes lostPan {
+  0%,  27%  { transform: translateX(-5.6%); }
+  44%, 76%  { transform: translateX(-51%); }
+  90%, 100% { transform: translateX(-5.6%); }
+}
+
+.pill-art__caption {
+  display: flex;
+  flex-direction: column;
+  gap: calc(3px * var(--u));
+  margin-top: calc(10px * var(--u));
+  text-align: center;
+}
+/* line-height pinned rather than left at `normal`: the card's height
+   is what every print position below is solved against, and `normal`
+   would leave that height up to the browser. */
+.pill-art__caption .pill-polaroid__meta { font-size: calc(7px * var(--u)); line-height: 1.3; }
+.pill-art__caption .pill-polaroid__line { font-size: calc(11.5px * var(--u)); line-height: 1.24; }
+
+/* Tape. It is stuck to the sheet, so it moves with the sheet: same
+   amplitude, same duration, and deliberately NO float delay. Any
+   offset here would put the tape a few frames behind the paper it is
+   holding down, which reads as it peeling off. The staggered ENTRANCE
+   delays stay — the tape still lands a beat after the paper. */
+.pill-art__tape {
+  position: absolute;
+  z-index: 7;
+  --icon-float-amp: var(--sheet-amp);
+  width: calc(62px * var(--u));
+  height: calc(22px * var(--u));
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.46) 0 2px,
+      rgba(222, 226, 224, 0.5) 2px calc(100% - 2px),
+      rgba(255, 255, 255, 0.46) calc(100% - 2px) 100%
+    );
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  animation-name: artSheetIn, floatBob;
+  animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1), ease-in-out;
+  animation-duration: 250ms, var(--sheet-float-dur);
+  animation-iteration-count: 1, infinite;
+  animation-fill-mode: both, none;
+}
+.pill-art__tape--1 { top: calc(2px * var(--u)); left: calc(-12px * var(--u)); transform: rotate(-36deg); animation-delay: 80ms, 0s; }
+.pill-art__tape--2 { bottom: calc(2px * var(--u)); right: calc(-12px * var(--u)); transform: rotate(-36deg); animation-delay: 140ms, 0s; }
+
+/* The two smaller doodles, clustered off the sheet's lower-left. They
+   sit outside the card rather than on it because the caption occupies
+   that corner — this is the one arrangement that leaves the caption
+   centred under the comic. Each frame's aspect-ratio is set inline
+   from its own file's proportions, so neither drawing is ever cropped
+   (Locked is 251x320 portrait; a shared square frame was slicing 24px
+   of ink off each end). */
+.pill-art__print {
+  position: absolute;
+  z-index: 6;
+  width: var(--print-w);
+  border-radius: calc(2px * var(--u));
+  overflow: hidden;
+  background: var(--pol-photo);
+  box-shadow:
+    0 0 0 calc(3px * var(--u)) var(--pol-paper),
+    0 0 0 calc(4px * var(--u)) var(--pol-edge),
+    0 calc(6px * var(--u)) calc(12px * var(--u)) calc(-4px * var(--u)) rgba(0, 0, 0, 0.38);
   animation-name: artStampIn, floatBob;
   animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1), ease-in-out;
   animation-iteration-count: 1, infinite;
   animation-fill-mode: both, none;
 }
-/* The print drifts too, on its own slower rhythm — the badges reading
-   as separate objects depends on them NOT sharing its motion. */
-.pill-art .pill-polaroid {
-  --icon-float-amp: 5px;
-  animation: floatBob 4.4s ease-in-out infinite;
+.pill-art__print img { display: block; width: 100%; height: 100%; object-fit: cover; }
+/* Two clearances decide these numbers.
+   1. EACH OTHER. floatBob only ever rises, so the lower print can
+      close the gap between the two but never the reverse — worst case
+      is one amplitude, which leaves 11px of daylight here.
+   2. THE CURSOR. placePill puts the card at left = clientX + 16,
+      top = clientY - height - 16, so the pointer sits just off the
+      card's BOTTOM-LEFT corner — the same corner these prints occupy.
+      And the cursor isn't a point: .cursor-ring is 34px across and
+      .is-hovering scales it 1.6, which is precisely the state the
+      popup appears in. So the real obstacle is a ~27px radius disc
+      centred 16px below-left of the card, and the pair is lifted to
+      clear it rather than sit under the user's hand. */
+.pill-art__print--a { top: calc(82px * var(--u)); left: calc(-40px * var(--u)); transform: rotate(-8deg); }
+.pill-art__print--b { bottom: calc(20px * var(--u)); left: calc(-36px * var(--u)); transform: rotate(7deg); z-index: 7; }
+
+/* The two programs, stuck to the sheet's upper-right edge. 56px apart
+   rather than flush: they float independently, and at 40px tall a
+   tighter column would let the lower one rise into the upper one. */
+.pill-art__badge {
+  position: absolute;
+  right: calc(-10px * var(--u));
+  z-index: 9;
+  width: calc(40px * var(--u));
+  height: calc(40px * var(--u));
+  border-radius: 26%;
+  overflow: hidden;
+  background: #2A302F;
+  box-shadow:
+    0 0 0 calc(2.5px * var(--u)) var(--pol-paper),
+    0 0 0 calc(3.5px * var(--u)) var(--pol-edge),
+    0 calc(6px * var(--u)) calc(12px * var(--u)) calc(-4px * var(--u)) rgba(0, 0, 0, 0.42);
+  animation-name: artStampIn, floatBob;
+  animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1), ease-in-out;
+  animation-iteration-count: 1, infinite;
+  animation-fill-mode: both, none;
 }
-.pill-art__badge img {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-/* Tilted against each other so the pair doesn't read as aligned. */
-.pill-art__badge--a { top: 30px; transform: rotate(6deg); }
-.pill-art__badge--b { top: 88px; transform: rotate(-7deg); }
+.pill-art__badge img { display: block; width: 100%; height: 100%; }
+.pill-art__badge--a { top: calc(22px * var(--u)); transform: rotate(-6deg); }
+.pill-art__badge--b { top: calc(78px * var(--u)); transform: rotate(7deg); }
+
 /* Scale only — the tilt lives on `transform`, so the entrance uses the
    individual `scale` property and the two compose instead of one
    clobbering the other. */
@@ -4367,9 +4508,24 @@ em.it { font-style: italic; }
   from { opacity: 0; scale: 0.8; }
   to   { opacity: 1; scale: 1; }
 }
+
+/* Phones: one number rescales the whole composition, clearances and
+   all, rather than a transform: scale() that would soften every
+   shadow and hairline. 212 x 0.92 puts it in line with the other
+   popups' footprint. */
+@media (max-width: 720px) {
+  .pill-art { --u: 0.92; }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .pill-art__badge,
-  .pill-art .pill-polaroid { animation: none; }
+  .pill-art__sheet,
+  .pill-art__tape,
+  .pill-art__print,
+  .pill-art__badge { animation: none; }
+  /* No pan — the whole strip at once, so the joke isn't withheld from
+     anyone who can't watch it move. */
+  .pill-art__window { display: grid; place-items: center; }
+  .pill-art__window img { animation: none; height: auto; width: 100%; }
 }
 
 /* ---- Scattered prints (friends) — four photos at a time laid on a
@@ -4409,6 +4565,14 @@ em.it { font-style: italic; }
   transition:
     opacity 260ms var(--ease-out-quint),
     transform 380ms var(--ease-out-expo);
+  /* Idle bob, per print. On the individual `translate` property so it
+     composes with the `transform` above (tilt, and the exit's corner
+     travel) instead of fighting it — the same split the orbit icons
+     and deck cards use. Travel/speed/phase are set inline per slot in
+     HoverBag.tsx; see SCATTER_FLOAT. */
+  animation-name: floatBob;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
 }
 .pill-scatter__print > img {
   display: block;
@@ -4458,6 +4622,11 @@ em.it { font-style: italic; }
     inset 0 1px 0 rgba(255, 255, 255, 0.7),
     inset 0 -1px 0 rgb(var(--fg-rgb) / 0.06),
     0 6px 12px -4px rgba(0, 0, 0, 0.3);
+  /* The centring lives on `transform` above; the bob runs on
+     `translate` so it layers on top rather than overriding it. */
+  animation-name: floatBob;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
 }
 .pill-scatter__caption .pill-polaroid__line { font-size: 9.5px; line-height: 1.15; }
 .pill-scatter__caption .pill-polaroid__meta { font-size: 6.5px; }

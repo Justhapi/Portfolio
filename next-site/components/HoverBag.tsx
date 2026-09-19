@@ -221,15 +221,29 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
     const vw = window.innerWidth, vh = window.innerHeight;
 
     const x = Math.min(Math.max(clientX + gap, margin), Math.max(margin, vw - w - margin));
-    const y = Math.min(Math.max(clientY - h - gap, margin), Math.max(margin, vh - h - margin));
+    /* The popup's whole defence against covering the cursor is that it
+       sits ABOVE it. Near the top of the viewport that's impossible, so
+       this clamp pushes the card back down — and straight over the
+       pointer. Remember whether that happened; the nudge below pays for
+       it sideways. */
+    const yIdeal = clientY - h - gap;
+    const y = Math.min(Math.max(yIdeal, margin), Math.max(margin, vh - h - margin));
+    /* How far the clamp had to push it. Used as the sideways travel
+       below rather than a boolean: a hard on/off would teleport the
+       popup ~100px across the instant the cursor crossed the threshold
+       by one pixel. Ramping with the same distance the card was pushed
+       keeps it continuous, and matches the physics — the further down
+       it's forced, the further it has encroached on the pointer. */
+    const pushedDown = Math.max(0, y - yIdeal);
 
     pill.style.left = `${x}px`;
     pill.style.top = `${y}px`;
     pill.style.transformOrigin = "0% 100%";
 
-    // Nudge for content that bleeds outside the nominal box (art's
-    // cloud, music's notes) — measure real painted bounds and shift
-    // just enough to keep them fully on-screen.
+    // Nudge for content that bleeds outside the nominal box (the art
+    // popup's two prints hang ~54px off its left edge) — measure real
+    // painted bounds and shift just enough to keep them fully
+    // on-screen, and off the pointer.
     const bounds = getPaintedBounds(pill);
     if (bounds) {
       let dx = 0, dy = 0;
@@ -237,6 +251,48 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
       else if (bounds.right > vw - margin) dx = Math.max(vw - margin - bounds.right, margin - bounds.left);
       if (bounds.top < margin) dy = margin - bounds.top;
       else if (bounds.bottom > vh - margin) dy = Math.max(vh - margin - bounds.bottom, margin - bounds.top);
+
+      /* When the clamp above pushed the card down over the pointer,
+         pay for it sideways: slide the popup RIGHT until its painted
+         bounds clear the cursor, so it moves down AND across rather
+         than settling under the user's hand.
+
+         Rightwards because the card is already anchored to the
+         cursor's right — pushing further that way keeps the same
+         spatial relationship, where flipping to the other side
+         mid-hover would read as the popup jumping.
+
+         Gated on `pushedDown` deliberately. `bounds` is one union
+         rectangle over every painted descendant, so in normal
+         placement it reports the cursor as "inside" simply because the
+         card's box extends past it — even though the bottom-left
+         corner of that rectangle is empty. Only the clamped case is a
+         real overlap, and it's the only case this should touch.
+
+         The pointer is not a point: .cursor-ring is 34px across and
+         grows 1.6x on hover — exactly the state a popup appears in —
+         so the thing to clear is a ~27px radius disc. */
+      const cursorClear = 34 * 1.6 * 0.5 + 6;
+      if (pushedDown > 0) {
+        const needRight = Math.min(clientX + cursorClear - (bounds.left + dx), pushedDown);
+        if (needRight > 0) {
+          const roomRight = vw - margin - (bounds.right + dx);
+          if (needRight <= roomRight) {
+            dx += needRight;
+          } else {
+            /* No room on the right — which only happens when the popup
+               is already pinned to that edge of the viewport, and is
+               therefore already sitting to the LEFT of the cursor.
+               Finish the move in the direction it has effectively
+               already taken rather than leaving it parked halfway
+               across the pointer. */
+            const needLeft = Math.min(bounds.right + dx - (clientX - cursorClear), pushedDown);
+            const roomLeft = bounds.left + dx - margin;
+            dx -= Math.max(0, Math.min(needLeft, roomLeft));
+          }
+        }
+      }
+
       if (dx || dy) {
         pill.style.left = `${x + dx}px`;
         pill.style.top = `${y + dy}px`;
@@ -712,6 +768,30 @@ const BOX_H = 123.4;
 /** Anything above this line is in the band above the caption. */
 const TOP_BAND_MAX_Y = 100;
 
+/* Idle drift, one entry per SLOT rather than per photo — the elements
+   are keyed by slot index, so a print keeps its own rhythm as photos
+   rotate through it instead of restarting the animation on every deal.
+   No two durations share a small-integer ratio, so the five pieces
+   never fall back into step.
+
+   Amplitude is free here in a way it wasn't for the doodles: floatBob
+   only ever raises a print, and SCATTER_COMPATIBLE turns out to be
+   decided by HORIZONTAL overlap for every marginal pair on this board
+   (the spots are staggered only ~12px apart in x, so `ox` is always
+   the smaller dimension). Vertical drift therefore can't push any
+   allowed pair past MAX_OVERLAP.
+
+   The caption gets the smallest travel of the five: the prints tuck
+   under its edges, so a large movement there would open and close
+   gaps around the text. */
+const SCATTER_FLOAT = [
+  { dur: 3.8, amp: 5, delay: 0 },
+  { dur: 4.6, amp: 4, delay: 0.55 },
+  { dur: 5.3, amp: 6, delay: 1.1 },
+  { dur: 4.1, amp: 5, delay: 1.7 },
+];
+const SCATTER_CAPTION_FLOAT = { dur: 5.9, amp: 3, delay: 0.3 };
+
 type ScatterSpot = { x: number; y: number; rot: number };
 
 /* Six places above the caption, six below. The top band's y values are
@@ -860,6 +940,13 @@ function PillScatter({
               // Tips the way it's travelling, so the diagonal reads as
               // a direction rather than a slide sideways.
               ["--spin" as string]: `${vx > 0 ? 5 : -5}deg`,
+              /* Its own bob. Runs on the individual `translate`
+                 property, so it layers over the `transform` that
+                 carries this print's tilt and its exit travel rather
+                 than overwriting either. */
+              ["--icon-float-amp" as string]: `${SCATTER_FLOAT[i].amp}px`,
+              animationDuration: `${SCATTER_FLOAT[i].dur}s`,
+              animationDelay: `${SCATTER_FLOAT[i].delay}s`,
             }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -874,9 +961,19 @@ function PillScatter({
         );
       })}
 
-      {/* Deliberately static — it is the one thing on the card that
-          never changes, so it never animates. */}
-      <div className="pill-scatter__caption">
+      {/* The caption drifts too, on the slowest and shallowest rhythm
+          of the five — it stays the anchor the prints are arranged
+          around, but a completely static centre made the drifting
+          prints read as sliding past a pinned label rather than
+          everything resting on one surface. */}
+      <div
+        className="pill-scatter__caption"
+        style={{
+          ["--icon-float-amp" as string]: `${SCATTER_CAPTION_FLOAT.amp}px`,
+          animationDuration: `${SCATTER_CAPTION_FLOAT.dur}s`,
+          animationDelay: `${SCATTER_CAPTION_FLOAT.delay}s`,
+        }}
+      >
         {meta && <span className="pill-polaroid__meta">{meta}</span>}
         <span className="pill-polaroid__line">{caption}</span>
       </div>
@@ -987,42 +1084,80 @@ function PillGames() {
    edge like tabs on a folder — which keeps the whole bottom of the card
    clear for the caption. Each is its own stamp with its own paper edge
    and tilt; they deliberately don't overlap. */
-const ART_TOOLS = [
-  /* Each badge drifts on its own speed and travel, distinct from each
-     other and from the print's 4.4s — that difference is the whole
-     point: matching rhythms would read as one rigid object again. */
-  {
-    name: "Procreate",
-    src: `${POP_UP}/doodles/Procreate.webp`,
-    float: { dur: 3.1, amp: 7, delay: 0.25 },
-  },
-  {
-    name: "Clip Studio Paint",
-    src: `${POP_UP}/doodles/CSP.webp`,
-    float: { dur: 3.8, amp: 5, delay: 0.55 },
-  },
+/**
+ * The doodles popup's pieces.
+ *
+ * Lost is a 2.25:1 comic strip that pans inside an 11:10 window — see
+ * the lostPan note in globals.css for why that window isn't square.
+ *
+ * `ratio` on each mini is its file's real width/height, and the frame
+ * takes that ratio directly. Locked is 251x320 portrait; a shared
+ * square frame with object-fit: cover was slicing 24px of actual ink
+ * off its top and bottom.
+ *
+ * Float numbers: amplitude, duration and delay are floatBob's only
+ * three knobs. No two durations here share a small-integer ratio, so
+ * the pieces never fall back into step — and none of them matches the
+ * sheet's 4.4s, which is what keeps them reading as separate objects
+ * lying on the print rather than one rigid card.
+ */
+const ART_DOODLE = { src: `${POP_UP}/doodles/Lost.webp`, name: "Lost" };
+
+const ART_MINIS = [
+  { src: `${POP_UP}/doodles/Rice.webp`, ratio: 320 / 315, float: { dur: 3.9, amp: 5, delay: 0.25 } },
+  { src: `${POP_UP}/doodles/Locked.webp`, ratio: 251 / 320, float: { dur: 4.7, amp: 6, delay: 0.95 } },
 ];
+
+const ART_TOOLS = [
+  { name: "Procreate", src: `${POP_UP}/doodles/Procreate.webp`, float: { dur: 4.1, amp: 5, delay: 0 } },
+  { name: "Clip Studio Paint", src: `${POP_UP}/doodles/CSP.webp`, float: { dur: 5.2, amp: 6, delay: 0.6 } },
+];
+
+/** Comma-paired to match each rule's animation-name order in globals.css. */
+const artFloat = (f: { dur: number; amp: number; delay: number }, enter: number) =>
+  ({
+    ["--icon-float-amp" as string]: `calc(${f.amp}px * var(--u))`,
+    animationDuration: `260ms, ${f.dur}s`,
+    animationDelay: `${enter}ms, ${f.delay}s`,
+  }) as React.CSSProperties;
 
 function PillArt() {
   return (
     <div className="pill-art">
-      <PillPolaroid
-        label="Photo — art"
-        meta="doodles of college to rmr"
-        rotate={3}
-        caption="I like to capture memories through sharing my vision with others"
-      />
+      <div className="pill-art__sheet">
+        <div className="pill-art__window">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={`${BASE_PATH}${ART_DOODLE.src}`} alt="" draggable={false} />
+        </div>
+        <div className="pill-art__caption">
+          <span className="pill-polaroid__meta">doodles of college to rmr</span>
+          <span className="pill-polaroid__line">
+            I like to capture memories through sharing my vision with others
+          </span>
+        </div>
+      </div>
+
+      <span className="pill-art__tape pill-art__tape--1" aria-hidden="true" />
+      <span className="pill-art__tape pill-art__tape--2" aria-hidden="true" />
+
+      {ART_MINIS.map((d, i) => (
+        <span
+          key={d.src}
+          className={`pill-art__print pill-art__print--${i === 0 ? "a" : "b"}`}
+          /* The frame takes the file's own proportions, so neither
+             doodle is ever cropped at any --u. */
+          style={{ aspectRatio: d.ratio, ...artFloat(d.float, 150 + i * 70) }}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={`${BASE_PATH}${d.src}`} alt="" draggable={false} />
+        </span>
+      ))}
+
       {ART_TOOLS.map((tool, i) => (
         <span
           key={tool.src}
           className={`pill-art__badge pill-art__badge--${i === 0 ? "a" : "b"}`}
-          style={{
-            ["--icon-float-amp" as string]: `${tool.float.amp}px`,
-            // Comma-paired: the entrance first, then the idle float —
-            // matching the animation-name order in globals.css.
-            animationDuration: `260ms, ${tool.float.dur}s`,
-            animationDelay: `${i * 80}ms, ${tool.float.delay}s`,
-          }}
+          style={artFloat(tool.float, i * 80)}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={`${BASE_PATH}${tool.src}`} alt="" draggable={false} />
