@@ -306,11 +306,54 @@ const FolderOpen = ({
         </>
       ) : coverVideo ? (
         <>
+          {/* WebKit clips NEITHER of the two boxes this video sits in,
+              which is why the frame escaped the folder in desktop
+              Safari (this branch is the desktop one — touch gets the
+              <image> above, so the bug only ever showed on a Mac):
+
+                1. Safari does not clip <foreignObject> content to the
+                   foreignObject's own x/y/width/height rect, so the
+                   video is free to paint anywhere in the SVG. And this
+                   artwork deliberately sets `overflow: visible` on the
+                   svg (the X-stars are meant to bleed past the
+                   viewBox), so there is no outer clip to catch it
+                   either.
+                2. `overflow: hidden` + `border-radius` is long-standing
+                   broken at clipping a <video> in WebKit — even
+                   contained, the square corners punch through the
+                   rounded box.
+
+              So the clip is stated three ways: an SVG clip-path on the
+              foreignObject (fixes 1), explicit overflow on the
+              foreignObject, and a -webkit-mask on the wrapper (fixes
+              2 — forcing a mask is the only thing WebKit reliably
+              honours for a video's corners). Chrome already clipped
+              correctly and is unaffected: the clip path matches the
+              radius the div was drawing anyway.
+
+              Clip rect is inset by half the outline's stroke-width
+              (~1.92px) with a larger radius to match, same as the
+              touch branch — an SVG stroke straddles its path, so
+              clipping to the stroke's own rect leaves a square corner
+              poking out. */}
+          <defs>
+            <clipPath id={`fo_vclip_${gid}`}>
+              <rect
+                x="126.521"
+                y="50.473"
+                width="115.928"
+                height="115.928"
+                rx="11.9"
+              />
+            </clipPath>
+          </defs>
           <foreignObject
             x="124.603"
             y="48.555"
             width="119.764"
             height="119.764"
+            clipPath={`url(#fo_vclip_${gid})`}
+            style={{ overflow: "hidden" }}
           >
             <div
               ref={(el) => {
@@ -328,6 +371,13 @@ const FolderOpen = ({
                 borderRadius: "9.98px",
                 position: "relative",
                 display: "block",
+                // Forces WebKit to actually clip the <video> to the
+                // radius above. A mask is honoured where plain
+                // overflow + radius is not; the gradient is opaque
+                // throughout, so it only establishes the clip and
+                // changes nothing visually.
+                WebkitMaskImage: "-webkit-radial-gradient(white, black)",
+                isolation: "isolate",
               }}
             >
               <video
