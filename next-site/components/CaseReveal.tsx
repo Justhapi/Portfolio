@@ -1,6 +1,11 @@
 "use client";
 
 import { useEffect } from "react";
+import {
+  watchScrollVelocity,
+  getScrollVelocity,
+  survivableScrollVh,
+} from "@/components/scrollVelocity";
 
 /**
  * CaseReveal — scroll-triggered entrance for project page body content.
@@ -19,7 +24,24 @@ import { useEffect } from "react";
  *
  * No-JS / SSR: data attribute never present server-side → content always
  * visible. prefers-reduced-motion: everything revealed immediately.
+ *
+ * FAST SCROLL: the stagger above is worth watching only if the reader is
+ * moving slowly enough to watch it. A recruiter session recording showed
+ * someone covering this page at 1.7-2.3 viewport-heights per second —
+ * roughly four times what this timing can survive — and the result was a
+ * case study read start to finish without a single section ever finishing
+ * its fade. Body copy rendered half-transparent; whole figures never
+ * arrived at all. So above the speed the animation can keep up with,
+ * elements are marked `.case-instant` and simply appear. See
+ * scrollVelocity.ts for where the threshold comes from.
  */
+/** Matches the transition duration in globals.css. */
+const REVEAL_MS = 560;
+/** The largest transition-delay assigned below. */
+const MAX_DELAY_MS = 600;
+/** rootMargin below the fold, as a fraction of viewport height. */
+const TRIGGER_AHEAD_VH = 0.15;
+
 export default function CaseReveal() {
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -31,6 +53,12 @@ export default function CaseReveal() {
     // Activate CSS hiding — must come before observe() calls so elements are
     // already at opacity:0 when the first IO callback fires.
     body.dataset.caseAnimate = "ready";
+
+    watchScrollVelocity();
+    const fastThreshold = survivableScrollVh(
+      MAX_DELAY_MS + REVEAL_MS,
+      TRIGGER_AHEAD_VH
+    );
 
     // All section children + any standalone disclaimer banner
     const sectionTargets = Array.from(
@@ -51,6 +79,16 @@ export default function CaseReveal() {
         entries.forEach((e) => {
           if (!e.isIntersecting) return;
           const el = e.target as HTMLElement;
+
+          /* Moving faster than the stagger can survive — show it now.
+             Checked per element rather than once, because a reader can
+             flick past the research boards and then settle to read the
+             takeaways, and the takeaways should still animate. */
+          if (getScrollVelocity() > fastThreshold) {
+            el.classList.add("case-instant", "case-in");
+            io.unobserve(el);
+            return;
+          }
 
           // Standalone disclaimer — no stagger needed, just reveal
           if (el.classList.contains("case-disclaimer")) {
@@ -77,7 +115,11 @@ export default function CaseReveal() {
           io.unobserve(el);
         });
       },
-      { rootMargin: "-4% 0px", threshold: 0.08 }
+      /* Bottom margin expanded so elements are triggered before they
+         enter the viewport rather than 4% after — at a normal reading
+         pace that hands the stagger an extra ~250ms to finish in, which
+         is most of the gap it was losing. Sides/top stay at 0. */
+      { rootMargin: `0px 0px ${TRIGGER_AHEAD_VH * 100}% 0px`, threshold: 0.08 }
     );
 
     allTargets.forEach((el) => io.observe(el));

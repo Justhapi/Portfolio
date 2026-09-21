@@ -1141,7 +1141,7 @@ body.on-paper .nav-pill {
   /* Fades in as the final left-column beat, after the wordmark has
      finished tracing itself (~2200ms). */
   opacity: 0;
-  animation: heroFocusFade 520ms var(--ease-out-quart) 2200ms forwards;
+  animation: heroFocusFade 520ms var(--ease-out-quart) 1450ms forwards;
 }
 @keyframes heroFocusFade {
   from { opacity: 0; transform: translateY(4px); }
@@ -1163,7 +1163,25 @@ body.on-paper .nav-pill {
   /* Fades in between the stickers settling and the wordmark tracing —
      the "an" bridge between the greeting phrase and the wordmark. */
   opacity: 0;
-  animation: heroAnFade 300ms var(--ease-out-quart) 1300ms forwards;
+  animation: heroAnFade 300ms var(--ease-out-quart) 700ms forwards;
+  /* ── Hero entrance pacing ───────────────────────────────────────────
+     The whole sequence used to finish at ~3.9s, with the two lines that
+     actually say what Kathleen does landing last: the "Artist Designer"
+     ribbon completed at ~2.3s and the "FOCUSING ON PRODUCT DESIGN…"
+     positioning line at ~2.7s. A recruiter session recording showed
+     someone leaving the hero before either had arrived — they scrolled
+     at ~1.5s and were in a case study by 13s.
+
+     Measured off the live site with document.getAnimations() rather
+     than read off the stylesheet, because the sequence is spread across
+     a dozen rules and its real end point wasn't obvious from any one of
+     them.
+
+     The back half is now pulled forward ~35% (an 1300→700, ribbon
+     1400→800, focus 2200→1450, stickers 2820/3200→1950/2250), so the
+     hero completes at ~2.6s and the headline reads by ~1.6s. The order
+     and the character of the choreography are unchanged — it's the same
+     dance, just not held as long before the point is made. */
 }
 @keyframes heroAnFade {
   from { opacity: 0; transform: translateX(-4px); }
@@ -1749,13 +1767,13 @@ body.on-paper .nav-pill {
   clip-path: inset(-15% 102% -15% -2%);
 }
 .hero-polaroid .cap-write:nth-child(1) {
-  animation: capWrite 1150ms cubic-bezier(0.45, 0.05, 0.55, 0.95) 1450ms forwards;
+  animation: capWrite 950ms cubic-bezier(0.45, 0.05, 0.55, 0.95) 850ms forwards;
 }
 .hero-polaroid .cap-write:nth-child(2) {
   /* Starts at ~78% through line 1 — the ease-in-out tail of line 1 is
      slow, so a strict sequential start read as a stall. Overlapping
      the starts keeps the pen moving. */
-  animation: capWrite 1250ms cubic-bezier(0.45, 0.05, 0.55, 0.95) 2350ms forwards;
+  animation: capWrite 1050ms cubic-bezier(0.45, 0.05, 0.55, 0.95) 1500ms forwards;
 }
 @keyframes capWrite {
   to { clip-path: inset(-15% -2% -15% -2%); }
@@ -1797,7 +1815,7 @@ em.it { font-style: italic; }
   width: auto;
   color: var(--hero-fg);
   margin: 4px 0;
-  animation: ribbonWriteIn 900ms cubic-bezier(0.7, 0, 0.25, 1) 1400ms backwards;
+  animation: ribbonWriteIn 800ms cubic-bezier(0.7, 0, 0.25, 1) 800ms backwards;
 }
 .ribbon-artist .wordmark {
   /* Shrunk 42 → 34px so the "an Artist × Designer" line sits as a
@@ -2095,7 +2113,7 @@ em.it { font-style: italic; }
      Delay 2820ms so the paper-note cluster arrives as the final beat
      of the whole-hero choreography, ~100ms after "focusing on…"
      settles. */
-  animation: stickerSchoolIn 320ms var(--ease-out-quart) 2820ms backwards;
+  animation: stickerSchoolIn 320ms var(--ease-out-quart) 1950ms backwards;
 }
 .sticker.designing-green.polaroid-attached {
   /* bottom pushed further down (-30 → -70) so the sticker sits below
@@ -2114,7 +2132,7 @@ em.it { font-style: italic; }
   z-index: 13;
   /* Enters as the LAST beat of the whole-hero choreography, after
      school-note settles (~3140ms). */
-  animation: stickerGreenIn 340ms var(--ease-out-quart) 3200ms backwards;
+  animation: stickerGreenIn 340ms var(--ease-out-quart) 2250ms backwards;
 }
 /* Removed the @media (max-width: 820px) sticker tightening —
    stickers now keep their desktop offsets (top -28 / left -60 for
@@ -2243,10 +2261,10 @@ em.it { font-style: italic; }
   stroke-dashoffset: 1;
 }
 .reveal.in .sticker.designing-green .design-doodle path.doodle-p1 {
-  animation: doodleDraw 720ms var(--ease-snap) 3200ms forwards;
+  animation: doodleDraw 720ms var(--ease-snap) 2250ms forwards;
 }
 .reveal.in .sticker.designing-green .design-doodle path.doodle-p2 {
-  animation: doodleDraw 620ms var(--ease-snap) 3420ms forwards;
+  animation: doodleDraw 620ms var(--ease-snap) 2470ms forwards;
 }
 /* Fallback: if the sticker's enclosing container never gets .reveal.in
    for any reason, ensure the doodle isn't left permanently invisible —
@@ -2254,10 +2272,10 @@ em.it { font-style: italic; }
    trace off that same reveal path via .hero-polaroid or .hero as a
    secondary anchor. */
 .hero .sticker.designing-green .design-doodle path.doodle-p1 {
-  animation: doodleDraw 720ms var(--ease-snap) 3200ms forwards;
+  animation: doodleDraw 720ms var(--ease-snap) 2250ms forwards;
 }
 .hero .sticker.designing-green .design-doodle path.doodle-p2 {
-  animation: doodleDraw 620ms var(--ease-snap) 3420ms forwards;
+  animation: doodleDraw 620ms var(--ease-snap) 2470ms forwards;
 }
 @keyframes doodleDraw {
   from { stroke-dashoffset: 1; }
@@ -5129,7 +5147,10 @@ em.it { font-style: italic; }
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: rgb(var(--hero-fg-rgb) / 0.9);
-  transition: color 200ms, padding 280ms var(--ease-out-quart);
+  /* Slides on transform, not padding. The movement is purely visual —
+     nothing needs to reflow for it — and padding made the browser
+     redo layout for the row on every frame of the hover. */
+  transition: color 200ms, transform 280ms var(--ease-out-quart);
 }
 .c-link:first-child {
   border-top: none;
@@ -5139,7 +5160,7 @@ em.it { font-style: italic; }
 }
 .c-link:hover {
   color: var(--hero-fg);
-  padding-left: 12px;
+  transform: translateX(12px);
 }
 .c-link span:first-child {
   display: inline-flex;
@@ -5197,7 +5218,7 @@ em.it { font-style: italic; }
   letter-spacing: inherit;
   font-size: inherit;
   text-decoration: none;
-  transition: color 200ms ease, padding 280ms var(--ease-out-quart);
+  transition: color 200ms ease, transform 280ms var(--ease-out-quart);
 }
 /* Hover slides the email's bullet + label right by 12px. Because
    this padding lives on .c-email-main (the inner <a>) rather than
@@ -5205,14 +5226,14 @@ em.it { font-style: italic; }
    right — only the bullet point itself moves. */
 .c-email-main:hover {
   color: var(--hero-fg);
-  padding-left: 12px;
+  transform: translateX(12px);
 }
 /* Suppress the parent .c-link:hover padding shift on the email row
    so the bullet's slide isn't compounded with a row-level shift
    that would push the copy button off-axis too. LinkedIn and Resume
    rows are unaffected — they still slide as a whole. */
 .c-link.c-email:hover {
-  padding-left: 0;
+  transform: none;
 }
 .c-email .c-spark {
   /* sparkle inside the email row still spins on email hover */
@@ -5325,6 +5346,29 @@ em.it { font-style: italic; }
 .reveal-stagger.in > *:nth-child(4) { transition-delay: 240ms; }
 .reveal-stagger.in > *:nth-child(5) { transition-delay: 320ms; }
 .reveal-stagger.in > *:nth-child(6) { transition-delay: 400ms; }
+
+/* ── Fast-scroll escape hatch ──────────────────────────────────────────
+   Applied by RevealOnScroll.tsx / CaseReveal.tsx when the page is moving
+   faster than the staged entrance can survive. A recruiter session
+   recording showed someone reading a whole case study at 1.7-2.3
+   viewport-heights per second: every element was still mid-fade for the
+   entire time it was on screen, so body copy rendered half-transparent
+   and whole figures read as missing sections.
+
+   Both the duration AND the delay have to go. Killing only the delay
+   still leaves a 560-800ms fade running while the element crosses the
+   screen in under half a second, which is the same failure.
+
+   !important rather than a specificity battle: this is an escape hatch
+   that has to beat the stagger's nth-child delays, the case body's
+   attribute-scoped rule, and the inline transitionDelay CaseReveal sets
+   per element. Losing that race means invisible content. */
+.case-instant,
+.reveal--instant,
+.reveal--instant > * {
+  transition: none !important;
+  transition-delay: 0ms !important;
+}
 
 /* =====================================================
    CASE STUDY PAGES
@@ -6544,9 +6588,15 @@ em.it { font-style: italic; }
      next-h3 top-margin handle the gap to the next section. */
   margin: 32px 0 8px;
   padding: 24px 28px;
-  background: rgba(0, 0, 0, 0.02);
-  border-left: 3px solid rgb(var(--accent-rgb, 154 109 76) / 0.55);
-  border-radius: 4px;
+  /* Was a 3px accent stripe down the left edge. That treatment is the
+     single most recognisable admin-dashboard tell, and it read as
+     generic against everything else here. Now a full hairline in the
+     same accent plus a warmer tint — a paper card rather than a system
+     alert. Kept as an inset box-shadow rather than a border so the box
+     metrics (and therefore the padding above) don't change. */
+  background: rgb(var(--accent-rgb, 154 109 76) / 0.05);
+  box-shadow: inset 0 0 0 1px rgb(var(--accent-rgb, 154 109 76) / 0.18);
+  border-radius: 8px;
   /* Horizontal by default — text block on the LEFT, visual on the
      RIGHT — so a carousel card fits more comfortably inside a
      laptop viewport height. Falls back to vertical stacking below
@@ -7042,9 +7092,15 @@ em.it { font-style: italic; }
 .round-focus {
   margin: 24px 0 12px;
   padding: 12px 16px;
-  background: rgba(0, 0, 0, 0.03);
-  border-left: 3px solid rgb(var(--accent-rgb, 154 109 76) / 0.6);
-  border-radius: 3px;
+  /* Was a 3px accent stripe down the left edge. That treatment is the
+     single most recognisable admin-dashboard tell, and it read as
+     generic against everything else here. Now a full hairline in the
+     same accent plus a warmer tint — a paper card rather than a system
+     alert. Kept as an inset box-shadow rather than a border so the box
+     metrics (and therefore the padding above) don't change. */
+  background: rgb(var(--accent-rgb, 154 109 76) / 0.06);
+  box-shadow: inset 0 0 0 1px rgb(var(--accent-rgb, 154 109 76) / 0.2);
+  border-radius: 7px;
   font-family: var(--f-sans);
   font-size: 15px;
   line-height: 1.5;
@@ -7082,9 +7138,15 @@ em.it { font-style: italic; }
 .usability-rounds .ur-round-focus {
   margin: 0;
   padding: 10px 14px;
-  background: rgba(0, 0, 0, 0.03);
-  border-left: 3px solid rgb(var(--accent-rgb, 154 109 76) / 0.6);
-  border-radius: 3px;
+  /* Was a 3px accent stripe down the left edge. That treatment is the
+     single most recognisable admin-dashboard tell, and it read as
+     generic against everything else here. Now a full hairline in the
+     same accent plus a warmer tint — a paper card rather than a system
+     alert. Kept as an inset box-shadow rather than a border so the box
+     metrics (and therefore the padding above) don't change. */
+  background: rgb(var(--accent-rgb, 154 109 76) / 0.06);
+  box-shadow: inset 0 0 0 1px rgb(var(--accent-rgb, 154 109 76) / 0.2);
+  border-radius: 6px;
   font-family: var(--f-sans);
   font-size: 13px;
   line-height: 1.45;
