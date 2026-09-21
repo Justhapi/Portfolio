@@ -5716,6 +5716,21 @@ em.it { font-style: italic; }
   margin: 0 auto 16px;
   text-align: center;
   max-width: 26ch;
+  /* Reserve three lines whatever the title's actual length. Titles here
+     run from 33 to 75 characters, which at the 60px cap wrapped to 1, 2
+     or 3 lines — and every extra line pushed the cover art down, so the
+     four case pages had covers of 817, 877 and 937px and the longest
+     ones dropped their cover image below the fold. Reserving the tallest
+     case makes all four covers identical and puts the artwork at the
+     same y on every page.
+
+     Grid with align-content rather than flex: a flex item would
+     shrink-wrap to max-content and stop the title wrapping at all.
+     Grid items stretch to the column by default, so wrapping is
+     untouched and only the vertical centring changes. */
+  min-height: 3em;
+  display: grid;
+  align-content: center;
 }
 .case-meta {
   font-family: var(--f-mono);
@@ -5741,8 +5756,20 @@ em.it { font-style: italic; }
   margin-bottom: 40px;
 }
 .case-hero-image {
-  width: 100%;
-  max-width: 820px;
+  /* Sized from HEIGHT, not width, so the whole cover always fits the
+     viewport and the artwork is never clipped at the fold. Width is
+     derived from the height via aspect-ratio, so the frame keeps its
+     16:9 proportions at every size instead of cropping.
+
+     --cover-chrome is everything above and below the art inside the
+     cover: the fixed nav's clearance, the reserved 3-line title, the
+     meta and subtitle, and the cover's bottom padding. Measured, not
+     guessed — at 476px the cover lands exactly on the viewport height
+     on a short window. 461px is the art's full height at its 820px cap. */
+  --cover-chrome: 476px;
+  height: clamp(200px, calc(100svh - var(--cover-chrome)), 461px);
+  width: auto;
+  max-width: 100%;
   margin: 0 auto;
   aspect-ratio: 16 / 9;
   background: var(--paper);
@@ -6554,6 +6581,42 @@ em.it { font-style: italic; }
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
 }
+/* Inline walkthrough clips (CaseVideo). Frame matches .zoomable-frame
+   so a video and an image sitting in the same case body read as the
+   same kind of object — same radius, same warm letterbox colour so any
+   bars from an aspect mismatch blend into the page rather than showing
+   as a dark band. */
+.case-video-fig {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.case-video-frame {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 6px;
+  background: #F6EEE6;
+  box-shadow: 0 1px 2px rgb(var(--fg-rgb) / 0.06), 0 8px 22px -12px rgb(var(--fg-rgb) / 0.22);
+}
+.case-video {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Two-up rows stack on phones — side-by-side 16:9 clips would be ~150px
+   wide, which is below the point where a wireframe is readable at all. */
+@media (max-width: 720px) {
+  .case-image-row,
+  .case-image-row.with-arrow {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .case-image-row .arrow-sep { display: none; }
+}
+
 .case-image-row .arrow-sep {
   font-family: var(--f-mono);
   font-size: 20px;
@@ -7573,6 +7636,14 @@ em.it { font-style: italic; }
 @media (max-width: 720px) {
   .case-body { padding: 64px 24px 120px; }
   .case-cover-inner { padding: 0 24px; }
+  /* On phones the art is width-bound, not height-bound: the column is
+     narrow enough that 16:9 is already short, and the title's reserved
+     3em shrinks with the clamped font. Hand sizing back to width so the
+     frame spans the column as before. */
+  .case-hero-image {
+    height: auto;
+    width: 100%;
+  }
   .case-image-row, .case-image-grid { grid-template-columns: 1fr; }
   .case-image-row.with-arrow { grid-template-columns: 1fr; }
   .case-image-row .arrow-sep { display: none; }

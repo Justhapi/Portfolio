@@ -161,6 +161,10 @@ components/
   ZoomableImage.tsx           frame with click-drag pan + wheel zoom + hover auto-pan + reset
   HoverBag.tsx                layered PNG bag illustration with 6 hoverable hit zones + cursor-following pill (About section)
   HoverWord.tsx               inline text keyword with floating pill card + magnetic 3-D tilt (About body)
+  CyclingImage.tsx            crossfading image stack
+  Clarity.tsx                 Microsoft Clarity tag (prod only, afterInteractive)
+  lenisInstance.ts            module-level handle on the live Lenis instance
+  scrollVelocity.ts           shared scroll-speed read, in viewport-heights/sec
 ```
 
 **ZoomableImage props:**
@@ -240,6 +244,24 @@ The hero is intentionally rich — **don't simplify it without explicit directio
 - **Availability sticker** with sub-line "Product, Design, and PM/Producer internships".
 - **Hero focus text:** "Focusing on Product Design, Research, and Cross-Functional Work" (Caveat display size).
 
+### Hero entrance pacing (don't let it creep back out)
+
+The entrance is a sequence spread across ~a dozen rules in `globals.css`, so its
+real end point isn't visible from any one of them — measure it with
+`document.getAnimations()` on the live site, not by reading the stylesheet.
+
+It used to finish at **~3.9s**, with the two lines that actually say what
+Kathleen does landing last: the "Artist Designer" ribbon completed ~2.3s and
+the "FOCUSING ON PRODUCT DESIGN…" positioning line ~2.7s. The recruiter
+recording showed someone leaving the hero at ~1.5s — before either had arrived.
+The back half is now pulled forward ~35% (`hero-an` 1300→700, ribbon 1400→800,
+focus 2200→1450, stickers 2820/3200→1950/2250): complete at **~2.6s**, headline
+readable by **~1.6s**. Same order, same character.
+
+Scrolling away and back does **not** replay it (verified — same animation object,
+clamped `currentTime`). A blackout mid-hero means a page reload landed the
+visitor at the start of the sequence.
+
 ### Hero quirks to remember
 - `.hero` is `position: sticky; top: 0` — `el.scrollIntoView()` on `#hero` no-ops. Use `window.scrollTo({ top: 0, behavior: "smooth" })`. Already handled in `smoothScrollTo("hero")`.
 - `.read-pill` has `white-space: nowrap; width: max-content; max-width: none` to prevent it wrapping into a near-circle at right viewport edge.
@@ -279,26 +301,90 @@ The About section has **two independent hover interactions**, both in the same s
 
 ### HoverBag — layered bag illustration (left side of body split)
 
-The bag is composed of **10 transparent PNG layers** stacked in z-order (`one_earbud_1` on top → `ten_back_bag` at bottom), served from `/public/img/bag/*.webp`. Six of the items have interactive hit zones. Hovering an item shows a small pill near the cursor (label only, e.g. "art", "games") and animates that item's layer(s) per its own effect.
+The bag is **10 transparent PNG layers** stacked in z-order (`one_earbud_1` on
+top → `ten_back_bag` at bottom) from `/public/img/bag/*.webp`. Six items have
+interactive hit zones; hovering one animates that item's layer(s) and opens a
+popup near the cursor.
 
-**Interactive items + labels:**
-| Item | Layer(s) | Label | Effect |
-|---|---|---|---|
-| ipad | `eight_ipad` | art | lift |
-| laptop | `nine_laptop` | games | lift |
-| phone | `five_phone` | friends | lift |
-| ticket | `six_ticket` | travel | tilt-right |
-| usagi | `three_usagi` | food | tilt-right |
-| earbuds | `one_earbud_1` + `two_earbud_2` | music | tilt-left |
+| Item | Layer(s) | Label | Popup component | Shape |
+|---|---|---|---|---|
+| earbuds | `one_earbud_1` + `two_earbud_2` | music | `PillMusic` | `PillOrbit` — 3 album tiles + nested caption |
+| laptop | `nine_laptop` | games | `PillGames` | `PillOrbit` — tiles tinted per game |
+| phone | `five_phone` | friends | `PillFriends` | `PillScatter` — 4 loose prints around a caption |
+| ticket | `six_ticket` | travel | `PillTravel` | `PillDeck` — shuffling card stack |
+| usagi | `three_usagi` | food | `PillFood` | single polaroid (only one still using the plain shape) |
+| ipad | `eight_ipad` | art | `PillArt` | taped comic print + 2 mini doodles + 2 program badges |
 
-- **Hit zones** — invisible `.hover-bag__zone` `<button>` overlays positioned by `%` (left/top/width/height per item's `zone`). Layer PNGs use `pointer-events: none`; only zones capture mouse.
-- **Transform composition** — entrance animation (`bagSlideBounceIn`, 1100 ms) and per-item hover both write to the same layer element, so they compose via CSS custom properties (`--enter-y`, `--hover-transform`) rather than clobbering each other.
-- **Rebound-phase per-item animations** — timed with `~750ms` delay to align with the parent entrance's 68–100% rebound window (`bagItemBounceUp` for lift items, `bagEarbudSway`, `bagTicketBob`, `bagUsagiSway` for tilt items).
-- **Pill offsets** — `PILL_OFFSET_X = 6`, `PILL_OFFSET_Y = -2 - 170` (gap + pill height; user-tightened to sit close to the cursor). Pill is `position:fixed`, updated via direct DOM writes on `mousemove` — no per-frame React re-renders. Position is clamped to viewport bounds inside `moveToPointer` so the pill never overflows.
-- **Hover-capable gating** — `hoverCapable` state driven by `matchMedia("(hover: hover) and (pointer: fine)")`. Hit zones AND the pill are only rendered on hover-capable devices; touch devices see the layered illustration without any interaction target. Prevents pill flicker + tap-hijack on mobile.
-- **Per-item pill content** — six unique pill components (`PillMusic`, `PillFriends`, `PillFood`, `PillTravel`, `PillGames`, `PillArt`). Every item hovers into a distinct visual layout inside a unified 240×170 shell. Content placeholders are marked in-file; swap for real photos/logos when assets are ready. `.hover-bag__pill:not(.is-on) * { animation-play-state: paused !important }` freezes inner animations while the pill is offscreen so they always start from frame 0 when a new item is entered.
-- **Z-index note** — `.about-body-split .about-body { z-index: 1 }`, `.about-body-split .hover-bag { z-index: 2 }` so the pill sits above the paragraph text (was clipped otherwise).
-- **Debug mode** — pass `<HoverBag debug />` to outline hit zones with dashed red borders + labels for tuning without DevTools.
+**Real photos are wired.** `/public/img/bag/pop_up/{music,games,friends,trips,doodles}`.
+The old "content placeholders, swap when assets are ready" note is obsolete.
+
+**The one trick that makes all of this work.** CSS *individual* transform
+properties (`translate`, `rotate`, `scale`) compose with the `transform`
+shorthand rather than overwriting it. So a piece can carry a static tilt on
+`transform`, an entrance on `scale`, and an idle bob on `translate`, all at
+once, with no keyframe coordination. Nearly every popup depends on this —
+if you find yourself fighting a transform, reach for this before restructuring.
+
+**Idle motion.** One shared keyframe, `floatBob`: vertical only, rising from
+rest, travel from `--icon-float-amp`. Personality comes *only* from amplitude,
+duration and delay set inline per piece. Multi-piece popups switch the
+shell-level float off and float each piece separately (durations are chosen so
+no two share a small-integer ratio and they never fall back into step). Note
+the art popup's tape strips deliberately share the sheet's exact amp/duration
+with **zero** delay — anything physically stuck to the paper must move with it,
+or it reads as peeling off.
+
+**Popup placement (`placePill`)** — `left = clientX + 16`, `top = clientY - h - 16`,
+so the card sits up-and-right and the pointer sits just off its bottom-left
+corner. Then:
+- `getPaintedBounds()` measures *painted* bounds (several popups draw far
+  outside their box — the art prints reach ~64px past the left edge) and nudges
+  to keep them on-screen.
+- Near the top of the viewport the `y` clamp pushes the card down over the
+  pointer. It now also slides sideways to clear it, ramped by the clamp
+  distance so it can't teleport. Gated on the clamp: `getPaintedBounds` returns
+  one union rectangle, so ungated it would drift on every popup.
+- The cursor is not a point — `.cursor-ring` is 34px and scales 1.6× on hover,
+  which is exactly the state a popup appears in. Clearance is ~27px radius.
+- Cursor **lean**: the card tips away from horizontal mouse movement
+  (`LEAN_SENSITIVITY`, `LEAN_MAX`, 140ms return-to-level), on the individual
+  `rotate` property so it composes with the entrance scale.
+
+**PillScatter (friends)** — 4 prints drawn from 12 `SCATTER_SPOTS`, re-dealt on
+a timer. `SCATTER_COMPATIBLE` is a pairwise matrix gated on `MAX_OVERLAP = 26`.
+Worth knowing: every marginal pair on this board is decided by *horizontal*
+overlap, so vertical float amplitude can't create new collisions. Prints exit
+and return along their nearest corner diagonal.
+
+**PillArt (doodles)** — a taped sheet, greyer than the bag's cream because a
+printed photo is cooler than stationery. The comic window is **11:10, not
+square**, for a measured reason: the strip's setup panel spans 824px of its own
+1786px width and a square window at this height is only 794px, so it physically
+cannot hold both speech bubbles. `lostPan` holds the setup, travels, lets the
+reveal sit longest, then returns quicker — comic timing, not a linear pan. The
+two mini frames take each doodle's own aspect ratio (Locked is 251×320 portrait;
+a shared square frame was cropping 24px of ink off each end). Both minis sit off
+the bottom-left, lifted clear of the cursor ring.
+
+**Everything positional in these popups was solved numerically, not by eye** —
+rotated bounding boxes, shadow spread, tape diagonals, caption boxes, float
+amplitude at worst-case excursion. That caught at least six real collisions that
+looked fine in review. If you move a piece, redo the arithmetic.
+
+- **Hit zones** — invisible `.hover-bag__zone` buttons positioned by `%`; layer
+  PNGs are `pointer-events: none`.
+- **Hover-capable gating** — `matchMedia("(hover: hover) and (pointer: fine)")`.
+  Touch devices get the illustration with no zones and no popup.
+- **Transform composition** — entrance (`bagSlideBounceIn`) and per-item hover
+  both write the same layer via `--enter-y` / `--hover-transform`.
+- **Debug mode** — `<HoverBag debug />` outlines hit zones.
+
+**The six items are a curated slice, not an inventory.** What's in the bag is a
+deliberate selection of things that read well as a small visual set — it is not
+a complete or current picture of what Kathleen is into, and it shouldn't be
+treated as a source of truth about her. Don't add a seventh item, and don't
+extend a popup's contents (a new game, a new album) because you inferred an
+interest from somewhere. She'll ask if she wants something in.
 
 ### HoverWord — inline keyword pills (right side, in body paragraphs)
 
@@ -337,6 +423,51 @@ Media queries that gate motion:
 - `prefers-reduced-motion: reduce` — kills entrance animations + HeroVideo autoplay.
 - `prefers-reduced-transparency: reduce` — reduces backdrop-filter blur on case-nav + pill backgrounds.
 - `(hover: hover) and (pointer: fine)` — gates HoverBag pill rendering, HoverVideo autoplay, cursor-follower.
+
+---
+
+## Scroll-reveal system — and the recruiter session that shaped it
+
+A screen recording of a TikTok recruiter going through the portfolio
+(Sept 2026) is the most useful piece of evidence we have about how this site
+is actually read. **33 seconds of real exploration.** They dwelled on the hero
+wordmark (~2s), opened the WORK dropdown to pick a project rather than browsing
+the folder cards (~3s — their longest dwell), then scrolled one case study end
+to end in ~18s. They never reached About, never reached Connect, never saw the
+other three projects, and never touched the bag.
+
+**Measured scroll speed: 1.7–2.3 viewport-heights per second.** That number is
+the design constraint. The staged entrance animations could survive about
+0.5 vh/s, so content was mid-fade for essentially its entire time on screen:
+body copy rendered half-transparent, section headings rendered grey, and figures
+that hadn't triggered yet read as **empty sections**. They read a whole case
+study without seeing one finished section.
+
+**The fix — `components/scrollVelocity.ts`.** A shared, smoothed read of scroll
+speed in *viewport-heights per second* (resolution-independent — what matters is
+how much screen an element crosses while fading, which is the same judgement on
+a laptop and a 5K display). `CaseReveal` and `RevealOnScroll` each derive their
+own threshold from their own timing via `survivableScrollVh(budget, triggerAhead)`
+rather than a magic number, and mark anything arriving faster with an escape-hatch
+class.
+
+Three things that are easy to get wrong here:
+1. **Kill the duration, not just the delay.** Zeroing the delay still leaves a
+   560–800ms fade running while the element crosses the screen in under half a
+   second — the same failure.
+2. **Gate it on speed, not on "is it visible".** `getPaintedBounds`-style union
+   rectangles report overlap constantly; ungated, every reveal would skip.
+3. **Bias toward showing content.** `HEADROOM` shades the threshold down on
+   purpose. Losing an animation costs a little delight; losing the content costs
+   the reader the page.
+
+Current thresholds: case ≈ 0.48 vh/s, home ≈ 0.44 vh/s. A careful or steady read
+still gets the full choreography; a skim gets the content. `rootMargin` on both
+observers was also widened — the case observer was `-4%`, i.e. holding elements
+back until they were already *inside* the viewport.
+
+**The general principle, worth keeping:** motion should reward someone who slows
+down. It must never be the reason content isn't there.
 
 ---
 
@@ -385,11 +516,61 @@ Static export runs `next build` → writes to `out/`. GitHub Actions workflow at
 
 ---
 
+## Prototype demo clips (AI agent case) — READ BEFORE RE-ENCODING
+
+`public/img/proto/{reactive,proactive}.mp4` are wireframe walkthroughs of the
+concept prototype, rendered by `components/CaseVideo.tsx` and placed twice on
+the AI-agent page (end of **Outcome** and end of **Verifying**) via the local
+`PrototypeDemos` component — edit the captions once, both update.
+
+**These files are redacted, and the redaction is not recoverable from the
+source.** `app/projects/ai-journey-agent/images/{Reactive,Proactive}.mp4` are
+the raw 1920×1080 recordings and still show everything. If you re-encode from
+them without re-applying the masks, confidential text goes live.
+
+What's masked, and why it was done this way:
+
+- **A band over the breadcrumb and tab labels** (x 0–1500, y 28–152, whole
+  duration). That strip named five product features in every single frame —
+  the strongest identifier in the footage. It is *blurred, not cropped*:
+  cropping the top clipped the Proactive modal, whose top edge sits at y≈64,
+  above the tab bar.
+- **Boxes over each on-screen product/person name** — the agent name, the
+  product name, the account holder's first name, and the internal journey
+  slug. Each box is time-gated to when that name is on screen.
+
+The mask list was derived by **OCR-ing every frame** (tesseract, 2fps on
+Reactive, 1fps on Proactive) rather than by eye, because the panel scrolls and
+the names drift vertically between frames — one of them moves through five
+different y positions in seven seconds. Boxes are padded generously around
+every hit to cover what sampling missed. The result was then verified by
+re-OCR-ing the *output* at all 23 timestamps where a name had been found:
+zero leaks.
+
+The generator script pattern lives in this file's history; the region list is
+the thing worth keeping:
+
+```
+Reactive:  chrome(0,28,1500,124,always) · Nat(1720,300,170,210,1.3-5.2)
+           Journi(1460,670,140,140,1.3-7.5) · jt(1520,500,100,90,9.0-15.2)
+           Track(1630,760,110,56,10.8-12.5) · Nats(1695,300,100,420,11.5-19.5)
+Proactive: chrome(0,28,1500,124,always) · Nats(1690,570,110,206,43.5-50.0)
+           jt(1520,430,100,80,47.5-50.0)
+```
+
+Clips are also greyscaled (`hue=s=0`) to drop the platform's brand colour, and
+scaled to 1280 wide. 25 MB of source → ~1.2 MB shipped.
+
+Still sharp and legible: the persona names inside the journey map (invented
+personas, not real people) and the interview verbatims in the map cells.
+Kathleen reviewed and kept those — do not "helpfully" blur them.
+
+---
+
 ## Known pending items
 
 - **Frogslayer InsightCard images.** 5 iteration images (Card_Loading, Membership_Free, Payment_Button, Reformat, Tier) sit unused. Wiring requires adding `originalSrc?` + `iteratedSrc?` optional props to `InsightCard` in `UsabilityRound.tsx` and rendering `<img>` inside the `.ur-thumb` divs when srcs are provided.
 - **ResearchHub image placeholders.** All `<div className="image-slot">` are intentional — assets not yet produced.
-- **HoverBag pill image slot.** Currently shows text label only ("art", "games", etc.). If we want mini photos, replace `<div className="image-slot">{activeItem?.label}</div>` in `HoverBag.tsx` with `<img src={activeItem?.imageSrc} …>` and add an `imageSrc` field to each ITEMS entry.
 - **HoverWord images.** All five pill views still show placeholder text.
 - **LinkedIn / Resume links.** Both `.c-link.is-pending` in ConnectV2. `next-site/public/resume.pdf` is on disk; not wired.
 - **inline NDA — pending confirmations before external sharing:**
@@ -401,7 +582,17 @@ Static export runs `next build` → writes to `out/`. GitHub Actions workflow at
 - **Baked-in image whitespace.** Several Frogslayer PNGs (Initial_Prototype, Final_Prototype) have ~30% vertical background baked into the source. Non-carousel container cap (44vh) reduces total footprint but same proportion of whitespace scales in. Full fix is source-image cropping; not yet done.
 - **Dormant `.about-peek*` CSS.** The "let's connect" strip was removed from AboutV2 but its CSS classes remain in `globals.css`. Safe to leave; remove for cleanliness if desired.
 - **Cover-video re-encode swap-in.** ffmpeg-optimized versions live alongside originals in `/public/img/cover/`: `Frogslayer_opt.webm` (3.1 MB, was 25.4 MB), `inline_opt.webm` (2.7 MB, was 19 MB), `Ai_Agent_opt.webm` (2.7 MB, was 18.5 MB). Preview each, then `mv` the `_opt` versions over the originals (case-sensitive filenames — match Frogslayer.webm / inline.webm / Ai_Agent.webm exactly). ResearchHub.webm at 6.2 MB was left as-is. Cleanup: `rm ffmpeg2pass-0.log ffmpeg2pass-0.log.mbtree` from the working dir.
-- **HoverBag revision in progress.** Kathleen is actively iterating on hover behavior. Any change here should preserve: `hoverCapable` gating (touch devices get no pill), viewport-clamped `moveToPointer`, the 240×170 unified pill shell, and the paused-when-off animation-play-state guard.
+- **Original PNGs still shipping.** The `pop_up/` and `doodles/` source PNGs
+  (~71 MB across `public/`) sit next to their WebP exports and are copied into
+  the static export. Nothing references them. Deleting needs explicit
+  permission — ask before doing it.
+- **Case-study endings.** No case page has a footer, next-project link or
+  contact CTA — each ends at `</section></main></div>`. Kathleen has seen this
+  raised and chose to leave it. Do not "fix" it unprompted.
+- **Sizing of the art popup** is unresolved: it ships at `--u: 1.34` (284px
+  card) because that was the size under review when the layout was chosen, not
+  because it was picked. One variable on `.pill-art` rescales the whole
+  composition, clearances included.
 - **Deferred animation improvements** (from `improve-animations` audit):
   - Spring-track HoverBag pill position (would smooth cursor tracking further; requires a spring library).
   - Interruptible polaroid flip (would rewrite the rise-flip-rest keyframes as transitions so mid-flip clicks can reverse mid-air).
@@ -423,9 +614,39 @@ npm run build        # static export → out/
 
 ---
 
-## Recent session log (Aug 2026)
+## Recent session log
 
-### Landed (most recent session — hover-revision handoff point)
+### Landed (Sept 2026 — bag popups, analytics, scroll + Safari fixes)
+
+- **Bag popups rebuilt around real photos.** `PillOrbit` (music/games, tiles
+  tinted per game), `PillScatter` (friends — promoted from a long prototype
+  round), `PillArt` (doodles — taped comic sheet with panning strip, aspect-
+  correct mini frames, program badges). See the HoverBag section above.
+- **Independent float everywhere.** Shared `floatBob`; each loose piece gets its
+  own amplitude/duration/delay. Tape locked to the sheet's exact numbers.
+- **Cursor-reactive popup lean** and cursor-avoidance when the popup is clamped
+  down near the top of the viewport.
+- **Microsoft Clarity** (`components/Clarity.tsx`, project `yj26cq0dps`),
+  production-only, `afterInteractive`.
+- **Scroll restore fixed.** The real cause was React Strict Mode double-invoking
+  the effect: pass 1 consumed the sessionStorage key, so pass 2 took the
+  fresh-visit branch and forced the hero. Module-level `recentlyRead` cache makes
+  the read idempotent. Also added `lenisInstance.ts` — Lenis owns scroll
+  position, so a bare `window.scrollTo` is reverted on its next frame.
+- **"X min read" pill fix.** Clicking a folder focused the anchor and `onFocus`
+  re-pointed the pill. Guarded with `:focus-visible`.
+- **Safari: cover video escaping the folder.** WebKit clips neither
+  `<foreignObject>` content nor `overflow: hidden` + `border-radius` around a
+  `<video>`, and this artwork deliberately sets `overflow: visible` on the svg
+  so the X-stars can bleed. Clip now stated three ways. Desktop-only bug —
+  touch takes a different branch.
+- **Velocity-aware reveals (P0 from the recruiter recording).** See the section
+  below.
+- **Hero entrance compressed** ~3.9s → ~2.6s; the headline now reads by ~1.6s.
+- **Callouts restyled** off the `border-left: 3px accent` dashboard tell;
+  Connect hover slides moved from `padding` onto `transform`.
+
+### Landed (Aug 2026 — hover-revision handoff point)
 - **"Back to projects" scroll restoration finalized.** Two-part fix:
   1. `CaseSectionNav.tsx` Link changed from `href="/#work"` → `href="/" scroll={false}` so Next.js's default hash-scroll stops racing with ScrollRestore.
   2. `ScrollRestore.tsx` — removed `sessionStorage.removeItem(KEY)` inside the effect. React strict mode double-invokes useEffect in dev, and run #2 was seeing an empty sessionStorage and forcing `scrollTo(0, 0)`. Idempotent restore is safe because `saveHomeScroll` overwrites the key on every folder click. See "Home-page scroll restoration" section.
@@ -448,7 +669,7 @@ npm run build        # static export → out/
 - **TypeScript: `types/media.d.ts`** — module declarations for `*.webm` + `*.mp4` imports.
 - **inline case study** — additional NDA-driven trims. Overview slimmed, "The Problem" section removed, Scenario 1 questions abstracted.
 
-### Landed (this session)
+### Landed (earlier, Aug 2026)
 - **HoverBag component** — new layered PNG bag illustration for the About section with 6 hoverable items (iPad→art, laptop→games, phone→friends, ticket→travel, usagi→food, earbuds→music). 10 layer PNGs, transparent buttons for hit zones positioned by `%`, cursor-following pill, entrance bounce animation + per-item rebound-phase animations, transform composition via CSS custom properties. Extensive iteration on hit-zone geometry, pivot points, rotation timing, pill offsets.
 - **About layout — body split.** HoverBag on the left, body paragraphs on the right, h3 heading full-width above. Fixed pill z-index vs body text (pill now sits above paragraphs via `.about-body-split` z-index rules).
 - **Removed `.about-peek` "let's connect" strip** from AboutV2. Removed the `handlePeekClick` callback and `useCallback` import. CSS remains dormant.

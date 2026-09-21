@@ -1,6 +1,7 @@
 import CaseCover from "@/components/CaseCover";
 import CaseSectionNav from "@/components/CaseSectionNav";
 import ZoomableImage from "@/components/ZoomableImage";
+import CaseVideo from "@/components/CaseVideo";
 
 import platformAudit from "./images/Platform_Audit_Visual.webp";
 import agentComponents from "./images/Ai_Agent_Components_Visual.webp";
@@ -32,6 +33,38 @@ const SECTIONS = [
    which was causing this cover to render blank or inconsistently. */
 // Custom domain (kathleenli.tech) serves from the root — no prefix needed.
 const BASE_PATH = "";
+
+/* The two wireframe walkthroughs. Defined once and rendered in BOTH the
+   Outcome section (so a reader who never gets past the fold still sees the
+   prototype move) and at the end of Verifying, where the iteration
+   narrative sits — so the captions can't drift apart between the two.
+
+   Clips are served from /public/img/proto/, NOT the co-located images/
+   folder: Next's static export copies /public verbatim, while the asset
+   loader emits videos to the wrong path.
+
+   The encoded files carry masked regions over the platform's breadcrumb
+   and tab labels, and over every on-screen product/person name. The mask
+   list was derived by OCR-ing every frame, not by eye — see HANDOVER
+   before re-encoding from source, or the masks will be lost. */
+function PrototypeDemos() {
+  return (
+    <div className="case-image-row">
+      <CaseVideo
+        src={`${BASE_PATH}/img/proto/reactive.mp4`}
+        poster={`${BASE_PATH}/img/proto/reactive-poster.webp`}
+        label="Wireframe walkthrough of the agent's reactive flow."
+        caption={<>Demo of Agent features responding to user requests.</>}
+      />
+      <CaseVideo
+        src={`${BASE_PATH}/img/proto/proactive.mp4`}
+        poster={`${BASE_PATH}/img/proto/proactive-poster.webp`}
+        label="Wireframe walkthrough of the agent's proactive flow."
+        caption={<>Demo of Agent features surfacing issues to the user.</>}
+      />
+    </div>
+  );
+}
 const COVER_VIDEO = {
   mp4: `${BASE_PATH}/img/cover/Ai_Agent.mp4`,
   webm: `${BASE_PATH}/img/cover/Ai_Agent.webm`,
@@ -80,6 +113,8 @@ export default function AIJourneyAgentCaseStudy() {
             design-principle documentation </mark>{" "} to the sponsor&rsquo;s leadership. The deliverables defined
             <mark className="hl"> an AI maintenance agent</mark> that could keep customer journey maps accurate and trustworthy over time.
           </p>
+
+          <PrototypeDemos />
         </section>
 
         {/* ───── Overview ───── */}
@@ -431,6 +466,7 @@ export default function AIJourneyAgentCaseStudy() {
             After the round of usability tests, we then categorized the insights to determine iteration focuses.
             The resulting iterations focused on agent access, information organization, and user flow simplification.
           </p>
+
         </section>
 
         {/* ───── Takeaways ───── */}
