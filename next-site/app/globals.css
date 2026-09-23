@@ -6586,6 +6586,46 @@ em.it { font-style: italic; }
    same kind of object — same radius, same warm letterbox colour so any
    bars from an aspect mismatch blend into the page rather than showing
    as a dark band. */
+/* Sketch pinned to the whiteboard photo's corner (AI agent case). The
+   wrapper is the positioning context; the overlay is anchored to its TOP
+   because ZoomableImage renders its figcaption inside the same wrapper,
+   so anchoring to the bottom would put the sketch on the caption rather
+   than on the board.
+
+   Styled like the prints elsewhere in the site: its own paper edge, a
+   hairline to separate it from the photo underneath, then a drop shadow
+   so it reads as laid on top rather than composited in. */
+.wb-stack {
+  position: relative;
+}
+.wb-stack__sketch {
+  position: absolute;
+  top: -14px;
+  left: -16px;
+  z-index: 3;
+  width: clamp(104px, 15%, 186px);
+  height: auto;
+  display: block;
+  border-radius: 3px;
+  transform: rotate(-4deg);
+  background: #F6EEE6;
+  box-shadow:
+    0 0 0 5px #FBF7EE,
+    0 0 0 6px rgb(var(--fg-rgb) / 0.12),
+    0 10px 22px -8px rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+}
+/* On phones the frame is narrow enough that a 15% overlay would cover a
+   meaningful share of the board, and the negative offsets would push it
+   past the body's 24px gutter. */
+@media (max-width: 720px) {
+  .wb-stack__sketch {
+    width: clamp(72px, 22%, 110px);
+    top: -8px;
+    left: -6px;
+  }
+}
+
 .case-video-fig {
   margin: 0;
   display: flex;
