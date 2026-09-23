@@ -480,6 +480,19 @@ type Project = {
   accent: [string, string];
   folder: FolderTheme;
   href: string;
+  /* Measured, not estimated. Derived from the BUILT pages (out/projects/
+     *.html), counting the rendered text of <main class="case-body"> only —
+     cover and nav excluded — at 240 wpm, plus 6s per image and 15s per
+     video for the visuals a reader actually stops on.
+
+     Two things to redo if you re-measure: strip <script> first, or the
+     RSC payload inflates the count enormously; and drop the first and
+     last child of every .rc-track with 4+ children — ResearchCarousel
+     clones the first and last slide as phantoms for its infinite wrap,
+     which double-counted ~190 words and 2 images on ResearchHub.
+
+     Current basis — inline 815w/0 visuals · AI agent 1465w/11img/2vid ·
+     ResearchHub 2066w/10img · Frogslayer 1890w/17img. */
   readTime: string;
   thumbnail?: string;
   thumbnailAlt?: string;
@@ -509,7 +522,7 @@ const PROJECTS: Project[] = [
       },
     },
     href: "/projects/inline",
-    readTime: "4 min read",
+    readTime: "3 min read",
     thumbnail: FOLDER_THUMB.inline,
     thumbnailAlt: "inline — sponsor logo",
     coverVideo: FOLDER_COVER.inline,
@@ -535,7 +548,7 @@ const PROJECTS: Project[] = [
       },
     },
     href: "/projects/ai-journey-agent",
-    readTime: "3 min read",
+    readTime: "8 min read",
     thumbnail: FOLDER_THUMB.anonymous,
     thumbnailAlt: "Sponsor anonymized under NDA",
     coverVideo: FOLDER_COVER.aiAgent,
@@ -561,7 +574,7 @@ const PROJECTS: Project[] = [
       },
     },
     href: "/projects/researchhub",
-    readTime: "4 min read",
+    readTime: "10 min read",
     thumbnail: FOLDER_THUMB.stack,
     thumbnailAlt: "Purdue Stack — sponsor logo",
     coverVideo: FOLDER_COVER.researchhub,
@@ -587,7 +600,7 @@ const PROJECTS: Project[] = [
       },
     },
     href: "/projects/frogslayer",
-    readTime: "6 min read",
+    readTime: "10 min read",
     thumbnail: FOLDER_THUMB.frogslayer,
     thumbnailAlt: "Frogslayer — sponsor logo",
     coverVideo: FOLDER_COVER.frogslayer,
