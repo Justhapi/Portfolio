@@ -20,8 +20,8 @@ import round1Loyalty from "./images/Loyalty_Round_1_Iteration.webp";
 import round1Ending from "./images/Ending_Iteration.webp";
 import round1PaymentButton from "./images/Payment_Button_Iteration.webp";
 /* Round 2 iterations — each image contains the before + after side-by-side. */
-import round2Upsell from "./images/Upsell_Iteration.png";
-import round2Reset from "./images/Reset_Iteration.png";
+import round2Upsell from "./images/Upsell_Iteration.webp";
+import round2Reset from "./images/Reset_Iteration.webp";
 
 export const metadata = {
   title: "Kiosk Interface Design Guidelines — Kathleen Li",

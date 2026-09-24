@@ -47,6 +47,10 @@ export default function StaticImage({
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
+          /* Same reasoning as ZoomableImage: these sit in case bodies,
+             below the fold, and are never the LCP element. */
+          loading="lazy"
+          decoding="async"
           src={src}
           alt={alt}
           className="zoomable-img is-static"

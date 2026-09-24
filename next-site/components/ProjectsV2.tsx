@@ -522,7 +522,7 @@ const PROJECTS: Project[] = [
       },
     },
     href: "/projects/inline",
-    readTime: "3 min read",
+    readTime: "4 min read",
     thumbnail: FOLDER_THUMB.inline,
     thumbnailAlt: "inline — sponsor logo",
     coverVideo: FOLDER_COVER.inline,

@@ -9,18 +9,18 @@ import CyclingImage from "@/components/CyclingImage";
    time with hashed filenames. Same pattern as Frogslayer + JT. */
 import auditImg from "./images/audit.webp";
 import interviewNotesImg from "./images/interview_notes.webp";
-import affinityDiagrammingImg from "./images/affinity_diagraming.png";
-import referencesImg from "./images/references.png";
-import sketchesImg from "./images/sketches.png";
+import affinityDiagrammingImg from "./images/affinity_diagraming.webp";
+import referencesImg from "./images/references.webp";
+import sketchesImg from "./images/sketches.webp";
 import colorSchemeImg from "./images/color_scheme.webp";
 /* Finalized page visuals shown in the Prototyping carousel. */
-import homePage from "./images/Home_Page.png";
-import messagesPage from "./images/Messages_Page.png";
-import projectPage1 from "./images/Project_Page_1.png";
-import projectPage2 from "./images/Project_Page_2.png";
-import projectPage3 from "./images/Project_Page_3.png";
-import projectPage4 from "./images/Project_Page_4.png";
-import projectPage5 from "./images/Project_Page_5.png";
+import homePage from "./images/Home_Page.webp";
+import messagesPage from "./images/Messages_Page.webp";
+import projectPage1 from "./images/Project_Page_1.webp";
+import projectPage2 from "./images/Project_Page_2.webp";
+import projectPage3 from "./images/Project_Page_3.webp";
+import projectPage4 from "./images/Project_Page_4.webp";
+import projectPage5 from "./images/Project_Page_5.webp";
 /* Wide-strip iteration-progression visuals for the Prototyping section. */
 import projectDashboardProgression from "./images/Project_Dashboard_Progression.webp";
 

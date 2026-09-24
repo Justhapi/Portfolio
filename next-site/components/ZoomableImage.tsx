@@ -356,6 +356,14 @@ export default function ZoomableImage({
           alt={alt}
           className="zoomable-img"
           draggable={false}
+          /* Every ZoomableImage on this site sits inside a case body, well
+             below the fold — the case cover above it is a video, not an
+             image. A case page carries 10-17 of these at 1-2 MB each, so
+             eager loading meant the whole set hit the wire on first paint
+             for a reader who, per the session recording, may never scroll
+             past the second section. Nothing here is the LCP element. */
+          loading="lazy"
+          decoding="async"
           style={{
             transform: `translate(${tx}px, ${ty}px) scale(${scale})`,
           }}

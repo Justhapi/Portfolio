@@ -1,5 +1,12 @@
 import CaseCover from "@/components/CaseCover";
 import CaseSectionNav from "@/components/CaseSectionNav";
+import CaseEquation from "@/components/CaseEquation";
+import OpportunityGap from "@/components/OpportunityGap";
+import ProgramSwitch from "@/components/ProgramSwitch";
+import baseUserFlow from "./images/Base_User_Flow.webp";
+import userFlowFeatures from "./images/User_Flow_Features.webp";
+import initialPrototype from "./images/Initial_Prototype.webp";
+import finalPrototype from "./images/Final_Prototype.webp";
 
 export const metadata = {
   title: "Pop by inline — Kathleen Li",
@@ -15,11 +22,6 @@ const SECTIONS = [
   { id: "takeaways", label: "Takeaways" },
 ];
 
-/* Cover video — served from /public/img/cover so static export copies
-   it verbatim. Same pattern as Frogslayer + ResearchHub. MP4 first —
-   VP9-in-WebM decode support is inconsistent across browsers/engines,
-   which was causing this cover to render blank or inconsistently. */
-// Custom domain (kathleenli.tech) serves from the root — no prefix needed.
 const BASE_PATH = "";
 const COVER_VIDEO = {
   mp4: `${BASE_PATH}/img/cover/inline.mp4`,
@@ -32,9 +34,9 @@ export default function PopByInlineCaseStudy() {
     <div className="case">
       <CaseSectionNav sections={SECTIONS} />
       <CaseCover
-        title="Designing Features For An Event Coordination Uncertainties"
+        title="Designing Features For A B2B2C Consumer App"
         meta="Summer 2026 · 10 weeks · Product Design Intern"
-        subtitle="A lightweight B2B2C consumer tool for planning everyday gatherings"
+        subtitle="A B2B2C Consumer App with Features Built Upon Identified Competitor Gaps and Standard Trends"
         imageLabel="Pop by inline · cover animation"
         heroVideoSrc={COVER_VIDEO}
         heroVideoPoster={COVER_POSTER}
@@ -46,7 +48,7 @@ export default function PopByInlineCaseStudy() {
           <span className="case-disclaimer__text">
             This case study covers sponsor work protected by a non-disclosure agreement, 
             specifically <strong>product features, competitor names, and internal artifacts 
-            are excluded or generalized.</strong>
+            are excluded or blurred.</strong>
           </span>
         </p>
 
@@ -56,9 +58,9 @@ export default function PopByInlineCaseStudy() {
 
           <aside className="outcome-callout" aria-label="Project outcome">
             <p className="outcome-callout__stat">
-              <strong>Handed off a set of must-have features for Pop,</strong>{" "}
+              <strong>Handed off a set of must-have features to inline's development team,</strong>{" "}
               alongside research findings for justification, in a written product
-              direction report for future development.
+              direction report.
             </p>
             <p className="outcome-callout__meta">
               Summer 2026 · 10 weeks inline internship → Handoff
@@ -77,11 +79,10 @@ export default function PopByInlineCaseStudy() {
         <section id="overview" className="case-section">
           <h2>Overview</h2>
           <p>
-            Pop by inline is an early-stage consumer product exploration from inline, a
+            inline's current project is an early-stage consumer product exploration from inline, a
             Taipei restaurant-technology company whose core business is a B2B reservation,
             waitlist, and table-management platform serving thousands of restaurants across
-            Asia-Pacific. Pop marks its step from pure B2B into B2B2C, and the brief centered
-            on <mark className="hl">coordination design under uncertainty</mark>.
+            Asia-Pacific. This project marks inline's step from pure B2B into B2B2C.
           </p>
 
           <h3>My Role</h3>
@@ -89,7 +90,7 @@ export default function PopByInlineCaseStudy() {
             <strong>I worked remotely with inline&rsquo;s Product team in Taiwan</strong> as the{" "}
             <mark className="hl">sole designer on one branch</mark>, alongside a parallel
             branch of the internship. My focus was bringing an outside perspective on the market through competitive research, gap analysis, concept design, and
-            usability testing, prioritizing the features Pop needed to succeed in it.
+            usability testing, <strong>ideating features for the product to succeed within the existing market.</strong>
           </p>
         </section>
 
@@ -99,20 +100,30 @@ export default function PopByInlineCaseStudy() {
           <h3>Mapping the Competitive Landscape</h3>
           <p>
             <strong>I applied one competitive-analysis framework</strong> across{" "}
-            <mark className="hl">three event-coordination products</mark>, auditing the host
-            and guest flows in each.
+            <mark className="hl">three competitor apps</mark>, auditing the flows.
           </p>
 
           <h3>Gap Analysis with Category Discipline</h3>
-          <p>
-            <strong>I cross-referenced each competitor&rsquo;s weaknesses</strong> against the solution
-            features the parallel branch had proposed, marking every weakness as already
-            addressed, partially addressed, or left open.
-            <br></br><br></br>
-            The weaknesses left open became the{" "}
-            <mark className="hl">opportunity gaps</mark>, the basis for features that solve the same problems as
-            competitors by a more efficient route.
-          </p>
+          {/* Ornament parks in the right margin of the paragraph it annotates,
+              and drops below it once the browser is too thin for two columns. */}
+          <div className="case-ornament-split">
+            <p>
+              <strong>I cross-referenced each competitor&rsquo;s weaknesses</strong> against the solution
+              features proposed by the parallel branch, marking every weakness as either already
+              addressed, partially addressed, or left open.
+              <br></br><br></br>
+              The weaknesses that were still left open became the{" "}
+              <mark className="hl">opportunity gaps</mark> for features to build upon to assist the product
+              in solving the same goal as competitors through a more efficient route.
+            </p>
+            {/* Decorative only — a gap with something coming out of it. It carries
+                no information the paragraph doesn't, so it gets an empty alt and
+                is hidden from assistive tech rather than described. Not a
+                StaticImage: that component frames its subject as a case artifact
+                and sizes it to ~880px, which would read as evidence. Inline SVG
+                (not <img>) so the star can rise out of the hole on scroll. */}
+            <OpportunityGap className="case-ornament" />
+          </div>
         </section>
 
         {/* ───── Designing ───── */}
@@ -125,11 +136,48 @@ export default function PopByInlineCaseStudy() {
             <mark className="hl">coordinating an event under uncertainty</mark>. From it <strong>I ideated the user flow</strong> and decided how each feature would be
             integrated into the prototype.
           </p>
+          <CaseEquation
+            base={{
+              src: baseUserFlow.src,
+              alt: "The base user flow for the coordination scenario, blurred and desaturated to comply with the NDA.",
+              caption: <>Blurred and Greyed Out (due to NDA) base user flow built around the planned user scenario.</>,
+            }}
+            count={4}
+            addendLabel="features"
+            result={{
+              src: userFlowFeatures.src,
+              alt: "The same user flow with the proposed features mapped onto it.",
+              caption: <>Blurred and Greyed Out (due to NDA) same flow fleshed out with the proposed features implemented.</>,
+            }}
+          />
           <h3>Prototyping</h3>
-          <p>
-            With a small window before testing, <strong>I built the flow&rsquo;s core interactivity</strong> with <mark className="hl">AI-assisted prototyping tools</mark>, starting in Figma Make, then moving to Google AI Studio,
-            whose daily credit limits better suited the pace of iterating between test rounds.
-          </p>
+          {/* Text leads, figure sits right, and the two stack below 820px.
+              ProgramSwitch, not a zoomable one: a two-node framework
+              diagram has nothing to reveal on zoom, and it animates in. */}
+          <div className="audit-split audit-split--figure-right audit-split--top">
+            <div className="audit-split__text">
+              <p>
+                With a small window before testing,{" "}
+                <strong>I built the flow&rsquo;s core interactivity</strong> with{" "}
+                <mark className="hl">AI-assisted prototyping tools</mark>, starting in Figma Make,
+                then moving to Google AI Studio, whose daily credit limits better suited the pace
+                of iterating between test rounds.
+              </p>
+              <p>
+                Once testing was done,{" "}
+                <strong>I adapted the prototype back into Figma</strong> so access to my materials
+                was centralized with the parallel branch&rsquo;s, where the rest of the
+                team&rsquo;s work already lived.
+              </p>
+            </div>
+            <div className="audit-split__visual">
+              <ProgramSwitch
+                topLabel={<>I Need More Credit To Iterate<br />Upon the Prototype More</>}
+                bottomLabel={<>I Need to Centralize Access to<br />My Materials with the Teams&rsquo;</>}
+                alt="Diagram of the prototype moving from Figma Make to Google AI Studio for iteration credits, then back into Figma to centralize access with the parallel branch."
+              />
+            </div>
+          </div>
         </section>
 
         {/* ───── Testing ───── */}
@@ -144,14 +192,33 @@ export default function PopByInlineCaseStudy() {
 
           <h3>Addressing Insights and Feedback with Iterations</h3>
           <p>
-            I ran the sessions in <mark className="hl">sprints of 2 to 3</mark>, so feedback
+            I ran the sessions in <mark className="hl">sprints of testing with 2 - 3 participants</mark>, so feedback
             reflected a general rather than a singular voice. After each sprint <strong>I identified iterations to implement</strong> and tweaked the
             protocol to probe them.
             <br></br><br></br>
             Every sprint therefore tested a prototype that had already answered the last one.
-            As the rounds progressed, feedback{" "}
-            <mark className="hl">shifted from usability issues to feature suggestions</mark>{" "}
-            for adapting the prototype to other use cases and continued usage.
+            After the first round of tests, feedback{" "}
+            <mark className="hl">quickly shifted from UI to feature expansion</mark>{" "}
+            for flexibility in other user scenarios and continued usage.
+          </p>
+          <CaseEquation
+            base={{
+              src: initialPrototype.src,
+              alt: "The prototype as it entered the first round of usability testing.",
+              caption: <>Blurred and Greyed Out (due to NDA) prototype before testing.</>,
+            }}
+            count={10}
+            addendLabel="feature iterations"
+            result={{
+              src: finalPrototype.src,
+              alt: "The same prototype after three sprints of iteration, with noticeably more screens.",
+              caption: <>Blurred and Greyed Out (due to NDA) prototype after three sprints of testing and iterating.</>,
+            }}
+          />
+          <p>
+            While four features were carried into the initial prototype, {" "}
+            <strong>I deemed three of them as pivotal </strong>due to directly contributing to the app's unique
+            position within the market.
           </p>
         </section>
 

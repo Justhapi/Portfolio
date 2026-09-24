@@ -69,3 +69,35 @@ During the project's research phase, I recognized that a **rigorous gap analysis
 ### Priorities in Implementation with AI
 
 From this project, I understood how to better navigate a workflow that includes implementing with AI. The **AI tools I utilized (Figma Make and Google AI Studio) limited the number of iterations I could implement at a time.** To adapt, I made **recognized and prioritized larger-scale implementations based on impact on the prototype’s efficiency** during usability testing while **manually refining smaller and specific details afterwards.** As a result, I was able to utilize my prompting tokens while also being well informed of the prototype's abilities and limitations through manual involvements of altering the code.
+
+---
+
+## Recalled context (not from the original page)
+
+*Added 2026-09-23. Everything above this line is the page as
+published on 2026-09-23. This section is memory and later reconstruction, kept
+separate so the archive above stays a faithful record.*
+
+### Why the prototype moved tools, and moved back
+
+The sequence was **Figma Make → Google AI Studio → Figma**, not a single switch.
+
+1. **Figma Make → Google AI Studio.** Its daily prompting credit limits better
+   suited the pace of iterating before and during the usability rounds. This one
+   is documented, both on the case study and in the final report.
+2. **Google AI Studio → Figma.** The prototype was adapted back into Figma so
+   access to the materials was centralized with the parallel branch's, where the
+   rest of the team's work already lived.
+
+**Evidence status.** Step 1 is on the page and in the report. The *fact* of step 2
+is in the final report's deliverables index — *"Figma Prototype: Contains the
+prototype adapted from the usability test prototype into Figma"* — but the
+**reason** for it (centralizing with the parallel branch) is recollection only. It
+appears in no document; the report's uses of "centralize" all refer to Pop's own
+product features. Worth saying as "as I recall" rather than as fact.
+
+**Why it matters in an interview.** "I moved back because the tool failed" and "I
+rebuilt the validated prototype where the team's work lived, so it could be handed
+off" say very different things about judgment. The second is what the record
+supports.
+

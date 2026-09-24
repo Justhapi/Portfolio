@@ -63,9 +63,16 @@ const caveat = localFont({
  *  pull-quotes) so it stays a distinct editorial voice rather than
  *  competing with the site's other display faces. */
 const kleeOne = localFont({
+  /* Latin-subset woff2, not the shipped .ttf. Klee One is a Japanese face
+     carrying full CJK coverage — 15.3 MB across these two weights — and the
+     site only ever renders Latin in it (pull-quotes, editorial callouts via
+     --f-quote). The one place CJK appears on the site is 李曦 in the hero,
+     which uses Long Cang, not this. Subsetting to Latin + punctuation takes
+     it to 235 KB, a 98.5% cut, with no visible change.
+     Regenerate with fontTools if the quote styles ever need more glyphs. */
   src: [
-    { path: "../public/fonts/Klee_One/KleeOne-Regular.ttf",  weight: "400", style: "normal" },
-    { path: "../public/fonts/Klee_One/KleeOne-SemiBold.ttf", weight: "600", style: "normal" },
+    { path: "../public/fonts/Klee_One/KleeOne-Regular-latin.woff2",  weight: "400", style: "normal" },
+    { path: "../public/fonts/Klee_One/KleeOne-SemiBold-latin.woff2", weight: "600", style: "normal" },
   ],
   variable: "--font-klee",
   display: "swap",
