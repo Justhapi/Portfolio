@@ -1,4 +1,5 @@
 import CaseCover from "@/components/CaseCover";
+import NextProject from "@/components/NextProject";
 import CaseSectionNav from "@/components/CaseSectionNav";
 import UsabilityRound, { InsightCard } from "@/components/UsabilityRound";
 import ResearchCarousel from "@/components/ResearchCarousel";
@@ -593,6 +594,9 @@ export default function FrogslayerCaseStudy() {
           </p>
         </section>
       </main>
+      {/* Side note: add note={<>…</>} to say anything about how this project
+          relates to the others (e.g. what you were working on alongside it). */}
+      <NextProject current="frogslayer" />
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import CaseCover from "@/components/CaseCover";
+import NextProject from "@/components/NextProject";
 import CaseSectionNav from "@/components/CaseSectionNav";
 import CaseEquation from "@/components/CaseEquation";
 import OpportunityGap from "@/components/OpportunityGap";
@@ -251,6 +252,9 @@ export default function PopByInlineCaseStudy() {
           </p>
         </section>
       </main>
+      {/* Side note: add note={<>…</>} to say anything about how this project
+          relates to the others (e.g. what you were working on alongside it). */}
+      <NextProject current="inline" />
     </div>
   );
 }

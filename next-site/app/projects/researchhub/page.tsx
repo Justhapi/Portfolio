@@ -1,4 +1,5 @@
 import CaseCover from "@/components/CaseCover";
+import NextProject from "@/components/NextProject";
 import CaseSectionNav from "@/components/CaseSectionNav";
 import ZoomableImage from "@/components/ZoomableImage";
 import ResearchCarousel from "@/components/ResearchCarousel";
@@ -539,6 +540,9 @@ export default function ResearchHubCaseStudy() {
           </p>
         </section>
       </main>
+      {/* Side note: add note={<>…</>} to say anything about how this project
+          relates to the others (e.g. what you were working on alongside it). */}
+      <NextProject current="researchhub" />
     </div>
   );
 }

@@ -21,11 +21,13 @@ import { setLenis } from "@/components/lenisInstance";
  *   .sticker.designing-green speed −0.11  (preserves rotate(−5deg) base)
  *   .hero-polaroid          speed −0.05  (special centred-transform handling)
  *
- * Case-cover hero — no per-element parallax. Instead .case-cover is
- * position: sticky at top:0 (z:0) and .case-body is position: relative
- * (z:1) with a cream background, so the content section physically
- * slides UP over the pinned hero as the user scrolls. This mirrors the
- * main page's .hero → .work depth illusion.
+ * Case-cover hero — .case-cover is position: sticky at top:0 (z:0) and
+ * .case-body is position: relative (z:1) with a cream background, so the
+ * content section physically slides UP over the pinned hero as the user
+ * scrolls (mirrors the main page's .hero → .work depth illusion). Each
+ * cover element (kicker, title, meta, subtitle, hero video) also drifts
+ * at its own speed on top of that. The case footer (.next-case) mirrors
+ * the same idea at the bottom of the page (relativeToPageEnd).
  *
  * Entrance animation fill-mode lock:
  *   CSS `animation: ... both` keeps elements at their final keyframe,
@@ -77,6 +79,21 @@ type ParallaxConfig = {
    * resting spot during the reveal and rises into place.
    */
   relativeToSceneEnd?: boolean;
+  /**
+   * If true, the delta zeroes at the very END of the page (max scroll).
+   * Used by the case-page footer (.next-case), which is pinned at the
+   * bottom while the case body slides up off it: each element sits a
+   * little below its resting spot during the reveal and settles exactly
+   * when the page bottoms out. Recomputed every frame, since late-loading
+   * images change the page height.
+   */
+  relativeToPageEnd?: boolean;
+  /**
+   * Largest offset (px, either direction) this element is allowed to
+   * drift. For elements that are only on screen for part of the page, so
+   * they don't keep sliding thousands of px once they're covered.
+   */
+  maxShift?: number;
 };
 
 const PARALLAX_TARGETS: ParallaxConfig[] = [
@@ -113,10 +130,16 @@ const PARALLAX_TARGETS: ParallaxConfig[] = [
   { selector: ".sticker.designing-green", speed:  0.08, baseRotate: "-4deg" },
 
   // ── Case-cover hero ──────────────────────────────────────────────────
-  // No per-element parallax on case study heroes. The depth illusion is
-  // achieved via CSS: .case-cover is sticky top:0 z:0, .case-body is
-  // relative z:1 with a cream bg, so the content physically slides over
-  // the pinned hero (matches the main page's .hero → .work pattern).
+  // The cover is pinned (sticky) while the case body slides up over it;
+  // on top of that, each cover element drifts UP at its own rate —
+  // title fastest, video slowest — so the header separates into layers
+  // as it's covered. Mirrors the home hero's top-fast/bottom-slow order.
+  // Capped: the cover is fully hidden after ~1 viewport of scroll.
+  { selector: ".case-kicker",           speed: -0.32, baseRotate: "-2deg", maxShift: 360 },
+  { selector: ".case-title",            speed: -0.30, maxShift: 360 },
+  { selector: ".case-meta",             speed: -0.26, maxShift: 320 },
+  { selector: ".case-subtitle",         speed: -0.22, maxShift: 280 },
+  { selector: ".case-hero-image",       speed: -0.12, maxShift: 160 },
 
   // ── Connect section elements ─────────────────────────────────────────
   // Negative speed → row drifts DOWN as scroll increases (confirmed from
@@ -143,6 +166,17 @@ const PARALLAX_TARGETS: ParallaxConfig[] = [
   // place as Connect is uncovered. Ends pinned at Connect's bottom with
   // no residual offset — the divider + © line travel as one block.
   { selector: ".foot",                  speed: -0.08, relativeToSceneEnd: true },
+
+  // ── Case-page footer (NextProject) ───────────────────────────────────
+  // Mirrors the reveal above: the footer is pinned under the case body,
+  // and as the body slides off, each element rises into place at its own
+  // rate — the label/note line drifts most, the cover least — so the row
+  // assembles with depth. All settle exactly at page end.
+  { selector: ".next-case__head",       speed: -0.22, relativeToPageEnd: true },
+  { selector: ".next-case__title",      speed: -0.18, relativeToPageEnd: true },
+  { selector: ".next-case__meta",       speed: -0.15, relativeToPageEnd: true },
+  { selector: ".next-case__cta",        speed: -0.12, relativeToPageEnd: true },
+  { selector: ".next-case__media",      speed: -0.08, relativeToPageEnd: true },
 ];
 
 /** Delay after page load before parallax transforms activate (ms). */
@@ -358,8 +392,18 @@ export default function SmoothScroll() {
        reads the current scroll position and writes transforms once,
        instead of waiting for the next wheel event. */
     applyParallax = function (scroll: number) {
+      // Read once, before any transform writes, to avoid forced layouts.
+      const pageEnd = document.documentElement.scrollHeight - window.innerHeight;
       for (const { el, config, scrollBase } of entries) {
-        const delta = (scroll - scrollBase) * config.speed;
+        const base = config.relativeToPageEnd ? pageEnd : scrollBase;
+        let delta = (scroll - base) * config.speed;
+        // Page-end elements only need to move during the final reveal;
+        // cap the offset so they don't sit thousands of px away (and
+        // stretch the scrollable area) while the reader is higher up.
+        if (config.relativeToPageEnd) delta = Math.min(delta, 140);
+        if (config.maxShift !== undefined) {
+          delta = Math.max(-config.maxShift, Math.min(config.maxShift, delta));
+        }
 
         // Availability sticker (.sticker.designing-green.polaroid-attached)
         // writes to a CSS custom property instead of an inline transform.

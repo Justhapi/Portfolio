@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { flushSync } from "react-dom";
+import { swapNames, slapNudge } from "@/components/heroStickerMotion";
 import SparkleField from "@/components/SparkleField";
 import ArtistDesignerWordmark from "@/components/ArtistDesignerWordmark";
 
@@ -49,6 +51,40 @@ export default function HeroV2() {
   const shiftTimerRef = useRef<number | null>(null);
   const liftRef = useRef<HTMLDivElement | null>(null);
   const hoverRef = useRef<HTMLDivElement | null>(null);
+
+  /* Sticker interactions (see heroStickerMotion.ts) — clicking the name
+     badge swaps Kathleen ⇄ 李曦; clicking a polaroid sticker pops it
+     forward over the photo for a moment. */
+  const [namesSwapped, setNamesSwapped] = useState(false);
+  const swappingRef = useRef(false);
+  const nameRef = useRef<HTMLSpanElement | null>(null);
+  const chipRef = useRef<HTMLSpanElement | null>(null);
+  const helloRef = useRef<HTMLSpanElement | null>(null);
+  const schoolRef = useRef<HTMLDivElement | null>(null);
+  const greenRef = useRef<HTMLDivElement | null>(null);
+
+  const handleNameSwap = () => {
+    const big = nameRef.current;
+    const chip = chipRef.current;
+    const hello = helloRef.current;
+    if (!big || !chip || !hello || swappingRef.current) return;
+    swappingRef.current = true;
+    swapNames(big, chip, hello, namesSwapped, () =>
+      flushSync(() => setNamesSwapped((v) => !v)),
+    ).finally(() => {
+      swappingRef.current = false;
+    });
+  };
+  const handleNudge = (el: HTMLDivElement | null, baseRotate: number) => {
+    if (el && photoRef.current) slapNudge(el, photoRef.current, baseRotate);
+  };
+  /** Enter / Space activate the role="button" stickers. */
+  const onKeyActivate = (fn: () => void) => (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      fn();
+    }
+  };
   useEffect(() => {
     const HERO_ENTRANCE_END = 2900;
     let hasPaper = false;
@@ -159,15 +195,27 @@ export default function HeroV2() {
       <div className="hero-stage" ref={stageRef}>
         <div className="hero-greeting">
           <p className="hero-greet-lead">
-            <span className="hero-greet-hi">Hello, I&rsquo;m </span>
-            <span className="sticker name-yellow name-inline">
-              <span className="name-en">Kathleen</span>
-              <span
-                className="chip-zh"
-                role="img"
-                aria-label="Li Xi (李曦) — my Chinese name"
-              >
-                <span className="chip-zh-text">李曦</span>
+            <span className="hero-greet-hi" ref={helloRef}>Hello, I&rsquo;m </span>
+            {/* Click to swap which name is the big sticker. Each name keeps
+                its own plate; only size and spot trade. */}
+            <span
+              ref={nameRef}
+              className={`sticker name-yellow name-inline is-clickable${namesSwapped ? " is-swapped" : ""}`}
+              role="button"
+              tabIndex={0}
+              aria-label={
+                namesSwapped
+                  ? "李曦 (Li Xi), also Kathleen — swap names"
+                  : "Kathleen, also 李曦 (Li Xi) — swap names"
+              }
+              onClick={handleNameSwap}
+              onKeyDown={onKeyActivate(handleNameSwap)}
+            >
+              <span className="name-en" aria-hidden="true">
+                {namesSwapped ? "李曦" : "Kathleen"}
+              </span>
+              <span className="chip-zh" ref={chipRef} aria-hidden="true">
+                <span className="chip-zh-text">{namesSwapped ? "Kathleen" : "李曦"}</span>
               </span>
             </span>
           </p>
@@ -242,12 +290,28 @@ export default function HeroV2() {
             </button>
             </div>
           </div>
-          <div className="sticker school-note polaroid-attached">
+          <div
+            ref={schoolRef}
+            className="sticker school-note polaroid-attached is-clickable"
+            role="button"
+            tabIndex={0}
+            aria-label="Currently completing my junior year at Purdue — bring note forward"
+            onClick={() => handleNudge(schoolRef.current, -8)}
+            onKeyDown={onKeyActivate(() => handleNudge(schoolRef.current, -8))}
+          >
             <span className="school-note-text">
               Currently completing my junior year @ Purdue
             </span>
           </div>
-          <div className="sticker designing-green polaroid-attached">
+          <div
+            ref={greenRef}
+            className="sticker designing-green polaroid-attached is-clickable"
+            role="button"
+            tabIndex={0}
+            aria-label="Availability note — bring note forward"
+            onClick={() => handleNudge(greenRef.current, -4)}
+            onKeyDown={onKeyActivate(() => handleNudge(greenRef.current, -4))}
+          >
             <svg
               className="design-doodle"
               viewBox="0 0 274 240"

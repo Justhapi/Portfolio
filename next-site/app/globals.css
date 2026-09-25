@@ -8351,3 +8351,236 @@ em.it { font-style: italic; }
 .audit-split.audit-split--figure-right.audit-split--top {
   align-items: start;
 }
+
+/* ── NextProject: next-case connector (case page footer) ───────────────
+   Mirrors .case-cover: same dark surface, and the same depth trick in
+   reverse — the cover is sticky at the TOP under the case body; this is
+   sticky at the BOTTOM under it (z:0 vs the body's z:1), so the body
+   slides up off it at the end of the page. Only where the footer is
+   shorter than the viewport: a sticky-bottom block taller than the screen
+   would have its top edge permanently hidden. */
+.next-case {
+  position: relative;
+  z-index: 0;
+  /* Clip so the parallax offsets on its children (SmoothScroll.tsx,
+     relativeToPageEnd) never spill out of the footer. */
+  overflow: clip;
+  background: var(--hero-bg);
+  color: var(--hero-fg);
+  padding: 80px 56px 88px;
+}
+@media (min-width: 821px) and (min-height: 620px) {
+  .next-case {
+    position: sticky;
+    bottom: 0;
+  }
+  /* Hidden while pinned under the page higher up — otherwise it would
+     show through over the case cover (see NextProject.tsx). */
+  .next-case.is-covered {
+    visibility: hidden;
+  }
+  /* Lift the body's bottom edge off the footer, matching the shadow its
+     top edge casts on the cover. */
+  .case:has(.next-case) .case-body::before {
+    box-shadow:
+      0 -12px 48px -4px rgba(0, 0, 0, 0.28),
+      0 -2px 8px rgba(0, 0, 0, 0.12),
+      0 12px 48px -4px rgba(0, 0, 0, 0.28),
+      0 2px 8px rgba(0, 0, 0, 0.12);
+  }
+}
+.next-case__sentinel {
+  height: 0;
+}
+.next-case__inner {
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+.next-case__card {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr);
+  gap: 48px;
+  align-items: center;
+}
+.next-case__media {
+  display: block;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border-radius: 10px;
+  background: var(--hero-bg-2);
+  box-shadow: 0 14px 30px -16px rgba(0, 0, 0, 0.7);
+}
+.next-case__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 300ms var(--ease-out-quart);
+}
+.next-case__text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  min-width: 0;
+}
+.next-case__eyebrow {
+  font-family: var(--f-mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent-soft);
+}
+.next-case__title {
+  font-family: var(--f-display);
+  font-weight: 600;
+  font-size: clamp(20px, 2.1vw, 28px);
+  line-height: 1.22;
+  text-wrap: balance;
+  color: var(--hero-fg);
+  text-decoration: none;
+  border-radius: 4px;
+}
+.next-case__title:focus-visible {
+  outline: 2px solid var(--accent-soft);
+  outline-offset: 4px;
+}
+.next-case__meta {
+  font-size: 14px;
+  color: rgb(var(--hero-fg-rgb) / 0.62);
+}
+
+/* "Next project" label + side note on one line; the note wraps under
+   the label when it's long. */
+.next-case__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 16px;
+  row-gap: 6px;
+}
+.next-case__eyebrow { flex: 0 0 auto; }
+.next-case__note {
+  min-width: 0;
+  font-size: 15px;
+  line-height: 1.4;
+  color: rgb(var(--hero-fg-rgb) / 0.9);
+}
+.next-case__note.is-placeholder {
+  padding: 2px 10px;
+  border: 1.5px dashed rgb(var(--hero-fg-rgb) / 0.25);
+  border-radius: 6px;
+  font-size: 12px;
+  color: rgb(var(--hero-fg-rgb) / 0.6);
+}
+
+.next-case__cta {
+  margin-top: 10px;
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--accent-soft);
+  text-decoration: none;
+}
+.next-case__arrow {
+  display: inline-block;
+  transition: transform 200ms var(--ease-out-quart);
+}
+@media (hover: hover) and (pointer: fine) {
+  .next-case__card:has(a:hover) .next-case__media img { transform: scale(1.03); }
+  .next-case__card:has(a:hover) .next-case__arrow { transform: translateX(4px); }
+  .next-case__title:hover { text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; }
+}
+
+@media (max-width: 820px) {
+  .next-case { padding: 56px 20px 72px; }
+  .next-case__card { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .next-case__media img,
+  .next-case__arrow { transition: none; }
+}
+
+/* ── Hero sticker interactions ("Slap" — see heroStickerMotion.ts) ────── */
+.sticker.is-clickable { cursor: pointer; }
+.sticker.is-clickable:focus-visible {
+  outline: 2px solid var(--ochre);
+  outline-offset: 4px;
+}
+
+/* Swapped names: sizes and spots trade, but each name keeps its OWN plate
+   and typeface — Kathleen is always ochre with dark text, 李曦 always
+   terracotta with light text. */
+.sticker.name-yellow.is-swapped {
+  background: var(--accent);
+  color: var(--paper);
+}
+.sticker.name-yellow.is-swapped .name-en {
+  font-family: var(--f-hand-zh);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+.sticker.name-yellow.is-swapped .chip-zh {
+  background: var(--ochre);
+  color: var(--fg);
+  font-family: var(--f-quote);
+  font-weight: 600;
+  font-size: 19px;
+  padding: 5px 10px 6px;
+}
+
+/* During the swap only the two named stickers transition; the rest of the
+   page keeps rendering live (no root cross-fade). */
+html.hero-vt { view-transition-name: none; }
+
+/* No cross-fade between each name's before/after snapshots — the JS
+   hard-cuts old → new where the sizes cross. Snapshots fill the group box
+   so they track the morph exactly. */
+html.hero-vt::view-transition-old(hero-front),
+html.hero-vt::view-transition-old(hero-back),
+html.hero-vt::view-transition-new(hero-front),
+html.hero-vt::view-transition-new(hero-back) {
+  animation: none;
+  mix-blend-mode: normal;
+  height: 100%;
+  object-fit: fill;
+}
+
+/* Yanked up fast, slammed down with a squash and rebound. The group curve
+   overshoots so they land with a bounce; its 0.5 crossing (8.6%) is
+   CROSS_AT in heroStickerMotion.ts. */
+html.hero-vt::view-transition-group(hero-front),
+html.hero-vt::view-transition-group(hero-back) {
+  animation-duration: 600ms;
+  animation-timing-function: cubic-bezier(0.2, 1.5, 0.5, 1);
+}
+html.hero-vt::view-transition-image-pair(hero-front) {
+  transform-origin: 50% 100%;
+  animation: hero-slap-hi 600ms linear;
+}
+html.hero-vt::view-transition-image-pair(hero-back) {
+  transform-origin: 50% 100%;
+  animation: hero-slap-lo 600ms linear;
+}
+@keyframes hero-slap-hi {
+  0%   { transform: none; animation-timing-function: cubic-bezier(0.1, 0.9, 0.2, 1); }
+  16%  { transform: translateY(-22px) rotate(-7deg) scale(1.2); filter: drop-shadow(0 20px 14px rgba(0,0,0,0.45)); }
+  48%  { transform: translateY(-18px) rotate(-3deg) scale(1.16); filter: drop-shadow(0 16px 12px rgba(0,0,0,0.42)); animation-timing-function: cubic-bezier(0.7, 0, 0.9, 0.3); }
+  60%  { transform: scale(1.12, 0.8); filter: drop-shadow(0 1px 1px rgba(0,0,0,0.35)); animation-timing-function: cubic-bezier(0.2, 0, 0.3, 1); }
+  74%  { transform: scale(0.95, 1.07); }
+  86%  { transform: scale(1.02, 0.98); }
+  94%  { transform: scale(0.995, 1.005); }
+  100% { transform: none; filter: drop-shadow(0 0 0 rgba(0,0,0,0)); }
+}
+@keyframes hero-slap-lo {
+  0%   { transform: none; animation-timing-function: cubic-bezier(0.1, 0.9, 0.2, 1); }
+  16%  { transform: translateY(10px) rotate(6deg) scale(1.06); filter: drop-shadow(0 8px 8px rgba(0,0,0,0.35)); }
+  48%  { transform: translateY(8px) rotate(3deg) scale(1.05); animation-timing-function: cubic-bezier(0.7, 0, 0.9, 0.3); }
+  60%  { transform: scale(1.1, 0.82); filter: drop-shadow(0 1px 1px rgba(0,0,0,0.35)); animation-timing-function: cubic-bezier(0.2, 0, 0.3, 1); }
+  74%  { transform: scale(0.96, 1.06); }
+  86%  { transform: scale(1.02, 0.98); }
+  100% { transform: none; filter: drop-shadow(0 0 0 rgba(0,0,0,0)); }
+}
+
+/* "Hello, I'm" tips from its baseline when knocked. */
+.hero-greet-hi { transform-origin: 50% 100%; }
