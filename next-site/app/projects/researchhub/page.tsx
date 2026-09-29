@@ -540,9 +540,9 @@ export default function ResearchHubCaseStudy() {
           </p>
         </section>
       </main>
-      {/* Side note: add note={<>…</>} to say anything about how this project
-          relates to the others (e.g. what you were working on alongside it). */}
-      <NextProject current="researchhub" />
+      <NextProject current="researchhub" 
+      note={<>Began after constructing <strong>Kiosk Design Guidelines</strong></>}
+      />
     </div>
   );
 }

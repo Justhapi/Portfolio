@@ -444,9 +444,9 @@ export default function AIJourneyAgentCaseStudy() {
           </p>
         </section>
       </main>
-      {/* Side note: add note={<>…</>} to say anything about how this project
-          relates to the others (e.g. what you were working on alongside it). */}
-      <NextProject current="ai-journey-agent" />
+      <NextProject current="ai-journey-agent" 
+        note={<>Worked on this project while designing a <strong>Purdue Research Collaboration Platform</strong></>}
+      />
     </div>
   );
 }

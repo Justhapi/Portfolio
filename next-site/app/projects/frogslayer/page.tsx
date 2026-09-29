@@ -594,9 +594,9 @@ export default function FrogslayerCaseStudy() {
           </p>
         </section>
       </main>
-      {/* Side note: add note={<>…</>} to say anything about how this project
-          relates to the others (e.g. what you were working on alongside it). */}
-      <NextProject current="frogslayer" />
+      <NextProject current="frogslayer" 
+      note={<>Recently worked on integrating a <strong>B2B2C product</strong> into an existing market</>}
+      />
     </div>
   );
 }

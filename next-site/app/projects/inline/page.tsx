@@ -252,9 +252,9 @@ export default function PopByInlineCaseStudy() {
           </p>
         </section>
       </main>
-      {/* Side note: add note={<>…</>} to say anything about how this project
-          relates to the others (e.g. what you were working on alongside it). */}
-      <NextProject current="inline" />
+      <NextProject current="inline" 
+      note={<>Started after finishing conceptualizing an <strong>AI Journey Map Maintenance Agent</strong></>}
+      />
     </div>
   );
 }
