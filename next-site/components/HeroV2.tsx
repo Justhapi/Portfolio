@@ -463,7 +463,7 @@ export default function HeroV2() {
           >
             <div className="d-text">
               <span className="d-avail">Available</span>
-              <strong>Summer 7</strong>
+              <strong>Summer 2027</strong>
               <span className="d-sub">Product Design · Product Management</span>
             </div>
           </div>
