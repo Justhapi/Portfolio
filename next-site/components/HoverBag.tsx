@@ -131,6 +131,47 @@ function getPaintedBounds(root: HTMLElement) {
   return L === Infinity ? null : { left: L, top: T, right: R, bottom: B };
 }
 
+/* ── Warm-up preload ─────────────────────────────────────────────────
+   The pop-up art (friends photos, album covers, game tiles, doodles)
+   only mounts when an item is hovered/tapped, so the browser used to
+   start fetching it at that moment and the pill filled in piece by
+   piece. Instead, fetch + decode everything once the page has finished
+   its own loading and the main thread is idle — or sooner if the bag
+   comes within ~1.5 screens of the viewport. Image objects are kept in
+   a module array so the decoded bitmaps stay warm in memory. */
+const warmed: HTMLImageElement[] = [];
+let warmStarted = false;
+function bagPreloadSrcs(): string[] {
+  // Pop-up art only — the bag layers are already <img>s in the DOM, so
+  // holding a second decoded copy of each here just doubled their memory.
+  return [
+    ...FRIEND_PHOTOS.map((p) => p.src),
+    `${POP_UP}/music/LBI.webp`,
+    `${POP_UP}/music/Ashley.webp`,
+    `${POP_UP}/music/FACE.webp`,
+    `${POP_UP}/games/League.webp`,
+    `${POP_UP}/games/TFT.webp`,
+    `${POP_UP}/games/Pokemon/Z-A.webp`,
+    `${POP_UP}/games/Pokemon/Pokopia.webp`,
+    `${POP_UP}/games/Pokemon/Violet.webp`,
+    `${POP_UP}/games/Pokemon/Arceus.webp`,
+    ART_DOODLE.src,
+    ...ART_MINIS.map((m) => m.src),
+    ...ART_TOOLS.map((t) => t.src),
+  ];
+}
+function warmBagImages() {
+  if (warmStarted) return;
+  warmStarted = true;
+  for (const src of bagPreloadSrcs()) {
+    const img = new Image();
+    img.decoding = "async";
+    img.src = `${BASE_PATH}${src}`;
+    img.decode?.().catch(() => {});
+    warmed.push(img);
+  }
+}
+
 export default function HoverBag({ debug = false }: { debug?: boolean }) {
   const [active, setActive] = useState<string | null>(null);
   const pillRef = useRef<HTMLDivElement | null>(null);
@@ -144,6 +185,39 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
     update();
     mq.addEventListener("change", update);
     return () => mq.removeEventListener("change", update);
+  }, []);
+
+  /* Kick off the pop-up image warm-up (see warmBagImages above). */
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    let idleId: number | undefined;
+    let timer: number | undefined;
+    const ric = (window as Window & {
+      requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number;
+      cancelIdleCallback?: (id: number) => void;
+    });
+    const schedule = () => {
+      if (ric.requestIdleCallback) idleId = ric.requestIdleCallback(warmBagImages, { timeout: 2500 });
+      else timer = window.setTimeout(warmBagImages, 1200);
+    };
+    if (document.readyState === "complete") schedule();
+    else window.addEventListener("load", schedule, { once: true });
+    // Safety net: if the reader scrolls fast, start as soon as the bag
+    // is within ~1.5 screens, idle or not.
+    let io: IntersectionObserver | undefined;
+    const el = stackRef.current;
+    if (el && "IntersectionObserver" in window) {
+      io = new IntersectionObserver((entries) => {
+        if (entries.some((e) => e.isIntersecting)) { warmBagImages(); io?.disconnect(); }
+      }, { rootMargin: "150% 0px 150% 0px" });
+      io.observe(el);
+    }
+    return () => {
+      window.removeEventListener("load", schedule);
+      if (idleId !== undefined) ric.cancelIdleCallback?.(idleId);
+      if (timer !== undefined) window.clearTimeout(timer);
+      io?.disconnect();
+    };
   }, []);
 
   const prefersReducedMotionRef = useRef(false);

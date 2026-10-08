@@ -2,7 +2,7 @@
  * heroStickerMotion — the "Slap" interactions for the hero stickers
  * (promoted from the /prototypes/hero-stickers exploration).
  *
- *  - Name badge: clicking swaps Kathleen ⇄ 李曦. Each name keeps its own
+ *  - Name badge: clicking swaps Kathleen ⇄ 妤𣎮. Each name keeps its own
  *    plate and typeface; only size and spot trade. Driven by a view
  *    transition: both are yanked up, then slammed down with a squash
  *    (keyframes in globals.css, "hero-slap-*"). The smaller sticker stays

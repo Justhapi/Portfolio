@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import SparkleField from "@/components/SparkleField";
+import ZhName from "@/components/ZhName";
 
 /**
  * ConnectV2 — pitch + link rows + footer.
@@ -154,7 +155,7 @@ export default function ConnectV2() {
         {/* Footer anchored at the bottom of Connect — semantic <footer>
             so screen-reader users get the contentinfo landmark. */}
         <footer className="foot">
-          <span>© Kathleen Li · 李曦 · 2026</span>
+          <span>© Kathleen Li · <span className="name-zh-inline"><ZhName /><span className="visually-hidden" lang="zh-Hant">妤𣎮</span></span> · 2026</span>
           <span>Made with Procreate, Figma &amp; a lot of React</span>
         </footer>
       </div>

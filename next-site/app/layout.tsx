@@ -66,8 +66,8 @@ const kleeOne = localFont({
   /* Latin-subset woff2, not the shipped .ttf. Klee One is a Japanese face
      carrying full CJK coverage — 15.3 MB across these two weights — and the
      site only ever renders Latin in it (pull-quotes, editorial callouts via
-     --f-quote). The one place CJK appears on the site is 李曦 in the hero,
-     which uses Long Cang, not this. Subsetting to Latin + punctuation takes
+     --f-quote). The one place CJK appears on the site is the name 妤𣎮,
+     which uses its own Long Cang subset + SVG (ZhName.tsx), not this. Subsetting to Latin + punctuation takes
      it to 235 KB, a 98.5% cut, with no visible change.
      Regenerate with fontTools if the quote styles ever need more glyphs. */
   src: [
@@ -78,11 +78,8 @@ const kleeOne = localFont({
   display: "swap",
 });
 
-/* Long Cang is excluded from next/font because its only Google Fonts
-   subset is 'chinese-simplified', which next/font doesn't type-support.
-   Instead it's loaded via a targeted <link> below with `text=李曦` —
-   Google serves only those 2 glyphs (~2 KB), so the request is tiny.
-   The --f-hand-zh token in globals.css uses the string name directly. */
+/* The Chinese name (components/ZhName.tsx) uses a self-hosted one-glyph
+   Long Cang subset for 妤 (preloaded below) plus an SVG for 𣎮. */
 
 /* Viewport meta — width=device-width prevents iOS Safari from rendering
    at the default 980px CSS width (which is why the hero was showing
@@ -141,12 +138,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={fontVars}>
       <head>
-        {/* Long Cang — targeted load for 李曦 only (~2 KB, 2 glyphs) */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Long+Cang&text=%E6%9D%8E%E6%9B%A6&display=swap"
-        />
+        {/* Long Cang — one-glyph subset for 妤 in the Chinese name (~2 KB) */}
+        <link rel="preload" href="/fonts/LongCang/long-cang-yu.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
         {/* No-JS fallback — .reveal / .reveal-stagger start opacity:0 and
             wait for RevealOnScroll's IntersectionObserver to add .in.
             Without JS the class never lands, so content stays invisible.

@@ -158,14 +158,22 @@ const PARALLAX_TARGETS: ParallaxConfig[] = [
      natural centered position (closer to the footer, no nav overlap)
      right when "fully scrolled" is reached, while still drifting for
      depth during the reveal itself. */
-  { selector: ".connect-row",           speed: -0.05, relativeToSceneEnd: true },
+  /* Both Connect targets now key off the PAGE END rather than the scene
+     end. On phones Connect is taller than the viewport, so once About has
+     slid off there's still ~200px of plain scrolling left; a scene-end
+     base had already settled by then, which read as the drift "wearing
+     off" right at the end. Page-end base = one steady rate all the way
+     down, settling exactly when the page bottoms out. maxShift (instead
+     of the 140px page-end cap) bounds the offset while Connect is still
+     covered by About. */
+  { selector: ".connect-row",           speed: -0.18, relativeToPageEnd: true, maxShift: 220 },
   // Footer credits line — counter-drift vs .connect-row for depth.
   // Scene-END base so delta = 0 exactly when About finishes sliding off:
   // during the reveal the footer sits below its resting spot (~0.08 ×
   // viewport height ≈ 70px down, off the viewport edge) and rises into
   // place as Connect is uncovered. Ends pinned at Connect's bottom with
   // no residual offset — the divider + © line travel as one block.
-  { selector: ".foot",                  speed: -0.08, relativeToSceneEnd: true },
+  { selector: ".foot",                  speed: -0.10, relativeToPageEnd: true, maxShift: 140 },
 
   // ── Case-page footer (NextProject) ───────────────────────────────────
   // Mirrors the reveal above: the footer is pinned under the case body,
@@ -400,7 +408,7 @@ export default function SmoothScroll() {
         // Page-end elements only need to move during the final reveal;
         // cap the offset so they don't sit thousands of px away (and
         // stretch the scrollable area) while the reader is higher up.
-        if (config.relativeToPageEnd) delta = Math.min(delta, 140);
+        if (config.relativeToPageEnd && config.maxShift === undefined) delta = Math.min(delta, 140);
         if (config.maxShift !== undefined) {
           delta = Math.max(-config.maxShift, Math.min(config.maxShift, delta));
         }

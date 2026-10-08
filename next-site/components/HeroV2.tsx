@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { flushSync } from "react-dom";
+import ZhName from "@/components/ZhName";
 import { swapNames, slapNudge } from "@/components/heroStickerMotion";
 import SparkleField from "@/components/SparkleField";
 import ArtistDesignerWordmark from "@/components/ArtistDesignerWordmark";
@@ -53,7 +54,7 @@ export default function HeroV2() {
   const hoverRef = useRef<HTMLDivElement | null>(null);
 
   /* Sticker interactions (see heroStickerMotion.ts) — clicking the name
-     badge swaps Kathleen ⇄ 李曦; clicking a polaroid sticker pops it
+     badge swaps Kathleen ⇄ 妤𣎮; clicking a polaroid sticker pops it
      forward over the photo for a moment. */
   const [namesSwapped, setNamesSwapped] = useState(false);
   const swappingRef = useRef(false);
@@ -107,13 +108,42 @@ export default function HeroV2() {
   }, []);
 
   const RISE_HOLD_MS = 460;
-  const ANIM_END_MS = 580;
-  // Covers the raise hold plus the 220ms shift-back transition (see
-  // .is-shift-anim in globals.css) so the sticker transition stays on
-  // long enough to animate the return trip too, not just the raise.
-  const SHIFT_ANIM_MS = RISE_HOLD_MS + 240;
+  const ANIM_END_MS = 760;
+  // Covers the raise hold plus the slowest staggered shift-back
+  // (delay + duration ≈ 590ms, see "Flip reactions" in globals.css) so
+  // the transitions stay on long enough to animate the return trip.
+  const SHIFT_ANIM_MS = RISE_HOLD_MS + 640;
+
+  /* Ends the flip on the card's own animationend (not a timer racing
+     it). The keyframe also holds its last frame (fill-mode: both), and
+     the face swap + class removal land in one render, so there is no
+     frame where the card snaps back to the old face before the new
+     rest pose applies — that one-frame snap was the end-of-flip glitch. */
+  const flipLockRef = useRef(false);
+  const finishFlip = () => {
+    if (animEndTimerRef.current) {
+      window.clearTimeout(animEndTimerRef.current);
+      animEndTimerRef.current = null;
+    }
+    flushSync(() => {
+      setFlipped(targetRef.current);
+      setAnimDir(null);
+    });
+    flipLockRef.current = false;
+  };
+  const handleFlipAnimEnd = (e: React.AnimationEvent<HTMLButtonElement>) => {
+    // Caption pen-writes etc. bubble up from inside the card — only the
+    // card's own flip keyframe ends the flip.
+    if (e.target !== e.currentTarget) return;
+    if (!e.animationName.startsWith("flipMalleable")) return;
+    finishFlip();
+  };
 
   const handlePhotoClick = () => {
+    // Ignore clicks mid-flip: restarting the keyframe from the other
+    // direction would jump the card straight to the opposite pose.
+    if (flipLockRef.current) return;
+    flipLockRef.current = true;
     if (riseTimerRef.current) window.clearTimeout(riseTimerRef.current);
     if (animEndTimerRef.current) window.clearTimeout(animEndTimerRef.current);
     if (shiftTimerRef.current) window.clearTimeout(shiftTimerRef.current);
@@ -129,11 +159,8 @@ export default function HeroV2() {
       setIsRaised(false);
       riseTimerRef.current = null;
     }, RISE_HOLD_MS);
-    animEndTimerRef.current = window.setTimeout(() => {
-      setFlipped(targetRef.current);
-      setAnimDir(null);
-      animEndTimerRef.current = null;
-    }, ANIM_END_MS);
+    // Fallback only (e.g. reduced motion, where no animation runs).
+    animEndTimerRef.current = window.setTimeout(finishFlip, ANIM_END_MS);
     shiftTimerRef.current = window.setTimeout(() => {
       setIsShiftAnim(false);
       shiftTimerRef.current = null;
@@ -173,18 +200,125 @@ export default function HeroV2() {
     };
   }, []);
 
-  const handleHoverEnter = () => {
-    const el = hoverRef.current;
-    if (!el) return;
-    el.style.transition = "transform var(--dur-med) var(--ease-spring)";
-    el.style.transform = "rotate(6deg)";
-  };
-  const handleHoverLeave = () => {
-    const el = hoverRef.current;
-    if (!el) return;
-    el.style.transition = "transform var(--dur-slow) var(--ease-spring)";
-    el.style.transform = "rotate(0deg)";
-  };
+  /* Cursor tilt — the project folders' hover reactivity, given to the
+     polaroid cluster. The whole cluster (card + notes + star) tilts and
+     shifts toward the cursor with the folders' exact numbers (±18/14px,
+     ±6° Y / ±4° X). On top of that each floating piece leans further on
+     its OWN spring, so they read as separate layers at different depths
+     rather than one rigid group:
+       • star       — lightest: furthest (±14px, spins ±12°), snappy & bouncy
+       • Purdue note— middle: ±8px, a little tilt, moderate spring
+       • Available  — heaviest: ±4px, slow, lags behind the others
+     Springs are integrated per frame and written as CSS variables
+     (globals.css "Polaroid cursor tilt"); the loop only runs while
+     something is still moving. Mouse/trackpad only; off for reduced
+     motion. */
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const stage = stageRef.current;
+    const cluster = stage?.querySelector<HTMLElement>(".hero-polaroid");
+    if (!stage || !cluster) return;
+
+    type Body = {
+      el: HTMLElement | SVGElement | null;
+      gain: number[];          // target = gain × cursor (x, y, x…)
+      axis: ("x" | "y")[];     // which cursor axis drives each channel
+      k: number; c: number;    // spring stiffness / damping
+      v: number[]; p: number[];
+      write: (el: HTMLElement | SVGElement, p: number[]) => void;
+    };
+    const px = (n: number) => `${n.toFixed(2)}px`;
+    const layer = (el: HTMLElement | SVGElement | null, g: number[], k: number, c: number): Body => ({
+      el, gain: g, axis: ["x", "y", "x"], k, c, v: [0, 0, 0], p: [0, 0, 0],
+      write: (e, p) => {
+        e.style.setProperty("--hx", px(p[0]));
+        e.style.setProperty("--hy", px(p[1]));
+        e.style.setProperty("--hr", `${p[2].toFixed(2)}deg`);
+      },
+    });
+    const bodies: Body[] = [
+      {
+        el: cluster, gain: [18, 14, -4, 6], axis: ["x", "y", "y", "x"],
+        k: 170, c: 14, v: [0, 0, 0, 0], p: [0, 0, 0, 0],
+        write: (e, p) => {
+          e.style.setProperty("--tilt-tx", px(p[0]));
+          e.style.setProperty("--tilt-ty", px(p[1]));
+          e.style.setProperty("--tilt-rx", p[2].toFixed(3));
+          e.style.setProperty("--tilt-ry", p[3].toFixed(3));
+          e.style.setProperty("--tilt-ra", `${Math.hypot(p[2], p[3]).toFixed(3)}deg`);
+        },
+      },
+      layer(stage.querySelector<SVGElement>(".polaroid-star"), [14, 11, 12], 320, 15),
+      layer(schoolRef.current, [8, 6, 2.5], 210, 17),
+      layer(greenRef.current, [4, 3, 1.2], 110, 15),
+    ];
+
+    let cx = 0, cy = 0, raf = 0, last = 0;
+    const step = (t: number) => {
+      const dt = Math.min(0.032, last ? (t - last) / 1000 : 0.016);
+      last = t;
+      let moving = false;
+      for (const b of bodies) {
+        if (!b.el) continue;
+        for (let i = 0; i < b.p.length; i++) {
+          const target = b.gain[i] * (b.axis[i] === "x" ? cx : cy);
+          const a = b.k * (target - b.p[i]) - b.c * b.v[i];
+          b.v[i] += a * dt;
+          b.p[i] += b.v[i] * dt;
+          if (Math.abs(target - b.p[i]) > 0.01 || Math.abs(b.v[i]) > 0.01) moving = true;
+        }
+        b.write(b.el, b.p);
+      }
+      raf = moving ? requestAnimationFrame(step) : 0;
+      if (!moving) last = 0;
+    };
+    const kick = () => { if (!raf) raf = requestAnimationFrame(step); };
+    /* Hover is decided by geometry, not by DOM enter/leave. Mid-flip the
+       card turns edge-on, so the element under a resting cursor flips to
+       the stage and back — enter/leave would fire, the targets would snap
+       to 0 and back, and the springs (the star's especially) would thrash
+       at the end of every flip. Instead: track the pointer on the window
+       and test it against the cluster box, padded to cover the notes
+       that hang off the card. */
+    const PAD = 0.18;
+    let inside = false;
+    const onMove = (e: PointerEvent) => {
+      if (e.pointerType !== "mouse") return;
+      // Cluster box with its own tilt shift taken back out, so the tilt
+      // moving the box doesn't feed back into where the cursor "is".
+      const b = cluster.getBoundingClientRect();
+      const t = bodies[0].p;
+      const r = { left: b.left - t[0], top: b.top - t[1], right: b.right - t[0], bottom: b.bottom - t[1], width: b.width, height: b.height };
+      const padX = r.width * PAD, padY = r.height * PAD;
+      const within =
+        e.clientX > r.left - padX && e.clientX < r.right + padX &&
+        e.clientY > r.top - padY && e.clientY < r.bottom + padY;
+      if (!within) {
+        if (inside) { inside = false; cx = 0; cy = 0; kick(); }
+        return;
+      }
+      inside = true;
+      const s = stage.getBoundingClientRect();
+      stage.style.perspectiveOrigin =
+        `${r.left + r.width / 2 - s.left}px ${r.top + r.height / 2 - s.top}px`;
+      cx = Math.max(-1, Math.min(1, ((e.clientX - r.left) / r.width - 0.5) * 2));
+      cy = Math.max(-1, Math.min(1, ((e.clientY - r.top) / r.height - 0.5) * 2));
+      kick();
+    };
+    const onOut = (e: MouseEvent) => {
+      if (e.relatedTarget) return; // only when the pointer leaves the window
+      inside = false; cx = 0; cy = 0; kick();
+    };
+    window.addEventListener("pointermove", onMove, { passive: true });
+    document.addEventListener("mouseout", onOut);
+    return () => {
+      window.removeEventListener("pointermove", onMove);
+      document.removeEventListener("mouseout", onOut);
+      cancelAnimationFrame(raf);
+    };
+  }, []);
   // Custom domain (kathleenli.tech) serves from the root — no prefix needed.
   const basePath = "";
   const photoSrc = `${basePath}/img/polaroid/polaroid_real.webp`;
@@ -205,17 +339,17 @@ export default function HeroV2() {
               tabIndex={0}
               aria-label={
                 namesSwapped
-                  ? "李曦 (Li Xi), also Kathleen — swap names"
-                  : "Kathleen, also 李曦 (Li Xi) — swap names"
+                  ? "妤𣎮 (Yuxi), also Kathleen — swap names"
+                  : "Kathleen, also 妤𣎮 (Yuxi) — swap names"
               }
               onClick={handleNameSwap}
               onKeyDown={onKeyActivate(handleNameSwap)}
             >
-              <span className="name-en" aria-hidden="true">
-                {namesSwapped ? "李曦" : "Kathleen"}
+              <span className="name-en" aria-hidden="true" lang={namesSwapped ? "zh-Hant" : undefined}>
+                {namesSwapped ? <ZhName /> : "Kathleen"}
               </span>
               <span className="chip-zh" ref={chipRef} aria-hidden="true">
-                <span className="chip-zh-text">{namesSwapped ? "Kathleen" : "李曦"}</span>
+                <span className="chip-zh-text" lang={namesSwapped ? undefined : "zh-Hant"}>{namesSwapped ? "Kathleen" : <ZhName />}</span>
               </span>
             </span>
           </p>
@@ -241,8 +375,6 @@ export default function HeroV2() {
             <div
               className="polaroid-hover"
               ref={hoverRef}
-              onMouseEnter={handleHoverEnter}
-              onMouseLeave={handleHoverLeave}
             >
             <button
               type="button"
@@ -255,6 +387,7 @@ export default function HeroV2() {
                 .join(" ")}
               ref={photoRef}
               onClick={handlePhotoClick}
+              onAnimationEnd={handleFlipAnimEnd}
               aria-label={`${flipped ? "Self-portrait doodle" : "Photo"} currently shown. Click to flip the polaroid.`}
               aria-pressed={flipped}
             >
@@ -290,6 +423,22 @@ export default function HeroV2() {
             </button>
             </div>
           </div>
+          {/* Corner star — the same sparkle used on the project folders.
+              Pinned to the polaroid's top-right corner; shifts outward
+              with the stickers while the card is lifted for a flip. */}
+          <svg
+            className="polaroid-star"
+            viewBox="318 170 88 92"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M383.405 176.641C384.09 177.145 384.186 177.889 384.202 178C384.24 178.258 384.227 178.49 384.216 178.625C384.193 178.918 384.132 179.249 384.068 179.556C383.935 180.191 383.713 181.067 383.457 182.077C382.936 184.134 382.225 186.935 381.602 190.152C380.344 196.643 379.499 204.569 381.158 211.222C382.776 217.707 387.33 223.921 391.593 228.771C393.708 231.177 395.69 233.182 397.154 234.702C397.868 235.443 398.499 236.11 398.933 236.637C399.141 236.89 399.375 237.195 399.546 237.51C399.629 237.664 399.752 237.917 399.817 238.232C399.88 238.539 399.933 239.141 399.562 239.749C399.179 240.375 398.596 240.589 398.368 240.659C398.093 240.744 397.837 240.768 397.666 240.777C397.315 240.795 396.923 240.765 396.56 240.726C395.813 240.646 394.811 240.479 393.671 240.279C391.347 239.87 388.263 239.291 384.807 238.823C377.804 237.873 369.753 237.455 364.016 239.609C356.028 242.606 349.57 247.169 344.979 250.959C342.685 252.853 340.872 254.541 339.548 255.756C338.903 256.349 338.328 256.872 337.882 257.23C337.668 257.401 337.402 257.602 337.122 257.754C336.987 257.827 336.753 257.942 336.457 258.006C336.176 258.067 335.568 258.137 334.948 257.759C334.149 257.271 334.025 256.46 334.001 256.298C333.96 256.023 333.975 255.775 333.989 255.626C334.018 255.308 334.09 254.95 334.168 254.614C334.327 253.921 334.592 252.971 334.899 251.876C335.523 249.649 336.376 246.634 337.134 243.207C338.668 236.276 339.729 228.003 337.926 221.449C336.223 215.258 332.47 208.997 329.111 204.061C327.433 201.596 325.906 199.535 324.776 197.949C324.227 197.178 323.747 196.485 323.421 195.938C323.263 195.674 323.094 195.365 322.976 195.056C322.918 194.903 322.842 194.671 322.81 194.396C322.782 194.146 322.763 193.622 323.079 193.083C323.433 192.479 323.979 192.238 324.298 192.145C324.614 192.054 324.897 192.048 325.067 192.053C325.416 192.063 325.773 192.133 326.059 192.2C326.658 192.339 327.447 192.583 328.313 192.858C330.096 193.424 332.465 194.206 335.217 194.914C340.765 196.342 347.541 197.378 353.509 195.788C360.655 193.885 367.276 189.144 372.291 184.789C374.781 182.627 376.832 180.599 378.328 179.113C379.061 178.384 379.698 177.748 380.169 177.315C380.397 177.106 380.651 176.885 380.892 176.715C381.003 176.637 381.204 176.503 381.458 176.403C381.588 176.351 382.408 176.023 383.261 176.544L383.405 176.641Z"
+              fill="#F8E0A8"
+              stroke="#D59B6E"
+              strokeWidth="3.83596"
+            />
+          </svg>
           <div
             ref={schoolRef}
             className="sticker school-note polaroid-attached is-clickable"
@@ -312,28 +461,6 @@ export default function HeroV2() {
             onClick={() => handleNudge(greenRef.current, -4)}
             onKeyDown={onKeyActivate(() => handleNudge(greenRef.current, -4))}
           >
-            <svg
-              className="design-doodle"
-              viewBox="0 0 274 240"
-              aria-hidden="true"
-            >
-              <path
-                className="doodle-p1"
-                pathLength="1"
-                d="M110.5 20.5C160.118 20.5 200.5 60.931 200.5 111C200.5 161.069 160.118 201.5 110.5 201.5C60.882 201.5 20.5 161.069 20.5 111C20.5 60.931 60.882 20.5 110.5 20.5Z"
-                stroke="currentColor"
-                strokeWidth="28"
-                fill="none"
-              />
-              <path
-                className="doodle-p2"
-                pathLength="1"
-                d="M200 102C237.711 102 268 131.703 268 168C268 204.297 237.711 234 200 234C162.289 234 132 204.297 132 168C132 131.703 162.289 102 200 102Z"
-                stroke="currentColor"
-                strokeWidth="12"
-                fill="none"
-              />
-            </svg>
             <div className="d-text">
               <span className="d-avail">Available</span>
               <strong>Summer 2026</strong>
