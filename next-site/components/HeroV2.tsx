@@ -449,7 +449,7 @@ export default function HeroV2() {
             onKeyDown={onKeyActivate(() => handleNudge(schoolRef.current, -8))}
           >
             <span className="school-note-text">
-              Currently completing my junior year @ Purdue
+              Currently completing my junior year @ Purdue!
             </span>
           </div>
           <div
@@ -463,7 +463,7 @@ export default function HeroV2() {
           >
             <div className="d-text">
               <span className="d-avail">Available</span>
-              <strong>Summer 2026</strong>
+              <strong>Summer 7</strong>
               <span className="d-sub">Product Design · Product Management</span>
             </div>
           </div>
