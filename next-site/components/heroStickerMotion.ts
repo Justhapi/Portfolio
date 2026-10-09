@@ -8,7 +8,12 @@
  *    (keyframes in globals.css, "hero-slap-*"). The smaller sticker stays
  *    in front the whole way, and each snapshot hard-cuts old → new (no
  *    cross-fade) at the instant their sizes cross.
- *  - "Hello, I'm" gets knocked sideways on the slam and springs back.
+ *  - The big name stays centred on the same spot whichever name it holds;
+ *    "Hello, I'm" slides straight across to stay beside it.
+ *  - The two lines under it (wordmark + focus line) hop when the name
+ *    lands, as if the slam bumped the table: each gets an upward velocity
+ *    kick at impact and a damped spring does the rest; the lower line
+ *    feels it a beat later and lighter.
  *  - Polaroid stickers: clicking pops one forward over the photo, squared
  *    up, then slams it back into place.
  *
@@ -36,6 +41,45 @@ export const prefersReducedMotion = () =>
   typeof window !== "undefined" &&
   window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+/** The slap squash lands at 60% of SWAP_MS (see hero-slap-hi). */
+const IMPACT_MS = SWAP_MS * 0.6;
+/** Delay between lines as the bump travels down the copy. */
+const TRAVEL_MS = 55;
+const FRAME = 1 / 60;
+const hops = new WeakMap<HTMLElement, { anim: Animation; ys: number[]; vs: number[] }>();
+
+/** Give `el` an upward kick (px/s) and let a damped spring settle it.
+ *  A kick mid-motion starts from the live offset + velocity, so rapid
+ *  swaps blend. Layered with composite "add" over parallax/entrance. */
+function hop(el: HTMLElement, impulse: number, zeta = 0.55, response = 0.36) {
+  let y = 0, v = 0;
+  const prev = hops.get(el);
+  if (prev && prev.anim.playState === "running") {
+    const i = Math.min(prev.ys.length - 1, Math.floor(Number(prev.anim.currentTime ?? 0) / 1000 / FRAME));
+    y = prev.ys[i];
+    v = prev.vs[i];
+    prev.anim.cancel();
+  }
+  v -= impulse;
+  const w = (2 * Math.PI) / response, k = w * w, c = 2 * zeta * w;
+  const ys: number[] = [], vs: number[] = [];
+  for (let n = 0; n < 240; n++) {
+    ys.push(y);
+    vs.push(v);
+    if (n > 3 && Math.abs(y) < 0.05 && Math.abs(v) < 0.4) break;
+    for (let s = 0; s < 4; s++) {
+      v += (-k * y - c * v) * (FRAME / 4);
+      y += v * (FRAME / 4);
+    }
+  }
+  ys[ys.length - 1] = 0;
+  const anim = el.animate(
+    ys.map((n) => ({ translate: `0 ${n.toFixed(2)}px` })),
+    { duration: ys.length * FRAME * 1000, easing: "linear", composite: "add" },
+  );
+  hops.set(el, { anim, ys, vs });
+}
+
 /**
  * Swap the two names.
  * @param big      the big name sticker (holds the chip)
@@ -52,8 +96,29 @@ export function swapNames(
   commit: () => void,
 ): Promise<void> {
   const doc = document as VTDoc;
-  if (prefersReducedMotion() || !doc.startViewTransition) {
+  /* Keep the big name centred on the same spot whichever name is in it.
+     妤𣎮 is narrower than "Kathleen", so when it takes the big spot the
+     line is shifted (--name-shift on the line, applied to "Hello, I'm"
+     and the big sticker) until its centre lands where Kathleen's was.
+     Kathleen sits naturally at shift 0. */
+  const line = big.parentElement;
+  const centreX = () => {
+    const r = big.getBoundingClientRect();
+    return r.left + r.width / 2;
+  };
+  const before = centreX();
+  const commitAndCentre = () => {
     commit();
+    if (!line) return;
+    line.style.setProperty("--name-shift", "0px");
+    if (!swapped) {
+      // 妤𣎮 just went big: measure it unshifted, then move it under
+      // Kathleen's old centre.
+      line.style.setProperty("--name-shift", `${(before - centreX()).toFixed(2)}px`);
+    }
+  };
+  if (prefersReducedMotion() || !doc.startViewTransition) {
+    commitAndCentre();
     return Promise.resolve();
   }
   const html = document.documentElement;
@@ -77,12 +142,18 @@ export function swapNames(
   name(swapped);
   const helloX = hello.getBoundingClientRect().left;
   const vt = doc.startViewTransition(() => {
-    commit();
+    commitAndCentre();
     name(!swapped);
   });
 
   vt.ready
     .then(() => {
+      // The copy under the name hops when it lands.
+      const greeting = big.closest(".hero-greeting");
+      [".ribbon-artist", ".hero-focus"].forEach((q, i) => {
+        const el = greeting?.querySelector<HTMLElement>(q);
+        if (el) window.setTimeout(() => hop(el, i === 0 ? 250 : 170), IMPACT_MS + i * TRAVEL_MS);
+      });
       const o = { duration: SWAP_MS, fill: "both" as const };
       const c = CROSS_AT;
       html.animate([{ zIndex: 2 }, { zIndex: 2 }], {
@@ -109,21 +180,19 @@ export function swapNames(
     });
 
   vt.updateCallbackDone.then(() => {
-    // "Hello, I'm" isn't in the transition; it reacts live. FLIP from its
-    // old spot (it only moves when the line is centred, e.g. on mobile)
-    // and get knocked sideways on the slam.
+    // "Hello, I'm" isn't in the transition; it reacts live. It slides
+    // straight across (no tilt) from where it was to its new spot beside
+    // the re-centred name, with a single small overshoot to settle.
+    // composite "add" layers the slide on top of its --name-shift.
     const from = helloX - hello.getBoundingClientRect().left;
+    if (Math.abs(from) < 0.5) return;
     hello.animate(
       [
-        { translate: `${from}px 0`, rotate: "0deg", easing: "cubic-bezier(0.1, 0.9, 0.2, 1)" },
-        { translate: `${from * 0.3 - 20}px 2px`, rotate: "-4.5deg", offset: 0.14, easing: INOUT },
-        { translate: "12px 0", rotate: "2.5deg", offset: 0.36, easing: INOUT },
-        { translate: "-6px 0", rotate: "-1.2deg", offset: 0.56, easing: INOUT },
-        { translate: "3px 0", rotate: "0.5deg", offset: 0.74, easing: INOUT },
-        { translate: "-1px 0", rotate: "-0.2deg", offset: 0.88, easing: INOUT },
-        { translate: "0 0", rotate: "0deg" },
+        { translate: `${from}px 0`, easing: "cubic-bezier(0.22, 1, 0.36, 1)" },
+        { translate: `${(-from * 0.06).toFixed(2)}px 0`, offset: 0.7, easing: INOUT },
+        { translate: "0 0" },
       ],
-      { duration: 900, delay: 330, easing: "linear", fill: "backwards" },
+      { duration: 560, delay: 40, fill: "backwards", composite: "add" },
     );
   });
 

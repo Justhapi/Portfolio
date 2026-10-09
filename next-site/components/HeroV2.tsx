@@ -201,7 +201,7 @@ export default function HeroV2() {
   }, []);
 
   /* Cursor tilt — the project folders' hover reactivity, given to the
-     polaroid cluster. The whole cluster (card + notes + star) tilts and
+     polaroid cluster and to the name sticker (see "groups" below). The whole cluster (card + notes + star) tilts and
      shifts toward the cursor with the folders' exact numbers (±18/14px,
      ±6° Y / ±4° X). On top of that each floating piece leans further on
      its OWN spring, so they read as separate layers at different depths
@@ -238,38 +238,70 @@ export default function HeroV2() {
         e.style.setProperty("--hr", `${p[2].toFixed(2)}deg`);
       },
     });
-    const bodies: Body[] = [
-      {
-        el: cluster, gain: [18, 14, -4, 6], axis: ["x", "y", "y", "x"],
-        k: 170, c: 14, v: [0, 0, 0, 0], p: [0, 0, 0, 0],
-        write: (e, p) => {
-          e.style.setProperty("--tilt-tx", px(p[0]));
-          e.style.setProperty("--tilt-ty", px(p[1]));
-          e.style.setProperty("--tilt-rx", p[2].toFixed(3));
-          e.style.setProperty("--tilt-ry", p[3].toFixed(3));
-          e.style.setProperty("--tilt-ra", `${Math.hypot(p[2], p[3]).toFixed(3)}deg`);
-        },
-      },
-      layer(stage.querySelector<SVGElement>(".polaroid-star"), [14, 11, 12], 320, 15),
-      layer(schoolRef.current, [8, 6, 2.5], 210, 17),
-      layer(greenRef.current, [4, 3, 1.2], 110, 15),
-    ];
+    const tiltWrite = (e: HTMLElement | SVGElement, p: number[]) => {
+      e.style.setProperty("--tilt-tx", px(p[0]));
+      e.style.setProperty("--tilt-ty", px(p[1]));
+      e.style.setProperty("--tilt-rx", p[2].toFixed(3));
+      e.style.setProperty("--tilt-ry", p[3].toFixed(3));
+      e.style.setProperty("--tilt-ra", `${Math.hypot(p[2], p[3]).toFixed(3)}deg`);
+    };
+    const tilt = (el: HTMLElement | null, g: number[], k: number, c: number): Body => ({
+      el, gain: g, axis: ["x", "y", "y", "x"], k, c, v: [0, 0, 0, 0], p: [0, 0, 0, 0], write: tiltWrite,
+    });
 
-    let cx = 0, cy = 0, raf = 0, last = 0;
+    /* Two independent hover zones, each with its own cursor position:
+         • the polaroid cluster (folder numbers, see above)
+         • the name sticker — same behaviour scaled to its size: the big
+           sticker tilts/shifts toward the cursor, and the small name
+           chip on it leans further on its own bouncier spring. */
+    type Group = {
+      zone: HTMLElement;
+      perspectiveHost: HTMLElement;
+      pad: number;
+      bodies: Body[];
+      cx: number; cy: number; inside: boolean;
+    };
+    const nameEl = nameRef.current;
+    const groups: Group[] = [
+      {
+        zone: cluster, perspectiveHost: stage, pad: 0.18,
+        cx: 0, cy: 0, inside: false,
+        bodies: [
+          tilt(cluster, [18, 14, -4, 6], 170, 14),
+          layer(stage.querySelector<SVGElement>(".polaroid-star"), [14, 11, 12], 320, 15),
+          layer(schoolRef.current, [8, 6, 2.5], 210, 17),
+          layer(greenRef.current, [4, 3, 1.2], 110, 15),
+        ],
+      },
+    ];
+    if (nameEl?.parentElement) {
+      groups.push({
+        zone: nameEl, perspectiveHost: nameEl.parentElement, pad: 0.3,
+        cx: 0, cy: 0, inside: false,
+        bodies: [
+          tilt(nameEl, [10, 7, -8, 7], 190, 14),
+          layer(chipRef.current, [7, 5, 8], 300, 15),
+        ],
+      });
+    }
+
+    let raf = 0, last = 0;
     const step = (t: number) => {
       const dt = Math.min(0.032, last ? (t - last) / 1000 : 0.016);
       last = t;
       let moving = false;
-      for (const b of bodies) {
-        if (!b.el) continue;
-        for (let i = 0; i < b.p.length; i++) {
-          const target = b.gain[i] * (b.axis[i] === "x" ? cx : cy);
-          const a = b.k * (target - b.p[i]) - b.c * b.v[i];
-          b.v[i] += a * dt;
-          b.p[i] += b.v[i] * dt;
-          if (Math.abs(target - b.p[i]) > 0.01 || Math.abs(b.v[i]) > 0.01) moving = true;
+      for (const g of groups) {
+        for (const b of g.bodies) {
+          if (!b.el) continue;
+          for (let i = 0; i < b.p.length; i++) {
+            const target = b.gain[i] * (b.axis[i] === "x" ? g.cx : g.cy);
+            const a = b.k * (target - b.p[i]) - b.c * b.v[i];
+            b.v[i] += a * dt;
+            b.p[i] += b.v[i] * dt;
+            if (Math.abs(target - b.p[i]) > 0.01 || Math.abs(b.v[i]) > 0.01) moving = true;
+          }
+          b.write(b.el, b.p);
         }
-        b.write(b.el, b.p);
       }
       raf = moving ? requestAnimationFrame(step) : 0;
       if (!moving) last = 0;
@@ -280,36 +312,37 @@ export default function HeroV2() {
        the stage and back — enter/leave would fire, the targets would snap
        to 0 and back, and the springs (the star's especially) would thrash
        at the end of every flip. Instead: track the pointer on the window
-       and test it against the cluster box, padded to cover the notes
-       that hang off the card. */
-    const PAD = 0.18;
-    let inside = false;
+       and test it against each zone's box, padded to cover the pieces
+       that hang off it (the notes; the name chip). */
     const onMove = (e: PointerEvent) => {
       if (e.pointerType !== "mouse") return;
-      // Cluster box with its own tilt shift taken back out, so the tilt
-      // moving the box doesn't feed back into where the cursor "is".
-      const b = cluster.getBoundingClientRect();
-      const t = bodies[0].p;
-      const r = { left: b.left - t[0], top: b.top - t[1], right: b.right - t[0], bottom: b.bottom - t[1], width: b.width, height: b.height };
-      const padX = r.width * PAD, padY = r.height * PAD;
-      const within =
-        e.clientX > r.left - padX && e.clientX < r.right + padX &&
-        e.clientY > r.top - padY && e.clientY < r.bottom + padY;
-      if (!within) {
-        if (inside) { inside = false; cx = 0; cy = 0; kick(); }
-        return;
+      for (const g of groups) {
+        // Zone box with its own tilt shift taken back out, so the tilt
+        // moving the box doesn't feed back into where the cursor "is".
+        const b = g.zone.getBoundingClientRect();
+        const t = g.bodies[0].p;
+        const r = { left: b.left - t[0], top: b.top - t[1], right: b.right - t[0], bottom: b.bottom - t[1], width: b.width, height: b.height };
+        const padX = r.width * g.pad, padY = r.height * g.pad;
+        const within =
+          e.clientX > r.left - padX && e.clientX < r.right + padX &&
+          e.clientY > r.top - padY && e.clientY < r.bottom + padY;
+        if (!within) {
+          if (g.inside) { g.inside = false; g.cx = 0; g.cy = 0; kick(); }
+          continue;
+        }
+        g.inside = true;
+        const h = g.perspectiveHost.getBoundingClientRect();
+        g.perspectiveHost.style.perspectiveOrigin =
+          `${r.left + r.width / 2 - h.left}px ${r.top + r.height / 2 - h.top}px`;
+        g.cx = Math.max(-1, Math.min(1, ((e.clientX - r.left) / r.width - 0.5) * 2));
+        g.cy = Math.max(-1, Math.min(1, ((e.clientY - r.top) / r.height - 0.5) * 2));
+        kick();
       }
-      inside = true;
-      const s = stage.getBoundingClientRect();
-      stage.style.perspectiveOrigin =
-        `${r.left + r.width / 2 - s.left}px ${r.top + r.height / 2 - s.top}px`;
-      cx = Math.max(-1, Math.min(1, ((e.clientX - r.left) / r.width - 0.5) * 2));
-      cy = Math.max(-1, Math.min(1, ((e.clientY - r.top) / r.height - 0.5) * 2));
-      kick();
     };
     const onOut = (e: MouseEvent) => {
       if (e.relatedTarget) return; // only when the pointer leaves the window
-      inside = false; cx = 0; cy = 0; kick();
+      for (const g of groups) { g.inside = false; g.cx = 0; g.cy = 0; }
+      kick();
     };
     window.addEventListener("pointermove", onMove, { passive: true });
     document.addEventListener("mouseout", onOut);

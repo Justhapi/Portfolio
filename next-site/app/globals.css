@@ -8752,7 +8752,7 @@ html.hero-vt::view-transition-image-pair(hero-back) {
   right: 0;
   width: 17%;
   height: auto;
-  translate: calc(30% + var(--hx, 0px)) calc(-38% + var(--hy, 0px));
+  translate: calc(30% + var(--hx, 0px)) calc(-38% + var(--hy, 0px) + var(--parallax-y, 0px));
   rotate: calc(14deg + var(--hr, 0deg));
   z-index: 14;
   overflow: visible;
@@ -8819,7 +8819,7 @@ html.hero-vt::view-transition-image-pair(hero-back) {
   animation-composition: replace, add;
 }
 .hero-polaroid.is-raised .sticker.designing-green.polaroid-attached {
-  animation: stickerGreenIn 340ms var(--ease-out-quart) 2250ms backwards, jumpGreenOut 340ms linear 105ms both, heroFloatB 5.6s ease-in-out -3.1s infinite;
+  animation: stickerGreenIn 340ms var(--ease-out-quart) 2250ms backwards, jumpGreenOut 400ms linear 40ms both, heroFloatB 5.6s ease-in-out -3.1s infinite;
   animation-composition: replace, add, add;
 }
 .hero-polaroid.is-shift-anim:not(.is-raised) .sticker.designing-green.polaroid-attached {
@@ -8832,14 +8832,14 @@ html.hero-vt::view-transition-image-pair(hero-back) {
    swing decelerating into its turn-around. */
 @keyframes jumpSchoolOut {
   0%   { translate: 0 0;          rotate: 0deg;    animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1); }
-  45%  { translate: -63px -37px;  rotate: -4.5deg; animation-timing-function: cubic-bezier(0.4, 0, 0.3, 1); }
-  72%  { translate: -56px -29px;  rotate: -2.5deg; animation-timing-function: cubic-bezier(0.4, 0, 0.3, 1); }
-  100% { translate: -58px -31px;  rotate: -3deg; }
+  45%  { translate: -63px -37px;  rotate: -13deg;  animation-timing-function: cubic-bezier(0.4, 0, 0.3, 1); }
+  72%  { translate: -56px -29px;  rotate: -9deg;   animation-timing-function: cubic-bezier(0.4, 0, 0.3, 1); }
+  100% { translate: -58px -31px;  rotate: -10deg; }
 }
 @keyframes jumpSchoolBack {
-  0%   { translate: -58px -31px;  rotate: -3deg;   animation-timing-function: cubic-bezier(0.3, 0.6, 0.35, 1); }
-  50%  { translate: 4px 3px;      rotate: 0.8deg;  animation-timing-function: cubic-bezier(0.4, 0, 0.3, 1); }
-  76%  { translate: -1px -1px;    rotate: -0.2deg; animation-timing-function: cubic-bezier(0.4, 0, 0.3, 1); }
+  0%   { translate: -58px -31px;  rotate: -10deg;  animation-timing-function: cubic-bezier(0.3, 0.6, 0.35, 1); }
+  50%  { translate: 4px 3px;      rotate: 1.5deg;  animation-timing-function: cubic-bezier(0.4, 0, 0.3, 1); }
+  76%  { translate: -1px -1px;    rotate: -0.4deg; animation-timing-function: cubic-bezier(0.4, 0, 0.3, 1); }
   100% { translate: 0 0;          rotate: 0deg; }
 }
 @keyframes jumpStarOut {
@@ -8856,13 +8856,16 @@ html.hero-vt::view-transition-image-pair(hero-back) {
   100% { translate: 0 0;        rotate: 360deg;  scale: 1; }
 }
 @keyframes jumpGreenOut {
-  0%   { translate: 0 0;          rotate: 0deg;    animation-timing-function: cubic-bezier(0.25, 0.6, 0.35, 1); }
-  55%  { translate: 33px 26px;    rotate: 3deg;    animation-timing-function: cubic-bezier(0.4, 0, 0.3, 1); }
-  100% { translate: 30px 23px;    rotate: 2.5deg; }
+  /* Same snap as jumpSchoolOut: fast ease-out to an overshoot at 45%,
+     a quick swing back, then settle. */
+  0%   { translate: 0 0;          rotate: 0deg;     animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1); }
+  45%  { translate: 34px 27px;    rotate: -12.5deg; animation-timing-function: cubic-bezier(0.4, 0, 0.3, 1); }
+  72%  { translate: 28px 21px;    rotate: -7deg;    animation-timing-function: cubic-bezier(0.4, 0, 0.3, 1); }
+  100% { translate: 30px 23px;    rotate: -8deg; }
 }
 @keyframes jumpGreenBack {
-  0%   { translate: 30px 23px;    rotate: 2.5deg;  animation-timing-function: cubic-bezier(0.3, 0.6, 0.35, 1); }
-  55%  { translate: -3px -3px;    rotate: -0.6deg; animation-timing-function: cubic-bezier(0.4, 0, 0.3, 1); }
+  0%   { translate: 30px 23px;    rotate: -8deg;   animation-timing-function: cubic-bezier(0.3, 0.6, 0.35, 1); }
+  55%  { translate: -3px -3px;    rotate: 1.5deg;  animation-timing-function: cubic-bezier(0.4, 0, 0.3, 1); }
   100% { translate: 0 0;          rotate: 0deg; }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -8914,3 +8917,25 @@ html.hero-vt::view-transition-image-pair(hero-back) {
   .polaroid-lift.play-wiggle,
   .polaroid-lift.is-raised { animation: none; }
 }
+
+/* ── Name sticker cursor tilt ────────────────────────────────────────
+   Same hover reactivity as the folders and the polaroid (HeroV2 writes
+   the spring values): the big name sticker tilts and shifts toward the
+   cursor (--tilt-*), and the small name chip on it leans further on its
+   own bouncier spring (--hx/--hy/--hr). Individual transform properties,
+   so the stickers' own tilt (transform) and the swap animation are left
+   alone. */
+.sticker.name-yellow.name-inline {
+  translate: calc(var(--tilt-tx, 0px) + var(--name-shift, 0px)) var(--tilt-ty, 0px);
+  rotate: var(--tilt-rx, 0) var(--tilt-ry, 1) 0 var(--tilt-ra, 0deg);
+}
+.sticker.name-yellow .chip-zh {
+  translate: var(--hx, 0px) var(--hy, 0px);
+  rotate: var(--hr, 0deg);
+}
+@media (hover: hover) and (pointer: fine) {
+  .hero-greet-lead { perspective: 600px; }
+}
+/* --name-shift (set by heroStickerMotion swapNames) keeps the big name
+   centred on one spot; "Hello, I'm" moves with it. */
+.hero-greet-hi { translate: var(--name-shift, 0px) 0; }

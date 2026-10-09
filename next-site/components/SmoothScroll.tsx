@@ -129,6 +129,13 @@ const PARALLAX_TARGETS: ParallaxConfig[] = [
   //   read as pinned).
   { selector: ".sticker.designing-green", speed:  0.08, baseRotate: "-4deg" },
 
+  // Corner star (.polaroid-star): a gentler drift than the two notes —
+  //   effective = polaroid (-0.20) + own (-0.10) = -0.30, vs the Purdue
+  //   note's -0.44. Written as --parallax-y (see below) because the star
+  //   positions itself with the individual `translate` property and spins
+  //   on flip; an inline transform would orbit during the spin.
+  { selector: ".polaroid-star",           speed: -0.10 },
+
   // ── Case-cover hero ──────────────────────────────────────────────────
   // The cover is pinned (sticky) while the case body slides up over it;
   // on top of that, each cover element drifts UP at its own rate —
@@ -419,7 +426,7 @@ export default function SmoothScroll() {
         // outward shift (which sets --raise-x/--raise-y on .is-raised)
         // in a single transform expression, so the two systems no longer
         // fight over inline vs class-based transforms.
-        if (el.classList.contains("designing-green")) {
+        if (el.classList.contains("designing-green") || el.classList.contains("polaroid-star")) {
           el.style.setProperty("--parallax-y", `${delta.toFixed(2)}px`);
           continue;
         }
