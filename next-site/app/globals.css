@@ -3477,16 +3477,20 @@ em.it { font-style: italic; }
 }
 @media (hover: none) and (pointer: coarse) {
   .folder .meta__read {
-    /* Plain label text — no fill, no border, no pill radius. Centered
-       in the copy column via block + margin auto. Sits just below
-       the meta strip when the folder opens. */
-    display: block;
-    margin: 8px auto 0;
+    /* "Ledger": one more line of the meta strip — same left edge,
+       tucked tight under it, with a short hairline marking it as a
+       reading note rather than another skill tag. The blurb's gap
+       moves below it so tag → meta → read time reads as one block.
+       Centres with the rest of the column on stacked layouts. */
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    align-self: flex-start;
+    margin: 0 0 16px;
     padding: 0;
     background: none;
     border: none;
     border-radius: 0;
-    text-align: center;
     color: var(--accent-on-cream);
     font-weight: 700;
     font-size: 11px;
@@ -3502,6 +3506,15 @@ em.it { font-style: italic; }
       visibility 0s linear 720ms;
     pointer-events: none;
   }
+  .folder .meta__read::before {
+    content: "";
+    width: 18px;
+    height: 1.5px;
+    border-radius: 1px;
+    background: currentColor;
+    opacity: 0.55;
+  }
+  .folder .meta { margin-bottom: 10px; }
   /* Visible only when this folder is currently in its open (hovered)
      phase — auto-open on scroll from the middle-60% observer sets
      .folder-art--hovered. */
@@ -8232,6 +8245,7 @@ em.it { font-style: italic; }
   .folder-copy { text-align: center; padding-inline: calc(4% + 10px); }
   /* .meta is a flex row — text-align doesn't reach it, needs justify-content */
   .folder .meta { justify-content: center; }
+  .folder .meta__read { align-self: center; }
 }
 
 @media (max-width: 640px) {
