@@ -15,6 +15,18 @@ import ideatingObservationFlow from "./images/Observation_User_Flow.webp";
 import ideatingBaseWireframes from "./images/Base_Wireframes.webp";
 import verifyingInitialPrototype from "./images/Initial_Prototype.webp";
 import verifyingFinalPrototype from "./images/Final_Prototype.webp";
+/* Key screens cropped from the final flow, shown large. */
+import finalStart from "./images/Final_Start.webp";
+import finalMember from "./images/Final_Member.webp";
+import finalPay from "./images/Final_Pay.webp";
+import finalDispensing from "./images/Final_Dispensing.webp";
+
+const KEY_SCREENS = [
+  { img: finalStart, step: "01", label: "Start", note: "" },
+  { img: finalMember, step: "02", label: "Member upsell", note: "Labelled with pricing to combat the suspicion that membership costs money." },
+  { img: finalPay, step: "03", label: "Payment", note: "" },
+  { img: finalDispensing, step: "04", label: "Dispensing", note: "" },
+];
 /* Round 1 iterations — each image contains the before + after side-by-side. */
 import round1CardLoading from "./images/Card_Load_Iteration.webp";
 import round1Loyalty from "./images/Loyalty_Round_1_Iteration.webp";
@@ -563,18 +575,30 @@ export default function FrogslayerCaseStudy() {
             as we needed to <mark className="hl">actively combat users&rsquo; habitual suspicion</mark>{" "}
             of the membership requiring monetary cost.
           </p>
-          <div className="usability-flow-anchor">
-            <ZoomableImage
-              src={verifyingFinalPrototype.src}
-              alt="The final user flow prototype after three rounds of usability testing."
-              aspectRatio={11555 / 5321}
-              caption={
-                <>
-                  The final user flow after three rounds of testing.
-                </>
-              }
-            />
+          <div className="case-screens">
+            {KEY_SCREENS.map((k) => (
+              <figure key={k.step} className="case-screen">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={k.img.src} alt={`${k.label} screen of the final kiosk flow`} width={495} height={882} loading="lazy" />
+                <figcaption>
+                  <span className="case-screen__step">{k.step}</span>
+                  <b>{k.label}</b>
+                  {k.note && <span>{k.note}</span>}
+                </figcaption>
+              </figure>
+            ))}
           </div>
+          <details className="case-fullflow">
+            <summary>See the full flow (all screens)</summary>
+            <div className="usability-flow-anchor">
+              <ZoomableImage
+                src={verifyingFinalPrototype.src}
+                alt="The final user flow prototype after three rounds of usability testing."
+                aspectRatio={11555 / 5321}
+                caption={<>The final user flow after three rounds of testing.</>}
+              />
+            </div>
+          </details>
         </section>
         <section id="takeaways" className="case-section">
           <h2>Takeaways</h2>

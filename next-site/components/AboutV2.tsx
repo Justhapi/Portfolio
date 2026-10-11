@@ -340,7 +340,7 @@ export default function AboutV2() {
         <div className="about-prose reveal">
           {/* Stage 1 — heading arrives first, full-width above the split */}
           <h3 className="lead">
-            A designer who avoids being the <em className="de">architect</em> in a <em className="de">room of engineers</em>
+            A designer who <em className="de">designs</em> within a <em className="de">room of engineers</em>
           </h3>
           <div className="about-body-split">
             <div className="about-bag-wrap">
