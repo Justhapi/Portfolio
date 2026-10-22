@@ -164,22 +164,24 @@ export default function FrogslayerCaseStudy() {
           <h3>Clarifying Scope with the Sponsor</h3>
           <p>
             The request arrived vague, as{" "}
-            <mark className="hl">&ldquo;design kiosk interface guidelines&rdquo;</mark>, so we
-            needed to narrow the scope immediately for tangible results.
-            <br></br><br></br>
-            We approached Frogslayer&rsquo;s product team for the{" "}
-            <mark className="hl">prior internal research</mark> that led to the project&rsquo;s
-            inception, and received an existing Figma prototype.
-            <br></br><br></br>
-            After auditing it and discussing it with their product team, we settled on four scope
-            focuses:
+            <mark className="hl">&ldquo;design kiosk interface guidelines&rdquo;</mark>. We audited
+            the existing Figma prototype from Frogslayer&rsquo;s{" "}
+            <mark className="hl">prior internal research</mark> with their product team and
+            settled on four scope focuses:
           </p>
-          <ul className="focus-list">
-            <li><strong>Internal ergonomics</strong></li>
-            <li><strong>Hospitality &amp; entertainment industry</strong></li>
-            <li><strong>Loyalty programs</strong></li>
-            <li><strong>External environmental factors</strong></li>
-          </ul>
+          <div className="case-board case-board--4" aria-label="Scope focuses">
+            {[
+              ["Internal ergonomics", "orange", -1.5],
+              ["Hospitality & entertainment industry", "teal", 1],
+              ["Loyalty programs", "pink", -1],
+              ["External environmental factors", "blue", 1.5],
+            ].map(([name, tone, tilt], i) => (
+              <div key={name as string} className={`case-sticky case-sticky--${tone}`} style={{ "--tilt": `${tilt}deg` } as React.CSSProperties}>
+                <span className="case-sticky__n">{String(i + 1).padStart(2, "0")}</span>
+                {name}
+              </div>
+            ))}
+          </div>
 
           <h3>Establishing the Evidence Base</h3>
           <p>
@@ -366,10 +368,10 @@ export default function FrogslayerCaseStudy() {
           <h2>Ideating</h2>
           <h3>From Individual Sketching to a Testable User Flow</h3>
           <p>
-            After building a sufficient foundation and familiarity with the current state of kiosk interfaces, we moved on to develop the user flow in two passes:{" "}
-            <mark className="hl">individual sketching and feature selection</mark>, then wireframing the features into an interactive prototype.
-            <br></br><br></br>
-            The purpose was to conduct usability tests <mark className="hl">applying our findings to an interactive flow</mark> , so users could verify their authenticity in real-world scenarios.
+            We developed the user flow in two passes,{" "}
+            <mark className="hl">individual sketching and feature selection</mark>, then
+            wireframing, so usability tests could{" "}
+            <mark className="hl">apply our findings to an interactive flow</mark>.
           </p>
 
           <h3>Individual Sketching &amp; Feature Selection</h3>
@@ -379,20 +381,23 @@ export default function FrogslayerCaseStudy() {
             After discussing and assessing each other&rsquo;s individual feature ideas, we voted
             on each other's works to decide which features to include in the usability test flow.
           </p>
-          <p>Field observations had previously surfaced the significant pain-point themes:</p>
-          <ul className="focus-list">
-            <li><strong>Payment-related interactions due to instructions being only textual</strong></li>
-            <li><strong>Auditory countdown cues that prompt action due to the threat of returning to the beginning of the flow</strong></li>
-          </ul>
-          <p>
-            As a result, we ideated features that would address those pain points, in addition
-            to other features that could improve the overall usability of the flow.
-          </p>
-          <p>The selected feature themes included:</p>
-          <ul className="focus-list">
-            <li><strong>Onboarding assistance</strong></li>
-            <li><strong>Clarity of affordances to reduce moments of hesitation through consistent UI designs</strong></li>
-          </ul>
+          <div className="case-map">
+            <div className="case-map__col">
+              <span className="case-map__label">Pain points from field observations</span>
+              <ul>
+                <li>Payment interactions with text-only instructions</li>
+                <li>Auditory countdown cues threatening a return to the start of the flow</li>
+              </ul>
+            </div>
+            <span className="case-map__arrow" aria-hidden="true">&rarr;</span>
+            <div className="case-map__col case-map__col--out">
+              <span className="case-map__label">Feature themes we selected</span>
+              <ul>
+                <li>Onboarding assistance</li>
+                <li>Clear affordances through consistent UI, to reduce hesitation</li>
+              </ul>
+            </div>
+          </div>
           <div className="visual-compact">
             <ZoomableImage
               src={ideatingCrazyEights.src}
@@ -428,12 +433,16 @@ export default function FrogslayerCaseStudy() {
         <section id="verifying" className="case-section">
           <h2>Verifying</h2>
           <h3>Validating and Retesting with User Insights</h3>
+          <div className="case-stats" role="list">
+            <div className="case-stat" role="listitem"><b>3</b><span>rounds of moderated testing at the busy Purdue Memorial Union</span></div>
+            <div className="case-stat" role="listitem"><b>19</b><span>test sessions across the three rounds</span></div>
+            <div className="case-stat" role="listitem"><b>6</b><span>iterations made between rounds</span></div>
+          </div>
           <p>
-            We ran <mark className="hl">three rounds of moderated usability testing</mark> at the
-            Purdue Memorial Union (PMU) to simulate the busy atmosphere of a real arcade. The
-            prototype was used as a research instrument,{" "}
-            <mark className="hl">iterated between rounds</mark> to address recorded friction points{" "}
-            and <mark className="hl">modified to assess user feedback</mark> on a specific finding.
+            The prototype was a research instrument,{" "}
+            <mark className="hl">iterated between rounds</mark> to address recorded friction
+            points and <mark className="hl">modified to assess user feedback</mark> on specific
+            findings.
           </p>
           <div className="usability-flow-anchor">
             <ZoomableImage

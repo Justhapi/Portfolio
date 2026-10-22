@@ -9,7 +9,6 @@ import CyclingImage from "@/components/CyclingImage";
    modules so Webpack bundles them into /_next/static/media/ at build
    time with hashed filenames. Same pattern as Frogslayer + JT. */
 import auditImg from "./images/audit.webp";
-import interviewNotesImg from "./images/interview_notes.webp";
 import affinityDiagrammingImg from "./images/affinity_diagraming.webp";
 import referencesImg from "./images/references.webp";
 import sketchesImg from "./images/sketches.webp";
@@ -133,29 +132,21 @@ export default function ResearchHubCaseStudy() {
           <h2>Researching</h2>
           <h3>Auditing the Platform and Its Two User Groups</h3>
           <p>
-            As a continuation of prior work, I needed to understand the platform&rsquo;s current
-            state and its two user groups, and my teammates needed to{" "}
-            <mark className="hl">begin development on schedule</mark>, so research had to fit a{" "}
-            <mark className="hl">1.5-week sprint</mark>.
-            <br></br><br></br>
-            I used my existing access to the platform and both user groups to run a quick sprint
-            containing:
+            My teammates needed to <mark className="hl">begin development on schedule</mark>, so
+            understanding the platform and its two user groups had to fit one quick sprint.
           </p>
-          <ul className="focus-list">
-            <li><strong>Audit of the Platform</strong></li>
-            <li><strong>Interviews with Purdue students and staff</strong></li>
-          </ul>
+          <div className="case-stats" role="list">
+            <div className="case-stat" role="listitem"><b>1.5</b><span>week research sprint</span></div>
+            <div className="case-stat" role="listitem"><b>2</b><span>roles audited end-to-end: student &amp; professor</span></div>
+            <div className="case-stat" role="listitem"><b>4</b><span>student interviews</span></div>
+          </div>
 
           <h3>The Platform Audit</h3>
           <p>
-            The core features (account creation, logins, postings, applications) were
-            functioning, but the experience served function alone. The UI was{" "}
-            <mark className="hl">visually basic and obviously AI-generated</mark>.
-            <br></br><br></br>
-            <strong>I explored the platform</strong>{" "}
-            <mark className="hl">as both a student and a professor</mark>, walking each
-            role&rsquo;s flow end-to-end and logging redundancies and opportunity gaps. Focusing
-            on friction rather than bugs, the issues clustered into three categories:
+            The core features worked, but the UI was{" "}
+            <mark className="hl">visually basic and obviously AI-generated</mark>.{" "}
+            <strong>I walked each role&rsquo;s flow end-to-end</strong>, logging friction rather
+            than bugs, and the issues clustered into three categories:
           </p>
 
           <div className="audit-split">
@@ -167,114 +158,67 @@ export default function ResearchHubCaseStudy() {
               />
             </div>
             <div className="audit-split__text">
-              <p>
-                <strong>Redundancy and Technical Issues.</strong> Elements with identical
-                affordances appeared on the same page, and some data modifications were not
-                saved. I either noted these or reported them to the development team for quick
-                resolution.
-              </p>
-              <p>
-                <strong>Hinted-at but Unfulfilled Features.</strong> Profiles, project listings,
-                and communication all existed in name but were never fully built out, leaving
-                gaps to address.
-              </p>
-              <p>
-                <strong>Design System Components Needed.</strong> Buttons, cards, and navigation
-                labels all needed accounting for when the design system came later.
-              </p>
+              <ol className="case-cards">
+                <li><b>Redundancy &amp; technical issues</b><span>Duplicate affordances on one page; some edits not saved.</span></li>
+                <li><b>Hinted-at, unfulfilled features</b><span>Profiles, listings and communication existed in name only.</span></li>
+                <li><b>Design system components needed</b><span>Buttons, cards and navigation labels.</span></li>
+              </ol>
             </div>
           </div>
 
           <h3>Understanding User Needs</h3>
           <p>
-            Upcoming meetings with Professor Reese were expected to cover professor needs, so I
-            focused on reaching students:{" "}
-            <strong>I conducted 4 student interviews</strong> and synthesized them
-            through affinity diagramming.
+            Professor needs were expected from upcoming client meetings, so{" "}
+            <strong>I interviewed 4 students</strong> on their research experience across:
           </p>
-          <div className="audit-split">
-            <div className="audit-split__visual">
-              <ZoomableImage
-                src={interviewNotesImg.src}
-                alt="Session notes from the 4 student interviews — capturing responses across the five probing categories."
-                aspectRatio={5806 / 3812}
-              />
+          <ul className="case-chips" aria-label="Interview probe areas">
+            <li>Discovering projects</li>
+            <li>Applying</li>
+            <li>Progress meeting logistics</li>
+            <li>Research deliverables</li>
+            <li>Current state views</li>
+          </ul>
+          <p>Affinity diagramming clustered what they said into three themes:</p>
+          <div className="case-themes">
+            <div className="case-theme case-theme--purple">
+              <b>Communication</b>
+              <ul><li>Professor&ndash;student interaction style</li><li>Meeting frequency &amp; format</li><li>Method of communication</li></ul>
             </div>
-            <div className="audit-split__text">
-              <p>
-                I probed each student&rsquo;s current experience with research projects across:
-              </p>
-              <ul className="focus-list">
-                <li><strong>Discovery of Research Project</strong></li>
-                <li><strong>Process of Applying</strong></li>
-                <li><strong>Progress Meeting Logistics</strong></li>
-                <li><strong>Research Deliverables (If Applicable)</strong></li>
-                <li><strong>Current State Views</strong></li>
-              </ul>
+            <div className="case-theme case-theme--yellow">
+              <b>Maintenance</b>
+              <ul><li>Documentation tools</li><li>Method of organization</li><li>Method of progress tracking</li></ul>
+            </div>
+            <div className="case-theme case-theme--pink">
+              <b>Project information needs</b>
+              <ul><li>Student background</li><li>Research project topic</li><li>Team structure</li><li>Method of project discovery</li><li>Involvement amount</li></ul>
             </div>
           </div>
-          <div className="audit-split">
-            <div className="audit-split__visual">
-              <ZoomableImage
-                src={affinityDiagrammingImg.src}
-                alt="Cross-interview affinity diagram — clustering 4 student interview observations into three themes: Communication, Maintenance, and Project Details."
-                aspectRatio={9366 / 6144}
-                caption={
-                  <>
-                    Affinity diagramming the 4 student interviews into themes around
-                    Communication, Maintenance, and Project Details.
-                  </>
-                }
-              />
-            </div>
-            <div className="audit-split__text">
-              <p>
-                Affinity diagramming clustered the findings into three themes:
-              </p>
-              <ul className="focus-list">
-                <li><strong>Communication</strong></li>
-                <li><strong>Maintenance</strong></li>
-                <li><strong>Project Details</strong></li>
-              </ul>
-              <p>
-                From these I identified the main student needs the new features had to address:{" "}
-                <mark className="hl">communication with professors, and file organization</mark>.
-              </p>
-            </div>
+          <details className="case-fullflow">
+            <summary>See the affinity board</summary>
+            <ZoomableImage
+              src={affinityDiagrammingImg.src}
+              alt="Cross-interview affinity diagram clustering 4 student interviews into Communication, Maintenance, and Project Information Needs."
+              aspectRatio={9366 / 6144}
+            />
+          </details>
+          <div className="case-shift" aria-label="Main student needs">
+            <span>Main student needs</span>
+            <span className="case-shift__arrow" aria-hidden="true">&rarr;</span>
+            <span className="is-key">Communication with professors</span>
+            <span className="is-key">File organization</span>
           </div>
           <p>
-            On the professor side, Professor Reese&rsquo;s schedule unexpectedly prevented the
-            meeting for in-depth insights.
-            <br></br><br></br>
-            Within the sprint window, <strong>I based professor needs</strong> on the features he had requested at an earlier
-            meeting with my project lead, and{" "}
-            <mark className="hl">prioritized them by how often students would interact with each</mark>, so the highest-student-impact requests
-            would ship first even under the tight timeline.
+            When Professor Reese&rsquo;s schedule prevented an in-depth meeting,{" "}
+            <strong>I based professor needs</strong> on his earlier feature requests and{" "}
+            <mark className="hl">prioritized them by how often students would interact with each</mark>.
           </p>
 
           <h3>The Core Features Professor Reese Requested</h3>
-          <p>
-            From the earlier meeting notes, in prioritization order:
-          </p>
-          <ul className="focus-list">
-            <li>
-              <strong>Individual project workspace</strong> to centralize tracking of details,
-              team, progress, timeline, and optional milestones.{" "}
-              <mark className="hl">Prioritized first</mark>, as this is the primary interface
-              students would return to most often.
-            </li>
-            <li>
-              <strong>AI review tests</strong> to verify that students had actually read the
-              assigned research documents. <mark className="hl">Prioritized second</mark>, as
-              students would encounter it on a per-document basis throughout the project.
-            </li>
-            <li>
-              <strong>The ability to &ldquo;finalize&rdquo; projects</strong>, and to check
-              whether the students on the project wanted referral letters at that point.{" "}
-              <mark className="hl">Prioritized last</mark>, since the interaction only triggers
-              at a project&rsquo;s end.
-            </li>
-          </ul>
+          <ol className="case-rank" aria-label="Professor Reese's requests, in priority order">
+            <li><b>Individual project workspace</b><span>Details, team, progress, timeline and milestones in one place. The interface students return to most.</span></li>
+            <li><b>AI review tests</b><span>Verify students read assigned documents. Met once per document.</span></li>
+            <li><b>Finalizing projects</b><span>Close a project and check who wants referral letters. Only triggers at the end.</span></li>
+          </ol>
         </section>
 
         {/* ───── Designing ───── */}

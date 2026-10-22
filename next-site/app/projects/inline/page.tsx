@@ -1,13 +1,8 @@
 import CaseCover from "@/components/CaseCover";
 import NextProject from "@/components/NextProject";
 import CaseSectionNav from "@/components/CaseSectionNav";
-import CaseEquation from "@/components/CaseEquation";
 import OpportunityGap from "@/components/OpportunityGap";
 import ProgramSwitch from "@/components/ProgramSwitch";
-import baseUserFlow from "./images/Base_User_Flow.webp";
-import userFlowFeatures from "./images/User_Flow_Features.webp";
-import initialPrototype from "./images/Initial_Prototype.webp";
-import finalPrototype from "./images/Final_Prototype.webp";
 
 export const metadata = {
   title: "Pop by inline — Kathleen Li",
@@ -108,15 +103,18 @@ export default function PopByInlineCaseStudy() {
           {/* Ornament parks in the right margin of the paragraph it annotates,
               and drops below it once the browser is too thin for two columns. */}
           <div className="case-ornament-split">
-            <p>
-              <strong>I cross-referenced each competitor&rsquo;s weaknesses</strong> against the solution
-              features proposed by the parallel branch, marking every weakness as either already
-              addressed, partially addressed, or left open.
-              <br></br><br></br>
-              The weaknesses that were still left open became the{" "}
-              <mark className="hl">opportunity gaps</mark> for features to build upon to assist the product
-              in solving the same goal as competitors through a more efficient route.
-            </p>
+            <div>
+              <p>
+                <strong>I cross-referenced each competitor&rsquo;s weaknesses</strong> against the
+                parallel branch&rsquo;s proposed features. Weaknesses still left open became the{" "}
+                <mark className="hl">opportunity gaps</mark> for Pop&rsquo;s features to build upon.
+              </p>
+              <ol className="case-legend" aria-label="How each competitor weakness was marked">
+                <li>Already addressed</li>
+                <li>Partially addressed</li>
+                <li className="is-key">Left open &rarr; opportunity gap</li>
+              </ol>
+            </div>
             {/* Decorative only — a gap with something coming out of it. It carries
                 no information the paragraph doesn't, so it gets an empty alt and
                 is hidden from assistive tech rather than described. Not a
@@ -137,20 +135,11 @@ export default function PopByInlineCaseStudy() {
             <mark className="hl">coordinating an event under uncertainty</mark>. From it <strong>I ideated the user flow</strong> and decided how each feature would be
             integrated into the prototype.
           </p>
-          <CaseEquation
-            base={{
-              src: baseUserFlow.src,
-              alt: "The base user flow for the coordination scenario, blurred and desaturated to comply with the NDA.",
-              caption: <>Blurred and Greyed Out (due to NDA) base user flow built around the planned user scenario.</>,
-            }}
-            count={4}
-            addendLabel="features"
-            result={{
-              src: userFlowFeatures.src,
-              alt: "The same user flow with the proposed features mapped onto it.",
-              caption: <>Blurred and Greyed Out (due to NDA) same flow fleshed out with the proposed features implemented.</>,
-            }}
-          />
+          <div className="case-equation-text" aria-label="Base user flow plus 4 features">
+            <span>Base user flow</span>
+            <b>+ 4</b>
+            <span>features mapped onto the coordination scenario</span>
+          </div>
           <h3>Prototyping</h3>
           {/* Text leads, figure sits right, and the two stack below 820px.
               ProgramSwitch, not a zoomable one: a two-node framework
@@ -185,41 +174,32 @@ export default function PopByInlineCaseStudy() {
         <section id="testing" className="case-section">
           <h2>Testing</h2>
           <h3>Facilitating Usability Testing</h3>
+          <div className="case-stats" role="list">
+            <div className="case-stat" role="listitem"><b>8</b><span>usability sessions I facilitated</span></div>
+            <div className="case-stat" role="listitem"><b>3</b><span>sprints of 2&ndash;3 participants each</span></div>
+            <div className="case-stat" role="listitem"><b>10</b><span>feature iterations between sprints</span></div>
+          </div>
           <p>
-            <strong>I facilitated</strong> <mark className="hl">8 usability sessions</mark>. Each opened with
-            warm-up questions to frame the prototype, moved into tasks that walked the tester
-            through its flows, then probed for feedback on each flow once completed.
+            Each session opened with warm-up questions, walked the tester through the
+            prototype&rsquo;s flows, then probed for feedback on each flow.
           </p>
 
           <h3>Addressing Insights and Feedback with Iterations</h3>
           <p>
-            I ran the sessions in <mark className="hl">sprints of testing with 2 - 3 participants</mark>, so feedback
-            reflected a general rather than a singular voice. After each sprint <strong>I identified iterations to implement</strong> and tweaked the
-            protocol to probe them.
-            <br></br><br></br>
-            Every sprint therefore tested a prototype that had already answered the last one.
-            After the first round of tests, feedback{" "}
-            <mark className="hl">quickly shifted from UI to feature expansion</mark>{" "}
-            for flexibility in other user scenarios and continued usage.
+            <strong>After each sprint I identified iterations to implement</strong> and tweaked
+            the protocol to probe them, so every sprint tested a prototype that had already
+            answered the last one.
           </p>
-          <CaseEquation
-            base={{
-              src: initialPrototype.src,
-              alt: "The prototype as it entered the first round of usability testing.",
-              caption: <>Blurred and Greyed Out (due to NDA) prototype before testing.</>,
-            }}
-            count={10}
-            addendLabel="feature iterations"
-            result={{
-              src: finalPrototype.src,
-              alt: "The same prototype after three sprints of iteration, with noticeably more screens.",
-              caption: <>Blurred and Greyed Out (due to NDA) prototype after three sprints of testing and iterating.</>,
-            }}
-          />
+          <div className="case-shift" aria-label="How feedback shifted after the first round">
+            <span>UI feedback</span>
+            <span className="case-shift__arrow" aria-hidden="true">&rarr;</span>
+            <span className="is-key">Feature expansion</span>
+            <small>for flexibility in other user scenarios and continued usage</small>
+          </div>
           <p>
-            While four features were carried into the initial prototype, {" "}
-            <strong>I deemed three of them as pivotal </strong>due to directly contributing to the app's unique
-            position within the market.
+            Of the four features carried into the initial prototype,{" "}
+            <strong>I deemed three pivotal</strong> for directly contributing to the app&rsquo;s
+            unique position within the market.
           </p>
         </section>
 

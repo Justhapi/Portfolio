@@ -9,17 +9,27 @@ import agentComponents from "./images/Ai_Agent_Components_Visual.webp";
 import directCompetitor from "./images/Direct_Competitor_Visual.webp";
 import indirectCompetitor from "./images/Indirect_Competitor_Visual.webp";
 import interactionPattern from "./images/Interaction_Pattern_Visual.webp";
-import interviewNotes from "./images/Interview_Notes_Visual.webp";
-import interviewAffinity from "./images/Interview_Affinity_Diagramming.webp";
 import crazyEightSketch from "./images/Crazy_Eight_Sketch.webp";
 import whiteboardConcept from "./images/Whiteboard_Concept.webp";
 import sketchingCorner from "./images/Sketching_corner.webp";
 import conceptRefinement from "./images/Concept_A_Refinement.webp";
-import usabilityTesting from "./images/Usability_Test_Feedback_Visual.webp";
 
 export const metadata = {
   title: "AI Journey Map Maintenance Agent — Kathleen Li",
 };
+/* Interview themes, as titled on the team's affinity board. Colours
+   match the board's sticky notes; tilt is a hand-placed scatter. */
+const THEMES: { name: string; tone: string; tilt: number }[] = [
+  { name: "Triggers for maintenance / updates", tone: "pink", tilt: -2 },
+  { name: "Concerns of AI use safety", tone: "teal", tilt: 1.5 },
+  { name: "Onboarding & learning patterns", tone: "purple", tilt: -1 },
+  { name: "Requests of AI automation", tone: "orange", tilt: 2 },
+  { name: "AI-feature usage patterns", tone: "blue", tilt: -1.5 },
+  { name: "Data-connection patterns", tone: "green", tilt: 1 },
+  { name: "Typical reactions to journey map maintenance gaps", tone: "pink", tilt: -2.5 },
+  { name: "Current manual processes in typical workflow", tone: "blue", tilt: 1.5 },
+];
+
 const SECTIONS = [
   { id: "outcome", label: "Outcome" },
   { id: "overview", label: "Overview" },
@@ -260,31 +270,23 @@ export default function AIJourneyAgentCaseStudy() {
           </figure>
 
           <h3>User Interviews</h3>
-          <p>
-            To verify the desk research matched what users needed, the team ran{" "}
-            <mark className="hl">six interviews with current platform users</mark>.
-          </p>
-          <p>
-            I <mark className="hl">participated in three of the six</mark>, rotating between
-            interviewer and note-taker. Afterwards we categorized the insights into the
-            platform-relevant needs the agent had to address.
-          </p>
-          <figure>
-            <ZoomableImage
-              src={interviewNotes.src}
-              alt="My session notes from the three interviews I participated in."
-              aspectRatio={4746 / 1517}
-              caption={<>My session notes from the three interviews I participated in.</>}
-            />
-          </figure>
-          <figure>
-            <ZoomableImage
-              src={interviewAffinity.src}
-              alt="Team affinity synthesis across all six interviews, clustered into themes."
-              aspectRatio={3996 / 2413}
-              caption={<>Team affinity synthesis across all six interviews, clustered into themes.</>}
-            />
-          </figure>
+          <div className="case-stats" role="list">
+            <div className="case-stat" role="listitem"><b>6</b><span>interviews with current platform users</span></div>
+            <div className="case-stat" role="listitem"><b>3</b><span>I ran, as interviewer or note-taker</span></div>
+            <div className="case-stat" role="listitem"><b>8</b><span>themes the agent had to answer to</span></div>
+          </div>
+          <div className="case-board" aria-label="Interview themes from the team's affinity synthesis">
+            {THEMES.map((t, i) => (
+              <div
+                key={t.name}
+                className={`case-sticky case-sticky--${t.tone}`}
+                style={{ "--tilt": `${t.tilt}deg` } as React.CSSProperties}
+              >
+                <span className="case-sticky__n">{String(i + 1).padStart(2, "0")}</span>
+                {t.name}
+              </div>
+            ))}
+          </div>
         </section>
 
         {/* ───── Ideating ───── */}
@@ -406,24 +408,19 @@ export default function AIJourneyAgentCaseStudy() {
             asked us each to recruit{" "}
             <mark className="hl">a UX Design classmate familiar with journey mapping</mark> as a
             substitute tester.
-            <br></br><br></br>
-            Each session had participants complete three tasks probing navigation and use of
-            the prototype&rsquo;s features, followed by a reflection round.
           </p>
-          <figure className="visual-compact">
-            <ZoomableImage
-              src={usabilityTesting.src}
-              alt="Notes from the usability test I conducted."
-              aspectRatio={1980 / 1291}
-              caption={<>Notes from the usability test I conducted.</>}
-            />
-          </figure>
-
-          <h3>Iterations</h3>
-          <p>
-            We categorized the insights to determine iteration focuses:{" "}
-            <mark className="hl">agent access, information organization, and flow simplification</mark>.
-          </p>
+          <div className="case-flow">
+            <div className="case-flow__in">
+              <b>3</b>
+              <span>tasks + a reflection round per session</span>
+            </div>
+            <span className="case-flow__arrow" aria-hidden="true">&rarr;</span>
+            <ul className="case-flow__out" aria-label="Iteration focuses">
+              <li>Agent access</li>
+              <li>Information organization</li>
+              <li>Flow simplification</li>
+            </ul>
+          </div>
 
         </section>
 
