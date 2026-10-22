@@ -3,9 +3,11 @@
  * (promoted from the /prototypes/hero-stickers exploration).
  *
  *  - Name badge: clicking swaps Kathleen ⇄ 妤𣎮. Each name keeps its own
- *    plate and typeface; only size and spot trade. The swap is instant;
- *    the big sticker lands with a squash and the chip pops in (Web
- *    Animations on scale/opacity only — no View Transition, see below).
+ *    plate and typeface; only size and spot trade. Driven by a view
+ *    transition: both are yanked up, then slammed down with a squash
+ *    (keyframes in globals.css, "hero-slap-*"). The smaller sticker stays
+ *    in front the whole way, and each snapshot hard-cuts old → new (no
+ *    cross-fade) at the instant their sizes cross.
  *  - The big name stays centred on the same spot whichever name it holds;
  *    "Hello, I'm" slides straight across to stay beside it.
  *  - The two lines under it (wordmark + focus line) hop when the name
@@ -18,18 +20,29 @@
  * Reduced motion: the swap is instant and the nudges are skipped.
  */
 
-/** How long one swap blocks the next click. */
-export const SWAP_MS = 460;
+/** Keep in sync with the ::view-transition-group rules in globals.css. */
+export const SWAP_MS = 600;
+/** Fraction of SWAP_MS at which the two sizes cross: where the group
+ *  curve cubic-bezier(0.2, 1.5, 0.5, 1) reaches 0.5. */
+const CROSS_AT = 0.086;
 
 const OUT = "cubic-bezier(0.25, 1, 0.5, 1)";
 const INOUT = "cubic-bezier(0.45, 0, 0.55, 1)";
+
+type VTDoc = Document & {
+  startViewTransition?: (cb: () => void) => {
+    finished: Promise<void>;
+    ready: Promise<void>;
+    updateCallbackDone: Promise<void>;
+  };
+};
 
 export const prefersReducedMotion = () =>
   typeof window !== "undefined" &&
   window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-/** The big sticker lands right away now (no lift); hop just after. */
-const IMPACT_MS = 40;
+/** The slap squash lands at 60% of SWAP_MS (see hero-slap-hi). */
+const IMPACT_MS = SWAP_MS * 0.6;
 /** Delay between lines as the bump travels down the copy. */
 const TRAVEL_MS = 55;
 const FRAME = 1 / 60;
@@ -69,14 +82,6 @@ function hop(el: HTMLElement, impulse: number, zeta = 0.55, response = 0.36) {
 
 /**
  * Swap the two names.
- *
- * Plain DOM swap + a few compositor-only animations. This used to run as a
- * View Transition, but every swap snapshotted the whole page (root
- * transition) on top of the animated hero, and rapid clicking stacked those
- * captures until the tab ran out of GPU memory and crashed. Now nothing is
- * captured: the state flips instantly, the new big sticker lands with a
- * squash, the chip pops in, "Hello, I'm" slides over, and the copy hops.
- *
  * @param big      the big name sticker (holds the chip)
  * @param chip     the small chip sticker
  * @param hello    the "Hello, I'm" span
@@ -90,72 +95,113 @@ export function swapNames(
   swapped: boolean,
   commit: () => void,
 ): Promise<void> {
+  const doc = document as VTDoc;
   /* Keep the big name centred on the same spot whichever name is in it.
      妤𣎮 is narrower than "Kathleen", so when it takes the big spot the
-     line is shifted (--name-shift on the line) until its centre lands
-     where Kathleen's was. Kathleen sits naturally at shift 0. */
+     line is shifted (--name-shift on the line, applied to "Hello, I'm"
+     and the big sticker) until its centre lands where Kathleen's was.
+     Kathleen sits naturally at shift 0. */
   const line = big.parentElement;
   const centreX = () => {
     const r = big.getBoundingClientRect();
     return r.left + r.width / 2;
   };
   const before = centreX();
-  const helloX = hello.getBoundingClientRect().left;
-
-  commit();
-  if (line) {
+  const commitAndCentre = () => {
+    commit();
+    if (!line) return;
     line.style.setProperty("--name-shift", "0px");
-    if (!swapped) line.style.setProperty("--name-shift", `${(before - centreX()).toFixed(2)}px`);
+    if (!swapped) {
+      // 妤𣎮 just went big: measure it unshifted, then move it under
+      // Kathleen's old centre.
+      line.style.setProperty("--name-shift", `${(before - centreX()).toFixed(2)}px`);
+    }
+  };
+  if (prefersReducedMotion() || !doc.startViewTransition) {
+    commitAndCentre();
+    return Promise.resolve();
   }
-  if (prefersReducedMotion()) return Promise.resolve();
+  const html = document.documentElement;
 
-  // Drop any half-finished swap animations so fast clicks never pile up.
-  for (const el of [big, chip, hello]) {
-    el.getAnimations().forEach((a) => {
-      if (!(a instanceof CSSAnimation)) a.cancel();
+  // Name each IDENTITY so it morphs from its old spot to its new one.
+  // "hero-front" = the name heading for the big spot on this click.
+  const name = (sw: boolean) => {
+    const kathleenEl = sw ? chip : big;
+    const lixiEl = sw ? big : chip;
+    const lixiGoingBig = !swapped;
+    kathleenEl.style.viewTransitionName = lixiGoingBig ? "hero-back" : "hero-front";
+    lixiEl.style.viewTransitionName = lixiGoingBig ? "hero-front" : "hero-back";
+  };
+  // The pseudo-element animations below use fill "both"; they must be
+  // cancelled when the transition ends or they pile up on <html> forever
+  // (6 per swap), which is what eventually crashed the tab.
+  const vtAnims: Animation[] = [];
+  const clear = () => {
+    vtAnims.forEach((a) => a.cancel());
+    big.style.viewTransitionName = "";
+    chip.style.viewTransitionName = "";
+    html.classList.remove("hero-vt");
+  };
+
+  html.classList.add("hero-vt");
+  name(swapped);
+  const helloX = hello.getBoundingClientRect().left;
+  const vt = doc.startViewTransition(() => {
+    commitAndCentre();
+    name(!swapped);
+  });
+
+  vt.ready
+    .then(() => {
+      // The copy under the name hops when it lands.
+      const greeting = big.closest(".hero-greeting");
+      [".ribbon-artist", ".hero-focus"].forEach((q, i) => {
+        const el = greeting?.querySelector<HTMLElement>(q);
+        if (el) window.setTimeout(() => hop(el, i === 0 ? 250 : 170), IMPACT_MS + i * TRAVEL_MS);
+      });
+      const o = { duration: SWAP_MS, fill: "both" as const };
+      const c = CROSS_AT;
+      vtAnims.push(html.animate([{ zIndex: 2 }, { zIndex: 2 }], {
+        ...o,
+        pseudoElement: "::view-transition-group(hero-front)",
+      }));
+      vtAnims.push(html.animate(
+        [{ zIndex: 1 }, { zIndex: 1, offset: c }, { zIndex: 3, offset: c }, { zIndex: 3 }],
+        { ...o, pseudoElement: "::view-transition-group(hero-back)" },
+      ));
+      for (const id of ["hero-front", "hero-back"]) {
+        vtAnims.push(html.animate(
+          [{ opacity: 1 }, { opacity: 1, offset: c }, { opacity: 0, offset: c }, { opacity: 0 }],
+          { ...o, pseudoElement: `::view-transition-old(${id})` },
+        ));
+        vtAnims.push(html.animate(
+          [{ opacity: 0 }, { opacity: 0, offset: c }, { opacity: 1, offset: c }, { opacity: 1 }],
+          { ...o, pseudoElement: `::view-transition-new(${id})` },
+        ));
+      }
+    })
+    .catch(() => {
+      /* pseudo-element animation unsupported: default stacking/fade */
     });
-  }
 
-  // Big sticker lands with a squash (scale only: its translate/rotate are
-  // owned by the cursor tilt and the name shift).
-  big.animate(
-    [
-      { scale: "1.12 0.82", easing: OUT },
-      { scale: "0.95 1.06", offset: 0.4, easing: INOUT },
-      { scale: "1.02 0.98", offset: 0.7, easing: INOUT },
-      { scale: "1" },
-    ],
-    { duration: 420 },
-  );
-  // Chip pops in from small.
-  chip.animate(
-    [
-      { scale: "0.5", opacity: 0, easing: OUT },
-      { scale: "1.1", opacity: 1, offset: 0.55, easing: INOUT },
-      { scale: "1", opacity: 1 },
-    ],
-    { duration: 380, delay: 60, fill: "backwards" },
-  );
-  // "Hello, I'm" slides straight across from its old spot.
-  const from = helloX - hello.getBoundingClientRect().left;
-  if (Math.abs(from) >= 0.5) {
+  vt.updateCallbackDone.then(() => {
+    // "Hello, I'm" isn't in the transition; it reacts live. It slides
+    // straight across (no tilt) from where it was to its new spot beside
+    // the re-centred name, with a single small overshoot to settle.
+    // composite "add" layers the slide on top of its --name-shift.
+    const from = helloX - hello.getBoundingClientRect().left;
+    if (Math.abs(from) < 0.5) return;
     hello.animate(
       [
         { translate: `${from}px 0`, easing: "cubic-bezier(0.22, 1, 0.36, 1)" },
         { translate: `${(-from * 0.06).toFixed(2)}px 0`, offset: 0.7, easing: INOUT },
         { translate: "0 0" },
       ],
-      { duration: 480, composite: "add" },
+      { duration: 560, delay: 40, fill: "backwards", composite: "add" },
     );
-  }
-  // The copy under the name hops as it lands.
-  const greeting = big.closest(".hero-greeting");
-  [".ribbon-artist", ".hero-focus"].forEach((q, i) => {
-    const el = greeting?.querySelector<HTMLElement>(q);
-    if (el) window.setTimeout(() => hop(el, i === 0 ? 250 : 170), IMPACT_MS + i * TRAVEL_MS);
   });
 
-  return new Promise((r) => window.setTimeout(r, SWAP_MS));
+  return vt.finished.then(clear, clear);
 }
 
 /**

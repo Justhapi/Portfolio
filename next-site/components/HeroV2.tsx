@@ -7,6 +7,9 @@ import { swapNames, slapNudge } from "@/components/heroStickerMotion";
 import SparkleField from "@/components/SparkleField";
 import ArtistDesignerWordmark from "@/components/ArtistDesignerWordmark";
 
+/** Minimum time between name swaps (ms). */
+const SWAP_COOLDOWN_MS = 900;
+
 export default function HeroV2() {
   const stageRef = useRef<HTMLDivElement | null>(null);
   const photoRef = useRef<HTMLButtonElement | null>(null);
@@ -58,6 +61,7 @@ export default function HeroV2() {
      forward over the photo for a moment. */
   const [namesSwapped, setNamesSwapped] = useState(false);
   const swappingRef = useRef(false);
+  const lastSwapRef = useRef(-Infinity);
   const nameRef = useRef<HTMLSpanElement | null>(null);
   const chipRef = useRef<HTMLSpanElement | null>(null);
   const helloRef = useRef<HTMLSpanElement | null>(null);
@@ -69,6 +73,12 @@ export default function HeroV2() {
     const chip = chipRef.current;
     const hello = helloRef.current;
     if (!big || !chip || !hello || swappingRef.current) return;
+    // Cooldown: one swap every few seconds. Each swap is a View Transition
+    // (the browser snapshots both stickers into GPU textures); back-to-back
+    // swaps stacked those up and could crash the tab ("Aw, Snap").
+    const now = performance.now();
+    if (now - lastSwapRef.current < SWAP_COOLDOWN_MS) return;
+    lastSwapRef.current = now;
     swappingRef.current = true;
     swapNames(big, chip, hello, namesSwapped, () =>
       flushSync(() => setNamesSwapped((v) => !v)),
