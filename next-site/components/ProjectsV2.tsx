@@ -502,32 +502,6 @@ type Project = {
 
 const PROJECTS: Project[] = [
   {
-    tag: "inline · Product Design Intern · 2026 · Recommended Features Handed Off ",
-    blurb: (
-      <>
-        I conducted <strong>early-stage exploration for a B2B2C consumer product</strong> by auditing the industry, then verifying{" "}
-        <strong>popular patterns and opportunity gaps</strong> through prototyping and multiple rounds of usability testing.
-      </>
-    ),
-    meta: ["NDA", "Product Design", "Competitive Analysis", "Usability Testing", "Iterations"],
-    accent: ["#F5B8CB", "#9D9BF5"],
-    folder: {
-      front: "#7C4A63",
-      back: "#5E3349",
-      shadow: "#39202F",
-      outlines: {
-        folder:  "#3B1A26",
-        company: "#AF1408",
-        video:   "#CFA287",
-      },
-    },
-    href: "/projects/inline",
-    readTime: "4 min read",
-    thumbnail: FOLDER_THUMB.inline,
-    thumbnailAlt: "inline — sponsor logo",
-    coverVideo: FOLDER_COVER.inline,
-  },
-  {
     tag: "Customer Journey Platform · 2026 · Concept Shipped to Beta",
     blurb: (
       <>
@@ -552,6 +526,32 @@ const PROJECTS: Project[] = [
     thumbnail: FOLDER_THUMB.anonymous,
     thumbnailAlt: "Sponsor anonymized under NDA",
     coverVideo: FOLDER_COVER.aiAgent,
+  },
+  {
+    tag: "inline · Product Design Intern · 2026 · Recommended Features Handed Off ",
+    blurb: (
+      <>
+        I conducted <strong>early-stage exploration for a B2B2C consumer product</strong> by auditing the industry, then verifying{" "}
+        <strong>popular patterns and opportunity gaps</strong> through prototyping and multiple rounds of usability testing.
+      </>
+    ),
+    meta: ["NDA", "Product Design", "Competitive Analysis", "Usability Testing", "Iterations"],
+    accent: ["#F5B8CB", "#9D9BF5"],
+    folder: {
+      front: "#7C4A63",
+      back: "#5E3349",
+      shadow: "#39202F",
+      outlines: {
+        folder:  "#3B1A26",
+        company: "#AF1408",
+        video:   "#CFA287",
+      },
+    },
+    href: "/projects/inline",
+    readTime: "4 min read",
+    thumbnail: FOLDER_THUMB.inline,
+    thumbnailAlt: "inline — sponsor logo",
+    coverVideo: FOLDER_COVER.inline,
   },
   {
     tag: "Purdue Stack · Design Engineer · 2026 · Platform Ships Fall",
