@@ -762,7 +762,20 @@ export default function ProjectsV2() {
       delete leavingTimers.current[id];
     }, MORPH_MS);
   };
+  /* A short grace before a hovered folder closes. Without it the cursor
+     sitting right on the folder's edge (or a re-render passing under it)
+     fired leave → enter → leave, flipping the folder in and out. */
+  const leaveGrace = useRef<Record<string, number>>({});
+  const leaveSoon = (id: string) => {
+    window.clearTimeout(leaveGrace.current[id]);
+    leaveGrace.current[id] = window.setTimeout(() => {
+      delete leaveGrace.current[id];
+      if (manualHoverRef.current !== id) leaveFolder(id);
+    }, 120);
+  };
   const enterFolder = (id: string) => {
+    window.clearTimeout(leaveGrace.current[id]);
+    delete leaveGrace.current[id];
     const pending = leavingTimers.current[id];
     if (pending) {
       window.clearTimeout(pending);
@@ -866,6 +879,7 @@ export default function ProjectsV2() {
         leaveFolder(hoveredId.current);
         closeTimer = window.setTimeout(() => {
           closeTimer = null;
+          if (manualHoverRef.current) return; // the user took over mid-close
           if (pendingTag && pendingTag !== hoveredId.current) {
             enterFolder(pendingTag);
           }
@@ -936,6 +950,7 @@ export default function ProjectsV2() {
                      WCAG AA contrast across all 4 folder palettes. */
                   ["--folder-blurb-bg" as string]:
                     hexToRgba(p.folder.shadow, 0.55),
+                  ["--fc" as string]: p.folder.front,
                 } as CSSProperties}
               >
                 <Link
@@ -989,7 +1004,7 @@ export default function ProjectsV2() {
                     if (manualHoverRef.current === p.tag) {
                       manualHoverRef.current = null;
                     }
-                    leaveFolder(p.tag);
+                    leaveSoon(p.tag);
                     handleTiltLeave(p.tag);
                   }}
                   /* Keyboard focus parity — Tab-navigating users get the
@@ -1064,7 +1079,22 @@ export default function ProjectsV2() {
                 </Link>
                 <div className="folder-copy">
                   <div className="tag">
-                    {p.tag}
+                    {(() => {
+                      // name · role · year · outcome — split into spans so
+                      // the type system can style each part; inline spans
+                      // with the same " · " read exactly as the plain string.
+                      const parts = p.tag.split("·").map((t) => t.trim()).filter(Boolean);
+                      const name = parts[0];
+                      const out = parts.length > 2 ? parts[parts.length - 1] : undefined;
+                      const role = parts.slice(1, out ? -1 : undefined).join(" · ");
+                      return (
+                        <>
+                          <span className="tag-name">{name}</span>
+                          {role && <><span className="tag-sep" aria-hidden="true"> · </span><span className="tag-role">{role}</span></>}
+                          {out && <><span className="tag-sep" aria-hidden="true"> · </span><span className="tag-out">{out}</span></>}
+                        </>
+                      );
+                    })()}
                     {p.outcome && (
                       <span className="tag-outcome">
                         <span className="tag-outcome-arrow" aria-hidden="true">→</span>

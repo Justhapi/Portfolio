@@ -111,10 +111,9 @@ export default function NextProject({ current, note }: Props) {
             <img src={next.poster} alt="" loading="lazy" decoding="async" />
           </Link>
           <div className="next-case__text">
-            {/* Label and side note share one line; a long note wraps
-                under the label. */}
+            {/* The side note leads the card (the "Next project" label was
+                dropped — the card's place at the end of the page says it). */}
             <div className="next-case__head">
-              <span className="next-case__eyebrow">Next project</span>
               {note ? (
                 <span className="next-case__note">
                   <span className="visually-hidden">Side note: </span>
@@ -133,7 +132,10 @@ export default function NextProject({ current, note }: Props) {
             <span className="next-case__meta">{next.meta}</span>
 
             <Link href={href} className="next-case__cta" tabIndex={-1} aria-hidden="true">
-              Read case study <span className="next-case__arrow">→</span>
+              <svg className="next-case__spark" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+                <path d="M48 6 C48 26 26 48 6 48 Q2 50 6 52 C26 52 48 74 48 94 Q50 98 52 94 C52 74 74 52 94 52 Q98 50 94 48 C74 48 52 26 52 6 Q50 2 48 6 Z" />
+              </svg>
+              Read case study
             </Link>
           </div>
         </div>

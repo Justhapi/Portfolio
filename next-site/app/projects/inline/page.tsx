@@ -65,7 +65,7 @@ export default function PopByInlineCaseStudy() {
 
           <p>
             The report bundled a{" "}
-            <mark className="hl">competitive audit, gap analysis, and interactive prototype</mark>{" "}
+            competitive audit, gap analysis, and interactive prototype{" "}
             focused on one use case, describing the must-have features that support
             Pop&rsquo;s market position.
           </p>
@@ -83,10 +83,10 @@ export default function PopByInlineCaseStudy() {
 
           <h3>My Role</h3>
           <p>
-            <strong>I worked remotely with inline&rsquo;s Product team in Taiwan</strong> as the{" "}
-            <mark className="hl">sole designer on one branch</mark>, alongside a parallel
+            I worked remotely with inline&rsquo;s Product team in Taiwan as the{" "}
+            sole designer on one branch, alongside a parallel
             branch of the internship. My focus was bringing an outside perspective on the market through competitive research, gap analysis, concept design, and
-            usability testing, <strong>ideating features for the product to succeed within the existing market.</strong>
+            usability testing, ideating features for the product to succeed within the existing market.
           </p>
         </section>
 
@@ -95,8 +95,8 @@ export default function PopByInlineCaseStudy() {
           <h2>Researching</h2>
           <h3>Mapping the Competitive Landscape</h3>
           <p>
-            <strong>I applied one competitive-analysis framework</strong> across{" "}
-            <mark className="hl">three competitor apps</mark>, auditing the flows.
+            I applied one competitive-analysis framework across{" "}
+            three competitor apps, auditing the flows.
           </p>
 
           <h3>Gap Analysis with Category Discipline</h3>
@@ -105,7 +105,7 @@ export default function PopByInlineCaseStudy() {
           <div className="case-ornament-split">
             <div>
               <p>
-                <strong>I cross-referenced each competitor&rsquo;s weaknesses</strong> against the
+                I cross-referenced each competitor&rsquo;s weaknesses against the
                 parallel branch&rsquo;s proposed features. Weaknesses still left open became the{" "}
                 <mark className="hl">opportunity gaps</mark> for Pop&rsquo;s features to build upon.
               </p>
@@ -132,7 +132,7 @@ export default function PopByInlineCaseStudy() {
           <h3>Ideating Scenario</h3>
           <p>
             To keep feedback focused, the user scenario centered on{" "}
-            <mark className="hl">coordinating an event under uncertainty</mark>. From it <strong>I ideated the user flow</strong> and decided how each feature would be
+            <mark className="hl">coordinating an event under uncertainty</mark>. From it I ideated the user flow and decided how each feature would be
             integrated into the prototype.
           </p>
           <div className="case-equation-text" aria-label="Base user flow plus 4 features">
@@ -148,14 +148,14 @@ export default function PopByInlineCaseStudy() {
             <div className="audit-split__text">
               <p>
                 With a small window before testing,{" "}
-                <strong>I built the flow&rsquo;s core interactivity</strong> with{" "}
-                <mark className="hl">AI-assisted prototyping tools</mark>, starting in Figma Make,
+                I built the flow&rsquo;s core interactivity with{" "}
+                AI-assisted prototyping tools, starting in Figma Make,
                 then moving to Google AI Studio, whose daily credit limits better suited the pace
                 of iterating between test rounds.
               </p>
               <p>
                 Once testing was done,{" "}
-                <strong>I adapted the prototype back into Figma</strong> so access to my materials
+                I adapted the prototype back into Figma so access to my materials
                 was centralized with the parallel branch&rsquo;s, where the rest of the
                 team&rsquo;s work already lived.
               </p>
@@ -174,11 +174,9 @@ export default function PopByInlineCaseStudy() {
         <section id="testing" className="case-section">
           <h2>Testing</h2>
           <h3>Facilitating Usability Testing</h3>
-          <div className="case-stats" role="list">
-            <div className="case-stat" role="listitem"><b>8</b><span>usability sessions I facilitated</span></div>
-            <div className="case-stat" role="listitem"><b>3</b><span>sprints of 2&ndash;3 participants each</span></div>
-            <div className="case-stat" role="listitem"><b>10</b><span>feature iterations between sprints</span></div>
-          </div>
+          <p>
+            I facilitated 8 usability sessions across 3 sprints of 2&ndash;3 participants each, with 10 feature iterations between sprints.
+          </p>
           <p>
             Each session opened with warm-up questions, walked the tester through the
             prototype&rsquo;s flows, then probed for feedback on each flow.
@@ -186,7 +184,7 @@ export default function PopByInlineCaseStudy() {
 
           <h3>Addressing Insights and Feedback with Iterations</h3>
           <p>
-            <strong>After each sprint I identified iterations to implement</strong> and tweaked
+            After each sprint I identified iterations to implement and tweaked
             the protocol to probe them, so every sprint tested a prototype that had already
             answered the last one.
           </p>
@@ -211,7 +209,7 @@ export default function PopByInlineCaseStudy() {
             During the project&rsquo;s research phase, I recognized that a{" "}
             <mark className="hl">rigorous gap analysis requires determination of the scope&rsquo;s limitations.</mark>{" "}
             While conducting the competitive audit, I realized{" "}
-            <mark className="hl">that some of the audited competitors had differing overlaps of identity compared to Pop.</mark>{" "}
+            that some of the audited competitors had differing overlaps of identity compared to Pop.{" "}
             As a result, I had to distinguish the scope of direct competitors in context to
             Pop&rsquo;s focus before building the gap analysis, so a gap of a competitor would not
             automatically be counted as a gap for Pop if it were to be an outside-of-scope gap.
@@ -221,11 +219,11 @@ export default function PopByInlineCaseStudy() {
           <p>
             From this project, I understood how to better navigate a workflow that includes
             implementing with AI. The{" "}
-            <mark className="hl">AI tools I utilized (Figma Make and Google AI Studio) limited the number of iterations I could implement at a time.</mark>{" "}
+            AI tools I utilized (Figma Make and Google AI Studio) limited the number of iterations I could implement at a time.{" "}
             To adapt, I{" "}
-            <mark className="hl">recognized and prioritized larger-scale implementations based on impact on the prototype&rsquo;s efficiency</mark>{" "}
+            recognized and prioritized larger-scale implementations based on impact on the prototype&rsquo;s efficiency{" "}
             during usability testing while{" "}
-            <mark className="hl">manually refining smaller and specific details afterwards.</mark>{" "}
+            manually refining smaller and specific details afterwards.{" "}
             As a result, I was able to utilize my prompting tokens while also being well informed
             of the prototype&rsquo;s abilities and limitations through manual involvements of
             altering the code.

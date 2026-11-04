@@ -112,7 +112,7 @@ export default function AIJourneyAgentCaseStudy() {
           <aside className="outcome-callout" aria-label="Project outcome">
             <p className="outcome-callout__stat">
               The concept was selected by the sponsor and developed into a high-fidelity
-              prototype <strong>handed off to their product team.</strong> Shortly after, the{" "}
+              prototype handed off to their product team. Shortly after, the{" "}
               <strong>sponsor shared that an AI maintenance agent was moving into
               development,</strong> validating the direction the team had explored.
             </p>
@@ -123,7 +123,7 @@ export default function AIJourneyAgentCaseStudy() {
 
           <p>
             We delivered a{" "}
-            <mark className="hl">high-fidelity prototype and design-principle documentation</mark>{" "}
+            high-fidelity prototype and design-principle documentation{" "}
             to the sponsor&rsquo;s leadership, defining an AI maintenance agent that keeps
             customer journey maps accurate and trustworthy over time.
           </p>
@@ -137,7 +137,7 @@ export default function AIJourneyAgentCaseStudy() {
           <p>
             The sponsor operates a customer journey management platform teams use to
             understand their customers&rsquo; experience across a product. We were asked to
-            explore how <mark className="hl">an AI maintenance agent</mark> could be
+            explore how an AI maintenance agent could be
             implemented into it to keep journey maps accurate.
           </p>
 
@@ -152,12 +152,12 @@ export default function AIJourneyAgentCaseStudy() {
           </p>
           <h3>My Role</h3>
           <p>
-            <strong>I worked as a UX Designer &amp; Researcher</strong>,{" "}
-            <mark className="hl">leading concept ideation and exploration</mark> and
+            I worked as a UX Designer &amp; Researcher,{" "}
+            leading concept ideation and exploration and
             contributing to research synthesis, wireframing, high-fidelity prototyping, and
             usability testing.
             <br></br><br></br>
-            <strong>I also managed communication</strong> between the team, sponsor leads, and platform
+            I also managed communication between the team, sponsor leads, and platform
             users through update meetings, update emails, and interviews, and
             mentored the junior designers on Figma onboarding and studio deliverable
             expectations.
@@ -176,7 +176,7 @@ export default function AIJourneyAgentCaseStudy() {
 
           <p className="research-split-lead">
             To cover each within a tight time frame, we{" "}
-            <mark className="hl">split into two sub-teams across two sprints</mark>,
+            split into two sub-teams across two sprints,
             reconvening after each to share findings.
           </p>
           <div className="parallel-tracks">
@@ -184,8 +184,8 @@ export default function AIJourneyAgentCaseStudy() {
               <span className="track-label">Track 1 · My team</span>
               <h3>Current State of Platform</h3>
               <p>
-                <strong>I audited the platform as a user</strong>, exploring{" "}
-                <mark className="hl">its features across functionality and placement</mark> to
+                I audited the platform as a user, exploring{" "}
+                its features across functionality and placement to
                 inform where the agent would sit and how it would integrate with related
                 features.
               </p>
@@ -219,7 +219,7 @@ export default function AIJourneyAgentCaseStudy() {
           <h3>Industry &amp; Interaction Patterns</h3>
           <p>
             We then ran competitive analysis across{" "}
-            <mark className="hl">direct competitors and analogous AI-driven SaaS platforms</mark>{" "}
+            direct competitors and analogous AI-driven SaaS platforms{" "}
             to understand the state of the AI agent industry.
           </p>
           <div className="parallel-tracks">
@@ -227,7 +227,7 @@ export default function AIJourneyAgentCaseStudy() {
               <span className="track-label">Direct · My team</span>
               <h3>4 Direct Journey-management Competitors</h3>
               <p>
-                <strong>I audited one of the four hands-on</strong>, focusing on three aspects of its AI: user
+                I audited one of the four hands-on, focusing on three aspects of its AI: user
                 interactions, reach within the platform, and user flow pain points.
               </p>
               <figure>
@@ -270,11 +270,9 @@ export default function AIJourneyAgentCaseStudy() {
           </figure>
 
           <h3>User Interviews</h3>
-          <div className="case-stats" role="list">
-            <div className="case-stat" role="listitem"><b>6</b><span>interviews with current platform users</span></div>
-            <div className="case-stat" role="listitem"><b>3</b><span>I ran, as interviewer or note-taker</span></div>
-            <div className="case-stat" role="listitem"><b>8</b><span>themes the agent had to answer to</span></div>
-          </div>
+          <p>
+            Of 6 interviews with current platform users, I ran 3 as interviewer or note-taker; together they surfaced 8 themes the agent had to answer to.
+          </p>
           <div className="case-board" aria-label="Interview themes from the team's affinity synthesis">
             {THEMES.map((t, i) => (
               <div
@@ -313,9 +311,9 @@ export default function AIJourneyAgentCaseStudy() {
             />
           </figure>
           <p>
-            During the walkthroughs <strong>I pitched a direction</strong> built on our recurring theme
+            During the walkthroughs I pitched a direction built on our recurring theme
             of user inputs, and went on to{" "}
-            <mark className="hl">lead a rules-based approach</mark> to the concept.
+            lead a rules-based approach to the concept.
           </p>
           <figure>
             {/* The sketch sits over the whiteboard's top-left corner, anchored to
@@ -341,7 +339,7 @@ export default function AIJourneyAgentCaseStudy() {
 
           <h3>Proposing Concepts</h3>
           <p>
-            We presented <mark className="hl">six concept proposals</mark>, including the
+            We presented six concept proposals, including the
             rules-based direction I led, each paired with the research evidence behind it. The
             sponsor selected two complementary directions.
           </p>
@@ -353,7 +351,7 @@ export default function AIJourneyAgentCaseStudy() {
 
           <h3>Concept A · My team</h3>
           <p>
-            I <mark className="hl">led the team sketching variations of Concept A</mark>,
+            I led the team sketching variations of Concept A,
             holding to the sponsor platform&rsquo;s UI patterns while providing access to
             Concept B&rsquo;s features. Those sketches opened refinement through partner-team
             and sponsor feedback, toward a more compressed and decision-focused UI.
@@ -390,7 +388,7 @@ export default function AIJourneyAgentCaseStudy() {
           <h3>Prototyping and Testing the Unified Concept</h3>
           <p>
             We took the combined concept into{" "}
-            <mark className="hl">high-fidelity prototyping, usability testing, and iteration</mark>.
+            high-fidelity prototyping, usability testing, and iteration.
           </p>
 
           <h3>Hi-Fi Prototyping</h3>
@@ -406,7 +404,7 @@ export default function AIJourneyAgentCaseStudy() {
           <p>
             To avoid setting false expectations about features that might not ship, the sponsor
             asked us each to recruit{" "}
-            <mark className="hl">a UX Design classmate familiar with journey mapping</mark> as a
+            a UX Design classmate familiar with journey mapping as a
             substitute tester.
           </p>
           <div className="case-flow">
@@ -435,9 +433,9 @@ export default function AIJourneyAgentCaseStudy() {
             focused heavily on the platform&rsquo;s own needs, making it natural to narrow down
             findings to apply to the final product later on.
             <br></br><br></br>
-            <mark className="hl">Narrowing down scope was a challenge subjective from project to project that I had previously addressed early</mark>{" "}
+            Narrowing down scope was a challenge subjective from project to project that I had previously addressed early{" "}
             on when constructing the first set of guidelines for Frogslayer. I now understand that{" "}
-            <mark className="hl">specific factors, like a project&rsquo;s theme of expansion, hints at its expected window for scope narrowing.</mark>
+            specific factors, like a project&rsquo;s theme of expansion, hints at its expected window for scope narrowing.
           </p>
         </section>
       </main>

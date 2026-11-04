@@ -61,11 +61,11 @@ export default function FeenixCaseStudy() {
             <p className="outcome-callout__meta">Phase 1 MVP · 2026–27 · in progress</p>
           </aside>
           <p>
-            Before wireframing, <strong>I defined the purpose of each of the platform&rsquo;s six sections</strong>,
+            Before wireframing, I defined the purpose of each of the platform&rsquo;s six sections,
             so deciding where a feature belonged came down to what each section was for.
             <br /><br />
             The sections sit inside a{" "}
-            <mark className="hl">dual-tier navigation similar to Discord&rsquo;s</mark>, with a server list
+            dual-tier navigation similar to Discord&rsquo;s, with a server list
             down the side and each server&rsquo;s sections across the top. The account and
             server-creation flows were then built around it.
           </p>
@@ -86,8 +86,8 @@ export default function FeenixCaseStudy() {
              caption={<>The project brief, split into what the platform needs to let users do and who we assumed the users were.</>} />
           <h3>My Role</h3>
           <p>
-            <strong> During the project I worked as the UX lead on the Frontend team</strong>,{" "}
-            <mark className="hl">owning the information architecture, user flows, and interface's design and frontend implementation</mark>.
+             During the project I worked as the UX lead on the Frontend team,{" "}
+            owning the information architecture, user flows, and interface's design and frontend implementation.
             <br/><br/>
             While designing, I actively collaborated with the other teams (Data, backend, infrastructure) to gauge feasbility and limitations
             of functions within the designs.
@@ -131,14 +131,14 @@ export default function FeenixCaseStudy() {
           <h2>Designing</h2>
           <h3>Defining a Purpose for Each Section</h3>
           <p>
-            Before wireframing, <strong>I wrote one line stating what each section is for</strong>.
-            Those six lines then <mark className="hl">decided where every feature went</mark>.
+            Before wireframing, I wrote one line stating what each section is for.
+            Those six lines then decided where every feature went.
           </p>
 
 
           <h3>Referencing a Navigation Users Already Know</h3>
           <p>
-            Our users use Discord daily, so <strong>I based the navigation on Discord&rsquo;s</strong>: a
+            Our users use Discord daily, so I based the navigation on Discord&rsquo;s: a
             server list down the side, with each server&rsquo;s sections across the top. Since users
             already know how it works, <mark className="hl">they wouldn&rsquo;t need to learn a new pattern</mark>.
           </p>
@@ -153,13 +153,13 @@ export default function FeenixCaseStudy() {
           <h2>Testing</h2>
           <h3>Testing the Structure</h3>
           <p>
-            <strong>I ran usability tests with two testers</strong> of opposite experience levels. Each
+            I ran usability tests with two testers of opposite experience levels. Each
             did the same six tasks on Aternos, play.hosting, and our prototype.
             <br /><br />
-            The tasks were picked to <mark className="hl">cross between sections</mark>, so finding
+            The tasks were picked to cross between sections, so finding
             something like the Minecraft version also tested whether the structure put it where they&rsquo;d
             look. On Aternos, one tester couldn&rsquo;t find it at all:{" "}
-            <mark className="hl">&ldquo;I&rsquo;m not seeing anything that says version.&rdquo;</mark>
+            &ldquo;I&rsquo;m not seeing anything that says version.&rdquo;
           </p>
 
           <h3>Shaping Server Creation</h3>
@@ -168,7 +168,7 @@ export default function FeenixCaseStudy() {
           <h3>What Testers Liked</h3>
           <p>
             Testers saw fewer sections as an improvement,{" "}
-            <strong>&ldquo;I like that there are fewer tabs here&rdquo;</strong>, and recognized the server
+            &ldquo;I like that there are fewer tabs here&rdquo;, and recognized the server
             list right away.
             <br /><br />
             One tester also pointed out that <mark className="hl">separating platform admins from the player list</mark>{" "}
@@ -187,13 +187,13 @@ export default function FeenixCaseStudy() {
             needs, but the words don&rsquo;t explain it.
             <br /><br />
             From this project, I learned that{" "}
-            <mark className="hl">writing one sentence on what a section is for</mark> is what makes it
+            writing one sentence on what a section is for is what makes it
             possible to label it clearly.
           </p>
           <h3>Using What Users Already Know</h3>
           <p>
             Basing the navigation on Discord meant users didn&rsquo;t need to learn it, so{" "}
-            <mark className="hl">their attention could go to the parts of the platform that are actually new to them</mark>,
+            their attention could go to the parts of the platform that are actually new to them,
             like versions, backups, and the difference between managing a server and playing on it.
           </p>
         </section>

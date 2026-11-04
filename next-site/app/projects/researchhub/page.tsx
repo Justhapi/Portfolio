@@ -78,13 +78,13 @@ export default function ResearchHubCaseStudy() {
 
           <p>
             The 6-week project delivered a{" "}
-            <mark className="hl">redesign and expansion of ResearchHub</mark>, a Purdue-specific
+            redesign and expansion of ResearchHub, a Purdue-specific
             research collaboration platform, addressing its lack of a design system and improving
             usability for Purdue students and staff.
             <br></br><br></br>
             Some features were requested directly by our client, Professor Reese of the statistics
             department. Others were built{" "}
-            <mark className="hl">around communication and project maintenance</mark>, student-side needs surfaced
+            around communication and project maintenance, student-side needs surfaced
             through my own research.
           </p>
         </section>
@@ -93,21 +93,21 @@ export default function ResearchHubCaseStudy() {
         <section id="overview" className="case-section">
           <h2>Overview</h2>
           <p>
-            ResearchHub is an <mark className="hl">AI-assisted platform</mark> that streamlines
+            ResearchHub is an AI-assisted platform that streamlines
             Purdue students&rsquo; ability to discover and contribute to research projects, while
             helping professors find and onboard the right students. Rather than replacing cold
             emails and departmental postings, it consolidates them into one system where both
             parties see the same information.
             <br></br><br></br>
             Prior work on the platform{" "}
-            <mark className="hl">focused solely on delivering functionality</mark>: logins, postings, applications. It left a working base with no coherent design system and few
+            focused solely on delivering functionality: logins, postings, applications. It left a working base with no coherent design system and few
             of the features its users needed.
           </p>
 
           <h3>The Problem</h3>
           <p>
             Research opportunities at Purdue are{" "}
-            <mark className="hl">plentiful but scattered</mark> across department pages, faculty
+            plentiful but scattered across department pages, faculty
             sites, listings, and word-of-mouth, so students have no centralized place to discover
             projects.
             <br></br><br></br>
@@ -119,8 +119,8 @@ export default function ResearchHubCaseStudy() {
           <h3>My Role</h3>
           <p>
             I was the{" "}
-            <mark className="hl">sole UI designer, later also Design Engineer</mark>, on a
-            6-person Purdue Stack team with 5 full-stack developers. <strong>I determined all UX and UI decisions</strong> and contributed front-end React.
+            sole UI designer, later also Design Engineer, on a
+            6-person Purdue Stack team with 5 full-stack developers. I determined all UX and UI decisions and contributed front-end React.
             <br></br><br></br>
             I held weekly discussions with my teammates to keep conceptualized features aligned
             and feasible.
@@ -132,20 +132,18 @@ export default function ResearchHubCaseStudy() {
           <h2>Researching</h2>
           <h3>Auditing the Platform and Its Two User Groups</h3>
           <p>
-            My teammates needed to <mark className="hl">begin development on schedule</mark>, so
+            My teammates needed to begin development on schedule, so
             understanding the platform and its two user groups had to fit one quick sprint.
           </p>
-          <div className="case-stats" role="list">
-            <div className="case-stat" role="listitem"><b>1.5</b><span>week research sprint</span></div>
-            <div className="case-stat" role="listitem"><b>2</b><span>roles audited end-to-end: student &amp; professor</span></div>
-            <div className="case-stat" role="listitem"><b>4</b><span>student interviews</span></div>
-          </div>
+          <p>
+            In a 1.5-week research sprint, I audited both roles end-to-end (student &amp; professor) and ran 4 student interviews.
+          </p>
 
           <h3>The Platform Audit</h3>
           <p>
             The core features worked, but the UI was{" "}
             <mark className="hl">visually basic and obviously AI-generated</mark>.{" "}
-            <strong>I walked each role&rsquo;s flow end-to-end</strong>, logging friction rather
+            I walked each role&rsquo;s flow end-to-end, logging friction rather
             than bugs, and the issues clustered into three categories:
           </p>
 
@@ -169,7 +167,7 @@ export default function ResearchHubCaseStudy() {
           <h3>Understanding User Needs</h3>
           <p>
             Professor needs were expected from upcoming client meetings, so{" "}
-            <strong>I interviewed 4 students</strong> on their research experience across:
+            I interviewed 4 students on their research experience across:
           </p>
           <ul className="case-chips" aria-label="Interview probe areas">
             <li>Discovering projects</li>
@@ -209,8 +207,8 @@ export default function ResearchHubCaseStudy() {
           </div>
           <p>
             When Professor Reese&rsquo;s schedule prevented an in-depth meeting,{" "}
-            <strong>I based professor needs</strong> on his earlier feature requests and{" "}
-            <mark className="hl">prioritized them by how often students would interact with each</mark>.
+            I based professor needs on his earlier feature requests and{" "}
+            prioritized them by how often students would interact with each.
           </p>
 
           <h3>The Core Features Professor Reese Requested</h3>
@@ -238,7 +236,7 @@ export default function ResearchHubCaseStudy() {
           <p>
             Students frequently named the Microsoft suite, Outlook, and Gmail as the tools they
             already used with professors, so I{" "}
-            <mark className="hl">referenced those same platforms</mark> when designing
+            referenced those same platforms when designing
             ResearchHub&rsquo;s UI.
             <br></br><br></br>
             Their interaction patterns became the base for the platform&rsquo;s components,
@@ -259,9 +257,9 @@ export default function ResearchHubCaseStudy() {
 
           <h3>Refining UI Around Purdue Identity</h3>
           <p>
-            <strong>I moved on to sketching features and screens</strong> to explore possibilities
+            I moved on to sketching features and screens to explore possibilities
             quickly,{" "}
-            <mark className="hl">showing sketches to my teammates</mark> to check each
+            showing sketches to my teammates to check each
             page&rsquo;s development plausibility while gathering outside feedback in parallel.
           </p>
           <ZoomableImage
@@ -286,12 +284,12 @@ export default function ResearchHubCaseStudy() {
             <div className="audit-split__text">
               <p>
                 Shipping next semester was the priority, so I{" "}
-                <mark className="hl">deliberately kept the design system work minimal</mark> and
+                deliberately kept the design system work minimal and
                 let the ship-critical features take precedence.
               </p>
               <p>
                 Instead I refined the existing UI and components to be{" "}
-                <mark className="hl">more reminiscent of Purdue</mark> through color and type,
+                more reminiscent of Purdue through color and type,
                 reinforcing its identity as a Purdue research platform.
               </p>
             </div>
@@ -300,9 +298,9 @@ export default function ResearchHubCaseStudy() {
           <h3>Prototyping for Developer Handoff</h3>
           <p>
             To keep development on schedule,{" "}
-            <strong>I wireframed in Figma</strong> while discussing implementation plausibility{" "}
+            I wireframed in Figma while discussing implementation plausibility{" "}
             with my teammates, gathering outside feedback on both
-            <mark className="hl">feasibility and usability</mark>.
+            feasibility and usability.
           </p>
           <ZoomableImage
             src={projectDashboardProgression.src}
@@ -318,7 +316,7 @@ export default function ResearchHubCaseStudy() {
 
           <p>
             Because both student and professor flows had to be wireframed in the same window, I
-            used <mark className="hl">Figma Make to keep shared pages consistent</mark> without
+            used Figma Make to keep shared pages consistent without
             re-drawing the same components across two flows.
           </p>
           <p>
@@ -339,7 +337,7 @@ export default function ResearchHubCaseStudy() {
                     <div className="rq-block__body">
                       <h4 className="rq-heading">General Dashboard</h4>
                       <p className="rq-lead">
-                        The dashboard was designed to <mark className="hl">centralize a routine day&rsquo;s needs</mark>, whether a student updating task
+                        The dashboard was designed to centralize a routine day&rsquo;s needs, whether a student updating task
                         progression or sending a message, or a professor assessing how their
                         students are progressing.
                       </p>
@@ -371,7 +369,7 @@ export default function ResearchHubCaseStudy() {
                       <h4 className="rq-heading">Communication</h4>
                       <p className="rq-lead">
                         The messages page was designed to provide{" "}
-                        <mark className="hl">organization for communication</mark> between professors, research
+                        organization for communication between professors, research
                         assistants, and students, in a structure already familiar to them.
                       </p>
                     </div>
@@ -403,7 +401,7 @@ export default function ResearchHubCaseStudy() {
                       <h4 className="rq-heading">Project Content Maintenance</h4>
                       <p className="rq-lead">
                         The project dashboard was designed to{" "}
-                        <mark className="hl">centralize a project&rsquo;s content without overwhelming the viewer</mark>,
+                        centralize a project&rsquo;s content without overwhelming the viewer,
                         segmenting it into five sections via left-side navigation. It began as
                         Professor Reese&rsquo;s request for a project-maintenance dashboard.
                       </p>
@@ -440,12 +438,12 @@ export default function ResearchHubCaseStudy() {
           <h2>Implementing</h2>
           <h3>Stepping In to Ship the Platform on Time</h3>
           <p>
-            As the wireframes were finalized, <strong>I began contributing code</strong>, specifically{" "}
+            As the wireframes were finalized, I began contributing code, specifically{" "}
             <mark className="hl">front-end React</mark>. I took the more mundane, tedious parts so
             my code-savvier teammates could focus on the platform&rsquo;s complex areas, keeping
             progression efficient by playing to our individual strengths.
             <br></br><br></br>
-            I also had to <mark className="hl">expand my own designs</mark> as I moved onto new
+            I also had to expand my own designs as I moved onto new
             pages, accounting for feature reactivity across any browser size.
           </p>
         </section>
@@ -455,22 +453,22 @@ export default function ResearchHubCaseStudy() {
 
           <h3>Design With the Cost of Building in Mind</h3>
           <p>
-            <mark className="hl">Directly building my own ideas significantly modified how I factor in limitations</mark>.
+            Directly building my own ideas significantly modified how I factor in limitations.
             Sometimes I would{" "}
-            <mark className="hl">code while thinking, half-annoyed, &ldquo;Jeez, who is the designer who designed and requested all of these details&rdquo;</mark>.
+            code while thinking, half-annoyed, &ldquo;Jeez, who is the designer who designed and requested all of these details&rdquo;.
             Working as both designer and engineer emphasized the need to ideate as a{" "}
             <em>development partner</em> rather than an <em>ideater.</em>
             <br></br><br></br>
             From this project, I better understood that a{" "}
             <mark className="hl">design&rsquo;s demands include the building cost</mark>, and that a
             designer who{" "}
-            <mark className="hl">accounts for the cost is able to ensure a well-designed handoff would be fully utilized.</mark>
+            accounts for the cost is able to ensure a well-designed handoff would be fully utilized.
           </p>
 
           <h3>Adapting to Uneven User-Group Access</h3>
           <p>
             Due to needing conceptualization finalized in the project&rsquo;s first weeks, I was{" "}
-            <mark className="hl">unable to conduct user research on professors as in-depth as I did with students</mark>,
+            unable to conduct user research on professors as in-depth as I did with students,
             since the two user groups offered very different levels of access. I had only one
             professor (our client) available and an entire campus of students readily available.
             As a result of the contrasting amount of specific user feedback, I prioritized the
@@ -479,7 +477,7 @@ export default function ResearchHubCaseStudy() {
             <br></br><br></br>
             From adapting to this obstacle, I now recognize that working with uneven user-group
             research requires{" "}
-            <mark className="hl">sequencing the less-accessible group&rsquo;s requests by how frequently the more-accessible group would interact with each</mark>,
+            sequencing the less-accessible group&rsquo;s requests by how frequently the more-accessible group would interact with each,
             so I can prioritize the applicable ideas ahead of the impractical ones.
           </p>
         </section>
