@@ -6704,6 +6704,17 @@ em.it { font-style: italic; }
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
 }
+/* Three-up variant — used by the Feenix case to show all six section
+   wireframes as two rows of three. Captions shrink a step because each
+   frame is ~2/3 the width of the standard pair. Collapses to one column
+   at the same breakpoint as .case-image-row below. */
+.case-image-row--three {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+.case-image-row--three figcaption {
+  font-size: 14px;
+}
 /* ── Case equation (CaseEquation) ─────────────────────────────────────
    A before/after pair written as "base + N = result". See the component
    for why the markup is term-major and the wide layout is placed
@@ -7941,6 +7952,7 @@ em.it { font-style: italic; }
     width: 100%;
   }
   .case-image-row, .case-image-grid { grid-template-columns: 1fr; }
+  .case-image-row--three { grid-template-columns: 1fr; }
   .case-image-row.with-arrow { grid-template-columns: 1fr; }
   .case-image-row .arrow-sep { display: none; }
 }
@@ -9149,3 +9161,219 @@ html.hero-vt::view-transition-image-pair(hero-back) {
 /* --name-shift (set by heroStickerMotion swapNames) keeps the big name
    centred on one spot; "Hello, I'm" moves with it. */
 .hero-greet-hi { translate: var(--name-shift, 0px) 0; }
+
+/* ══ Connect — the night sky guestbook (components/ConnectSky.tsx) ══════
+   Sticky behind About like the old Connect (.connect keeps position:
+   sticky); .connect.cs pins its own 100vh grid on every width. */
+.connect.cs { height: 100vh; height: 100dvh; min-height: 640px; display: grid; grid-template-rows: 1fr auto; }
+.cs-sky { position: relative; }
+
+/* heading + note column, left */
+.cs-left { position: absolute; left: max(32px, calc((100vw - 1136px) / 2)); top: 13vh; width: min(420px, 86vw); z-index: 3; }
+.cs-head { font-family: var(--f-hand); font-weight: 600; font-size: 40px; line-height: 1.15; color: var(--hero-fg); margin: 0 0 22px; max-width: 16ch; }
+.cs-legend { margin: -8px 0 20px; font: 600 11.5px/1.9 var(--f-mono); letter-spacing: 0.16em; text-transform: uppercase; color: rgb(246 239 220 / 0.55); }
+
+/* you, at the desk */
+.cs-me { position: absolute; left: max(48px, calc((100vw - 1136px) / 2 + 20px)); bottom: -2px; width: clamp(170px, 18vw, 250px); height: auto; opacity: 0.92; pointer-events: none; z-index: 2; }
+
+/* still stars = side projects */
+.cs-star { position: absolute; translate: -50% -50%; z-index: 4; padding: 10px; border: 0; background: none; cursor: pointer; }
+.cs-star .c-spark { display: block; width: 22px; height: 22px; fill: var(--hero-fg); filter: drop-shadow(0 0 6px rgba(248,224,168,0.55));
+  animation: csTwinkle 3.2s ease-in-out infinite; transition: scale 220ms cubic-bezier(0.23, 1, 0.32, 1), fill 160ms; }
+.cs-star:nth-of-type(2n) .c-spark { animation-delay: -1.3s; }
+.cs-star:nth-of-type(3n) .c-spark { animation-delay: -2.1s; }
+.cs-star.is-active .c-spark, .cs-star:focus-visible .c-spark { fill: #F8E0A8; scale: 1.35; }
+@keyframes csTwinkle { 0%, 100% { opacity: 1; scale: 1; } 50% { opacity: 0.6; scale: 0.85; } }
+.cs-pill { left: 0; top: 0; }
+.cs-pill__inner { width: 230px; }
+.cs-pill__card { padding: 12px 14px 10px; color: var(--hero-fg); rotate: -3deg;
+  background: rgb(38 42 49 / 0.82); border: 1px solid rgb(246 239 220 / 0.22);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); border-radius: 16px 10px 18px 12px; }
+.cs-pill__photo { display: grid; place-items: center; aspect-ratio: 4 / 3; margin-bottom: 10px; border-radius: 10px 7px 11px 8px;
+  border: 1px dashed rgb(246 239 220 / 0.3); font: 600 10.5px/1 var(--f-mono); letter-spacing: 0.18em; text-transform: uppercase; color: rgb(246 239 220 / 0.55); }
+.cs-pill__text { margin: 0 0 6px; font-family: var(--f-hand); font-size: 21px; line-height: 1.2; }
+
+/* shooting stars — the butter star with a trail */
+.cs-shoot, .cs-launch { position: absolute; z-index: 5; display: block; padding: 0; border: 0; background: none; pointer-events: none; }
+.cs-shoot { right: -60px; width: 30px; height: 30px; }
+.cs-shoot.is-catchable { pointer-events: auto; cursor: pointer; width: 56px; height: 56px; display: grid; place-items: center; }
+.cs-shoot__head { position: relative; z-index: 1; display: grid; place-items: center; filter: drop-shadow(0 0 8px rgba(248,224,168,0.8)); }
+.cs-shoot__trail { position: absolute; left: 50%; top: 50%; width: 150px; height: 2px; transform-origin: 0 50%; rotate: -26deg;
+  background: linear-gradient(90deg, rgba(248,224,168,0.9), rgba(248,224,168,0)); border-radius: 2px; }
+.cs-shoot.is-catchable .cs-shoot__head { animation: csTwinkle 0.9s ease-in-out infinite; }
+.cs-launch { translate: -50% -50%; }
+.cs-launch .cs-shoot__trail { rotate: 154deg; }
+
+/* the pop + a visitor's note */
+.cs-burst { position: absolute; z-index: 6; pointer-events: none; }
+.cs-burst svg { display: block; width: 100%; height: 100%; fill: #F8E0A8; filter: drop-shadow(0 0 4px rgba(248,224,168,0.8)); }
+.cs-flash { position: absolute; z-index: 5; width: 40px; height: 40px; margin: -20px 0 0 -20px; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle, rgba(248,224,168,0.75), rgba(248,224,168,0) 70%); }
+.cs-past { position: absolute; z-index: 4; width: 270px; padding: 16px 20px 12px;
+  /* see-through, so the sky still shows behind the note */
+  background: rgb(38 42 49 / 0.78); border: 1px solid rgb(246 239 220 / 0.22);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); border-radius: 16px 10px 18px 12px; color: var(--hero-fg); }
+.cs-past__text { margin: 0 0 10px; font-family: var(--f-hand); font-size: 24px; line-height: 1.2; color: var(--hero-fg); }
+.cs-past__meta { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin: 0;
+  font-family: var(--f-hand); font-size: 18px; color: rgb(246 239 220 / 0.72); }
+
+/* the two minimized sparkles: write / read. Picking one dissipates the other */
+.cs-compose [hidden] { display: none !important; }
+.cs-compose__slot { position: relative; }
+.cs-mini { display: inline-flex; align-items: center; gap: 10px; padding: 20px 6px 10px 10px; border: 0; background: none; color: var(--hero-fg); cursor: pointer;
+  transition: opacity 260ms ease-out, filter 260ms ease-out, scale 260ms ease-out, transform 160ms cubic-bezier(0.23, 1, 0.32, 1); }
+.cs-mini--read { padding-top: 8px; }
+.cs-mini.is-gone { position: absolute; top: 0; left: 0; opacity: 0; filter: blur(5px); scale: 0.96; visibility: hidden; pointer-events: none;
+  transition: opacity 280ms ease-out, filter 280ms ease-out, scale 280ms ease-out, visibility 0s linear 280ms; }
+.cs-mini__star { display: grid; }
+.cs-mini__star .c-spark { width: 24px; height: 24px; fill: var(--accent-soft); filter: drop-shadow(0 0 5px rgba(212,144,117,0.45));
+  transition: rotate 320ms cubic-bezier(0.34, 1.4, 0.64, 1), fill 200ms ease; }
+.cs-mini__label { font-family: var(--f-hand); font-size: 24px; line-height: 1; }
+.cs-mini:hover .c-spark, .cs-mini:focus-visible .c-spark { rotate: 90deg; fill: var(--hero-fg); }
+
+/* minimize sparkle — lands where the sparkle you clicked was */
+.cs-note__min { position: absolute; top: 19px; left: 9px; z-index: 1; display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px;
+  padding: 0; border: 0; background: none; cursor: pointer; transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1); }
+.cs-note__min--inline { position: static; flex: none; }
+.cs-note__min .c-spark { width: 24px; height: 24px; fill: var(--accent-soft); filter: drop-shadow(0 0 5px rgba(212,144,117,0.45));
+  transition: rotate 320ms cubic-bezier(0.34, 1.4, 0.64, 1), fill 200ms ease; }
+.cs-note__min:hover .c-spark { rotate: 90deg; fill: var(--hero-fg); }
+.cs-note__min:active, .cs-mini:active { transform: scale(0.97); }
+.cs-note__min:focus-visible, .cs-mini:focus-visible { outline: 2px solid var(--accent-soft); outline-offset: 3px; border-radius: 6px; }
+
+/* write a note — glass, like the visitor notes */
+.cs-note { position: relative; display: grid; gap: 10px; padding: 16px 18px 14px; color: var(--hero-fg);
+  background: rgb(38 42 49 / 0.82); border: 1px solid rgb(246 239 220 / 0.22); box-shadow: 0 14px 30px -14px rgba(0,0,0,0.7);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); border-radius: 18px 12px 20px 14px; }
+.cs-note__row { display: flex; align-items: center; gap: 10px; padding-left: 34px; }
+.cs-note__label { font: 600 11px/1 var(--f-mono); letter-spacing: 0.2em; text-transform: uppercase; color: rgb(246 239 220 / 0.6); }
+.cs-note input, .cs-note textarea { width: 100%; border: 0; border-bottom: 1.5px solid rgb(246 239 220 / 0.25); background: transparent;
+  font: 400 16px/1.5 var(--f-sans); color: var(--hero-fg); padding: 4px 2px; outline: none; resize: none; }
+.cs-note textarea { border: 1.5px solid rgb(246 239 220 / 0.25); border-radius: 8px 6px 9px 7px; padding: 10px 12px; font-family: var(--f-hand); font-size: 21px; line-height: 1.3; }
+.cs-note input::placeholder, .cs-note textarea::placeholder { color: rgb(246 239 220 / 0.45); }
+.cs-note input:focus, .cs-note textarea:focus { border-color: var(--accent); }
+.cs-note textarea[aria-invalid] { border-color: #C0573F; }
+.cs-note__foot { display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
+.cs-send { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px 8px 16px; border-radius: 999px; cursor: pointer;
+  border: 1px solid rgb(246 239 220 / 0.3); background: transparent; color: rgb(246 239 220 / 0.9);
+  font: 600 11px/1 var(--f-mono); letter-spacing: 0.2em; text-transform: uppercase;
+  transition: background 200ms ease, border-color 200ms ease, transform 160ms cubic-bezier(0.23, 1, 0.32, 1); }
+.cs-send .c-spark { width: 12px; height: 12px; fill: var(--accent-soft); }
+.cs-send:hover { background: rgb(246 239 220 / 0.08); border-color: rgb(246 239 220 / 0.55); }
+.cs-send:active { transform: scale(0.97); }
+
+/* read everyone's notes — a scrolling pinboard of slips */
+.cs-notes { position: relative; display: grid; gap: 8px; padding: 7px 18px 14px 9px; color: var(--hero-fg);
+  background: rgb(38 42 49 / 0.82); border: 1px solid rgb(246 239 220 / 0.22); border-radius: 18px 12px 20px 14px;
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); box-shadow: 0 14px 30px -14px rgba(0,0,0,0.7); }
+.cs-notes__head { display: flex; align-items: center; gap: 12px; }
+.cs-notes__board { --fade-top: 0px; --fade-bottom: 0px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 6px 4px 8px 9px; overflow-y: auto; align-items: start;
+  overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: rgb(246 239 220 / 0.25) transparent;
+  /* the fades grow with the scroll (set from JS), so they ease in rather than switch on */
+  -webkit-mask-image: linear-gradient(transparent, #000 var(--fade-top), #000 calc(100% - var(--fade-bottom)), transparent);
+  mask-image: linear-gradient(transparent, #000 var(--fade-top), #000 calc(100% - var(--fade-bottom)), transparent); }
+.cs-notes__board:focus-visible { outline: 2px solid var(--accent-soft); outline-offset: 2px; border-radius: 8px; }
+.cs-notes__slip { padding: 10px 12px 8px; border-radius: 10px 6px 11px 7px; background: rgb(246 239 220 / 0.07); border: 1px dashed rgb(246 239 220 / 0.28); }
+.cs-notes__slip .cs-past__text { font-size: 19px; margin-bottom: 6px; }
+.cs-notes__slip .cs-past__meta { font-size: 15px; flex-direction: column; gap: 0; }
+
+/* footer: the desk line, handle, links */
+.cs-foot { position: relative; z-index: 3; display: flex; justify-content: space-between; align-items: center; gap: 20px;
+  margin: 0 max(32px, calc((100vw - 1136px) / 2)); padding: 18px 0 26px; }
+.cs-foot::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 1px; background: rgb(246 239 220 / 0.22); }
+.cs-handle { font: 500 12px/1 var(--f-mono); letter-spacing: 0.2em; color: rgb(246 239 220 / 0.6); }
+.cs-links { display: flex; gap: 28px; }
+.cs-links a { display: inline-flex; align-items: center; gap: 9px; color: var(--hero-fg); text-decoration: none; font: 600 13px/1 var(--f-mono); letter-spacing: 0.24em; text-transform: uppercase; }
+.cs-links .c-spark { width: 16px; height: 16px; fill: var(--accent-soft); filter: drop-shadow(0 0 5px rgba(212,144,117,0.45)); transition: rotate 320ms cubic-bezier(0.34, 1.4, 0.64, 1); }
+.cs-links a:hover .c-spark { rotate: 90deg; fill: var(--hero-fg); }
+
+/* hidden until enough of the section is uncovered */
+.cs.is-pending .cs-head, .cs.is-pending .cs-legend, .cs.is-pending .cs-compose, .cs.is-pending .cs-star,
+.cs.is-pending .cs-me, .cs.is-pending .cs-foot { opacity: 0; }
+
+@media (max-width: 760px) {
+  .cs-left { top: 90px; }
+  .cs-head { font-size: 32px; }
+  .cs-star { scale: 0.85; }
+  .cs-me { width: 112px; left: 24px; opacity: 0.8; }
+  .cs-foot { flex-direction: column; align-items: flex-start; }
+  .cs-links { gap: 18px; }
+  .cs-past { width: 220px; }
+  .cs-past__text { font-size: 20px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cs-star .c-spark, .cs-shoot.is-catchable .cs-shoot__head { animation: none; }
+  .cs-mini, .cs-mini.is-gone, .cs-mini__star .c-spark, .cs-note__min .c-spark { transition: none; }
+}
+
+/* Email + its copy button, in the Connect footer */
+.cs-email { display: inline-flex; align-items: center; gap: 10px; }
+.cs-copy { padding: 5px 7px; gap: 6px; }
+@media (max-width: 760px) {
+  .cs-copy { min-height: 0; padding: 5px 7px; }
+  .cs-links { gap: 14px; flex-wrap: wrap; row-gap: 12px; }
+  .cs-links a { letter-spacing: 0.16em; gap: 7px; }
+  .cs-email { gap: 8px; }
+}
+.cs-notes__slip--empty { grid-column: 1 / -1; justify-self: start; }
+.cs-notes__slip--empty .cs-past__text { margin: 0; }
+/* note sending: hidden spam trap, a quiet failure line, a spinning sparkle while it sends */
+.cs-botcheck { display: none; }
+.cs-note__fail { margin-right: auto; font-family: var(--f-hand); font-size: 19px; color: #F2B39B; }
+.cs-send[aria-busy] { cursor: progress; opacity: 0.75; }
+.cs-send[aria-busy] .c-spark { animation: csSpin 900ms linear infinite; }
+@keyframes csSpin { to { rotate: 360deg; } }
+@media (prefers-reduced-motion: reduce) { .cs-send[aria-busy] .c-spark { animation: none; } }
+/* you at the desk — three GIFs (components/MeGif.tsx). Sized so the drawn
+   figure (x 40–407, y 70–457 of the 480px square) sits on the desk line. */
+.cs-me.me-gif { --me-w: clamp(160px, 16vw, 230px); display: block; width: var(--me-w); opacity: 1;
+  margin-left: calc(var(--me-w) * -0.083); margin-bottom: calc(var(--me-w) * -0.048); }
+.me-gif__frame { display: block; width: 100%; height: auto; }
+.me-gif__act { position: absolute; inset: 0; }
+@media (max-width: 760px) { .cs-me.me-gif { --me-w: 112px; opacity: 0.9; } }
+/* Narrow screens: heading, note options, sketch and footer share one 24px
+   gutter, and the footer links spread evenly across the full width. */
+@media (max-width: 760px) {
+  .cs-left { left: 24px; right: 24px; width: auto; }
+  .cs-mini { padding-left: 0; }
+  .cs-foot { margin: 0 24px; }
+  .cs-links { width: 100%; justify-content: space-between; gap: 0; }
+}
+/* the sparkle dust a shooting star leaves behind (ConnectSky) */
+.cs-dust { position: absolute; z-index: 5; pointer-events: none; }
+.cs-dust svg { display: block; width: 100%; height: 100%; fill: #F8E0A8; filter: drop-shadow(0 0 3px rgba(248,224,168,0.8)); }
+/* sparkles shaking off the About bag's items as it lands (BagSplash) */
+.bag-splash { position: absolute; inset: 0; pointer-events: none; z-index: 3; overflow: visible; }
+.bag-splash__spark { position: absolute; display: block; }
+.bag-splash__spark svg { display: block; width: 100%; height: 100%; }
+.bag-splash__spark.is-warm svg { fill: var(--accent); filter: drop-shadow(0 0 3px rgb(198 141 95 / 0.45)); }
+.bag-splash__spark.is-butter svg { fill: #F2CF8A; stroke: #C68D5F; stroke-width: 4; filter: drop-shadow(0 0 4px rgb(242 207 138 / 0.7)); }
+/* doodling on a note: the pencil, and the drawing over the message box */
+.cs-note__body { position: relative; display: block; }
+.cs-doodle { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+.cs-doodle.is-on { pointer-events: auto; cursor: crosshair; touch-action: none; }
+.cs-doodle path { fill: none; stroke: var(--hero-fg); stroke-width: 2.5px; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.cs-note__body:has(.cs-doodle.is-on) textarea { border-color: var(--accent-soft); border-style: dashed; }
+.cs-note__tools { display: flex; align-items: center; gap: 6px; margin-right: auto; }
+.cs-tool { display: inline-grid; place-items: center; min-width: 32px; height: 32px; padding: 0 8px; border-radius: 999px; cursor: pointer;
+  border: 1px solid rgb(246 239 220 / 0.22); background: transparent; color: rgb(246 239 220 / 0.75);
+  transition: background 200ms ease, border-color 200ms ease, color 200ms ease, transform 160ms cubic-bezier(0.23, 1, 0.32, 1); }
+.cs-tool svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round;
+  transition: rotate 320ms cubic-bezier(0.34, 1.4, 0.64, 1); }
+.cs-tool:hover { border-color: rgb(246 239 220 / 0.45); color: var(--hero-fg); }
+.cs-tool.is-on { background: rgb(217 169 131 / 0.16); border-color: var(--accent-soft); color: var(--accent-soft); }
+.cs-tool.is-on svg { rotate: -12deg; }
+.cs-tool:active { transform: scale(0.97); }
+.cs-tool:focus-visible { outline: 2px solid var(--accent-soft); outline-offset: 2px; }
+.cs-tool--text { font: 600 10.5px/1 var(--f-mono); letter-spacing: 0.18em; text-transform: uppercase; }
+.cs-note__fail { margin-right: 0; }
+@media (prefers-reduced-motion: reduce) { .cs-tool svg { transition: none; } }
+
+/* /doodle — a doodle someone left, opened from the note email */
+.doodle-page { min-height: 100vh; display: grid; place-items: center; padding: 48px 20px; background: var(--hero-bg); }
+.doodle-page__card { width: min(560px, 100%); margin: 0; padding: 20px; border-radius: 18px 12px 20px 14px;
+  background: rgb(38 42 49 / 0.82); border: 1px solid rgb(246 239 220 / 0.22); }
+.doodle-page__card svg { display: block; width: 100%; height: auto; }
+.doodle-page__card path { fill: none; stroke: var(--hero-fg); stroke-width: 2.5px; vector-effect: non-scaling-stroke; stroke-linecap: round; stroke-linejoin: round; }
+.doodle-page__card figcaption, .doodle-page__empty { margin: 14px 0 0; font-family: var(--f-hand); font-size: 20px; color: rgb(246 239 220 / 0.7); }

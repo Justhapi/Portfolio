@@ -1,7 +1,7 @@
 import HeroV2 from "@/components/HeroV2";
 import ProjectsV2 from "@/components/ProjectsV2";
 import AboutV2 from "@/components/AboutV2";
-import ConnectV2 from "@/components/ConnectV2";
+import ConnectSky from "@/components/ConnectSky";
 import SiteNavV2 from "@/components/SiteNavV2";
 import RevealOnScroll from "@/components/RevealOnScroll";
 import ScrollRestore from "@/components/ScrollRestore";
@@ -20,7 +20,7 @@ export default function Home() {
             range (same reason Hero comes before Work). JS sets scene height
             = aboutH + connectH so About has room to fully scroll off. */}
         <div className="ac-scene">
-          <ConnectV2 />
+          <ConnectSky />
           <AboutV2 />
         </div>
       </main>

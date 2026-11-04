@@ -181,6 +181,15 @@ const PARALLAX_TARGETS: ParallaxConfig[] = [
   // place as Connect is uncovered. Ends pinned at Connect's bottom with
   // no residual offset — the divider + © line travel as one block.
   { selector: ".foot",                  speed: -0.10, relativeToPageEnd: true, maxShift: 140 },
+  // Night-sky Connect (ConnectSky): same depth as above — the heading +
+  // note column drifts most, the footer and your sketch at the desk move
+  // together (so you never leave the desk line), the still stars least.
+  // Their entrances animate the individual translate/rotate properties,
+  // so this inline transform composes with them instead of fighting.
+  { selector: ".cs-left",               speed: -0.18, relativeToPageEnd: true, maxShift: 220 },
+  { selector: ".cs-foot",               speed: -0.10, relativeToPageEnd: true, maxShift: 140 },
+  { selector: ".cs-me",                 speed: -0.10, relativeToPageEnd: true, maxShift: 140 },
+  { selector: ".cs-star",               speed: -0.06, relativeToPageEnd: true, maxShift: 90 },
 
   // ── Case-page footer (NextProject) ───────────────────────────────────
   // Mirrors the reveal above: the footer is pinned under the case body,

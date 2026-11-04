@@ -30,11 +30,13 @@ export default function CursorFollower() {
     if (!wrap) return;
 
     let raf = 0;
+    let x = 0, y = 0;
 
     const onMove = (e: MouseEvent) => {
-      const x = e.clientX;
-      const y = e.clientY;
-      // schedule the position write on next frame so we batch w/ react renders
+      // keep the newest position; the next frame writes it once, so fast
+      // moves (like drawing on a note) don't trail behind
+      x = e.clientX;
+      y = e.clientY;
       if (!raf) {
         raf = requestAnimationFrame(() => {
           wrap.style.transform = `translate3d(${x}px, ${y}px, 0)`;
