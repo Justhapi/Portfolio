@@ -21,22 +21,21 @@
    (NOTES_INBOX_KEY); nothing shows on the site until you add it there. */
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import ZhName from "@/components/ZhName";
 import SparkleField from "@/components/SparkleField";
 import { STAR_D } from "@/components/starPath";
 import { NOTES, NOTES_INBOX_KEY, type VisitorNote } from "@/components/connectNotes";
 import MeGif, { type MeHandle } from "@/components/MeGif";
+import SideCard from "@/components/SideCard";
+import { SIDE_PROJECTS } from "@/components/sideProjects";
 import { DOODLE_MAX_POINTS, DOODLE_W, encodeDoodle, strokePath, type Pt } from "@/components/doodle";
 
 const EMAIL = "likathleen094@gmail.com";
 const GMAIL = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(EMAIL)}`;
 
-/* PLACEHOLDERS — swap for the real side projects. */
-const PROJECTS = [
-  { id: "p1", label: "Side project", meta: "role · year", note: "your project name + one line" },
-  { id: "p2", label: "Side project", meta: "role · year", note: "your project name + one line" },
-  { id: "p3", label: "Side project", meta: "role · year", note: "your project name + one line" },
-];
+/* Side projects: one still star each (data + images in sideProjects.ts). */
+const PROJECTS = SIDE_PROJECTS;
 
 /* Approved visitor notes live in connectNotes.ts. With none yet, a
    popped star and the board both invite the visitor to write the first. */
@@ -63,17 +62,63 @@ const ButterStar = ({ size = 26 }: { size?: number }) => (
   </svg>
 );
 
-/** Fresh still-star positions every visit, in the open sky right of the
- *  note column and above the footer, kept apart. % units. */
-function scatter(count: number, mobile: boolean) {
-  const box = mobile ? { x0: 40, x1: 90, y0: 62, y1: 84 } : { x0: 48, x1: 90, y0: 12, y1: 70 };
+type Box = { x0: number; y0: number; x1: number; y1: number }; // % of the sky
+
+/** The page's content edges (the same left/right lines the heading and the
+ *  footer sit on), in px from the sky's left. Stars stay between them. */
+function edges(sky: HTMLElement) {
+  const foot = sky.parentElement?.querySelector<HTMLElement>(".cs-foot");
+  const W = sky.clientWidth;
+  if (!foot) return { left: 0, right: W };
+  return { left: foot.offsetLeft, right: foot.offsetLeft + foot.offsetWidth };
+}
+
+/** The parts of the sky that are taken: the heading + note column and you
+ *  at the desk, padded. Layout offsets, so entrance/parallax transforms
+ *  don't skew them. */
+function keepOut(sky: HTMLElement, pad = 18): Box[] {
+  const W = sky.clientWidth || 1, H = sky.clientHeight || 1;
+  return [".cs-left", ".cs-me"].flatMap((sel) => {
+    const el = sky.querySelector<HTMLElement>(sel);
+    if (!el) return [];
+    return [{
+      x0: ((el.offsetLeft - pad) / W) * 100, x1: ((el.offsetLeft + el.offsetWidth + pad) / W) * 100,
+      y0: ((el.offsetTop - pad) / H) * 100, y1: ((el.offsetTop + el.offsetHeight + pad) / H) * 100,
+    }];
+  });
+}
+
+/** Fresh still-star positions every visit: anywhere in the open sky, i.e.
+ *  the whole sky minus the note column and you, kept apart. % units. */
+function scatter(count: number, mobile: boolean, avoid: Box[], x0 = 6, x1 = 94) {
+  const box = { x0, x1, y0: 6, y1: mobile ? 86 : 88 };
   const minD = mobile ? 14 : 16;
   const out: { x: number; y: number }[] = [];
-  for (let tries = 0; out.length < count && tries < 400; tries++) {
+  const free = (p: { x: number; y: number }) => avoid.every((b) => p.x < b.x0 || p.x > b.x1 || p.y < b.y0 || p.y > b.y1);
+  for (let tries = 0; out.length < count && tries < 800; tries++) {
     const p = { x: box.x0 + Math.random() * (box.x1 - box.x0), y: box.y0 + Math.random() * (box.y1 - box.y0) };
-    if (out.every((q) => Math.hypot(q.x - p.x, (q.y - p.y) * 1.4) > minD)) out.push(p);
+    if (free(p) && out.every((q) => Math.hypot(q.x - p.x, (q.y - p.y) * 1.4) > minD)) out.push(p);
   }
   return out;
+}
+
+/** Where a shooting star may start (% from the top of the sky) so its
+ *  straight -64vw/+30vh flight passes BELOW the note column, never across
+ *  it. */
+function shootTop(sky: HTMLElement | null) {
+  if (!sky) return 6 + Math.random() * 20;
+  const W = sky.clientWidth, H = sky.clientHeight;
+  const col = sky.querySelector<HTMLElement>(".cs-left");
+  const slope = (0.3 * window.innerHeight) / (0.64 * window.innerWidth); // px down per px left
+  const startX = edges(sky).right - 28; // the star's centre as it enters, at the right content edge
+  let lo = 4;
+  if (col) {
+    const clearY = col.offsetTop + col.offsetHeight + 28; // just under the options
+    const need = clearY - (startX - (col.offsetLeft + col.offsetWidth)) * slope;
+    lo = Math.max(lo, (need / H) * 100);
+  }
+  lo = Math.min(lo, 62);
+  return lo + Math.random() * Math.min(18, 70 - lo);
 }
 
 /** Damped-spring samples, so motion never stalls. */
@@ -167,7 +212,7 @@ function burst(sky: HTMLElement, x: number, y: number, soft = false) {
 }
 
 /* ── Shooting stars ─────────────────────────────────────────────────── */
-type Shoot = { id: number; top: number };
+type Shoot = { id: number; top: number; right?: number };
 
 /* A passing star flies straight down the diagonal, does one flip midway,
    and leaves a tight stream of sparkle dust drifting back the way it came. */
@@ -270,7 +315,7 @@ function ShootingStar({ s, onDone, onPop }: { s: Shoot; onDone: (id: number) => 
       type="button"
       aria-label="Pop this shooting star to read a note a visitor left"
       className="cs-shoot is-catchable"
-      style={{ top: `${s.top}%` }}
+      style={{ top: `${s.top}%`, right: s.right != null ? `${s.right}px` : undefined }}
       onPointerEnter={() => {
         if (reduced()) return;
         window.clearTimeout(slowTimer.current);
@@ -461,6 +506,18 @@ const PencilIcon = () => (
   </svg>
 );
 
+/* Word limits: notes stay notes, names stay names. */
+const NOTE_WORDS = 80;
+const NAME_WORDS = 4;
+const countWords = (t: string) => (t.trim() ? t.trim().split(/\s+/).length : 0);
+/** Keeps the first `max` words, and whatever you typed between them. */
+function clampWords(t: string, max: number) {
+  const words = t.match(/\S+\s*/g) ?? [];
+  if (words.length <= max) return t;
+  const lead = t.match(/^\s*/)?.[0] ?? "";
+  return lead + words.slice(0, max).join("").replace(/\s+$/, "");
+}
+
 function NoteCard({ onSent, onSend, onMin, hidden, cardRef }: {
   onSent: (from: string, cardEl: HTMLElement) => void;
   /** the moment send is pressed with a message in it */
@@ -511,13 +568,15 @@ function NoteCard({ onSent, onSend, onMin, hidden, cardRef }: {
       </button>
       <label className="cs-note__row">
         <span className="cs-note__label">From</span>
-        <input value={from} onChange={(e) => setFrom(e.target.value)} placeholder="your name" autoComplete="name" />
+        <input value={from} onChange={(e) => setFrom(clampWords(e.target.value, NAME_WORDS))} placeholder="your name" autoComplete="name" maxLength={40} />
       </label>
       <label className="cs-note__body">
         <span className="visually-hidden">Message</span>
         <textarea
+          data-lenis-prevent
           value={msg}
-          onChange={(e) => { setMsg(e.target.value); setErr(false); if (state === "failed") setState("idle"); }}
+          onChange={(e) => { setMsg(clampWords(e.target.value, NOTE_WORDS)); setErr(false); if (state === "failed") setState("idle"); }}
+          aria-describedby="cs-note-count"
           placeholder={pencil ? "" : "leave a note for me (and the next visitor)…"}
           rows={5}
           aria-invalid={err || undefined}
@@ -544,6 +603,11 @@ function NoteCard({ onSent, onSend, onMin, hidden, cardRef }: {
         <span className="visually-hidden" role="status">
           {err ? "Write or draw something before sending." : state === "sending" ? "Sending your note." : ""}
         </span>
+        {msg.trim() && state !== "failed" && (
+          <span id="cs-note-count" className={`cs-note__count${countWords(msg) >= NOTE_WORDS ? " is-full" : ""}`}>
+            {countWords(msg)}/{NOTE_WORDS} words
+          </span>
+        )}
         {state === "failed" && <span className="cs-note__fail" role="alert">didn&rsquo;t send. try again?</span>}
         <button type="submit" className="cs-send" disabled={state === "sending"} aria-busy={state === "sending" || undefined}>
           {state === "sending" ? "sending" : "send"} <Spark />
@@ -602,9 +666,6 @@ function NotesPanel({ onMin, panelRef, hidden }: { onMin: () => void; panelRef: 
         <button type="button" className="cs-note__min cs-note__min--inline" aria-label="Minimize notes" onClick={onMin}>
           <Spark />
         </button>
-        <span className="cs-note__label">
-          {notes.length === 0 ? "no notes yet" : `${notes.length} ${notes.length === 1 ? "note" : "notes"} left here`}
-        </span>
       </div>
       <div ref={boardRef} className="cs-notes__board" data-lenis-prevent tabIndex={0} aria-label="All notes" onScroll={readEdge}>
         {notes.length === 0 && (
@@ -626,6 +687,10 @@ function NotesPanel({ onMin, panelRef, hidden }: { onMin: () => void; panelRef: 
 /* ── The two minimized sparkles and what they open ──────────────────── */
 type Mode = "write" | "read" | null;
 const ORIGIN = { write: "23px 32px", read: "23px 20px" } as const;
+
+/* The open panels rest at this tilt (CSS rotate). The open/close animation
+   ends exactly on it, so nothing jumps once the polaroid has opened. */
+const PANEL_TILT = "-1deg";
 
 function Compose({ onSent, onSend, onRead }: { onSent: (from: string, cardEl: HTMLElement) => void; onSend: () => void; onRead: (open: boolean) => void }) {
   const [mode, setMode] = useState<Mode>(null);
@@ -671,14 +736,14 @@ function Compose({ onSent, onSend, onRead }: { onSent: (from: string, cardEl: HT
         p.animate(
           [
             { opacity: 0, scale: "0.2", rotate: "-8deg", translate: `0 ${dy}px` },
-            { opacity: 1, scale: "1", rotate: "0deg", translate: `0 ${dy}px`, offset: 0.45, easing: "cubic-bezier(0.65, 0, 0.35, 1)" },
-            { opacity: 1, scale: "1", rotate: "0deg", translate: "0 0" },
+            { opacity: 1, scale: "1", rotate: PANEL_TILT, translate: `0 ${dy}px`, offset: 0.45, easing: "cubic-bezier(0.65, 0, 0.35, 1)" },
+            { opacity: 1, scale: "1", rotate: PANEL_TILT, translate: "0 0" },
           ],
           { duration: 640, easing: OUT },
         );
         return;
       }
-      p.animate([{ opacity: 0, scale: "0.2", rotate: "-8deg" }, { opacity: 1, scale: "1", rotate: "0deg" }], { duration: 340, easing: OUT });
+      p.animate([{ opacity: 0, scale: "0.2", rotate: "-8deg" }, { opacity: 1, scale: "1", rotate: PANEL_TILT }], { duration: 340, easing: OUT });
     });
   };
   const close = (refocus = true) => {
@@ -689,7 +754,7 @@ function Compose({ onSent, onSend, onRead }: { onSent: (from: string, cardEl: HT
     if (!p || reduced()) return done();
     busy.current = true;
     p.style.transformOrigin = ORIGIN[m];
-    p.animate([{ opacity: 1, scale: "1", rotate: "0deg" }, { opacity: 0, scale: "0.2", rotate: "-8deg" }], { duration: 200, easing: "cubic-bezier(0.4, 0, 1, 1)", fill: "forwards" })
+    p.animate([{ opacity: 1, scale: "1", rotate: PANEL_TILT }, { opacity: 0, scale: "0.2", rotate: "-8deg" }], { duration: 200, easing: "cubic-bezier(0.4, 0, 1, 1)", fill: "forwards" })
       .finished.then((a) => { done(); requestAnimationFrame(() => a.cancel()); }, done);
   };
 
@@ -871,6 +936,8 @@ function CopyEmail() {
 
 type Shown = { key: number; n: Note; x: number; y: number };
 
+const CARD_EXIT_MS = 160; // matches the CSS exit
+
 export default function ConnectSky() {
   const meRef = useRef<MeHandle | null>(null);
   const sectionRef = useRef<HTMLElement | null>(null);
@@ -882,23 +949,83 @@ export default function ConnectSky() {
   const noteIdx = useRef(0);
   // placed after mount (random per visit; avoids a server/client mismatch)
   const [spots, setSpots] = useState<{ x: number; y: number }[] | null>(null);
-  useEffect(() => { setSpots(scatter(PROJECTS.length, window.innerWidth <= 760)); }, []);
+  useEffect(() => {
+    const sky = skyRef.current;
+    if (!sky) { setSpots(scatter(PROJECTS.length, window.innerWidth <= 760, [])); return; }
+    // inside the content edges, with room for the star's glow
+    const e = edges(sky), W = sky.clientWidth || 1;
+    setSpots(scatter(PROJECTS.length, window.innerWidth <= 760, keepOut(sky), ((e.left + 24) / W) * 100, ((e.right - 24) / W) * 100));
+  }, []);
 
   // opening "read everyone's notes" clears any popped note
   const [readAll, setReadAll] = useState(false);
   useEffect(() => { if (readAll) setShown([]); }, [readAll]);
 
-  // side-project card that follows the cursor (same as the hero bag)
+  // side-project card: opens centred on its star and stays put; closes a
+  // moment after the cursor leaves both the star and the card
   const [hover, setHover] = useState<string | null>(null);
-  const pillRef = useRef<HTMLDivElement | null>(null);
-  const showPill = (id: string, x: number, y: number) => {
-    setHover(id);
-    const el = pillRef.current;
-    if (!el) return;
-    const h = el.offsetHeight || 250;
-    el.style.left = `${Math.min(x + 14, window.innerWidth - 262)}px`;
-    el.style.top = `${y - h - 8 < 12 ? y + 18 : y - h - 8}px`; // flip below when there's no room above
+  const [cardAt, setCardAt] = useState<{ left: number; top: number; width: number; ox: number; oy: number } | null>(null);
+  const cardRef = useRef<HTMLDivElement | null>(null);
+  const closeT = useRef<number | undefined>(undefined);
+  const keep = () => window.clearTimeout(closeT.current);
+  /* Closing plays the card's exit (a class the CSS animates), then unmounts. */
+  const leaveT = useRef<number | undefined>(undefined);
+  const dismiss = () => {
+    const el = cardRef.current;
+    if (!el || reduced()) { setHover(null); return; }
+    el.classList.add("is-leaving");
+    window.clearTimeout(leaveT.current);
+    leaveT.current = window.setTimeout(() => setHover(null), CARD_EXIT_MS);
   };
+  const closeSoon = () => { keep(); closeT.current = window.setTimeout(dismiss, 220); };
+  /* Placed in viewport coordinates and rendered into <body> (a portal), so
+     it can sit above the fixed nav when the two overlap. Centred on the
+     star, kept between the page's content edges and on screen. */
+  const place = (star: HTMLElement, H: number) => {
+    const sky = skyRef.current;
+    const W = Math.min(400, window.innerWidth - 32);
+    const r = star.getBoundingClientRect();
+    const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+    const foot = sky?.parentElement?.querySelector<HTMLElement>(".cs-foot")?.getBoundingClientRect();
+    const eL = foot ? foot.left : 16, eR = foot ? foot.right : window.innerWidth - 16;
+    const left = Math.min(Math.max(cx - W / 2, eL), eR - W);
+    const top = Math.min(Math.max(cy - H / 2, 12), window.innerHeight - H - 12);
+    return { left, top, width: W, ox: cx - left, oy: cy - top };
+  };
+  const openCard = (id: string, star: HTMLElement) => {
+    keep();
+    // re-entering mid-exit: cancel it and stay open
+    window.clearTimeout(leaveT.current);
+    cardRef.current?.classList.remove("is-leaving");
+    const W = Math.min(400, window.innerWidth - 32);
+    setCardAt(place(star, cardRef.current?.offsetHeight || Math.round(W * 0.95)));
+    setHover(id);
+  };
+  useEffect(() => () => window.clearTimeout(closeT.current), []);
+  // re-centre once the card's real height is known
+  useLayoutEffect(() => {
+    if (!hover || !cardRef.current || !skyRef.current) return;
+    const star = skyRef.current.querySelector<HTMLElement>(`[data-star="${hover}"]`);
+    if (!star) return;
+    const next = place(star, cardRef.current.offsetHeight);
+    setCardAt((c) => (c && (Math.abs(c.top - next.top) > 1 || Math.abs(c.oy - next.oy) > 1) ? next : c));
+    // it's pinned to the screen, so scrolling the page away closes it
+    const off = () => dismiss();
+    window.addEventListener("scroll", off, { passive: true, once: true });
+    return () => window.removeEventListener("scroll", off);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hover]);
+  // touch: tap outside closes it
+  useEffect(() => {
+    if (!hover) return;
+    const off = (ev: PointerEvent) => {
+      const t = ev.target as Node;
+      if (cardRef.current?.contains(t) || (t as HTMLElement).closest?.(".cs-star")) return;
+      dismiss();
+    };
+    document.addEventListener("pointerdown", off);
+    return () => document.removeEventListener("pointerdown", off);
+  }, [hover]);
 
   const done = useCallback((id: number) => setShoots((s) => s.filter((x) => x.id !== id)), []);
 
@@ -918,7 +1045,8 @@ export default function ConnectSky() {
     const W = 270, H = 112;
     const col = sky.querySelector(".cs-left")?.getBoundingClientRect();
     const minX = col && sr.width > 760 ? col.right - sr.left + 24 : 16;
-    const x = Math.min(Math.max(cx - W / 2, minX), sr.width - W - 16);
+    const ed = edges(sky);
+    const x = Math.min(Math.max(cx - W / 2, minX, ed.left), Math.min(sr.width - W - 16, ed.right - W));
     const y = Math.min(Math.max(cy - H / 2, 60), sr.height - H - 16);
     const n = PAST_NOTES.length ? PAST_NOTES[noteIdx.current++ % PAST_NOTES.length] : FIRST_NOTE;
     setShown([{ key: Date.now(), n, x, y }]);
@@ -956,7 +1084,13 @@ export default function ConnectSky() {
   // one passing shooting star at a time
   useEffect(() => {
     if (reduced() || !starsOn) return;
-    const spawn = () => setShoots((s) => (s.length ? s : [{ id: nextId.current++, top: 6 + Math.random() * 20 }]));
+    const spawn = () => setShoots((s) => {
+      if (s.length) return s;
+      const sky = skyRef.current;
+      // enters right at the content edge instead of off the side of the screen
+      const right = sky ? sky.clientWidth - edges(sky).right : undefined;
+      return [{ id: nextId.current++, top: shootTop(sky), right }];
+    });
     const first = window.setTimeout(spawn, 300);
     const t = window.setInterval(spawn, 4600);
     return () => { window.clearTimeout(first); window.clearInterval(t); };
@@ -994,12 +1128,13 @@ export default function ConnectSky() {
             type="button"
             className={`cs-star${hover === p.id ? " is-active" : ""}`}
             style={{ left: `${spots[i].x}%`, top: `${spots[i].y}%` }}
-            aria-label={`${p.label}: ${p.note}`}
-            onMouseEnter={(e) => showPill(p.id, e.clientX, e.clientY)}
-            onMouseMove={(e) => showPill(p.id, e.clientX, e.clientY)}
-            onMouseLeave={() => setHover(null)}
-            onFocus={(e) => { const r = e.currentTarget.getBoundingClientRect(); showPill(p.id, r.right, r.top + r.height / 2); }}
-            onBlur={() => setHover(null)}
+            data-star={p.id}
+            aria-label={`${p.name}: ${p.what}${p.event ? `, ${p.event}` : ""}`}
+            aria-expanded={hover === p.id}
+            onMouseEnter={(e) => openCard(p.id, e.currentTarget)}
+            onMouseLeave={closeSoon}
+            onFocus={(e) => openCard(p.id, e.currentTarget)}
+            onClick={(e) => (hover === p.id ? dismiss() : openCard(p.id, e.currentTarget))}
           >
             <Spark />
           </button>
@@ -1016,21 +1151,19 @@ export default function ConnectSky() {
           <p className="visually-hidden" role="status" aria-live="polite">{sentMsg}</p>
         </div>
         <MeGif ref={meRef} />
-      </div>
-
-      <div ref={pillRef} className={`hover-bag__pill cs-pill${hover ? " is-on" : ""}`} aria-hidden="true">
-        <div className="hover-bag__pill-inner cs-pill__inner">
-          {(() => {
-            const p = PROJECTS.find((x) => x.id === hover) ?? PROJECTS[0];
-            return (
-              <div className="cs-pill__card">
-                <span className="cs-pill__photo">{p.label}</span>
-                <p className="cs-pill__text">{p.note}</p>
-                <p className="cs-past__meta"><span>{p.meta}</span></p>
-              </div>
-            );
-          })()}
-        </div>
+        {hover && cardAt && typeof document !== "undefined" && (() => {
+          const p = PROJECTS.find((x) => x.id === hover);
+          return p ? createPortal(
+            <SideCard
+              p={p}
+              cardRef={cardRef}
+              style={{ left: cardAt.left, top: cardAt.top, width: cardAt.width, ["--ox" as string]: `${cardAt.ox}px`, ["--oy" as string]: `${cardAt.oy}px` }}
+              onEnter={keep}
+              onLeave={closeSoon}
+            />,
+            document.body,
+          ) : null;
+        })()}
       </div>
 
       {/* data-slug: the nav's Connect submenu scrolls to these */}

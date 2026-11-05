@@ -144,7 +144,7 @@ const PARALLAX_TARGETS: ParallaxConfig[] = [
   // Capped: the cover is fully hidden after ~1 viewport of scroll.
   { selector: ".case-kicker",           speed: -0.32, baseRotate: "-2deg", maxShift: 360 },
   { selector: ".case-title",            speed: -0.30, maxShift: 360 },
-  { selector: ".case-meta",             speed: -0.26, maxShift: 320 },
+  { selector: ".case-details",          speed: -0.26, maxShift: 320 },
   { selector: ".case-subtitle",         speed: -0.22, maxShift: 280 },
   { selector: ".case-hero-image",       speed: -0.12, maxShift: 160 },
 

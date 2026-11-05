@@ -9,6 +9,7 @@ export default function CaseCover({
   hideHero = false,
   heroVideoSrc,
   heroVideoPoster,
+  metaLabels = ["Timeline", "Duration", "Role"],
 }: {
   title: string;
   meta: string;
@@ -29,13 +30,23 @@ export default function CaseCover({
   /** Optional still image shown before the video loads / as fallback for
    *  browsers that don't support the video format. */
   heroVideoPoster?: string;
+  /** Labels for the " · "-separated parts of `meta`, shown as a details list. */
+  metaLabels?: string[];
 }) {
+  const parts = meta.split("·").map((t) => t.trim()).filter(Boolean);
   return (
     <header className="case-cover">
       <div className="case-cover-inner">
         {kicker && <div className="case-kicker">{kicker}</div>}
         <h1 className="case-title">{title}</h1>
-        <div className="case-meta">{meta}</div>
+        <dl className="case-details">
+          {parts.map((v, i) => (
+            <div key={i} className="case-details__item">
+              <dt>{metaLabels[i] ?? ""}</dt>
+              <dd>{v}</dd>
+            </div>
+          ))}
+        </dl>
         <div className="case-subtitle">{subtitle}</div>
         {!hideHero && (
           <div className="case-hero-image">

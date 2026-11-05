@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { FoodBento, TripsWindow } from "./BagTray";
 
 /**
  * HoverBag — layered bag illustration.
@@ -1086,26 +1087,11 @@ function PillFriends() {
 }
 
 function PillFood() {
-  return (
-    <PillPolaroid
-      label="Photo — food"
-      meta="one dish at a time"
-      rotate={4}
-      caption="always down to share a plate"
-    />
-  );
+  return <FoodBento />;
 }
 
 function PillTravel() {
-  return (
-    <PillPolaroidDeck
-      cards={[
-        { label: "Photo — China", meta: "China", caption: "where it started", rotate: -3 },
-        { label: "Photo — Japan", meta: "Japan", caption: "spring trip", rotate: 2 },
-        { label: "Photo — Hong Kong", meta: "Hong Kong", caption: "food + family", rotate: -2 },
-      ]}
-    />
-  );
+  return <TripsWindow />;
 }
 
 function PillGames() {

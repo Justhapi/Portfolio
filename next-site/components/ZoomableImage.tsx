@@ -8,7 +8,7 @@ import { useRef, useState, useCallback, useEffect } from "react";
  * Wraps an <img> in a fixed-aspect frame. The image can be:
  *   - dragged with the mouse (pan)
  *   - zoomed with the scroll wheel (zoom is centered on the cursor)
- *   - reset to 1× via the small "reset" button in the corner
+ *   - zoomed in 3× / back out with the magnifier button in the corner
  *
  * On touch devices, one-finger drag pans; pinch/spread is left to the
  * browser default (no custom two-touch handler yet — can be added
@@ -33,6 +33,9 @@ type Props = {
   noDrag?: boolean;
 };
 
+/** "Zoom in by a lot": one press goes straight here. */
+const TOGGLE_SCALE = 3;
+
 const MIN_SCALE = 1;
 const MAX_SCALE = 5;
 const WHEEL_SENSITIVITY = 0.0018; // higher = zooms faster per wheel tick
@@ -52,8 +55,8 @@ export default function ZoomableImage({
   // Hint shows only when the cursor is INSIDE the container AND the
   // user hasn't interacted yet. First interaction (wheel, mousedown,
   // touch) hides the hint permanently for this session.
-  const [isHovering, setIsHovering] = useState(false);
-  const [hasInteracted, setHasInteracted] = useState(false);
+  const [, setIsHovering] = useState(false);
+  const [, setHasInteracted] = useState(false);
 
   // Mirrors of the transform state accessible synchronously inside
   // native event handlers (React state closure is stale after the
@@ -199,6 +202,8 @@ export default function ZoomableImage({
     // stationary near an edge (RTS-style edge scroll).
     const frame = frameRef.current;
     if (!frame) return;
+    // resting on the zoom button shouldn't drift the image toward that corner
+    if ((e.target as HTMLElement).closest(".zoom-btn")) { cursorRef.current.nx = 0; cursorRef.current.ny = 0; return; }
     const rect = frame.getBoundingClientRect();
     cursorRef.current.nx = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
     cursorRef.current.ny = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
@@ -296,12 +301,20 @@ export default function ZoomableImage({
     setTy((prevY) => clampTranslation(0, prevY + dy, scale).y);
   };
 
-  const reset = () => {
-    setScale(1);
-    setTx(0);
-    setTy(0);
+  // a short glide only for button / tap zooms (wheel and drag stay 1:1)
+  const [gliding, setGliding] = useState(false);
+  const glide = () => { setGliding(true); window.setTimeout(() => setGliding(false), 360); };
+  const zoomTo = (s: number, cx = 0, cy = 0) => {
+    // keep the point at (cx, cy) from the frame centre under the cursor
+    const ratio = s / scaleRef.current;
+    const c = clampTranslation(cx - (cx - txRef.current) * ratio, cy - (cy - tyRef.current) * ratio, s);
+    scaleRef.current = s; txRef.current = s === 1 ? 0 : c.x; tyRef.current = s === 1 ? 0 : c.y;
+    setScale(s); setTx(txRef.current); setTy(tyRef.current);
+    setHasInteracted(true);
+    glide();
   };
-
+  const reset = () => zoomTo(1);
+  const toggle = () => (scaleRef.current > 1.02 ? reset() : zoomTo(TOGGLE_SCALE));
   // Global mouseup so the drag ends even if the cursor leaves the frame
   // before button release.
   useEffect(() => {
@@ -318,7 +331,7 @@ export default function ZoomableImage({
     <div className="zoomable-wrap">
       <div
         ref={frameRef}
-        className={`zoomable-frame${draggingRef.current ? " is-dragging" : ""}`}
+        className={`zoomable-frame${draggingRef.current ? " is-dragging" : ""}${isZoomed ? " is-zoomed" : ""}${gliding ? " is-gliding" : ""}`}
         style={{
           aspectRatio: `${aspectRatio}`,
           /* Pair with .zoomable-frame's max-height: 62vh in CSS.
@@ -368,29 +381,31 @@ export default function ZoomableImage({
             transform: `translate(${tx}px, ${ty}px) scale(${scale})`,
           }}
         />
-        {/* Hint chip — only shown while cursor is inside the container AND
-            no interaction has happened yet. First wheel/mousedown/touch
-            flips hasInteracted permanently and the hint stays gone. */}
-        <div
-          className={`zoomable-hint${isHovering && !hasInteracted ? "" : " is-hidden"}`}
-          aria-hidden="true"
-        >
-          drag · scroll to zoom
-        </div>
-        {/* Zoom-out button — appears only when zoomed/panned. Snaps
-            back to 1× with position reset. */}
-        {isZoomed && (
-          <button
-            type="button"
-            className="zoomable-reset"
-            onClick={reset}
-            aria-label="Zoom out to 1×"
-          >
-            zoom out
-          </button>
-        )}
+        {/* one press zooms in a lot; press again to zoom back out */}
+        <ZoomButton zoomed={isZoomed} onClick={toggle} />
       </div>
       {caption && <figcaption>{caption}</figcaption>}
     </div>
+  );
+}
+
+/** Magnifier with + (zoom in) or − (zoom out). */
+function ZoomButton({ zoomed, onClick }: { zoomed: boolean; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      className={`zoom-btn${zoomed ? " is-out" : ""}`}
+      onClick={(e) => { e.stopPropagation(); onClick(); }}
+      onMouseDown={(e) => e.stopPropagation()}
+      aria-label={zoomed ? "Zoom out" : "Zoom in"}
+      title={zoomed ? "Zoom out" : "Zoom in"}
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <circle cx="10.5" cy="10.5" r="6.5" />
+        <path d="M15.5 15.5 20 20" />
+        <path d="M7.5 10.5h6" />
+        {!zoomed && <path d="M10.5 7.5v6" />}
+      </svg>
+    </button>
   );
 }

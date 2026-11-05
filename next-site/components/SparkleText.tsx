@@ -6,7 +6,7 @@ import type { CSSProperties } from "react";
  * "ink on paper" texture in the sketch/japandi aesthetic.
  *
  * Variants:
- *   - gem      ✦ 𖥔
+ *   - gem      ✦ ✧
  *   - mini     . ｡ .
  *   - splatter tiny asymmetric ink blob + satellite specks (SVG)
  */

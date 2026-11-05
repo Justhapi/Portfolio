@@ -46,7 +46,7 @@ function freshFields(slowdown = 1, lifeScale = 1, scale = 1): Omit<SlotData, "id
   /* Variant selection:
        ~12.5%  splatter — rare hand-drawn ink blob for texture accent
        ~40%    mini     — soft dot cycle
-       ~47.5%  gem      — the standard ✦ 𖥔 sparkle
+       ~47.5%  gem      — the standard ✦ ✧ sparkle
      Splatter is intentionally rare so it reads as an accidental
      ink-fleck rather than a repeating decorative element. */
   const roll = Math.random();

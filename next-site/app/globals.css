@@ -7814,11 +7814,8 @@ em.it { font-style: italic; }
   max-width: 100%;
   margin-inline: auto;
   overflow: hidden;
-  /* Background matches the Frogslayer visual palette (#F6EEE6, warm
-     cream) so any letterboxing (from object-fit: contain when the image
-     aspect ratio doesn't perfectly match the frame's) blends invisibly
-     into the page instead of showing as a dark bar under the image. */
-  background: #F6EEE6;
+  /* No box behind the art: the image sits straight on the page. */
+  background: transparent;
   border-radius: 6px;
   cursor: grab;
   /* Prevent the browser from hijacking scroll — wheel events are
@@ -7889,44 +7886,21 @@ em.it { font-style: italic; }
   will-change: transform;
   pointer-events: none;
 }
-.zoomable-hint {
-  position: absolute;
-  bottom: 10px;
-  left: 10px;
-  padding: 4px 8px;
-  background: rgba(0, 0, 0, 0.55);
-  color: rgba(255, 255, 255, 0.82);
-  font-family: var(--f-mono);
-  font-size: 10px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  border-radius: 3px;
-  pointer-events: none;
-  transition: opacity 240ms ease;
-}
-.zoomable-hint.is-hidden { opacity: 0; }
-.zoomable-reset {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  padding: 6px 12px;
-  background: rgba(255, 255, 255, 0.92);
-  color: #1a1a1a;
-  font-family: var(--f-mono);
-  font-size: 10px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  border: 0;
-  border-radius: 3px;
-  cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
-  transition: background 160ms ease, transform 160ms ease;
-}
-.zoomable-reset:hover { background: #fff; transform: translateY(-1px); }
-.zoomable-reset:focus-visible {
-  outline: 2px solid var(--accent-soft);
-  outline-offset: 2px;
-}
+/* Zoom: one magnifier in the top-right corner (+ zooms in 3×, − zooms
+   back out). Shows on hover, stays while zoomed, always on touch. */
+.zoom-btn { position: absolute; top: 10px; right: 10px; display: grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 50%;
+  background: rgb(20 22 27 / 0.72); color: #F6EFDC; cursor: pointer; opacity: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  transition: background 150ms ease-out, opacity 180ms ease-out, scale 150ms ease-out; }
+.zoom-btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
+.zoomable-frame:hover .zoom-btn, .zoomable-frame.is-zoomed .zoom-btn, .zoom-btn:focus-visible { opacity: 1; }
+.zoom-btn:hover { background: rgb(20 22 27 / 0.9); }
+.zoom-btn:active { scale: 0.94; }
+.zoom-btn:focus-visible { outline: 2px solid var(--accent-soft); outline-offset: 2px; }
+@media (hover: none) { .zoom-btn { opacity: 1; } }
+/* button zooms glide; wheel and drag stay 1:1 */
+.zoomable-frame.is-gliding .zoomable-img { transition: transform 340ms cubic-bezier(0.22, 1, 0.36, 1); }
+@media (prefers-reduced-motion: reduce) { .zoomable-frame.is-gliding .zoomable-img { transition: none; } }
 .case-section figcaption {
   font-family: var(--f-sans);
   font-weight: 500;
@@ -7988,7 +7962,7 @@ em.it { font-style: italic; }
 }
 @keyframes sparkleGem {
   0%   { content: "✦"; }
-  50%  { content: "𖥔"; }
+  50%  { content: "✧"; }
 }
 
 /* mini: .｡. — soft dot cycle */
@@ -9461,7 +9435,8 @@ html.hero-vt::view-transition-image-pair(hero-back) {
      the Chinese name never moves the text or the polaroid. */
   .hero-greeting { width: 484px; max-width: none; flex: none; }
   /* the focus line wraps to the width of "an ArtistDesigner" */
-  .hero-greeting .hero-focus { width: 271px; max-width: none; text-align: center; text-wrap: balance; }
+  /* two balanced lines, left-aligned with "an" */
+  .hero-greeting .hero-focus { width: 340px; max-width: none; text-align: left; text-wrap: balance; }
 }
 @media (max-width: 820px) {
   /* phones: the greeting shrinks to the "an ArtistDesigner" row; the
@@ -9522,4 +9497,279 @@ html.hero-vt::view-transition-image-pair(hero-back) {
 @media (hover: hover) and (pointer: fine) {
   .folder-art:hover { transform: none; }
   .folder-art:hover .folder-tilt-wrap { translate: 0 -3px; }
+}
+.hero-focus strong { white-space: nowrap; }
+/* note word count, next to send */
+.cs-note__count { font: 500 12px/1 var(--f-sans); color: rgb(246 239 220 / 0.5); font-variant-numeric: tabular-nums; }
+.cs-note__count.is-full { color: var(--accent-soft); }
+/* Connect's ambient twinkles stay between the same content edges as the
+   project stars and shooting stars. */
+.connect.cs .connect-sparkles { left: max(32px, calc((100vw - 1136px) / 2)); right: max(32px, calc((100vw - 1136px) / 2)); width: auto; }
+@media (max-width: 760px) { .connect.cs .connect-sparkles { left: 24px; right: 24px; } }
+
+/* ══ Side-project card (Connect) — opens centred on its star ══════════ */
+.cs-side { position: fixed; z-index: 5000; padding: 22px 22px 18px; border-radius: 20px;
+  background: #20232A; color: #F6EFDC; border: 1px solid rgb(246 239 220 / 0.12);
+  box-shadow: 0 24px 48px -20px rgba(0,0,0,0.7);
+  animation: csSideIn 220ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+@keyframes csSideIn { from { opacity: 0; scale: 0.96; } to { opacity: 1; scale: 1; } }
+.cs-side p { margin: 0; }
+.cs-side__event { font: 500 clamp(19px, 2vw, 23px)/1.15 var(--f-sans); letter-spacing: -0.01em; }
+.cs-side__award { margin-top: 3px !important; font: 400 13.5px/1.3 var(--f-sans); color: rgb(246 239 220 / 0.85); }
+.cs-side__row { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin-top: 14px; padding-bottom: 12px;
+  border-bottom: 1px solid rgb(232 199 124 / 0.55); }
+.cs-side__name { font: 500 22px/1.1 var(--f-sans); }
+.cs-side__what { margin-top: 2px !important; font: 400 13px/1.3 var(--f-sans); color: rgb(246 239 220 / 0.8); }
+.cs-side__role { display: inline-flex; align-items: center; gap: 8px; flex: none; font: 400 15px/1 var(--f-sans); }
+.cs-side__role .c-spark { width: 18px; height: 18px; fill: #F8E0A8; stroke: #D59B6E; stroke-width: 4; }
+.cs-side__preview { position: relative; margin: 14px 0; aspect-ratio: 16 / 10; overflow: hidden; border-radius: 4px; background: #1A1C22; }
+.cs-side__shot { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.cs-side__belt { position: relative; overflow: hidden; padding: 12px 0 4px; border-top: 1px solid rgb(232 199 124 / 0.55);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); }
+.cs-side__track { display: flex; align-items: center; gap: 6px; width: max-content; padding: 2px 0; }
+.cs-side__thumb { flex: none; height: 56px; padding: 0; border: 0; border-radius: 3px; overflow: hidden; background: #1A1C22; cursor: zoom-in;
+  outline: 1.5px solid transparent; outline-offset: 1px; transition: outline-color 150ms ease-out, opacity 150ms ease-out; }
+.cs-side__thumb img { display: block; height: 100%; width: auto; }
+.cs-side__thumb.is-on { outline-color: #E8C77C; }
+.cs-side__thumb:focus-visible { outline-color: #F6EFDC; }
+
+/* the preview: case-study zoom (scroll to zoom, drag to pan, reset) */
+.cs-side__preview { aspect-ratio: auto; background: none; overflow: visible; }
+.cs-side__preview .zoomable-frame { aspect-ratio: 16 / 10 !important; max-height: none; background: transparent; border-radius: 4px; }
+
+/* the belt drifts on its own, pausing while you're on it */
+/* (driven from SideCard.tsx: a real scroller, so the wheel and swipes work) */
+.cs-side__belt { overflow-x: auto; overflow-y: hidden; scrollbar-width: none; overscroll-behavior-x: contain; }
+.cs-side__belt::-webkit-scrollbar { display: none; }
+@keyframes csBelt { to { translate: calc(-50% - 3px) 0; } }
+
+/* the shot grows up out of the thumbnail you're on */
+.cs-side__zoom { animation: csShotLift 260ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+@keyframes csShotLift { from { opacity: 0; scale: 0.18; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .cs-side, .cs-side__zoom { animation: none !important; }
+}
+@media (max-width: 760px) {
+  .cs-side { padding: 16px 16px 12px; border-radius: 16px; }
+  .cs-side__name { font-size: 19px; }
+  .cs-side__thumb { height: 46px; }
+}
+/* An open note or notes board sits above the side-project stars, so a
+   star underneath can't be hovered (and open its card) through it. */
+.cs-left:has(.cs-compose.is-write, .cs-compose.is-read) { z-index: 6; }
+
+/* Side-project card spacing, on an 8pt rhythm: tight inside a group
+   (event + award, name + line), a bigger step between groups. */
+.cs-side { padding: 24px 24px 20px; }
+.cs-side__award { margin-top: 4px !important; }
+.cs-side__row { margin-top: 16px; padding-bottom: 16px; align-items: center; }
+.cs-side__what { margin-top: 4px !important; }
+.cs-side__preview { margin: 16px 0; }
+.cs-side__belt { padding: 12px 0 4px; }
+.cs-side__track { gap: 8px; }
+@media (max-width: 760px) { .cs-side { padding: 16px 16px 12px; } }
+
+/* ══ Case pages: hero, section numbers, outcome, stats ═════════════════
+   Hero "Fill": title, summary and details on the left, stretched to the
+   cover's height (details level with its bottom edge); the cover on the
+   right at the videos' own 720 × 432 shape. */
+.case-cover-inner { max-width: 1136px; padding-inline: 40px; }
+.case-title { text-align: left; min-height: 0; display: block; margin: 0; }
+.case-subtitle { font-family: var(--f-sans); font-weight: 400; font-size: 16px; line-height: 1.55; color: rgb(var(--hero-fg-rgb) / 0.72); text-align: left; margin: 0; }
+.case-details { display: flex; flex-wrap: wrap; gap: 12px 28px; margin: 0; padding-top: 16px; border-top: 1px solid rgb(var(--hero-fg-rgb) / 0.16);
+  animation: caseFadeUp 500ms var(--ease-out-quart) 800ms backwards; }
+.case-details__item { display: grid; gap: 4px; }
+.case-details dt { font: 500 13px/1.4 var(--f-sans); color: rgb(var(--hero-fg-rgb) / 0.55); }
+.case-details dd { margin: 0; font: 500 15px/1.4 var(--f-sans); color: var(--hero-fg); }
+.case-hero-image { aspect-ratio: 720 / 432; height: auto; width: 100%; max-width: none; margin: 0; background: none; box-shadow: 0 24px 48px -24px rgba(0,0,0,0.6); }
+.case-cover-inner { display: grid; row-gap: 18px; }
+@media (min-width: 821px) {
+  .case-title { font-size: clamp(32px, 3.4vw, 46px); line-height: 1.05; }
+  .case-cover-inner:has(> .case-hero-image) { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); grid-template-rows: auto 1fr auto; column-gap: 56px; row-gap: 0; }
+  .case-cover-inner:has(> .case-hero-image) > .case-title { grid-column: 1; grid-row: 1; }
+  .case-cover-inner:has(> .case-hero-image) > .case-subtitle { grid-column: 1; grid-row: 2; margin-top: 18px; }
+  .case-cover-inner:has(> .case-hero-image) > .case-details { grid-column: 1; grid-row: 3; }
+  .case-cover-inner:has(> .case-hero-image) > .case-hero-image { grid-column: 2; grid-row: 1 / 4; }
+  /* no cover (NDA pages): one left-aligned column */
+  .case-cover-inner:not(:has(> .case-hero-image)) .case-title { max-width: 22ch; }
+  .case-cover-inner:not(:has(> .case-hero-image)) .case-subtitle { max-width: 62ch; }
+}
+
+/* Section headings: the star, tilted, with the outlined number running from
+   its centre out past its right side. */
+.case-section h2 { position: relative; }
+.case-section h2::before {
+  content: ""; width: 52px; height: 52px; flex: none; padding: 0; border-radius: 0; box-shadow: none; margin-right: 30px;
+  background: var(--accent-soft); rotate: -14deg; transform: none;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M48 6 C48 26 26 48 6 48 Q2 50 6 52 C26 52 48 74 48 94 Q50 98 52 94 C52 74 74 52 94 52 Q98 50 94 48 C74 48 52 26 52 6 Q50 2 48 6 Z'/%3E%3C/svg%3E") center / contain no-repeat;
+          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M48 6 C48 26 26 48 6 48 Q2 50 6 52 C26 52 48 74 48 94 Q50 98 52 94 C52 74 74 52 94 52 Q98 50 94 48 C74 48 52 26 52 6 Q50 2 48 6 Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  animation: caseStarIn 480ms var(--ease-out-quart) backwards;
+}
+@keyframes caseStarIn { from { opacity: 0; } }
+.case-section h2::after {
+  content: counter(case-section, decimal-leading-zero);
+  position: absolute; left: 24px; top: 50%; translate: 0 -46%; z-index: 1;
+  font: 800 34px/1 var(--f-display); letter-spacing: -0.01em;
+  color: var(--bg); -webkit-text-stroke: 1.6px var(--fg); paint-order: stroke fill;
+}
+
+/* Outcome: the result as a big left-aligned statement; the timeline line
+   (bigger, for a skim) and the detail paragraph stacked beside it. */
+.outcome-callout { background: none; border-radius: 0; padding: 0; gap: 8px; }
+.outcome-callout .outcome-callout__meta { text-align: left; font: 600 clamp(18px, 1.6vw, 21px)/1.35 var(--f-sans); color: var(--accent-on-cream); }
+.outcome-callout .outcome-callout__stat { text-align: left; font: 500 clamp(22px, 2.2vw, 28px)/1.3 var(--f-sans); letter-spacing: -0.01em; max-width: 30ch; }
+@media (min-width: 821px) {
+  .case-section:has(> .outcome-callout) { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); column-gap: 56px; }
+  .case-section:has(> .outcome-callout) > *,
+  .case-section:has(> .outcome-callout)::after { grid-column: 1 / -1; }
+  .case-section:has(> .outcome-callout) > .outcome-callout { display: contents; }
+  .outcome-callout .outcome-callout__stat { grid-column: 1; grid-row: 2 / 4; align-self: start; }
+  .outcome-callout .outcome-callout__meta { grid-column: 2; grid-row: 2; align-self: start; margin-bottom: 14px; }
+  .case-section:has(> .outcome-callout) > .outcome-callout + p { grid-column: 2; grid-row: 3; align-self: start; margin: 0; }
+}
+
+/* "+ 4": the figure big, its label under it */
+.case-equation-text { display: grid; grid-template-columns: auto; gap: 2px; margin: 24px 0 32px; }
+.case-equation-text b { order: 0; font: 600 56px/1 var(--f-sans); letter-spacing: -0.02em; color: var(--accent-on-cream); }
+.case-equation-text span { order: 1; font: 400 14px/1.4 var(--f-sans); color: rgb(var(--fg-rgb) / 0.6); }
+/* process steps: "01 / … 02 / …" */
+.case-shift { counter-reset: cs; gap: 8px 28px; }
+.case-shift > span:not(.case-shift__arrow) { counter-increment: cs; box-shadow: none; padding: 0; background: none; font: 600 17px/1.4 var(--f-sans); color: rgb(var(--fg-rgb) / 0.55); }
+.case-shift > span:not(.case-shift__arrow)::before { content: counter(cs, decimal-leading-zero) " / "; font-weight: 500; color: var(--accent-on-cream); }
+.case-shift > span.is-key { color: var(--fg); background: none; }
+.case-shift > .case-shift__arrow { display: none; }
+
+/* ══ Home page, in the case pages' voice ══════════════════════════════
+   K2D, normal case, no tracking; one accent; the tilted star as the
+   only marker. */
+/* nav: no filled pill; the current section is marked by the tilted star */
+.nav-pill-highlight { opacity: 0 !important; }
+.nav-link { border-radius: 0; }
+.nav-link .nav-spark { width: 13px; height: 13px; opacity: 0.35; rotate: -14deg; }
+.nav-link.active .nav-spark { opacity: 1; fill: var(--accent-soft); scale: 1.3; }
+/* the subheads only repeated their headings */
+.section-subhead { display: none; }
+/* About headline: one accent phrase, not two */
+.about-prose .lead em.de:first-of-type { color: inherit; }
+/* 3 · skill tags: sans, normal case, no tracking */
+.folder .meta { font-family: var(--f-sans); font-size: 13px; letter-spacing: 0; text-transform: none; color: rgb(var(--fg-rgb) / 0.6); }
+/* 4 · one bold phrase per summary: the first; the rest read as body */
+.folder .blurb strong ~ strong { font-weight: inherit; color: inherit; }
+/* 5 · read time: plain text, not a dark pill */
+.read-pill { background: var(--bg); box-shadow: 0 2px 8px rgba(0,0,0,0.08); padding: 6px 10px; border-radius: 6px;
+  font: 600 14px/1 var(--f-sans); letter-spacing: 0; text-transform: none; color: var(--accent-on-cream); }
+/* 7 + 8 · footer: sans like the case details */
+.cs-handle { font: 500 13px/1 var(--f-sans); letter-spacing: 0; }
+.cs-links a { font: 600 15px/1 var(--f-sans); letter-spacing: 0; text-transform: none; }
+
+
+/* ══ Side-project card, refined ══════════════════════════════════════
+   One title (the project), the role beside it; a one-line description;
+   the event and award as a label/value row like the case-page details.
+   14px corners, a hairline edge and a soft shadow instead of a float;
+   everything on an 8pt rhythm. */
+.cs-side { padding: 20px 20px 16px; border-radius: 14px; background: #1C1F25; border: 1px solid rgb(246 239 220 / 0.1);
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.04) inset, 0 12px 32px -12px rgba(0,0,0,0.55); }
+.cs-side__row { margin: 0; padding: 0; border: 0; align-items: baseline; gap: 16px; }
+.cs-side__name { font: 600 22px/1.15 var(--f-sans); letter-spacing: -0.01em; }
+.cs-side__role { font: 500 14px/1 var(--f-sans); color: rgb(246 239 220 / 0.85); gap: 6px; }
+.cs-side__role .c-spark { width: 14px; height: 14px; }
+.cs-side__what { margin-top: 4px !important; font: 400 14px/1.45 var(--f-sans); color: rgb(246 239 220 / 0.7); }
+.cs-side a { color: #F6EFDC; text-decoration: underline; text-decoration-color: rgb(232 199 124 / 0.6); text-underline-offset: 3px; transition: text-decoration-color 150ms ease; }
+.cs-side a:hover { text-decoration-color: #E8C77C; }
+.cs-side__facts { display: flex; flex-wrap: wrap; gap: 8px 24px; margin: 16px 0 0; padding-top: 12px; border-top: 1px solid rgb(246 239 220 / 0.12); }
+.cs-side__facts > div { display: grid; gap: 2px; }
+.cs-side__facts dt { font: 500 12px/1.4 var(--f-sans); color: rgb(246 239 220 / 0.5); }
+.cs-side__facts dd { margin: 0; font: 500 14px/1.4 var(--f-sans); color: #F6EFDC; }
+.cs-side__preview { margin: 16px 0 12px; }
+.cs-side__preview .zoomable-frame { border-radius: 8px; }
+.cs-side__belt { padding: 8px 0 2px; border-top: 0; }
+.cs-side__thumb { height: 52px; border-radius: 6px; outline-width: 2px; outline-offset: 2px; }
+.cs-side__links { margin-top: 12px !important; padding-top: 12px; border-top: 1px solid rgb(246 239 220 / 0.12); font: 500 14px/1 var(--f-sans); display: flex; gap: 20px; }
+@media (max-width: 760px) { .cs-side { padding: 16px 16px 12px; border-radius: 12px; } .cs-side__name { font-size: 19px; } .cs-side__thumb { height: 44px; } }
+
+/* ══ Connect notes: "Ink" — no glass panel; fields sit on the sky ══ */
+/* ══ Shared: 3 · labels in sans, normal case (like the case details) ══ */
+.cs-note__label { font: 500 13px/1 var(--f-sans); letter-spacing: 0; text-transform: none; color: rgb(246 239 220 / 0.6); }
+
+/* ══ 3. Ink — no panel at all: the fields sit right on the sky ════════ */
+/* 1 glass → nothing behind; hairlines carry the form */
+.cs-note, .cs-notes {
+  background: none; -webkit-backdrop-filter: none; backdrop-filter: none; border: 0; box-shadow: none; padding-left: 9px; padding-right: 0; }
+.cs-note textarea { border: 0; border-bottom: 1.5px solid rgb(246 239 220 / 0.25); border-radius: 0; padding-left: 2px; }
+.cs-past { background: #1C1F25; -webkit-backdrop-filter: none; backdrop-filter: none; border: 1px solid rgb(246 239 220 / 0.12); border-radius: 12px; }
+/* 2 send: the one solid accent button on the page */
+.cs-send { border: 0; border-radius: 8px; background: var(--accent-soft); color: var(--hero-bg); font: 600 14px/1 var(--f-sans); letter-spacing: 0; text-transform: none; padding: 10px 16px; }
+.cs-send .c-spark { fill: var(--hero-bg); }
+.cs-send:hover { background: #E4B992; }
+/* 4 copy: bare icon */
+.cs-copy { border: 0; background: none; padding: 4px; color: rgb(246 239 220 / 0.6); }
+.cs-copy:hover { color: var(--hero-fg); }
+
+/* Side-project card: grows out of its star, shrinks back into it on leave */
+.cs-side { transform-origin: var(--ox, 50%) var(--oy, 50%); animation: csBloomIn 220ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.cs-side.is-leaving { animation: csBloomOut 160ms cubic-bezier(0.4, 0, 1, 1) both; pointer-events: none; }
+@keyframes csBloomIn { from { opacity: 0; scale: 0.6; } }
+@keyframes csBloomOut { to { opacity: 0; scale: 0.7; } }
+@media (prefers-reduced-motion: reduce) { .cs-side, .cs-side.is-leaving { animation: none; } }
+
+/* ══ Connect notes: "Polaroid" — paper cards in ink, like the hero polaroid ══ */
+/* ══ Shared: paper surfaces read in ink (high contrast on the night sky) ══ */
+:is(.cs-note, .cs-notes, .cs-past) { -webkit-backdrop-filter: none; backdrop-filter: none; color: #1A1714; }
+.cs-note { gap: 14px; padding: 18px 20px 16px; }
+.cs-note__label { font: 500 13px/1 var(--f-sans); letter-spacing: 0; text-transform: none; color: rgb(26 23 20 / 0.55); }
+.cs-note input { color: #1A1714; font: 500 16px/1.4 var(--f-sans); border-bottom: 1.5px solid rgb(26 23 20 / 0.25); }
+.cs-note textarea { color: #1A1714; min-height: 120px; font-size: 22px; line-height: 1.35; border: 0; border-bottom: 1.5px solid rgb(26 23 20 / 0.25); border-radius: 0; padding: 6px 2px; }
+.cs-note input::placeholder, .cs-note textarea::placeholder { color: rgb(26 23 20 / 0.4); }
+.cs-note input:focus, .cs-note textarea:focus { border-color: #93613A; }
+.cs-note__min .c-spark { fill: #93613A; filter: none; }
+.cs-note__min:hover .c-spark { fill: #1A1714; }
+.cs-tool { border-radius: 8px; color: rgb(26 23 20 / 0.7); border-color: rgb(26 23 20 / 0.25); }
+.cs-tool:hover { color: #1A1714; border-color: rgb(26 23 20 / 0.5); }
+.cs-note__count { color: rgb(26 23 20 / 0.5); }
+.cs-note__count.is-full { color: #93613A; }
+.cs-send { border: 0; border-radius: 8px; background: #1A1714; color: #FBF7EE; font: 600 14px/1 var(--f-sans); letter-spacing: 0; text-transform: none; padding: 10px 16px; }
+.cs-send .c-spark { fill: #D9A983; }
+.cs-send:hover { background: #2C2722; }
+.cs-doodle path { stroke: #1A1714; }
+.cs-notes { padding: 16px 18px 14px; }
+.cs-notes__head .cs-note__label { color: rgb(26 23 20 / 0.6); }
+.cs-notes__board { gap: 12px; scrollbar-color: rgb(26 23 20 / 0.25) transparent; }
+.cs-notes__slip .cs-past__text, .cs-past__text { color: #1A1714; }
+.cs-past__meta, .cs-notes__slip .cs-past__meta { font: 500 12px/1.4 var(--f-sans); color: rgb(26 23 20 / 0.55); flex-direction: row; justify-content: space-between; gap: 12px; }
+
+/* ══ Shared: paper surfaces read in ink (high contrast on the night sky) ══ */
+/* ══ 1. Polaroid — paper cards like your hero polaroid ═════════════════ */
+:is(.cs-note, .cs-notes) { background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0) 30%), #FBF7EE;
+  border: 0; border-radius: 12px; rotate: -1deg; /* = PANEL_TILT in ConnectSky.tsx */ box-shadow: 0 12px 28px -12px rgba(0,0,0,0.6); padding-bottom: 28px; }
+.cs-notes__slip { background: #fff; border: 0; border-radius: 6px; padding: 10px 10px 18px; box-shadow: 0 2px 8px rgba(26,23,20,0.12); }
+.cs-notes__slip:nth-child(odd) { rotate: -1.5deg !important; }
+.cs-notes__slip:nth-child(even) { rotate: 1.2deg !important; }
+.cs-past { background: #FBF7EE; border: 0; border-radius: 12px; rotate: -1.5deg; box-shadow: 0 12px 28px -12px rgba(0,0,0,0.6); padding-bottom: 20px; }
+
+
+/* long notes scroll inside the message box instead of growing the card */
+.cs-note textarea { max-height: 220px; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: rgb(26 23 20 / 0.25) transparent; }
+
+/* ══ About bag · food + trips pop-ups ("Tray · Outline", from /prototypes/bag-stacks) ══
+   Flat fills, a drawn outline and a hard offset shadow, like the folders. */
+.hover-bag__pill--usagi .hover-bag__pill-inner, .hover-bag__pill--ticket .hover-bag__pill-inner { width: auto; animation: none; }
+.bs-bento img, .bs-window img { display: block; width: 100%; height: 100%; object-fit: cover; }
+@keyframes bsFadeIn { from { opacity: 0; } }
+
+.bs-bento { display: grid; grid-template: "a b" 92px "a c" 72px "d d" 70px / 120px 100px; gap: 5px; padding: 7px;
+  background: #8E3B2E; border: 3px solid #4A1E16; border-radius: 12px 9px 14px 10px; box-shadow: 4px 5px 0 rgb(26 23 20 / 0.18); rotate: -2deg; }
+.bs-bento__cell { overflow: hidden; background: #1A100C; border: 2.5px solid #4A1E16; border-radius: 7px 5px 8px 6px; }
+.bs-bento__cell img { animation: bsFadeIn 450ms ease-out both; }
+
+/* cream frame + drawn outline; the photos fill the whole pane inside it */
+.bs-window { padding: 14px; border-radius: 70px; background: #EDE6D8; border: 3px solid #544F4F; box-shadow: 4px 5px 0 rgb(26 23 20 / 0.18); }
+.bs-window__pane { position: relative; width: 184px; height: 228px; border-radius: 56px; overflow: hidden; background: #0F1217; border: 2.5px solid #544F4F; }
+.bs-window__view { position: absolute; left: 0; top: 0; bottom: 0; display: flex; gap: 4px; width: max-content; animation: bsGlide 43s linear infinite; /* ~63px/s, the original pace */ }
+.bs-window__view img { width: auto; height: 100%; flex: none; }
+@keyframes bsGlide { to { translate: calc(-50% - 2px) 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .bs-window__view, .bs-bento__cell img { animation: none !important; }
 }

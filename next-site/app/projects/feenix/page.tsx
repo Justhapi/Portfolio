@@ -36,6 +36,7 @@ export default function FeenixCaseStudy() {
       <CaseCover
         title="Structuring a Minecraft Server Hosting Platform for Players of Any Experience"
         meta="Feenix Group · 2026–27 · UX Lead, Frontend"
+        metaLabels={["Client", "Timeline", "Role"]}
         subtitle="A beginner-friendly server hosting platform built from an audit of two competitors"
         hideHero
       />
