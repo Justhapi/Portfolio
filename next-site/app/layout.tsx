@@ -5,6 +5,7 @@ import CursorFollower from "@/components/CursorFollower";
 import SmoothScroll from "@/components/SmoothScroll";
 import ClickSound from "@/components/ClickSound";
 import Clarity from "@/components/Clarity";
+import ChunkReload from "@/components/ChunkReload";
 
 /* ── Self-hosted fonts via next/font/local ─────────────────────────────
    All four typefaces are shipped with the site under /public/fonts/,
@@ -165,6 +166,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Analytics last — it's the only thing here that isn't part of
             the experience, and it self-disables in development. */}
         <Clarity />
+        <ChunkReload />
       </body>
     </html>
   );

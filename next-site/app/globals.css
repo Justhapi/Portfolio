@@ -9752,24 +9752,390 @@ html.hero-vt::view-transition-image-pair(hero-back) {
 /* long notes scroll inside the message box instead of growing the card */
 .cs-note textarea { max-height: 220px; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: rgb(26 23 20 / 0.25) transparent; }
 
-/* ══ About bag · food + trips pop-ups ("Tray · Outline", from /prototypes/bag-stacks) ══
-   Flat fills, a drawn outline and a hard offset shadow, like the folders. */
+/* ══ About bag · pop-ups (promoted from /prototypes/bag-pops) ══════════
+   Trips: two windows with draggable shades · Food: a receipt that keeps
+   printing · Music: a turning ring of covers · Doodles: a sticky pad whose
+   top note is tugged off by its corner and tossed onto the wall. */
 .hover-bag__pill--usagi .hover-bag__pill-inner, .hover-bag__pill--ticket .hover-bag__pill-inner { width: auto; animation: none; }
-.bs-bento img, .bs-window img { display: block; width: 100%; height: 100%; object-fit: cover; }
-@keyframes bsFadeIn { from { opacity: 0; } }
-
-.bs-bento { display: grid; grid-template: "a b" 92px "a c" 72px "d d" 70px / 120px 100px; gap: 5px; padding: 7px;
-  background: #8E3B2E; border: 3px solid #4A1E16; border-radius: 12px 9px 14px 10px; box-shadow: 4px 5px 0 rgb(26 23 20 / 0.18); rotate: -2deg; }
-.bs-bento__cell { overflow: hidden; background: #1A100C; border: 2.5px solid #4A1E16; border-radius: 7px 5px 8px 6px; }
-.bs-bento__cell img { animation: bsFadeIn 450ms ease-out both; }
-
-/* cream frame + drawn outline; the photos fill the whole pane inside it */
-.bs-window { padding: 14px; border-radius: 70px; background: #EDE6D8; border: 3px solid #544F4F; box-shadow: 4px 5px 0 rgb(26 23 20 / 0.18); }
-.bs-window__pane { position: relative; width: 184px; height: 228px; border-radius: 56px; overflow: hidden; background: #0F1217; border: 2.5px solid #544F4F; }
-.bs-window__view { position: absolute; left: 0; top: 0; bottom: 0; display: flex; gap: 4px; width: max-content; animation: bsGlide 43s linear infinite; /* ~63px/s, the original pace */ }
-.bs-window__view img { width: auto; height: 100%; flex: none; }
-@keyframes bsGlide { to { translate: calc(-50% - 2px) 0; } }
-
+/* ══ Shared behaviour: still pop-ups you can reach and click ══════════
+   No cursor-follow, no lean, no idle bob on any piece. The pop-up takes
+   the pointer so it can be clicked; hidden ones don't. */
+html:root .hover-bag__pill { transition: opacity 160ms ease-out, transform 200ms cubic-bezier(0.23, 1, 0.32, 1); }
+html:root .hover-bag__pill.is-on { pointer-events: auto; cursor: pointer; }
+html:root .hover-bag__pill-inner { animation: none !important; }
+/* (per-piece floats are back on — see Round 13) */
+html:root .hover-bag__zone { cursor: pointer; }
+/* ink + paper used by every outlined piece (same as the tray) */
+html:root { --po-ink: #3A2E28; --po-paper: #FBF7EE; --po-drop: 4px 5px 0 rgb(26 23 20 / 0.18); }
+/* ══ The original pop-ups — what changes across the three variants ══
+   Shared: no mono UPPERCASE eyebrow, no tape, no glossy gradient + inset
+   app-icon shading, no soft blurred float shadows. Only the framing
+   material differs below. */
+html:root .pill-polaroid__meta { display: none; }
+html:root .pill-art__tape { display: none; }
+html:root .pill-orbit__caption .pill-polaroid__line,
+html:root .pill-scatter__caption .pill-polaroid__line { font-size: 13.5px; color: #3A2E28; }
+html:root .pill-orbit__caption,
+html:root .pill-scatter__caption { padding: 6px 10px; }
+html:root .pill-art__print { aspect-ratio: 1; }
+html:root .pill-art__print img,
+html:root .pill-art__window img.is-still { object-fit: contain; background: #FBF7EE; }
+html:root .pill-art__window img.is-still { animation: none; width: 100%; height: 100%; transform: none; }
+html:root .pill-orbit__item { border-radius: 10px; }
+/* Paper finish for friends + games — every piece a print with a cream border, like the hero polaroid */
+html:root .pill-orbit__item,
+html:root .pill-art__badge { border-radius: 3px; box-shadow: 0 0 0 5px #FBF7EE, 0 1px 0 6px rgb(26 23 20 / 0.10), 0 3px 4px 4px rgb(26 23 20 / 0.10) !important; }
+html:root .pill-scatter__print,
+html:root .pill-art__print { box-shadow: 0 0 0 5px #FBF7EE, 0 1px 0 6px rgb(26 23 20 / 0.10), 0 3px 4px 4px rgb(26 23 20 / 0.10) !important; border-radius: 2px; }
+html:root .pill-art__sheet { background: #FBF7EE; box-shadow: 0 1px 0 1px rgb(26 23 20 / 0.10), 0 3px 6px rgb(26 23 20 / 0.12) !important; }
+html:root .pill-orbit__caption,
+html:root .pill-scatter__caption { background: #FBF7EE; border-radius: 2px; box-shadow: 0 1px 0 1px rgb(26 23 20 / 0.10), 0 3px 4px rgb(26 23 20 / 0.10) !important; }
+/* Scatter: captions sit under the cluster, not over the art */
+html:root .pill-orbit { margin-bottom: 22px; }
+html:root .pill-orbit__caption { top: calc(100% - 4px) !important; left: 50% !important; width: 200px; }
+html:root .pill-orbit__caption .pill-polaroid__line { white-space: normal; max-width: 220px; display: block; }
+html:root .hover-bag__pill--earbuds .hover-bag__pill-inner,
+html:root .hover-bag__pill--laptop .hover-bag__pill-inner,
+html:root .hover-bag__pill--phone .hover-bag__pill-inner,
+html:root .hover-bag__pill--ipad .hover-bag__pill-inner { width: 190px; }
+html:root .pill-scatter__print { cursor: pointer; }
+/* the counter edge the table sits behind */
+html:root .hover-bag__pill--usagi .hover-bag__pill-inner { width: auto; }
+/* ══════════ Round 5 ══════════════════════════════════════════════════ */
+.tw2 { user-select: none; -webkit-user-select: none; --ink: #3A2E28; --paper: #FBF7EE; --drop: 4px 5px 0 rgb(26 23 20 / 0.18); position: relative; color: var(--ink); }
+.tw2-line { margin: 0; font-family: var(--f-hand); font-size: 16px; line-height: 1.15; color: var(--ink); text-wrap: balance; }
+.tw2 img { display: block; user-select: none; -webkit-user-drag: none; }
+/* ── Trips: two windows with draggable shades ── */
+.tw2 { width: 330px; height: 300px; }
+.tw2-window { position: absolute; padding: 9px; border-radius: 52px; background: #EDE6D8; border: 3px solid #544F4F; box-shadow: var(--drop); }
+.tw2-window[data-w="0"] { left: 0; top: 46px; rotate: -3deg; }
+.tw2-window[data-w="1"] { left: 160px; top: 96px; rotate: 4deg; }
+.tw2-line { position: absolute; width: 150px; padding: 6px 9px; background: var(--paper); border-radius: 2px; box-shadow: 0 1px 0 1px rgb(26 23 20 / 0.10), 0 3px 4px rgb(26 23 20 / 0.10); font-size: 14.5px; }
+.tw2-line[data-w="0"] { left: 4px; top: 0; rotate: -2deg; z-index: 3; }
+.tw2-line[data-w="1"] { left: 170px; top: 246px; rotate: 2deg; z-index: 3; }
+.tw2-pane { position: relative; width: 116px; height: 158px; border-radius: 44px; overflow: hidden; background: #0F1217; border: 2.5px solid #544F4F; cursor: grab; touch-action: none; }
+.tw2-pane:active { cursor: grabbing; }
+.tw2-view { display: flex; width: 100%; height: 100%; transition: translate 620ms cubic-bezier(0.65, 0, 0.35, 1); }
+.tw2-view[data-dir="up"] { flex-direction: column; }
+.tw2-frame { flex: none; width: 100%; height: 100%; }
+.tw2-frame img { width: 100%; height: 100%; object-fit: cover; }
+/* the shade is a full-height panel pulled up out of view; --covered is how much shows */
+.tw2-shade { position: absolute; inset: 0; z-index: 2; background: repeating-linear-gradient(#E6DDCD 0 13px, #D9CEBA 13px 15px); border-bottom: 2.5px solid #544F4F;
+  transition: translate 420ms cubic-bezier(0.25, 1, 0.5, 1); }
+.tw2-shade.is-dragging { transition: none; }
+.tw2-shade__tab { position: absolute; left: 50%; bottom: 5px; width: 26px; height: 6px; translate: -50% 0; border-radius: 3px; background: #544F4F; }
+/* ── Food · Live: instant camera ── */
+html:root .hover-bag__pill--usagi .hover-bag__pill-inner,
+html:root .hover-bag__pill--ticket .hover-bag__pill-inner,
+html:root .hover-bag__pill--earbuds .hover-bag__pill-inner,
+html:root .hover-bag__pill--ipad .hover-bag__pill-inner { width: auto; }
 @media (prefers-reduced-motion: reduce) {
-  .bs-window__view, .bs-bento__cell img { animation: none !important; }
+.tw2-view,
+.tw2-shade { transition: none; }
 }
+/* ══════════ Round 6 · Paper trail ═══════════════════════════════════
+   What read as AI in the last Paper trail: three sheets overlapping at
+   random tilts, too small to read; a rainbow trio of magnets; an
+   off-palette sticky note; a dotted timeline with status dots; photos
+   dimmed to 55% so you couldn't see them; a 1.5x zoom pop on click.
+   Now: every piece has its own spot, nothing overlaps, nothing is
+   dimmed, tilts are ±1°, and each piece is mounted the way that paper
+   really is kept (photo corners, a fold, pegs). */
+.pt-receipt { --ink: #3A2E28; --paper: #FBF7EE; position: relative; color: var(--ink); user-select: none; -webkit-user-select: none; }
+.pt-receipt img { display: block; width: 100%; height: 100%; -webkit-user-drag: none; }
+.pt-line,
+.pt-receipt__head { margin: 0; font-family: var(--f-hand); font-size: 17px; line-height: 1.15; color: var(--ink); text-wrap: balance; }
+@keyframes ptIn { from { opacity: 0; } }
+/* 1 · Scrapbook: a cream page, prints held by four photo corners */
+.pt-line { grid-column: 1 / -1; }
+/* Receipt: zigzag ends, a new dish feeds in at the bottom */
+.pt-receipt { width: 228px; padding: 18px 14px 20px; background: #fff;
+  -webkit-mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / 12px 51% repeat-x, conic-gradient(from 135deg at top, #0000, #000 1deg 89deg, #0000 90deg) top / 12px 51% repeat-x;
+  mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / 12px 51% repeat-x, conic-gradient(from 135deg at top, #0000, #000 1deg 89deg, #0000 90deg) top / 12px 51% repeat-x;
+  filter: drop-shadow(0 2px 3px rgb(26 23 20 / 0.16)); }
+.pt-receipt__head { text-align: center; padding-bottom: 10px; border-bottom: 1.5px dashed rgb(58 46 40 / 0.35); }
+.pt-receipt__rows { display: grid; gap: 8px; margin-top: 10px; }
+.pt-receipt__row { display: block; height: 104px; overflow: hidden; border-radius: 2px; cursor: pointer; }
+.pt-receipt__row img { object-fit: cover; animation: ptIn 300ms ease-out both; }
+.pt-receipt__row.is-new { animation: ptFeed 520ms cubic-bezier(0.25, 1, 0.5, 1) both; }
+@keyframes ptFeed { from { clip-path: inset(0 0 100% 0); } }
+/* 3 · Clothesline: prints pegged to a sagging string, evenly spaced */
+.pt-line-wrap { position: relative; padding-top: 6px; }
+/* each spot rides the sag of the string */
+html:root .hover-bag__pill--ipad .hover-bag__pill-inner,
+html:root .hover-bag__pill--usagi .hover-bag__pill-inner { width: auto; }
+@media (prefers-reduced-motion: reduce) {
+.pt-receipt__row img,
+.pt-receipt__row.is-new { animation: none; }
+}
+/* Playlist: covers on their own (no frame), buttons + line in one small card */
+html:root .hover-bag__pill--earbuds .hover-bag__pill-inner { width: auto; }
+/* 3 · Orbit */
+html:root .hover-bag__pill--earbuds .hover-bag__pill-inner,
+html:root .hover-bag__pill--ipad .hover-bag__pill-inner { width: auto; }
+/* One float for every loose piece, tuned per piece: its own duration,
+   delay, height and a hint of sway. Uses `transform` so it never fights
+   the `translate` / `rotate` that place each piece. */
+@keyframes bob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(calc(-1 * var(--b-amp, 4px))) rotate(var(--b-rot, 0.5deg)); }
+}
+.pd-loose,
+.pd-pad,
+.pd-line,
+.rp-art,
+.rp-line,
+.tw2-window,
+.tw2-line,
+.pt-receipt {
+  animation: bob var(--b-dur, 4.4s) ease-in-out var(--b-delay, 0s) infinite;
+}
+.pd-loose[data-k="0"] { --b-dur: 3.9s; --b-amp: 5px; --b-rot: 0.8deg; --b-delay: -0.6s; }
+.pd-loose[data-k="1"] { --b-dur: 5.1s; --b-amp: 3.5px; --b-rot: -0.6deg; --b-delay: -2.1s; }
+.pd-pad { --b-dur: 6.2s; --b-amp: 2px; --b-rot: 0.3deg; --b-delay: -1.3s; }
+.pd-line { --b-dur: 5.6s; --b-amp: 2px; --b-rot: 0deg; --b-delay: -3s; }
+.rp-cover[data-k="0"] .rp-art { --b-dur: 4.3s; --b-amp: 4px; --b-rot: 0.7deg; --b-delay: -0.4s; }
+.rp-cover[data-k="1"] .rp-art { --b-dur: 5.3s; --b-amp: 5px; --b-rot: -0.5deg; --b-delay: -2.4s; }
+.rp-cover[data-k="2"] .rp-art { --b-dur: 3.7s; --b-amp: 3px; --b-rot: 0.4deg; --b-delay: -1.1s; }
+.rp-line { --b-dur: 6s; --b-amp: 2px; --b-rot: -0.3deg; --b-delay: -2.7s; }
+.tw2-window[data-w="0"] { --b-dur: 4.8s; --b-amp: 4px; --b-rot: 0.6deg; --b-delay: -1s; }
+.tw2-window[data-w="1"] { --b-dur: 5.7s; --b-amp: 5px; --b-rot: -0.5deg; --b-delay: -3.2s; }
+.tw2-line[data-w="0"] { --b-dur: 4.1s; --b-amp: 3px; --b-rot: -0.4deg; --b-delay: -0.2s; }
+.tw2-line[data-w="1"] { --b-dur: 6.3s; --b-amp: 2.5px; --b-rot: 0.5deg; --b-delay: -2s; }
+.pt-receipt { --b-dur: 5.4s; --b-amp: 4px; --b-rot: -0.6deg; }
+/* ── The pad ── */
+.pd { position: relative; width: 340px; height: 300px; color: #3A2E28; user-select: none; -webkit-user-select: none; }
+.pd img { display: block; width: 100%; height: 100%; object-fit: contain; -webkit-user-drag: none; }
+.pd-hand { margin: 0; font-family: var(--f-hand); font-size: 18px; line-height: 1.15; color: #3A2E28; text-wrap: balance; }
+.pd-loose { position: absolute; width: 140px; height: 130px; padding: 7px; box-sizing: border-box; background: #fff; cursor: pointer;
+  box-shadow: 0 0 0 0.5px rgb(26 23 20 / 0.10), 0 2px 4px rgb(26 23 20 / 0.12), 0 8px 10px -8px rgb(26 23 20 / 0.30); }
+.pd-loose[data-k="1"] { width: 130px; height: 122px; }
+/* a freshly peeled note flies from the pad to its spot */
+.pd-loose.is-new { animation: pdFly 560ms cubic-bezier(0.25, 1, 0.5, 1) both, bob var(--b-dur) ease-in-out var(--b-delay) infinite; }
+@keyframes pdFly { from { translate: var(--fx) var(--fy); rotate: -4deg; scale: 0.96; } }
+.pd-pad { position: absolute; width: 176px; height: 158px; cursor: pointer; }
+/* the block: the sheets underneath, showing as a thick edge on the bottom and left */
+.pd-block { position: absolute; inset: 0; background: #fff;
+  box-shadow: 0 1px 0 #E7E1D5, 0 2px 0 #fff, 0 3px 0 #E7E1D5, 0 4px 0 #fff, 0 5px 0 #E7E1D5, 0 6px 0 #fff, 0 7px 0 #DDD6C8,
+    -1px 1px 0 #E7E1D5, -2px 2px 0 #fff, -3px 3px 0 #E7E1D5, -4px 4px 0 #fff, -5px 5px 0 #E7E1D5, -6px 6px 0 #fff, -7px 7px 0 #DDD6C8,
+    -4px 12px 12px -6px rgb(26 23 20 / 0.30); }
+.pd-top { position: absolute; inset: 0; display: grid; grid-template: minmax(0, 1fr) / minmax(0, 1fr); align-items: center; padding: 12px; box-sizing: border-box; background: #fff;
+  box-shadow: 0 0 0 0.5px rgb(26 23 20 / 0.10); transform-origin: 0 0; animation: pdNext 320ms ease-out both; }
+@keyframes pdNext { from { opacity: 0; } }
+/* 1 · Pad in perspective — tipped back like the sketch; the top sheet lifts off its corner */
+.pd--perspective .pd-pad { transform: perspective(700px) rotateX(24deg) rotateZ(-7deg); animation: none; }
+/* the top sheet has come half unstuck: shifted up off the block, its free edge throwing a shadow */
+.pd--perspective .pd-top { translate: 3px -5px; rotate: -1.5deg; padding: 18px; box-shadow: 0 0 0 0.5px rgb(26 23 20 / 0.10), 0 9px 10px -7px rgb(26 23 20 / 0.30); }
+/* 2 · Flat pad — straight down; the next doodle waits on the pad, the line written underneath */
+.pd--flat .pd-pad { rotate: -4deg; }
+.pd-line { position: absolute; left: 0; top: 296px; width: 200px; }
+.pd--flat,
+.pd--curl { height: 360px; }
+/* 3 · Curling sheet — the top sheet's corner keeps lifting off the pad and settling back */
+.pd--curl .pd-pad { rotate: -3deg; }
+/* ── Playlist (not a player) ── */
+.rp { width: 320px; display: grid; justify-items: center; gap: 12px; color: #3A2E28; user-select: none; -webkit-user-select: none; }
+.rp img { display: block; width: 100%; height: 100%; object-fit: cover; -webkit-user-drag: none; }
+.rp-ring { position: relative; width: 320px; height: 160px; }
+.rp-cover { position: absolute; left: 50%; top: 50%; width: 140px; height: 140px; margin: -70px 0 0 -70px; cursor: pointer; will-change: translate, scale; }
+.rp-art { display: block; width: 100%; height: 100%; border-radius: 7px; overflow: hidden; }
+.rp-line { margin: 0; padding: 8px 16px; background: #FBF7EE; border-radius: 8px; box-shadow: 0 1px 0 1px rgb(26 23 20 / 0.06), 0 3px 8px rgb(26 23 20 / 0.10);
+  font-family: var(--f-hand); font-size: 18px; line-height: 1.15; }
+html:root .hover-bag__pill--earbuds .hover-bag__pill-inner,
+html:root .hover-bag__pill--ipad .hover-bag__pill-inner { width: auto; }
+@media (prefers-reduced-motion: reduce) {
+.pd-loose,
+.pd-pad,
+.pd-line,
+.rp-art,
+.rp-line,
+.tw2-window,
+.tw2-line,
+.pt-receipt,
+.pd-loose.is-new { animation: none; }
+}
+/* --lift is the corner's angle in degrees, kept as a plain number so it can drive opacity and offsets too */
+@property --lift { syntax: "<number>"; inherits: true; initial-value: 0; }
+.pd--curls { height: 360px; }
+.pd--curls .pd-pad { --c: 54px; rotate: -3deg; }
+.pd--curls .pd-top { clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--c)), calc(100% - var(--c)) 100%, 0 100%); animation: pdNext 320ms ease-out both; transform: none; }
+.pd-corner { position: absolute; right: 0; bottom: 0; z-index: 3; width: var(--c); height: var(--c); pointer-events: none; }
+.pd-corner__leaf { position: absolute; inset: 0; background: #fff; clip-path: polygon(100% 0, 100% 100%, 0 100%);
+  transform-origin: 50% 50%; transform: perspective(240px) rotate3d(1, -1, 0, calc(var(--lift) * 1deg));
+  box-shadow: inset 0 0 0 0.5px rgb(26 23 20 / 0.10); }
+/* the leaf's underside catches a little shade as it turns */
+.pd-corner__leaf::after { content: ""; position: absolute; inset: 0; background: rgb(26 23 20 / calc(var(--lift) * 0.0016)); }
+/* the shadow it throws onto the sheet beneath grows as it lifts */
+.pd-corner__shade { position: absolute; inset: 6px -2px -4px 6px; clip-path: polygon(100% 0, 100% 100%, 0 100%); background: rgb(26 23 20 / 0.28); filter: blur(4px);
+  opacity: calc(var(--lift) / 40); translate: calc(var(--lift) / 12 * 1px) calc(var(--lift) / 12 * 1px); }
+/* 1 · on its own: lifts and settles on a slow loop */
+.pd--curl .pd-pad { animation: pdLift 3.6s ease-in-out 700ms infinite, bob var(--b-dur) ease-in-out var(--b-delay) infinite; }
+@keyframes pdLift { 0%, 100% { --lift: 0; } 50% { --lift: 38; } }
+/* 2 · on hover: stays down until you point at the pad */
+.pd--hover .pd-pad { transition: --lift 380ms cubic-bezier(0.25, 1, 0.5, 1); }
+.pd--hover .pd-pad:hover { --lift: 44; }
+/* 3 · curl, then peel: a small lift at rest; before each sheet comes off the corner curls right up */
+.pd--peel .pd-pad { --lift: 12; transition: --lift 440ms cubic-bezier(0.45, 0, 0.55, 1); }
+.pd--peel.is-peeling .pd-pad { --lift: 78; }
+/* The doodles line gets the same paper label as the other pop-ups */
+.pd-line { padding: 8px 12px; background: #FBF7EE; border-radius: 6px; box-shadow: 0 1px 0 1px rgb(26 23 20 / 0.06), 0 3px 8px rgb(26 23 20 / 0.10); top: 300px; }
+/* Trips: give the windows and their lines room, like friends — nothing covers a photo */
+.tw2 { width: 340px; height: 372px; }
+.tw2-window[data-w="0"] { left: 6px; top: 74px; }
+.tw2-window[data-w="1"] { left: 186px; top: 118px; }
+.tw2-line[data-w="0"] { left: 0; top: 0; width: 168px; }
+.tw2-line[data-w="1"] { left: 172px; top: 310px; width: 160px; }
+@media (prefers-reduced-motion: reduce) {
+.pd--curl .pd-pad { animation: none; }
+.pd--hover .pd-pad,
+.pd--peel .pd-pad { transition: none; }
+}
+/* ══════════ Round 15 · a real curl on the top note only; peeled notes zoom ═
+   The curl is now a big fold of the top note alone (about half of it),
+   lifting out from the bottom-right. Under it sits the next sheet, plain
+   white, and the shadow stays inside that sheet — so the pad itself never
+   looks like it's bending. While it curls the doodle on top doesn't need
+   to read; it reads in full once it's peeled off. */
+.pd--curls .pd-pad { --c: 104px; }
+.pd-under { position: absolute; inset: 0; background: #fff; box-shadow: 0 0 0 0.5px rgb(26 23 20 / 0.08); }
+.pd-corner__shade { inset: 10px 0 0 10px; clip-path: polygon(100% 0, 100% 100%, 0 100%); background: rgb(26 23 20 / 0.22); filter: blur(6px);
+  opacity: calc(var(--lift) / 30); translate: 0 0; }
+.pd-corner__leaf { transform: perspective(360px) rotate3d(1, -1, 0, calc(var(--lift) * 1deg)); }
+/* the leaf's face catches light as it turns up toward you */
+.pd-corner__leaf::after { background: linear-gradient(315deg, rgb(26 23 20 / calc(var(--lift) * 0.003)) 0%, transparent 60%); }
+/* Peeled notes: hover brings one forward to look at; a click does the
+   Available sticker's pop-forward-and-slam. */
+.pd-loose { rotate: var(--r); transition: scale 260ms cubic-bezier(0.25, 1, 0.5, 1), rotate 260ms cubic-bezier(0.25, 1, 0.5, 1), translate 260ms cubic-bezier(0.25, 1, 0.5, 1), box-shadow 260ms ease-out; }
+.pd-loose[data-k="0"] { --hx: -34px; --hy: 30px; }
+.pd-loose[data-k="1"] { --hx: -40px; --hy: -24px; }
+.pd-loose:hover { z-index: 20; scale: 1.5; rotate: 0deg; translate: var(--hx) var(--hy);
+  box-shadow: 0 0 0 0.5px rgb(26 23 20 / 0.10), 0 14px 22px -10px rgb(26 23 20 / 0.40); }
+@media (prefers-reduced-motion: reduce) {
+.pd-loose { transition: none; }
+.pd-loose:hover { translate: 0 0; }
+}
+/* ══════════ Round 16 · the whole top note curls, then really peels ═══
+   A sticky note is glued along its top edge only, so a pull lifts the
+   whole sheet from the bottom: it hinges at the glue line and tips toward
+   you, twisting a little toward the corner being pulled, while that
+   corner folds up most. Then it comes away and travels to its spot. */
+.pd-sheet { position: absolute; inset: 0; z-index: 2; transform-origin: 50% 0; transform-style: preserve-3d;
+  transform: perspective(600px) rotateX(calc(var(--lift) * -0.34deg)) rotateY(calc(var(--lift) * 0.11deg)); }
+/* once it's off the pad the fold line goes too */
+.pd--curls.is-fly .pd-corner__leaf { box-shadow: none; }
+.pd-sheet .pd-top { animation: none; }
+/* a shadow on the next sheet grows under the lifted note */
+.pd-under { position: absolute; inset: 0; z-index: 1; display: grid; grid-template: minmax(0, 1fr) / minmax(0, 1fr); padding: 12px; box-sizing: border-box; background: #fff;
+  box-shadow: 0 0 0 0.5px rgb(26 23 20 / 0.08); }
+.pd-under::after { content: ""; position: absolute; left: 8%; right: 4%; bottom: 0; height: 40%; background: rgb(26 23 20 / 0.24); filter: blur(10px);
+  opacity: calc(var(--lift) / 60); pointer-events: none; }
+.pd-under img { display: block; width: 100%; height: 100%; object-fit: contain; }
+/* at rest the note breathes: a small lift and settle on a slow loop */
+.pd--curls.is-rest .pd-pad { animation: pdLift 3.8s ease-in-out 600ms infinite, bob var(--b-dur) ease-in-out var(--b-delay) infinite; }
+@keyframes pdLift { 0%, 100% { --lift: 6; } 50% { --lift: 30; } }
+/* the pull before it lets go */
+.pd--curls.is-curl .pd-pad { --lift: 76; transition: --lift 420ms cubic-bezier(0.45, 0, 0.55, 1); }
+/* in flight the corner flattens back out as the note is carried */
+.pd--curls.is-fly .pd-pad { --lift: 0; transition: --lift 500ms cubic-bezier(0.25, 1, 0.5, 1); }
+.pd--curls.is-fly .pd-sheet { z-index: 40; }
+.pd--curls .pd-pad:has(.pd-sheet) { z-index: 5; }
+.pd--curls.is-fly .pd-pad { z-index: 30; }
+/* the oldest note comes unstuck and drops away as the new one arrives */
+.pd-loose { transition: left 520ms cubic-bezier(0.25, 1, 0.5, 1), top 520ms cubic-bezier(0.25, 1, 0.5, 1), width 520ms cubic-bezier(0.25, 1, 0.5, 1), height 520ms cubic-bezier(0.25, 1, 0.5, 1),
+  scale 260ms cubic-bezier(0.25, 1, 0.5, 1), rotate 260ms cubic-bezier(0.25, 1, 0.5, 1), translate 260ms cubic-bezier(0.25, 1, 0.5, 1), box-shadow 260ms ease-out; }
+.pd-loose.is-falling { pointer-events: none; animation: pdDrop 760ms cubic-bezier(0.55, 0, 0.75, 0.2) forwards; }
+@keyframes pdDrop {
+  0% { translate: 0 0; rotate: var(--r); }
+  25% { translate: 4px -6px; rotate: calc(var(--r) - 6deg); }
+  100% { translate: 18px 120px; rotate: calc(var(--r) + 24deg); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+.pd--curls.is-rest .pd-pad { animation: none; }
+.pd-loose { transition: none; }
+.pd-loose.is-falling { animation: none; }
+}
+/* ══════════ Round 17 · one continuous tear (driven from JS) ══════════
+   The pad's --lift is now written every frame by the scene itself, so the
+   CSS loops / transitions that used to drive it are switched off here. */
+.pd--js .pd-pad,
+.pd--js.is-rest .pd-pad { animation: bob var(--b-dur) ease-in-out var(--b-delay) infinite; transition: none; }
+/* the arriving note holds still until it has landed; its float then starts from rest */
+.pd-loose.is-arriving { animation: none; z-index: 30; }
+@media (prefers-reduced-motion: reduce) {
+.pd--js .pd-pad { animation: none; }
+}
+/* while it's flying in it ignores the pointer, so a hover can't scale it mid-flight */
+.pd-loose.is-arriving { pointer-events: none; }
+.pd-loose.is-arriving,
+.pd-loose.is-arriving:hover { scale: 1; translate: 0 0; rotate: var(--r); transition: none; }
+/* Performance: every piece the curl moves gets its own layer, and only its
+   transform/opacity change per frame. */
+.pd--js .pd-sheet,
+.pd--js .pd-corner__leaf { will-change: transform; }
+.pd--js .pd-corner__shade,
+.pd--js .pd-under__shade,
+.pd--js .pd-corner__sheen { will-change: opacity; }
+.pd--js .pd-corner__shade { translate: 0 0; opacity: 0; }
+.pd--js .pd-under::after { content: none; }
+.pd-under__shade { position: absolute; left: 8%; right: 4%; bottom: 0; height: 40%; background: rgb(26 23 20 / 0.24); filter: blur(10px); opacity: 0; pointer-events: none; }
+.pd--js .pd-corner__leaf::after { content: none; }
+.pd-corner__sheen { position: absolute; inset: 0; background: linear-gradient(315deg, rgb(26 23 20 / 0.22) 0%, transparent 60%); opacity: 0; }
+.pd--js .pd-loose { box-shadow: 0 0 0 0.5px rgb(26 23 20 / 0.10), 0 2px 4px rgb(26 23 20 / 0.12), 0 8px 10px -8px rgb(26 23 20 / 0.30); }
+.pd--js .pd-loose.is-arriving { will-change: transform; }
+/* Soft shadows drawn as gradients instead of blur filters — a blur has to be
+   recomposited every frame its opacity changes; a gradient doesn't. */
+.pd--js .pd-corner__shade { filter: none; inset: 10px 0 0 10px; background: linear-gradient(315deg, rgb(26 23 20 / 0.30) 0%, rgb(26 23 20 / 0.12) 45%, transparent 75%); }
+.pd--js .pd-under__shade { filter: none; background: radial-gradient(60% 70% at 55% 100%, rgb(26 23 20 / 0.26), transparent 70%); }
+.pd--js .pd-sheet { transform-style: flat; }
+.pd--js .pd-block { box-shadow: 0 1px 0 #E7E1D5, 0 3px 0 #E7E1D5, 0 5px 0 #E7E1D5, 0 7px 0 #DDD6C8, -1px 1px 0 #E7E1D5, -3px 3px 0 #E7E1D5, -5px 5px 0 #E7E1D5, -7px 7px 0 #DDD6C8, -4px 12px 14px -8px rgb(26 23 20 / 0.28); }
+/* the corner leaf holds the matching piece of the doodle: a full-size copy of
+   the sheet's face, anchored bottom-right so it lines up exactly, clipped to
+   the leaf's triangle. As the leaf lifts, that piece of the drawing lifts too. */
+.pd-corner__face { position: absolute; right: 0; bottom: 0; width: 176px; height: 158px; padding: 12px; box-sizing: border-box; background: #fff;
+  display: grid; grid-template: minmax(0, 1fr) / minmax(0, 1fr); align-items: center; }
+.pd-corner__face img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.pd-corner__sheen { z-index: 1; }
+/* the bottom note drops off quicker, so it's gone before the top note comes down to its spot */
+.pd-loose.is-falling { animation-duration: 600ms; }
+/* the top note waits a beat for the space to clear, then slides down */
+.pd--js .pd-loose[data-k="1"] { transition-delay: 140ms, 140ms, 140ms, 140ms, 0s, 0s, 0s, 0s; }
+/* ══════════ Round 19 · no dark wedge at the end of the pull ══════════
+   The wedge was the corner's own shading (shade + sheen) plus the leaf
+   turning edge-on at full pull. Both shading layers are gone; the leaf now
+   stops at 52° so its face (with the doodle on it) always shows. */
+.pd--js .pd-corner__shade,
+.pd--js .pd-corner__sheen { display: none; }
+/* ══════════ Round 20 · warm the pad's edge + lift shadow ═════════════
+   The pad's side (the stacked sheet edges on the left and bottom) and the
+   soft shadow under the top note before it tears now use a light tint of
+   the site's clay orange instead of grey. */
+.pd--js .pd-block { box-shadow: 0 1px 0 #F3E2D1, 0 3px 0 #F3E2D1, 0 5px 0 #F3E2D1, 0 7px 0 #EBD1BA, -1px 1px 0 #F3E2D1, -3px 3px 0 #F3E2D1, -5px 5px 0 #F3E2D1, -7px 7px 0 #EBD1BA, -4px 12px 14px -8px rgb(198 141 95 / 0.30); }
+.pd--js .pd-under__shade { background: radial-gradient(60% 70% at 55% 100%, rgb(217 169 131 / 0.42), transparent 70%); }
+/* ══════════ Round 21 · the rip ═══════════════════════════════════════
+   The corner can now flip right up past vertical. Its doodle face hides
+   once it turns away from you, leaving the note's plain white back. */
+.pd--js .pd-corner__leaf { transform-style: preserve-3d; background: #fff; }
+.pd--js .pd-corner__face { backface-visibility: hidden; }
+/* the note's back is a touch warmer/greyer than its front, so the flipped-up corner reads as paper, not a gap */
+.pd--js .pd-corner__leaf { background: #EFE8DD; }
+/* hinge the lift at the glued top-left, so the free bottom-right swings up and out */
+.pd--js .pd-sheet { transform-origin: 0 0; }
+/* ══════════ Round 22 · top edge stays put until the pop ═══════════════ */
+.pd--js .pd-sheet { transform-origin: 50% 0; }
+/* the springing note rides above the notes on the wall */
+.pd--js .pd-pad { z-index: 25; }
+/* ══════════ Round 23 · back to the outward corner lift with the doodle on it ══
+   Undo Round 21's flip-over: the leaf keeps its doodle face (the "mesh")
+   the whole time and only lifts outward, so there's no blank triangle. */
+.pd--js .pd-corner__leaf { transform-style: flat; background: #fff; }
+.pd--js .pd-corner__face { backface-visibility: visible; }
+
+/* The top note's tear is drawn on a canvas that lives on the pad (so the
+   torn page can roll up over its glued top edge and fly off to the wall).
+   It stands in for the top sheet whenever the pad has `is-warp`; until it
+   has drawn (or with reduced motion) the plain sheet shows. */
+.pd-warp { position: absolute; z-index: 4; pointer-events: none; }
+.pd--js .pd-pad.is-warp .pd-top,
+.pd--js .pd-pad.is-warp .pd-corner { visibility: hidden; }
+.pd-mark { position: absolute; width: 0; height: 0; pointer-events: none; }
+

@@ -2,7 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { FoodBento, TripsWindow } from "./BagTray";
+import { COPY, slap } from "./bag/motion";
+import { BagTrips } from "./bag/BagTrips";
+import { BagReceipt } from "./bag/BagReceipt";
+import { BagDoodles } from "./bag/BagDoodles";
+import { BagPlaylist } from "./bag/BagPlaylist";
+
 
 /**
  * HoverBag — layered bag illustration.
@@ -97,6 +102,8 @@ const EFFECT_CLASS: Record<HoverEffect, string> = {
  *  automatically, so if that ever changes again, this is the one
  *  place to update (same pattern as elsewhere in the repo). */
 const BASE_PATH = "";
+/** Caption labels in the pop-ups — left out when deciding what sits against the cursor. */
+const CAPTIONS = ".tw2-line, .pd-line, .rp-line, .pill-orbit__caption, .pill-scatter__caption, .pill-polaroid__line";
 
 /* Visible painted bounds of everything under `root`: each descendant is
    intersected with every clipping ancestor up to (but not including)
@@ -105,13 +112,29 @@ const BASE_PATH = "";
    counted. Used to catch content that bleeds past the nominal pill box
    (art's cloud, music's flanking notes) so it can be nudged fully
    on-screen rather than clipped by the viewport edge. */
-function getPaintedBounds(root: HTMLElement) {
+/** Does this element itself draw anything? (an image or canvas, a fill,
+ *  a border, a shadow or its own text — not just a box around others) */
+function paints(n: Element) {
+  if (/^(IMG|CANVAS|SVG|VIDEO|svg)$/.test(n.tagName)) return true;
+  const s = getComputedStyle(n);
+  if (s.visibility === "hidden" || s.opacity === "0") return false;
+  if (s.backgroundImage !== "none") return true;
+  if (!/rgba\(0, 0, 0, 0\)|transparent/.test(s.backgroundColor)) return true;
+  if (s.boxShadow !== "none") return true;
+  if (parseFloat(s.borderTopWidth) || parseFloat(s.borderLeftWidth)) return true;
+  for (const c of Array.from(n.childNodes)) if (c.nodeType === 3 && c.textContent?.trim()) return true;
+  return false;
+}
+function getPaintedBounds(root: HTMLElement, skip?: string) {
   let L = Infinity, T = Infinity, R = -Infinity, B = -Infinity;
   const clips = (n: Element) => {
     const s = getComputedStyle(n);
     return /hidden|clip|auto|scroll/.test(s.overflow + " " + s.overflowX + " " + s.overflowY);
   };
   root.querySelectorAll("*").forEach((n) => {
+    if ((n as HTMLElement).dataset?.boundsIgnore !== undefined || n.closest("[data-bounds-ignore]")) return;
+    if (skip && n.closest(skip)) return;
+    if (!paints(n)) return; // layout wrappers draw nothing, so they don't count
     const r = n.getBoundingClientRect();
     if (!r.width && !r.height) return;
     let { left, top, right, bottom } = r;
@@ -156,9 +179,9 @@ function bagPreloadSrcs(): string[] {
     `${POP_UP}/games/Pokemon/Pokopia.webp`,
     `${POP_UP}/games/Pokemon/Violet.webp`,
     `${POP_UP}/games/Pokemon/Arceus.webp`,
-    ART_DOODLE.src,
-    ...ART_MINIS.map((m) => m.src),
-    ...ART_TOOLS.map((t) => t.src),
+    `${POP_UP}/doodles/Lost.webp`,
+    `${POP_UP}/doodles/Rice.webp`,
+    `${POP_UP}/doodles/Locked.webp`,
   ];
 }
 function warmBagImages() {
@@ -175,6 +198,25 @@ function warmBagImages() {
 
 export default function HoverBag({ debug = false }: { debug?: boolean }) {
   const [active, setActive] = useState<string | null>(null);
+  /* Clicks on the item or its pop-up: each one advances the pop-up's
+     photos early and slaps it (like the hero stickers). */
+  const [bump, setBump] = useState(0);
+  const press = () => {
+    setBump((b) => b + 1);
+    const card = pillRef.current?.querySelector(".hover-bag__pill-inner") as HTMLElement | null;
+    if (card) slap(card);
+  };
+  /* The pop-up stays put once shown and only closes after the pointer
+     has left both the item and the pop-up (a short grace covers the gap
+     between them). */
+  const closeT = useRef<number | undefined>(undefined);
+  const keepOpen = () => window.clearTimeout(closeT.current);
+  const closeSoon = () => {
+    window.clearTimeout(closeT.current);
+    closeT.current = window.setTimeout(() => { setActive(null); lastPos.current = null; }, 220);
+  };
+  const switchT = useRef<number | undefined>(undefined);
+  useEffect(() => () => { window.clearTimeout(closeT.current); window.clearTimeout(switchT.current); }, []);
   const pillRef = useRef<HTMLDivElement | null>(null);
   const stackRef = useRef<HTMLDivElement | null>(null);
   const lastPos = useRef<{ x: number; y: number } | null>(null);
@@ -231,17 +273,6 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
     return () => mq.removeEventListener("change", update);
   }, []);
 
-  /* Sideways "lean" — the pill tips opposite the cursor's horizontal
-     motion, like a sign swinging from where it's held (its
-     transform-origin is the bottom-left corner, same anchor the cursor
-     sits at — see the entrance-scale comment below), settling back
-     level a beat after the mouse stops moving. Kept on the individual
-     `rotate` property, set directly via the DOM ref rather than
-     through React state, so it never triggers a re-render and never
-     fights `.hover-bag__pill`'s own `transform: scale()` entrance. */
-  const leanTimeout = useRef<number | null>(null);
-  const LEAN_SENSITIVITY = 0.6; // deg of lean per px of horizontal movement
-  const LEAN_MAX = 7; // deg, clamped so a fast swipe can't over-rotate it
 
   /* The pill is portaled straight to <body> (see the render below).
      .hover-bag's own entrance animation leaves a lingering, non-"none"
@@ -259,130 +290,88 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
-  /* Mouse-anchored placement: the pill always sits top-right of the
-     cursor (consistent everywhere on the page, no left/below flip) —
-     clamped, not flipped, so it never overshoots the viewport but
-     stays on the same side of the cursor throughout a hover. */
-  const placePill = (clientX: number, clientY: number, key: string | null) => {
+  /* Placement: the pop-up opens to the top-right of the pointer and then
+     stays still where it opened (its pieces keep their own float). Once
+     it has painted, what it actually draws is measured and it eases into
+     the corrected spot; `base` is where it opened, the correction is a
+     `translate` on top. */
+  const base = useRef({ x: 0, y: 0 });
+  const cur = useRef({ x: 0, y: 0 });
+  const target = useRef({ x: 0, y: 0 });
+  /** What the pop-up paints, relative to its own origin (measured after it shows). */
+  const painted = useRef<{ l: number; t: number; r: number; b: number; al: number; ab: number } | null>(null);
+  const followRaf = useRef(0);
+  const follow = () => {
+    const pill = pillRef.current;
+    followRaf.current = 0;
+    if (!pill) return;
+    const dx = target.current.x - cur.current.x, dy = target.current.y - cur.current.y;
+    const snapNow = prefersReducedMotionRef.current || Math.abs(dx) + Math.abs(dy) < 0.3;
+    cur.current = snapNow ? { ...target.current } : { x: cur.current.x + dx * 0.24, y: cur.current.y + dy * 0.24 };
+    pill.style.translate = `${(cur.current.x - base.current.x).toFixed(2)}px ${(cur.current.y - base.current.y).toFixed(2)}px`;
+    if (!snapNow) followRaf.current = requestAnimationFrame(follow);
+  };
+  const placePill = (clientX: number, clientY: number, key: string | null, snap = false) => {
     const pill = pillRef.current;
     if (!pill || !key) return;
-
-    if (!prefersReducedMotionRef.current) {
-      // No previous position for THIS hover session (fresh mouseenter,
-      // since onMouseLeave/onBlur null it out below) means no lean yet
-      // — otherwise the jump between two different bag items would
-      // read as one big spurious kick.
-      const dx = lastPos.current ? clientX - lastPos.current.x : 0;
-      const lean = Math.max(-LEAN_MAX, Math.min(LEAN_MAX, -dx * LEAN_SENSITIVITY));
-      pill.style.rotate = `${lean}deg`;
-      if (leanTimeout.current) window.clearTimeout(leanTimeout.current);
-      leanTimeout.current = window.setTimeout(() => {
-        if (pillRef.current) pillRef.current.style.rotate = "0deg";
-      }, 140);
-    }
-
     lastPos.current = { x: clientX, y: clientY };
     const card = pill.firstElementChild as HTMLElement | null;
-    // Fallback matches .pill-polaroid / .pill-deck's own width (190)
-    // and roughly the polaroid's natural rendered height — only used
-    // for the very first frame, before the real DOM has been measured.
-    const w = card?.offsetWidth || 190;
-    const h = card?.offsetHeight || 250;
-    const margin = 12;
-    // Every popup is a uniform polaroid now, so a single gap works
-    // for all six (the old per-key tighter gap was tuned for the
-    // music pill's flanking notes, which no longer exist).
-    const gap = 16;
+    const fw = card?.offsetWidth || 190, fh = card?.offsetHeight || 250;
+    const pr = painted.current ?? { l: 0, t: 0, r: fw, b: fh, al: 0, ab: fh };
+    const margin = 12, gap = 10;
     const vw = window.innerWidth, vh = window.innerHeight;
-
-    const x = Math.min(Math.max(clientX + gap, margin), Math.max(margin, vw - w - margin));
-    /* The popup's whole defence against covering the cursor is that it
-       sits ABOVE it. Near the top of the viewport that's impossible, so
-       this clamp pushes the card back down — and straight over the
-       pointer. Remember whether that happened; the nudge below pays for
-       it sideways. */
-    const yIdeal = clientY - h - gap;
-    const y = Math.min(Math.max(yIdeal, margin), Math.max(margin, vh - h - margin));
-    /* How far the clamp had to push it. Used as the sideways travel
-       below rather than a boolean: a hard on/off would teleport the
-       popup ~100px across the instant the cursor crossed the threshold
-       by one pixel. Ramping with the same distance the card was pushed
-       keeps it continuous, and matches the physics — the further down
-       it's forced, the further it has encroached on the pointer. */
-    const pushedDown = Math.max(0, y - yIdeal);
-
-    pill.style.left = `${x}px`;
-    pill.style.top = `${y}px`;
-    pill.style.transformOrigin = "0% 100%";
-
-    // Nudge for content that bleeds outside the nominal box (the art
-    // popup's two prints hang ~54px off its left edge) — measure real
-    // painted bounds and shift just enough to keep them fully
-    // on-screen, and off the pointer.
-    const bounds = getPaintedBounds(pill);
-    if (bounds) {
-      let dx = 0, dy = 0;
-      if (bounds.left < margin) dx = margin - bounds.left;
-      else if (bounds.right > vw - margin) dx = Math.max(vw - margin - bounds.right, margin - bounds.left);
-      if (bounds.top < margin) dy = margin - bounds.top;
-      else if (bounds.bottom > vh - margin) dy = Math.max(vh - margin - bounds.bottom, margin - bounds.top);
-
-      /* When the clamp above pushed the card down over the pointer,
-         pay for it sideways: slide the popup RIGHT until its painted
-         bounds clear the cursor, so it moves down AND across rather
-         than settling under the user's hand.
-
-         Rightwards because the card is already anchored to the
-         cursor's right — pushing further that way keeps the same
-         spatial relationship, where flipping to the other side
-         mid-hover would read as the popup jumping.
-
-         Gated on `pushedDown` deliberately. `bounds` is one union
-         rectangle over every painted descendant, so in normal
-         placement it reports the cursor as "inside" simply because the
-         card's box extends past it — even though the bottom-left
-         corner of that rectangle is empty. Only the clamped case is a
-         real overlap, and it's the only case this should touch.
-
-         The pointer is not a point: .cursor-ring is 34px across and
-         grows 1.6x on hover — exactly the state a popup appears in —
-         so the thing to clear is a ~27px radius disc. */
-      const cursorClear = 34 * 1.6 * 0.5 + 6;
-      if (pushedDown > 0) {
-        const needRight = Math.min(clientX + cursorClear - (bounds.left + dx), pushedDown);
-        if (needRight > 0) {
-          const roomRight = vw - margin - (bounds.right + dx);
-          if (needRight <= roomRight) {
-            dx += needRight;
-          } else {
-            /* No room on the right — which only happens when the popup
-               is already pinned to that edge of the viewport, and is
-               therefore already sitting to the LEFT of the cursor.
-               Finish the move in the direction it has effectively
-               already taken rather than leaving it parked halfway
-               across the pointer. */
-            const needLeft = Math.min(bounds.right + dx - (clientX - cursorClear), pushedDown);
-            const roomLeft = bounds.left + dx - margin;
-            dx -= Math.max(0, Math.min(needLeft, roomLeft));
-          }
-        }
-      }
-
-      if (dx || dy) {
-        pill.style.left = `${x + dx}px`;
-        pill.style.top = `${y + dy}px`;
-      }
+    /* Top-right of the pointer, snug against it: the pop-up's main picture
+       (everything but its captions) starts just right of the cursor and
+       ends just above it. A caption may hang lower, off to the right.
+       Clamped (never flipped) so all of it stays on screen. */
+    let x = clientX + gap - pr.al;
+    const yIdeal = clientY - gap - pr.ab;
+    x = Math.min(Math.max(x, margin - pr.l), vw - margin - pr.r);
+    const y = Math.min(Math.max(yIdeal, margin - pr.t), vh - margin - pr.b);
+    /* Near the top of the window the clamp pushes it down over the
+       pointer — then slide it sideways to clear the cursor ring. */
+    if (y > yIdeal) {
+      const clear = 34 * 1.6 * 0.5 + 6;
+      const right = clientX + clear - pr.l;
+      if (right + pr.r <= vw - margin) x = Math.max(x, right);
+      else x = Math.max(margin - pr.l, clientX - clear - pr.r);
     }
+    target.current = { x, y };
+    if (snap) {
+      base.current = { x, y };
+      cur.current = { x, y };
+      pill.style.left = `${x}px`;
+      pill.style.top = `${y}px`;
+      pill.style.translate = "0px 0px";
+      // grow out of the pointer
+      pill.style.transformOrigin = `${clientX - x}px ${clientY - y}px`;
+      return;
+    }
+    if (!followRaf.current) followRaf.current = requestAnimationFrame(follow);
   };
+  /** Measure what the open pop-up actually paints, then re-centre on the pointer. */
+  const measure = () => {
+    const pill = pillRef.current;
+    if (!pill || !activeRef.current) return;
+    const bounds = getPaintedBounds(pill);
+    if (!bounds) return;
+    // the main picture, without its captions: this is what sits against the cursor
+    const main = getPaintedBounds(pill, CAPTIONS) ?? bounds;
+    const ox = cur.current.x, oy = cur.current.y;
+    painted.current = { l: bounds.left - ox, t: bounds.top - oy, r: bounds.right - ox, b: bounds.bottom - oy, al: main.left - ox, ab: main.bottom - oy };
+    if (lastPos.current) placePill(lastPos.current.x, lastPos.current.y, activeRef.current);
+  };
+  const activeRef = useRef<string | null>(null);
+  activeRef.current = active;
+  useEffect(() => () => cancelAnimationFrame(followRaf.current), []);
 
-  // Re-place once the newly-active variant's markup has painted, so
-  // bleeding elements are measured for real rather than against the
-  // previous variant's bounds.
+  // Once a newly opened pop-up has painted (and again once its grow-in has
+  // finished, so the scale doesn't skew the numbers), measure and re-centre.
   useEffect(() => {
-    if (!active || !lastPos.current) return;
-    const pos = lastPos.current;
-    const id = requestAnimationFrame(() => placePill(pos.x, pos.y, active));
-    return () => cancelAnimationFrame(id);
+    if (!active) return;
+    let id = requestAnimationFrame(() => { id = requestAnimationFrame(measure); });
+    const t = window.setTimeout(measure, 260);
+    return () => { cancelAnimationFrame(id); window.clearTimeout(t); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active]);
 
@@ -395,6 +384,107 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
     return () => window.removeEventListener("resize", onResize);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active]);
+
+  /* Hover, worked out from the pointer position rather than enter/leave
+     events — the pop-up sits on top of the item now, so the item itself
+     never sees the pointer. Using everything under the pointer:
+       · on its item, or on the pop-up itself → it stays open and still
+       · resting on a different item for a moment switches to that one
+       · anywhere else → closes after the grace period */
+  useEffect(() => {
+    if (!hoverCapable) return;
+    let raf = 0, px = -1, py = -1;
+    let pending: string | null = null;
+    /* The way to the pop-up: while the pointer is travelling from its item
+       toward the open pop-up, other items it crosses don't take over —
+       they only do once it stops on them. `anchor` is the last spot on the
+       open item; the route is the area between it and the pop-up. */
+    let anchor: { x: number; y: number } | null = null;
+    /** Clicked or dragged inside the open pop-up: you're using it, so nothing under it takes over. */
+    let engaged = false;
+    let stillT: number | undefined;
+    const onRoute = (x: number, y: number) => {
+      const pill = pillRef.current;
+      if (!anchor || !pill || !painted.current) return false;
+      const ox = cur.current.x, oy = cur.current.y, pr = painted.current;
+      const pad = 10;
+      const corners = [[ox + pr.l - pad, oy + pr.t - pad], [ox + pr.r + pad, oy + pr.t - pad], [ox + pr.r + pad, oy + pr.b + pad], [ox + pr.l - pad, oy + pr.b + pad]];
+      // inside any triangle (anchor, corner i, corner i+1) = inside the hull of anchor + pop-up
+      const side = (ax: number, ay: number, bx: number, by: number) => (bx - ax) * (y - ay) - (by - ay) * (x - ax);
+      for (let i = 0; i < 4; i++) {
+        const [bx, by] = corners[i], [cx, cy] = corners[(i + 1) % 4];
+        const d1 = side(anchor.x, anchor.y, bx, by), d2 = side(bx, by, cx, cy), d3 = side(cx, cy, anchor.x, anchor.y);
+        if ((d1 >= 0 && d2 >= 0 && d3 >= 0) || (d1 <= 0 && d2 <= 0 && d3 <= 0)) return true;
+      }
+      return false;
+    };
+    const open = (key: string) => {
+      painted.current = null;
+      anchor = { x: px, y: py };
+      engaged = false;
+      placePill(px, py, key, true);
+      setActive(key);
+      activeRef.current = key;
+    };
+    const evaluate = () => {
+      raf = 0;
+      if (px < 0) return;
+      const els = document.elementsFromPoint(px, py);
+      const zone = els.find((el) => el.classList.contains("hover-bag__zone")) as HTMLElement | undefined;
+      const key = zone?.dataset.key ?? null;
+      const now = activeRef.current;
+      const pill = pillRef.current;
+      // only the pop-up's actual pieces count, not the empty space between them
+      const onPill = !!now && !!pill && els.some((el) => pill.contains(el) && paints(el));
+      if (key) {
+        keepOpen();
+        if (!now) { open(key); return; }
+        if (key === now) { window.clearTimeout(switchT.current); pending = null; anchor = { x: px, y: py }; return; }
+        // on the pop-up where it covers another item: holds while you're using it (or just passing);
+        // stop there for a moment without clicking and that item takes over
+        if (onPill) {
+          window.clearTimeout(switchT.current); pending = null;
+          window.clearTimeout(stillT);
+          if (!engaged) stillT = window.setTimeout(() => { if (activeRef.current === now) open(key); }, 600);
+          return;
+        }
+        // on the way to the pop-up: only switch if the pointer actually stops here
+        if (onRoute(px, py)) {
+          window.clearTimeout(switchT.current); pending = null;
+          window.clearTimeout(stillT);
+          stillT = window.setTimeout(() => { if (activeRef.current === now) open(key); }, 420);
+          return;
+        }
+        // resting on a different item switches to it
+        if (pending !== key) {
+          pending = key;
+          window.clearTimeout(switchT.current);
+          switchT.current = window.setTimeout(() => { pending = null; open(key); }, 260);
+        }
+        return;
+      }
+      if (onPill) { keepOpen(); window.clearTimeout(switchT.current); pending = null; return; }
+      window.clearTimeout(switchT.current); pending = null;
+      if (now) closeSoon();
+    };
+    const queue = () => { if (!raf) raf = requestAnimationFrame(evaluate); };
+    const onMove = (e: PointerEvent) => { if (e.pointerType === "touch") return; px = e.clientX; py = e.clientY; window.clearTimeout(stillT); queue(); };
+    const onDown = (e: PointerEvent) => { if (pillRef.current?.contains(e.target as Node)) { engaged = true; window.clearTimeout(stillT); } };
+    const onOut = (e: MouseEvent) => { if (!e.relatedTarget && activeRef.current) { px = -1; closeSoon(); } };
+    window.addEventListener("pointermove", onMove, { passive: true });
+    window.addEventListener("pointerdown", onDown, true);
+    window.addEventListener("scroll", queue, { passive: true });
+    document.addEventListener("mouseout", onOut);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.clearTimeout(stillT);
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerdown", onDown, true);
+      window.removeEventListener("scroll", queue);
+      document.removeEventListener("mouseout", onOut);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hoverCapable]);
 
   /* Touch path: tapping anywhere outside the active zone closes the
      centered popup. Only armed while a popup is actually open, and only
@@ -452,35 +542,21 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
               width: `${item.zone.w}%`,
               height: `${item.zone.h}%`,
             }}
-            onMouseEnter={hoverCapable ? (e) => {
-              placePill(e.clientX, e.clientY, item.key);
-              setActive(item.key);
-            } : undefined}
-            onMouseMove={hoverCapable ? (e) => placePill(e.clientX, e.clientY, item.key) : undefined}
-            onMouseLeave={hoverCapable ? () => {
-              setActive(null);
-              // Fresh start for whichever item is hovered next — see
-              // the comment in placePill on why this matters for lean.
-              lastPos.current = null;
-              if (leanTimeout.current) window.clearTimeout(leanTimeout.current);
-              if (pillRef.current) pillRef.current.style.rotate = "0deg";
-            } : undefined}
+            data-key={item.key}
             onFocus={hoverCapable ? (e) => {
+              keepOpen();
               const r = e.currentTarget.getBoundingClientRect();
-              placePill(r.left + r.width / 2, r.top + r.height / 2, item.key);
+              painted.current = null;
+              placePill(r.left + r.width / 2, r.top + r.height / 2, item.key, true);
               setActive(item.key);
             } : undefined}
-            onBlur={hoverCapable ? () => {
-              setActive(null);
-              lastPos.current = null;
-              if (leanTimeout.current) window.clearTimeout(leanTimeout.current);
-              if (pillRef.current) pillRef.current.style.rotate = "0deg";
-            } : undefined}
+            onBlur={hoverCapable ? closeSoon : undefined}
             /* Touch path: tap toggles the centered popup — tap the same
                item again (or it's already active) to fade it back out. */
-            onClick={!hoverCapable ? () => {
-              setActive((prev) => (prev === item.key ? null : item.key));
-            } : undefined}
+            onClick={hoverCapable ? press : () => {
+              if (active === item.key) press();
+              else setActive(item.key);
+            }}
             aria-label={item.label}
             aria-pressed={!hoverCapable ? active === item.key : undefined}
             data-debug-label={debug ? item.label : undefined}
@@ -497,9 +573,10 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
           ref={pillRef}
           className={`hover-bag__pill hover-bag__pill--${activeItem?.key ?? "none"}${active ? " is-on" : ""}`}
           aria-hidden="true"
+          onClick={press}
         >
           <div className="hover-bag__pill-inner">
-            {activeItem && renderPillVariant(activeItem.key)}
+            {activeItem && renderPillVariant(activeItem.key, bump)}
           </div>
         </div>,
         document.body
@@ -511,9 +588,10 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
         <div
           className={`hover-bag__pill hover-bag__pill--mobile hover-bag__pill--${activeItem?.key ?? "none"}${active ? " is-on" : ""}`}
           aria-hidden="true"
+          onClick={press}
         >
           <div className="hover-bag__pill-inner">
-            {activeItem && renderPillVariant(activeItem.key)}
+            {activeItem && renderPillVariant(activeItem.key, bump)}
           </div>
         </div>
       )}
@@ -527,47 +605,18 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
    has distinctive layout + typography so the six items feel like six
    different peeks into Kathleen's world rather than six labels. */
 
-function renderPillVariant(key: string): React.ReactNode {
+function renderPillVariant(key: string, bump: number): React.ReactNode {
   switch (key) {
-    case "earbuds": return <PillMusic />;
-    case "phone":   return <PillFriends />;
-    case "usagi":   return <PillFood />;
-    case "ticket":  return <PillTravel />;
-    case "laptop":  return <PillGames />;
-    case "ipad":    return <PillArt />;
+    case "usagi":
+      return <BagReceipt bump={bump} />;
+    case "ipad":
+      return <BagDoodles bump={bump} />;
+    case "ticket":  return <BagTrips bump={bump} />;
+    case "earbuds": return <BagPlaylist bump={bump} />;
+    case "phone":   return <PillFriends bump={bump} />;
+    case "laptop":  return <PillGames bump={bump} />;
     default:        return null;
   }
-}
-
-/* All six popups now share one shape — a polaroid: a photo area
-   (currently an .image-slot placeholder, ready for real photos later)
-   over a hand-captioned line, matching the hero polaroid's look.
-   Friends and travel use a "deck" of these instead of one — a couple
-   of static polaroids peek out behind as texture while the real cards
-   take turns flipping to the front on a timer. */
-
-function PillPolaroid({
-  label,
-  caption,
-  meta,
-  rotate = 0,
-}: {
-  label: string;
-  caption: React.ReactNode;
-  meta?: string;
-  rotate?: number;
-}) {
-  return (
-    <div className="pill-polaroid" style={{ ["--rot" as string]: `${rotate}deg` }}>
-      <div className="pill-polaroid__photo">
-        <span className="image-slot">{label}</span>
-      </div>
-      <div className="pill-polaroid__caption">
-        {meta && <span className="pill-polaroid__meta">{meta}</span>}
-        <span className="pill-polaroid__line">{caption}</span>
-      </div>
-    </div>
-  );
 }
 
 type OrbitArtwork = {
@@ -604,7 +653,9 @@ const ALT_SLOT_SECONDS = 2.8;
 function OrbitTile({
   icon,
   float,
+  bump,
 }: {
+  bump: number;
   icon: OrbitIcon;
   float: { dur: number; amp: number; delay: number };
 }) {
@@ -618,7 +669,13 @@ function OrbitTile({
       ALT_SLOT_SECONDS * 1000
     );
     return () => window.clearInterval(id);
-  }, [art.length]);
+  }, [art.length, bump]);
+  // a click shows the next title now (and restarts the timer above)
+  const first = useRef(true);
+  useEffect(() => {
+    if (first.current) { first.current = false; return; }
+    if (art.length > 1) setShown((prev) => (prev + 1) % art.length);
+  }, [bump, art.length]);
 
   return (
     <div
@@ -684,7 +741,11 @@ function PillOrbit({
   captionTop,
   captionLeft,
   captionRotate = 0,
+  bump = 0,
+  shiftOnBump = false,
 }: {
+  bump?: number;
+  shiftOnBump?: boolean;
   icons: OrbitIcon[];
   meta?: string;
   caption: React.ReactNode;
@@ -695,9 +756,11 @@ function PillOrbit({
 }) {
   return (
     <div className="pill-orbit" style={{ ["--rot" as string]: `${rotate}deg` }}>
-      {icons.map((icon, i) => (
-        <OrbitTile key={i} icon={icon} float={ICON_FLOAT[i % ICON_FLOAT.length]} />
-      ))}
+      {icons.map((icon, i) => {
+        // music: each click passes the covers round to the next tile
+        const art = shiftOnBump ? icons[(i + bump) % icons.length].art : icon.art;
+        return <OrbitTile key={i} icon={{ ...icon, art }} float={ICON_FLOAT[i % ICON_FLOAT.length]} bump={bump} />;
+      })}
       <div
         className="pill-orbit__caption"
         style={{
@@ -715,64 +778,6 @@ function PillOrbit({
         {meta && <span className="pill-polaroid__meta">{meta}</span>}
         <span className="pill-polaroid__line">{caption}</span>
       </div>
-    </div>
-  );
-}
-
-type DeckCard = {
-  label: string;
-  caption: React.ReactNode;
-  meta?: string;
-  rotate?: number;
-};
-
-/* Each card in a deck runs the same 3-position shuffle (front / mid /
-   back — see @keyframes deckShuffle in globals.css), offset by a
-   negative delay of one DECK_SLOT_SECONDS window per card so they're
-   always a step apart in the cycle — one card is front, one is mid,
-   one is back, and they continuously rotate through those slots like
-   a hand of cards being worked through. */
-const DECK_SLOT_SECONDS = 3.6;
-
-/* Independent float timing per card slot, layered on top of each
-   card's own deckShuffle choreography — see the shared @keyframes
-   floatBob comment on ICON_FLOAT above for how this composes without
-   fighting deckShuffle's `transform`. */
-const CARD_FLOAT = [
-  { dur: 3.2, amp: 5, delay: 0 },
-  { dur: 3.9, amp: 4, delay: 0.3 },
-  { dur: 4.5, amp: 6, delay: 0.55 },
-];
-
-function PillPolaroidDeck({ cards }: { cards: DeckCard[] }) {
-  const cycle = cards.length * DECK_SLOT_SECONDS;
-  return (
-    <div className="pill-deck">
-      {cards.map((c, i) => {
-        const float = CARD_FLOAT[i % CARD_FLOAT.length];
-        return (
-        <div
-          key={i}
-          className="pill-deck__front pill-polaroid"
-          style={{
-            ["--rot" as string]: `${c.rotate ?? 0}deg`,
-            ["--icon-float-amp" as string]: `${float.amp}px`,
-            // Comma-paired: deckShuffle's duration/delay first, then
-            // floatBob's — matches the animation-name order in CSS.
-            animationDuration: `${cycle}s, ${float.dur}s`,
-            animationDelay: `${-(i * DECK_SLOT_SECONDS)}s, ${float.delay}s`,
-          }}
-        >
-          <div className="pill-polaroid__photo">
-            <span className="image-slot">{c.label}</span>
-          </div>
-          <div className="pill-polaroid__caption">
-            {c.meta && <span className="pill-polaroid__meta">{c.meta}</span>}
-            <span className="pill-polaroid__line">{c.caption}</span>
-          </div>
-        </div>
-        );
-      })}
     </div>
   );
 }
@@ -918,12 +923,27 @@ function PillScatter({
   photos,
   meta,
   caption,
+  bump = 0,
 }: {
+  bump?: number;
   photos: PhotoCard[];
   meta?: string;
   caption: React.ReactNode;
 }) {
   const [cards, setCards] = useState<ScatterCard[]>(SCATTER_OPENING);
+  const dealBeat = useRef(0);
+  /* Clicking a print swaps just that photo for one not on the table. */
+  const swapPrint = (i: number, e: React.MouseEvent<HTMLElement>) => {
+    e.stopPropagation();
+    slap(e.currentTarget);
+    setCards((prev) => {
+      const showing = prev.map((c) => c.photo);
+      let next = prev[i].photo;
+      do next = (next + 1) % photos.length; while (showing.includes(next));
+      return prev.map((c, k) => (k === i ? { ...c, photo: next } : c));
+    });
+  };
+  const dealArmed = useRef(false);
 
   // Warm the cache for the photos not on the table yet, so a print
   // never arrives as an empty frame.
@@ -936,10 +956,10 @@ function PillScatter({
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    let beat = 0;
+    let beat = dealBeat.current;
     let settle = 0;
 
-    const id = window.setInterval(() => {
+    const deal = () => {
       const moving = beat % SCATTER_CARDS;
       beat += 1;
 
@@ -966,13 +986,17 @@ function PillScatter({
           );
         });
       }, SCATTER_FADE_MS);
-    }, SCATTER_MOVE_MS);
+      dealBeat.current = beat;
+    };
+    // a click deals the next print now and restarts the rhythm
+    if (dealArmed.current) deal(); else dealArmed.current = true;
+    const id = window.setInterval(deal, SCATTER_MOVE_MS);
 
     return () => {
       window.clearInterval(id);
       window.clearTimeout(settle);
     };
-  }, [photos.length]);
+  }, [photos.length, bump]);
 
   return (
     <div className="pill-scatter">
@@ -1004,6 +1028,7 @@ function PillScatter({
           <span
             key={i}
             className={`pill-scatter__print${card.out ? " is-out" : ""}`}
+            onClick={(e) => swapPrint(i, e)}
             style={{
               left: `${left}px`,
               top: `${top}px`,
@@ -1056,50 +1081,25 @@ function PillScatter({
   );
 }
 
-function PillMusic() {
-  return (
-    <PillOrbit
-      rotate={-3}
-      meta="now playing"
-      caption={<>Mostly <strong>CPOP / KPOP / JPOP</strong> — <strong>LBI利比</strong> on repeat</>}
-      icons={[
-        // Square cover art fills its tile edge to edge, so these keep
-        // the default dark tile colour — none of it shows.
-        { label: "LBI 利比", top: "5%", left: "-3%", rotate: -13, art: [{ src: `${POP_UP}/music/LBI.webp` }] },
-        { label: "Ashley", top: "-7%", right: "8%", rotate: 7, art: [{ src: `${POP_UP}/music/Ashley.webp` }] },
-        { label: "F/ACE", top: "40%", left: "37%", rotate: 8, art: [{ src: `${POP_UP}/music/FACE.webp` }] },
-      ]}
-      captionTop="39%"
-      captionLeft="46%"
-      captionRotate={-2}
-    />
-  );
-}
-
-function PillFriends() {
+function PillFriends({ bump }: { bump: number }) {
   return (
     <PillScatter
+      bump={bump}
       photos={FRIEND_PHOTOS}
       meta="friends"
-      caption="photos of friends"
+      caption={COPY.friends}
     />
   );
 }
 
-function PillFood() {
-  return <FoodBento />;
-}
 
-function PillTravel() {
-  return <TripsWindow />;
-}
-
-function PillGames() {
+function PillGames({ bump }: { bump: number }) {
   return (
     <PillOrbit
+      bump={bump}
       rotate={-2}
       meta="what i'm playing"
-      caption="Pokémon, League, and TFT"
+      caption={COPY.games}
       icons={[
         {
           label: "League of Legends",
@@ -1137,92 +1137,5 @@ function PillGames() {
       captionLeft="55%"
       captionRotate={1.5}
     />
-  );
-}
-
-/* The programs the doodles are drawn in, stamped down the print's right
-   edge like tabs on a folder — which keeps the whole bottom of the card
-   clear for the caption. Each is its own stamp with its own paper edge
-   and tilt; they deliberately don't overlap. */
-/**
- * The doodles popup's pieces.
- *
- * Lost is a 2.25:1 comic strip that pans inside an 11:10 window — see
- * the lostPan note in globals.css for why that window isn't square.
- *
- * `ratio` on each mini is its file's real width/height, and the frame
- * takes that ratio directly. Locked is 251x320 portrait; a shared
- * square frame with object-fit: cover was slicing 24px of actual ink
- * off its top and bottom.
- *
- * Float numbers: amplitude, duration and delay are floatBob's only
- * three knobs. No two durations here share a small-integer ratio, so
- * the pieces never fall back into step — and none of them matches the
- * sheet's 4.4s, which is what keeps them reading as separate objects
- * lying on the print rather than one rigid card.
- */
-const ART_DOODLE = { src: `${POP_UP}/doodles/Lost.webp`, name: "Lost" };
-
-const ART_MINIS = [
-  { src: `${POP_UP}/doodles/Rice.webp`, ratio: 320 / 315, float: { dur: 3.9, amp: 5, delay: 0.25 } },
-  { src: `${POP_UP}/doodles/Locked.webp`, ratio: 251 / 320, float: { dur: 4.7, amp: 6, delay: 0.95 } },
-];
-
-const ART_TOOLS = [
-  { name: "Procreate", src: `${POP_UP}/doodles/Procreate.webp`, float: { dur: 4.1, amp: 5, delay: 0 } },
-  { name: "Clip Studio Paint", src: `${POP_UP}/doodles/CSP.webp`, float: { dur: 5.2, amp: 6, delay: 0.6 } },
-];
-
-/** Comma-paired to match each rule's animation-name order in globals.css. */
-const artFloat = (f: { dur: number; amp: number; delay: number }, enter: number) =>
-  ({
-    ["--icon-float-amp" as string]: `calc(${f.amp}px * var(--u))`,
-    animationDuration: `260ms, ${f.dur}s`,
-    animationDelay: `${enter}ms, ${f.delay}s`,
-  }) as React.CSSProperties;
-
-function PillArt() {
-  return (
-    <div className="pill-art">
-      <div className="pill-art__sheet">
-        <div className="pill-art__window">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={`${BASE_PATH}${ART_DOODLE.src}`} alt="" draggable={false} />
-        </div>
-        <div className="pill-art__caption">
-          <span className="pill-polaroid__meta">doodles of college to rmr</span>
-          <span className="pill-polaroid__line">
-            I like to capture memories through sharing my vision with others
-          </span>
-        </div>
-      </div>
-
-      <span className="pill-art__tape pill-art__tape--1" aria-hidden="true" />
-      <span className="pill-art__tape pill-art__tape--2" aria-hidden="true" />
-
-      {ART_MINIS.map((d, i) => (
-        <span
-          key={d.src}
-          className={`pill-art__print pill-art__print--${i === 0 ? "a" : "b"}`}
-          /* The frame takes the file's own proportions, so neither
-             doodle is ever cropped at any --u. */
-          style={{ aspectRatio: d.ratio, ...artFloat(d.float, 150 + i * 70) }}
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={`${BASE_PATH}${d.src}`} alt="" draggable={false} />
-        </span>
-      ))}
-
-      {ART_TOOLS.map((tool, i) => (
-        <span
-          key={tool.src}
-          className={`pill-art__badge pill-art__badge--${i === 0 ? "a" : "b"}`}
-          style={artFloat(tool.float, i * 80)}
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={`${BASE_PATH}${tool.src}`} alt="" draggable={false} />
-        </span>
-      ))}
-    </div>
   );
 }
