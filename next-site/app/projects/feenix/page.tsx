@@ -1,8 +1,66 @@
 import CaseCover from "@/components/CaseCover";
 import CaseSectionNav from "@/components/CaseSectionNav";
 import ZoomableImage from "@/components/ZoomableImage";
+import CaseFilmstrip from "@/components/CaseFilmstrip";
 
 import briefImg from "./images/Feenix_Project_Introduction.png";
+
+import competitorSignIn from "./images/Competitor_Sign_In.png";
+import aternosServer from "./images/Aternos_Server.png";
+import playHostingServer from "./images/Play.Hosting_Server.png";
+import aternosMaintenance from "./images/Aternos_Maintenace.png";
+import competitorMaintenance from "./images/Competitor_Server_Maintenance.png";
+import serverCreationIdeation from "./images/Server_Creation_Ideation.png";
+import serverCreationFlowSketch from "./images/Server_Creation_Flow_Sketch.png";
+import loginSketch from "./images/Login_Sketch.png";
+import createAccountSketch from "./images/Create_Account_Sketch.png";
+import createAccountSketch2 from "./images/Create_Account_Sketch_Second.png";
+import authFlow from "./images/Landing_Page_Flow.png";
+import createAccountSketch3 from "./images/Create_Account_Sketch_Third.png";
+import createAccountSketchFinal from "./images/Create_Account_Sketch_Final.png";
+import accountRecoverySketch from "./images/Account_Recovery_Sketch.png";
+import loginMock1 from "./images/Login_Initial_Mockup_1.png";
+import loginMock2 from "./images/Login_Initial_Mockup_2.png";
+import createAccountFlowWire from "./images/Create_Account_Flow_Wireframe.png";
+import recoverAccountFlowWire from "./images/Recover_Account_Flow_Wireframe.png";
+import websiteLogin from "./images/Website_Login.png";
+import websiteCreateUsername from "./images/Website_Create_Account_Username.png";
+import websiteCreatePasswordEmpty from "./images/Website_Create_Account_Password_Empty.png";
+import websiteCreatePasswordFilled from "./images/Website_Create_Account_Password_Filled.png";
+import websiteCreateAgreement from "./images/Website_Create_Account_Agreement.png";
+import competitorSidebar from "./images/Competitor_Sidebar.png";
+import sidebarIdea from "./images/Sidebar_Idea.png";
+import sidebarSketch from "./images/Sidebar_Sketch.png";
+import sidebarSketch2 from "./images/Sidebar_Sketch_Second.png";
+import sidebarSketch3 from "./images/Sidebar_Sketch_Third.png";
+import sidebarSketch4 from "./images/Sidebar_Sketch_Fourth.png";
+import sidebarSketchFinal from "./images/Sidebar_Sketch_Final.png";
+import homeNewSketch from "./images/Home_New_Sketch.png";
+import consoleSketch from "./images/Console_Sketch.png";
+import worldSketch from "./images/World_Sketch.png";
+import playersSketch from "./images/Players_Sketch.png";
+import backupSketch from "./images/Backup_Sketch.png";
+import adminSketch from "./images/Admin_Sketch.png";
+import softwareSketch from "./images/Software_Sketch.png";
+import consoleSketchFinal from "./images/Console_Sketch_Final.png";
+import worldSketchFinal from "./images/World_Sketch_Final.png";
+import playersSketchFinal from "./images/Players_Sketch_Final.png";
+import backupSketchFinal from "./images/Backup_Sketch_Final.png";
+import consoleWire1 from "./images/Server_Console_Wireframe_Initial.png";
+import consoleWire2 from "./images/Server_Console_Wireframe_Second.png";
+import worldWire1 from "./images/Server_World_Wireframe_Initial.png";
+import worldWire2 from "./images/Server_World_Wireframe_Second.png";
+import playersWire from "./images/Server_Players_Wireframe_Initial.png";
+import backupWire from "./images/Server_Backup_Wireframe_Initial.png";
+import adminWire from "./images/Server_Admin_Wireframe_Initial.png";
+import softwareWire from "./images/Server_Software_Wireframe_Initial.png";
+import serverCreationNew from "./images/Server_Creation_New.png";
+import creationStep1Public from "./images/Server_Creation_Step_1_Public.png";
+import creationStep1Private from "./images/Server_Creation_Step_1_Private.png";
+import creationStep2a from "./images/Server_Creation_Step_2_Initial.png";
+import creationStep2b from "./images/Server_Creation_Step_2_Second.png";
+import creationStep3a from "./images/Server_Creation_Step_3_Initial.png";
+import creationStep3b from "./images/Server_Creation_Step_3_Second.png";
 
 
 export const metadata = {
@@ -34,7 +92,7 @@ export default function FeenixCaseStudy() {
     <div className="case">
       <CaseSectionNav sections={SECTIONS_NAV} />
       <CaseCover
-        title="Structuring a Minecraft Server Hosting Platform for Players of Any Experience"
+        title="Constructing a Minecraft Server Hosting Platform Applicable To Any Level of Experience"
         meta="Feenix Group · 2026–27 · UX Lead, Frontend"
         metaLabels={["Client", "Timeline", "Role"]}
         subtitle="A beginner-friendly server hosting platform built from an audit of two competitors"
@@ -80,7 +138,7 @@ export default function FeenixCaseStudy() {
             with the younger audience through video games and partnerships. They are well known through 
             their projects in Roblox development.
             <br></br><br></br>
-            Currently, Feenix Group is branching out to Minecraft through collaborating the team I was a part of in Purdue&rsquo;s Data 
+            Currently, Feenix Group is branching out to Minecraft, collaborating with the team I was a part of in Purdue&rsquo;s Data 
             Mine Corporate Partners to build a Minecraft server hosting platform.
           </p>
           <Z img={briefImg} alt="Project brief board with the platform description and user assumptions on sticky notes."
@@ -90,113 +148,236 @@ export default function FeenixCaseStudy() {
              During the project I worked as the UX lead on the Frontend team,{" "}
             owning the information architecture, user flows, and interface's design and frontend implementation.
             <br/><br/>
-            While designing, I actively collaborated with the other teams (Data, backend, infrastructure) to gauge feasbility and limitations
-            of functions within the designs.
+            While designing, I actively collaborated with the other teams (Data, backend, infrastructure) to address 
+            feasbility and limitations of functions within the designs.
           </p>
         </section>
 
         {/* ───── Researching ───── */}
         <section id="researching" className="case-section">
           <h2>Researching</h2>
-          <h3>Auditing Two Competitors</h3>
-          <p>
-            During sponsor meetings and from the, Hari, the sponsor's _____, named Aternos, another Minecraft server 
-            hosting platform, to reference off of and a teammate also mentioned Play.Hosting.
-            <br></br><br></br>
-            Within each platform, I audited flows regarding server creation and maintenance to understand better Feenix's 
-            requested features regarding the following:
-            <br></br>
-            <ul>
-              <li>Functionality</li>
-              <li>Additional opportunity gaps (addressed or left open by the competitors)</li>
-            </ul>
-          </p>
 
-          <>
+          <h3>Auditing two competitors</h3>
+          {/* DOC → Phase 3 → "Goal" / "Method" */}
+          <CaseFilmstrip
+            label="Auditing two competitors"
+            shots={[
+              { key: "competitor-sign-in", img: competitorSignIn, label: "Sign-in, both platforms", alt: "Sign-in screens from Aternos and play.hosting side by side." },
+              { key: "aternos-server", img: aternosServer, label: "Aternos dashboard", alt: "The Aternos server dashboard." },
+              { key: "play-hosting-server", img: playHostingServer, label: "play.hosting dashboard", alt: "The play.hosting server dashboard." },
+            ]}
+          />
 
-              <h3>Where Their Structures Fell Short</h3>
-              <p>
-                Both platforms put platform permissions and in-game player lists under labels that
-                don&rsquo;t tell them apart.
-                <br /><br />
-                On Aternos, a tester looking for the whitelist went to <strong>Access</strong>, which is
-                actually for sharing the account. On play.hosting, platform access was under{" "}
-                <strong>Sub users</strong>, a term neither tester recognized, and one had to be told where it was.
-              </p>
+          <h3>Where their structures fell short</h3>
+          {/* DOC → Phase 3 → "Findings — Aternos" */}
+          {/* DOC → Phase 6 → Console paragraph */}
+          <CaseFilmstrip
+            label="Where their structures fell short"
+            shots={[
+              { key: "aternos-maintenace", img: aternosMaintenance, label: "Aternos maintenance", alt: "Aternos server maintenance screens." },
+              { key: "competitor-server-maintenance", img: competitorMaintenance, label: "Maintenance, both platforms", alt: "Server maintenance screens captured across both competitors." },
+            ]}
+          />
 
-            </>
         </section>
 
         {/* ───── Designing ───── */}
         <section id="designing" className="case-section">
           <h2>Designing</h2>
-          <h3>Defining a Purpose for Each Section</h3>
-          <p>
-            Before wireframing, I wrote one line stating what each section is for.
-            Those six lines then decided where every feature went.
-          </p>
 
+          <h3>Working out what a server needs</h3>
+          {/* DOC → Phase 7 → "Findings — feature inventory" */}
+          <CaseFilmstrip
+            label="Working out what a server needs"
+            shots={[
+              { key: "server-creation-ideation", img: serverCreationIdeation, label: "Feature inventory", alt: "Sticky-note board listing what a server needs: address, privacy, whitelist, admins, blueprint, backup, world seed." },
+              { key: "server-creation-flow-sketch", img: serverCreationFlowSketch, label: "Flow sketch", alt: "Hand sketch of the server creation flow across its pages." },
+            ]}
+          />
 
-          <h3>Referencing a Navigation Users Already Know</h3>
-          <p>
-            Our users use Discord daily, so I based the navigation on Discord&rsquo;s: a
-            server list down the side, with each server&rsquo;s sections across the top. Since users
-            already know how it works, <mark className="hl">they wouldn&rsquo;t need to learn a new pattern</mark>.
-          </p>
+          <h3>Create account, four passes</h3>
+          {/* DOC → Phase 4 → "Goal" */}
+          <CaseFilmstrip
+            label="Create account, four passes"
+            shots={[
+              { key: "create-account-sketch", img: createAccountSketch, label: "First pass", alt: "First hand sketch of the create account screen." },
+              { key: "create-account-sketch-second", img: createAccountSketch2, label: "Second pass", alt: "Second create account sketch." },
+              { key: "create-account-sketch-third", img: createAccountSketch3, label: "Third pass", alt: "Third create account sketch." },
+              { key: "create-account-sketch-final", img: createAccountSketchFinal, label: "Final pass", alt: "Final create account sketch." },
+            ]}
+          />
 
+          <h3>Log in, recovery and the auth flow</h3>
+          {/* DOC → Phase 4 → "Goal" */}
+          <CaseFilmstrip
+            label="Log in, recovery and the auth flow"
+            shots={[
+              { key: "login-sketch", img: loginSketch, label: "Log in sketch", alt: "Hand sketch of the log in screen." },
+              { key: "account-recovery-sketch", img: accountRecoverySketch, label: "Recovery sketch", alt: "Hand sketch of the account recovery screens." },
+              { key: "landing-page-flow", img: authFlow, label: "Auth branching flow", alt: "Flow diagram branching from the landing page: new user to sign-up, returning user to log in, both ending at the homepage." },
+            ]}
+          />
 
-          <h3>Wireframing the Six Sections</h3>
+          <h3>Log in mockups</h3>
+          {/* DOC → Phase 4 → "Method — colour variants (9/17)" */}
+          <CaseFilmstrip
+            label="Log in mockups"
+            shots={[
+              { key: "login-initial-mockup-1", img: loginMock1, label: "Mockup one", alt: "First log in mockup." },
+              { key: "login-initial-mockup-2", img: loginMock2, label: "Mockup two", alt: "Second log in mockup." },
+            ]}
+          />
+
+          <h3>Auth flow wireframes</h3>
+          {/* DOC → Phase 4 → "Interaction decisions (10/2)" */}
+          <CaseFilmstrip
+            label="Auth flow wireframes"
+            shots={[
+              { key: "create-account-flow-wireframe", img: createAccountFlowWire, label: "Create account flow", alt: "Wireframe of the full create account flow." },
+              { key: "recover-account-flow-wireframe", img: recoverAccountFlowWire, label: "Recover account flow", alt: "Wireframe of the full account recovery flow." },
+            ]}
+          />
+
+          <h3>Authentication as built</h3>
+          {/* DOC → Phase 4 → "Outcome" */}
+          {/* DOC → Phase 11 → "Outcome" */}
+          <CaseFilmstrip
+            label="Authentication as built"
+            shots={[
+              { key: "website-login", img: websiteLogin, label: "Log in", alt: "The log in screen as built." },
+              { key: "website-create-account-username", img: websiteCreateUsername, label: "Username step", alt: "Create account, username step, as built." },
+              { key: "website-create-account-password-empty", img: websiteCreatePasswordEmpty, label: "Password, empty", alt: "Create account, password step, empty." },
+              { key: "website-create-account-password-filled", img: websiteCreatePasswordFilled, label: "Password, filled", alt: "Create account, password step, filled, with the requirement tracker met." },
+              { key: "website-create-account-agreement", img: websiteCreateAgreement, label: "Agreement step", alt: "Create account, agreement step, as built." },
+            ]}
+          />
+
+          <h3>Navigation reference</h3>
+          {/* DOC → Phase 8 → "Direction" */}
+          <Z img={competitorSidebar} alt="Aternos' side navigation next to a command palette from another tool." />
+
+          <h3>Sidebar, six passes</h3>
+          {/* DOC → Phase 8 → "First sketches" / "Navigation structure" */}
+          <CaseFilmstrip
+            label="Sidebar, six passes"
+            shots={[
+              { key: "sidebar-idea", img: sidebarIdea, label: "Early idea", alt: "Early navigation idea." },
+              { key: "sidebar-sketch", img: sidebarSketch, label: "First pass", alt: "First side navigation sketch." },
+              { key: "sidebar-sketch-second", img: sidebarSketch2, label: "Second pass", alt: "Second side navigation sketch." },
+              { key: "sidebar-sketch-third", img: sidebarSketch3, label: "Third pass", alt: "Third side navigation sketch." },
+              { key: "sidebar-sketch-fourth", img: sidebarSketch4, label: "Fourth pass", alt: "Fourth side navigation sketch." },
+              { key: "sidebar-sketch-final", img: sidebarSketchFinal, label: "Final pass", alt: "Final side navigation sketch." },
+            ]}
+          />
+
+          <h3>Post-login home states</h3>
+          {/* DOC → Phase 8 → "First sketches" */}
+          <Z img={homeNewSketch} alt="Four post-login home states: first-time welcome, returning user with a server list, and two empty states reading \u201cNo servers made\u201d." />
+
+          <h3>Six sections, sketched</h3>
+          {/* DOC → Phase 9 → "Section purposes" */}
+          <CaseFilmstrip
+            label="Six sections, sketched"
+            shots={[
+              { key: "console-sketch", img: consoleSketch, label: "Console", alt: "Console section sketch." },
+              { key: "world-sketch", img: worldSketch, label: "World", alt: "World section sketch." },
+              { key: "players-sketch", img: playersSketch, label: "Players", alt: "Players section sketch." },
+              { key: "backup-sketch", img: backupSketch, label: "Backup", alt: "Backup section sketch." },
+              { key: "admin-sketch", img: adminSketch, label: "Admin", alt: "Admin section sketch." },
+              { key: "software-sketch", img: softwareSketch, label: "Software", alt: "Software section sketch." },
+            ]}
+          />
+
+          <h3>Six sections, resolved</h3>
+          {/* DOC → Phase 9 → "Sponsor feedback (10/6)" */}
+          <CaseFilmstrip
+            label="Six sections, resolved"
+            shots={[
+              { key: "console-sketch-final", img: consoleSketchFinal, label: "Console", alt: "Final console section sketch." },
+              { key: "world-sketch-final", img: worldSketchFinal, label: "World", alt: "Final world section sketch." },
+              { key: "players-sketch-final", img: playersSketchFinal, label: "Players", alt: "Final players section sketch." },
+              { key: "backup-sketch-final", img: backupSketchFinal, label: "Backup", alt: "Final backup section sketch." },
+            ]}
+          />
+
+          <h3>Section wireframes</h3>
+          {/* DOC → Phase 9 → "Console" … "Software" */}
+          <CaseFilmstrip
+            label="Section wireframes"
+            shots={[
+              { key: "server-console-wireframe-initial", img: consoleWire1, label: "Console, first", alt: "Console wireframe, first pass." },
+              { key: "server-console-wireframe-second", img: consoleWire2, label: "Console, second", alt: "Console wireframe, second pass." },
+              { key: "server-world-wireframe-initial", img: worldWire1, label: "World, first", alt: "World wireframe, first pass." },
+              { key: "server-world-wireframe-second", img: worldWire2, label: "World, second", alt: "World wireframe, second pass." },
+              { key: "server-players-wireframe-initial", img: playersWire, label: "Players", alt: "Players wireframe." },
+              { key: "server-backup-wireframe-initial", img: backupWire, label: "Backup", alt: "Backup wireframe." },
+              { key: "server-admin-wireframe-initial", img: adminWire, label: "Admin", alt: "Admin wireframe." },
+              { key: "server-software-wireframe-initial", img: softwareWire, label: "Software", alt: "Software wireframe." },
+            ]}
+          />
 
         </section>
 
         {/* ───── Testing ───── */}
         <section id="testing" className="case-section">
           <h2>Testing</h2>
+
           <h3>Testing the Structure</h3>
-          <p>
-            I ran usability tests with two testers of opposite experience levels. Each
-            did the same six tasks on Aternos, play.hosting, and our prototype.
-            <br /><br />
-            The tasks were picked to cross between sections, so finding
-            something like the Minecraft version also tested whether the structure put it where they&rsquo;d
-            look. On Aternos, one tester couldn&rsquo;t find it at all:{" "}
-            &ldquo;I&rsquo;m not seeing anything that says version.&rdquo;
-          </p>
+          {/* DOC → Phase 10 — Comparative Usability Testing → "Goal", "Method", */}
+          {/* DOC → "Findings — Aternos", "Findings — play.hosting", */}
+          {/* DOC → "Findings — prototype", "Confirmed — prototype" */}
 
-          <h3>Shaping Server Creation</h3>
+          <h3>Before any server exists</h3>
+          {/* DOC → Phase 12 → "Goal" */}
+          <Z img={serverCreationNew} alt="The empty state before any server exists, with a single Create server action." />
 
+          <h3>Step one — general details</h3>
+          {/* DOC → Phase 12 → "Method" */}
+          <CaseFilmstrip
+            label="Step one — general details"
+            shots={[
+              { key: "server-creation-step-1-public", img: creationStep1Public, label: "Public", alt: "Server creation step one, set to public." },
+              { key: "server-creation-step-1-private", img: creationStep1Private, label: "Private", alt: "Server creation step one, set to private." },
+            ]}
+          />
+
+          <h3>Step two — world setup</h3>
+          {/* DOC → Phase 12 → "Method" */}
+          {/* DOC → Phase 7 → "Feedback — World section" */}
+          <CaseFilmstrip
+            label="Step two — world setup"
+            shots={[
+              { key: "server-creation-step-2-initial", img: creationStep2a, label: "First pass", alt: "Server creation step two, first pass." },
+              { key: "server-creation-step-2-second", img: creationStep2b, label: "Second pass", alt: "Server creation step two, second pass." },
+            ]}
+          />
+
+          <h3>Step three — backup settings</h3>
+          {/* DOC → Phase 12 → "Backup settings" */}
+          <CaseFilmstrip
+            label="Step three — backup settings"
+            shots={[
+              { key: "server-creation-step-3-initial", img: creationStep3a, label: "First pass", alt: "Server creation step three, first pass." },
+              { key: "server-creation-step-3-second", img: creationStep3b, label: "Second pass", alt: "Server creation step three, second pass." },
+            ]}
+          />
 
           <h3>What Testers Liked</h3>
-          <p>
-            Testers saw fewer sections as an improvement,{" "}
-            &ldquo;I like that there are fewer tabs here&rdquo;, and recognized the server
-            list right away.
-            <br /><br />
-            One tester also pointed out that <mark className="hl">separating platform admins from the player list</mark>{" "}
-            fixed what had confused them on the competitors.
-          </p>
+          {/* DOC → Phase 10 → "Confirmed — prototype" and "Monetisation" */}
         </section>
 
         {/* ───── Takeaways ───── */}
         <section id="takeaways" className="case-section">
           <h2>Takeaways</h2>
+
           <h3>Naming Decides Structure</h3>
-          <p>
-            While auditing, I noticed that{" "}
-            <mark className="hl">every structural problem on both competitors started as a naming problem.</mark>{" "}
-            Operator, whitelist, access, and sub users each stand for a real distinction the platform
-            needs, but the words don&rsquo;t explain it.
-            <br /><br />
-            From this project, I learned that{" "}
-            writing one sentence on what a section is for is what makes it
-            possible to label it clearly.
-          </p>
+          {/* DOC → Phase 3 → "Findings — Aternos" (Access vs whitelist) */}
+          {/* DOC → Phase 10 → "Findings — Aternos" and "Findings — play.hosting" */}
+          {/* DOC → Phase 9 → "Section purposes" */}
+
           <h3>Using What Users Already Know</h3>
-          <p>
-            Basing the navigation on Discord meant users didn&rsquo;t need to learn it, so{" "}
-            their attention could go to the parts of the platform that are actually new to them,
-            like versions, backups, and the difference between managing a server and playing on it.
-          </p>
+          {/* DOC → Phase 8 → "Navigation structure" */}
+          {/* DOC → Phase 6 → "Findings" → the Minecraft and Duolingo paragraphs */}
         </section>
       </main>
       {/* No NextProject: this case is not in that component's CASES list

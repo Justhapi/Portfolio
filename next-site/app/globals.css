@@ -10139,3 +10139,122 @@ html:root .hover-bag__pill--ipad .hover-bag__pill-inner { width: auto; }
 .pd--js .pd-pad.is-warp .pd-corner { visibility: hidden; }
 .pd-mark { position: absolute; width: 0; height: 0; pointer-events: none; }
 
+
+
+/* ── CaseFilmstrip ────────────────────────────────────────────────────
+   A progression of images under one heading. Frames in a group share a
+   height so paging never resizes the page; how many share a page is
+   computed from the images' own proportions in CaseFilmstrip.tsx.
+
+   Frames are transparent — the sketches and screenshots carry their own
+   white, and a second white card around them read as a box inside a box
+   on the cream page. */
+.cf {
+  margin: 20px 0 8px;
+  outline: none;
+}
+.cf-viewport {
+  overflow: hidden;
+}
+.cf-track {
+  display: flex;
+  transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+.cf-slide {
+  flex: 0 0 100%;
+  min-width: 0;
+}
+/* The cell is the container: full column width, one shared height for
+   the group. The visual is centred inside it, so a wide panorama's
+   leftover height splits evenly above and below instead of pooling
+   under the image. */
+.cf-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+/* Sized in the component to the image's own proportions, clamped to the
+   column — the frame then fills it rather than re-deriving its own cap. */
+.cf-fit {
+  max-width: 100%;
+}
+.cf-fit .zoomable-frame {
+  height: 100% !important;
+  max-height: none !important;
+  width: 100%;
+}
+
+/* Strip — the position indicator and the jump target in one. Thumbnails
+   crop rather than letterbox so the row reads as an even rhythm. */
+.cf-strip {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: thin;
+}
+.cf-thumb {
+  flex: 0 0 auto;
+  width: 96px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+  overflow: hidden;
+  opacity: 0.5;
+  transition: opacity 140ms ease, border-color 140ms ease;
+}
+.cf-thumb img {
+  display: block;
+  width: 100%;
+  height: 58px;
+  object-fit: cover;
+  background: #fff;
+}
+.cf-thumb-label {
+  display: block;
+  padding: 4px 6px 5px;
+  font-size: 11px;
+  line-height: 1.25;
+  color: var(--muted);
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cf-thumb:hover { opacity: 0.8; }
+.cf-thumb[data-on] {
+  opacity: 1;
+  border-color: var(--accent-on-cream);
+}
+.cf-thumb[data-on] .cf-thumb-label { color: var(--fg); }
+.cf-thumb:focus-visible {
+  outline: 2px solid var(--accent-on-cream);
+  outline-offset: 2px;
+}
+
+.cf-cap {
+  margin: 10px 0 0;
+  font-size: 14px;
+  color: var(--muted);
+}
+.cf-cap strong {
+  font-family: var(--f-mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: var(--fg);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 720px) {
+  .cf-thumb { width: 76px; }
+  .cf-thumb img { height: 46px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cf-track { transition: none; }
+}

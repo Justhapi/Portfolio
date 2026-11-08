@@ -111,21 +111,20 @@ export default function AIJourneyAgentCaseStudy() {
           <h2>Outcome</h2>
           <aside className="outcome-callout" aria-label="Project outcome">
             <p className="outcome-callout__stat">
-              The concept was selected by the sponsor and developed into a high-fidelity
-              prototype handed off to their product team. Shortly after, the{" "}
-              <strong>sponsor shared that an AI maintenance agent was moving into
-              development,</strong> validating the direction the team had explored.
+              After the concept was successfully prototyped and tested, the sponsor's 
+              product team then <strong>moved the AI maintenance agent concept into beta 
+              a month after handoff.</strong>
             </p>
             <p className="outcome-callout__meta">
-              Spring 2026 · Sponsor platform → Concept · Development
+              Spring 2026 · Sponsor platform → Concept Prototype · Beta Development
             </p>
           </aside>
 
           <p>
             We delivered a{" "}
             high-fidelity prototype and design-principle documentation{" "}
-            to the sponsor&rsquo;s leadership, defining an AI maintenance agent that keeps
-            customer journey maps accurate and trustworthy over time.
+            to the sponsor&rsquo;s leadership, conceptualizing an AI maintenance agent that keeps
+            customer journey maps consistently accurate and trustworthy over time.
           </p>
 
           <PrototypeDemos />
@@ -135,24 +134,25 @@ export default function AIJourneyAgentCaseStudy() {
         <section id="overview" className="case-section">
           <h2>Overview</h2>
           <p>
-            The sponsor operates a customer journey management platform teams use to
-            understand their customers&rsquo; experience across a product. We were asked to
-            explore how an AI maintenance agent could be
-            implemented into it to keep journey maps accurate.
+            The sponsor operates a B22B customer journey management platform that assists teams in
+            understanding their customers&rsquo; experience. We were asked to explore and conceptualize 
+            how an AI maintenance agent would be implemented to keep journey maps accurate.
           </p>
 
           <h3>The Problem</h3>
           <p>
-            The platform&rsquo;s users (CX strategists, designers, and product teams) manage,
-            update, and analyze data inside customer journey maps.
+            The platform&rsquo;s users (CX strategists, designers, and product teams) are typically the 
+            sole individuals managing customer journey maps along with their other duties.
             <br></br><br></br>
-            Without a system for flagging staleness, they rely on{" "}
-            <mark className="hl">manual and potentially inaccurate review cadences</mark>, so a
-            map&rsquo;s value degrades as maintenance grows with the volume of content.
+            However, without a system for flagging staleness, they often rely on{" "}
+            <mark className="hl">manual and potentially inaccurate review cadences</mark>.
+            <br></br><br></br>
+            As a result, a map&rsquo;s value will degrade as maintenance workload grows 
+            with the volume of content.
           </p>
           <h3>My Role</h3>
           <p>
-            I worked as a UX Designer &amp; Researcher,{" "}
+            During this project, I worked as a UX Designer &amp; Researcher,{" "}
             leading concept ideation and exploration and
             contributing to research synthesis, wireframing, high-fidelity prototyping, and
             usability testing.
@@ -169,15 +169,15 @@ export default function AIJourneyAgentCaseStudy() {
           <h2>Researching</h2>
           <h3>Understanding What Makes an AI Maintenance Agent Effective in Existing Platform</h3>
           <p>
-            To conceptualize the agent, we explored four research focuses: the
+            We first explored four research focuses: the
             platform&rsquo;s state, the agent&rsquo;s required components, the industry, and
             user needs.
           </p>
 
           <p className="research-split-lead">
-            To cover each within a tight time frame, we{" "}
+            To cover each focus within a tight time frame, we{" "}
             split into two sub-teams across two sprints,
-            reconvening after each to share findings.
+            reconvening to share findings.
           </p>
           <div className="parallel-tracks">
             <div className="research-track">
@@ -185,8 +185,8 @@ export default function AIJourneyAgentCaseStudy() {
               <h3>Current State of Platform</h3>
               <p>
                 I audited the platform as a user, exploring{" "}
-                its features across functionality and placement to
-                inform where the agent would sit and how it would integrate with related
+                its features regarding functionality and placement to
+                determine the agent would accessed and integrate with other
                 features.
               </p>
               <figure>
@@ -227,7 +227,7 @@ export default function AIJourneyAgentCaseStudy() {
               <span className="track-label">Direct · My team</span>
               <h3>4 Direct Journey-management Competitors</h3>
               <p>
-                I audited one of the four hands-on, focusing on three aspects of its AI: user
+                I audited one of the four direct competitors, focusing on three aspects of its AI agent: user
                 interactions, reach within the platform, and user flow pain points.
               </p>
               <figure>
@@ -243,7 +243,7 @@ export default function AIJourneyAgentCaseStudy() {
               <span className="track-label">Analogous · Partner team</span>
               <h3>3 Analogous AI-driven SaaS Platforms</h3>
               <p>
-                The partner team audited products that use AI to analyze customer data for
+                The partner team audited platforms that utilize AI to analyze data for
                 feedback and insights.
               </p>
               <figure>
@@ -258,7 +258,7 @@ export default function AIJourneyAgentCaseStudy() {
           </div>
           <p>
             We then examined interaction patterns within knowledge-verification platforms to
-            surface the structural moves every modern verification flow shares.
+            identify patterns within every information verification flow.
           </p>
           <figure>
             <ZoomableImage
@@ -271,7 +271,8 @@ export default function AIJourneyAgentCaseStudy() {
 
           <h3>User Interviews</h3>
           <p>
-            Of 6 interviews with current platform users, I ran 3 as interviewer or note-taker; together they surfaced 8 themes the agent had to answer to.
+            Out of the 6 interview sessions with current platform users, I ran 3 as interviewer or note-taker. 
+            Through affinity diagramming, we surfaced 8 themes the agent had to address.
           </p>
           <div className="case-board" aria-label="Interview themes from the team's affinity synthesis">
             {THEMES.map((t, i) => (
@@ -298,8 +299,8 @@ export default function AIJourneyAgentCaseStudy() {
 
           <h3>Sketching Ideas</h3>
           <p>
-            Each designer ideated in a Crazy 8&rsquo;s sprint before we walked through
-            everyone&rsquo;s ideas and combined the most supported features through group
+            We individually ideated in a Crazy 8&rsquo;s sprint before walking 
+            through each ideas and combined the most supported features through group
             whiteboarding.
           </p>
           <figure>
@@ -313,13 +314,9 @@ export default function AIJourneyAgentCaseStudy() {
           <p>
             During the walkthroughs I pitched a direction built on our recurring theme
             of user inputs, and went on to{" "}
-            lead a rules-based approach to the concept.
+            lead a rule-based approach to the concept.
           </p>
           <figure>
-            {/* The sketch sits over the whiteboard's top-left corner, anchored to
-                the top of the stack rather than the bottom: ZoomableImage renders
-                its figcaption inside the same wrapper, so a bottom-anchored
-                overlay would land on the caption instead of the board. */}
             <div className="wb-stack">
               <ZoomableImage
                 src={whiteboardConcept.src}
@@ -339,8 +336,8 @@ export default function AIJourneyAgentCaseStudy() {
 
           <h3>Proposing Concepts</h3>
           <p>
-            We presented six concept proposals, including the
-            rules-based direction I led, each paired with the research evidence behind it. The
+            We presented six concept proposals to the sponsor with 
+            cited with research evidence. In the end, the
             sponsor selected two complementary directions.
           </p>
 
@@ -352,9 +349,9 @@ export default function AIJourneyAgentCaseStudy() {
           <h3>Concept A · My team</h3>
           <p>
             I led the team sketching variations of Concept A,
-            holding to the sponsor platform&rsquo;s UI patterns while providing access to
-            Concept B&rsquo;s features. Those sketches opened refinement through partner-team
-            and sponsor feedback, toward a more compressed and decision-focused UI.
+            following the sponsor platform&rsquo;s UI patterns as I provided sketches 
+            to refine organization of the concept's features through partner-team
+            and sponsor feedback.
           </p>
           <figure>
             <ZoomableImage
@@ -373,12 +370,8 @@ export default function AIJourneyAgentCaseStudy() {
 
           <h3>Eventual Merging of Wireframes into One System</h3>
           <p>
-            Wireframing revealed heavy overlap, as both concepts drew on the same context and
-            evidence, so we{" "}
+            Due to wireframing revelaing heavy overlap, we{" "} decided to
             <mark className="hl">merged them into a single agentic system</mark>.
-            <br></br><br></br>
-            Because the wireframes are built on the sponsor&rsquo;s platform UI, they
-            aren&rsquo;t shown here to comply with the NDA.
           </p>
         </section>
 
@@ -387,25 +380,20 @@ export default function AIJourneyAgentCaseStudy() {
           <h2>Verifying</h2>
           <h3>Prototyping and Testing the Unified Concept</h3>
           <p>
-            We took the combined concept into{" "}
+            We took the now combined concept into{" "}
             high-fidelity prototyping, usability testing, and iteration.
           </p>
 
           <h3>Hi-Fi Prototyping</h3>
           <p>
-            We built an interactive Figma prototype expressing the unified concept end-to-end
-            through user flows, applying the insights the research had surfaced.
-            <br></br><br></br>
-            Because the prototype was constructed directly on the sponsor&rsquo;s platform
-            surface, the screens themselves aren&rsquo;t shown here.
+            We built an interactive Figma prototype comprising of the unified concept flows.
           </p>
 
           <h3>Usability Testing</h3>
           <p>
             To avoid setting false expectations about features that might not ship, the sponsor
-            asked us each to recruit{" "}
-            a UX Design classmate familiar with journey mapping as a
-            substitute tester.
+            asked us instead each to recruit{" "} a UX Design classmate who is familiar with 
+            journey mapping as substitute testers.
           </p>
           <div className="case-flow">
             <div className="case-flow__in">
@@ -429,13 +417,13 @@ export default function AIJourneyAgentCaseStudy() {
           <p>
             This project was my first time{" "}
             <mark className="hl">designing within an existing product context and design system. </mark>
-            The first half was exploratory and general regarding takeaways, but the second half
-            focused heavily on the platform&rsquo;s own needs, making it natural to narrow down
+            While first half was exploratory in nature, but the second half
+            focused heavily on the platform&rsquo;s specific needs, making it natural to narrow down
             findings to apply to the final product later on.
             <br></br><br></br>
-            Narrowing down scope was a challenge subjective from project to project that I had previously addressed early{" "}
+            Narrowing down scope has been a challenge subjective from project to project that I had to previously addressed early{" "}
             on when constructing the first set of guidelines for Frogslayer. I now understand that{" "}
-            specific factors, like a project&rsquo;s theme of expansion, hints at its expected window for scope narrowing.
+            specific factors, like a project&rsquo;s theme of expansion, hints at its natural window for scope narrowing.
           </p>
         </section>
       </main>
