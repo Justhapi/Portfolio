@@ -14,13 +14,11 @@ import serverCreationIdeation from "./images/Server_Creation_Ideation.png";
 import serverCreationFlowSketch from "./images/Server_Creation_Flow_Sketch.png";
 import loginSketch from "./images/Login_Sketch.png";
 import createAccountSketch from "./images/Create_Account_Sketch.png";
-import createAccountSketch2 from "./images/Create_Account_Sketch_Second.png";
 import authFlow from "./images/Landing_Page_Flow.png";
-import createAccountSketch3 from "./images/Create_Account_Sketch_Third.png";
 import createAccountSketchFinal from "./images/Create_Account_Sketch_Final.png";
 import accountRecoverySketch from "./images/Account_Recovery_Sketch.png";
-import loginMock1 from "./images/Login_Initial_Mockup_1.png";
-import loginMock2 from "./images/Login_Initial_Mockup_2.png";
+import guidelines from "./images/Design_Guidelines.png";
+import loginMock from "./images/Login_Initial_Wireframe.png";
 import createAccountFlowWire from "./images/Create_Account_Flow_Wireframe.png";
 import recoverAccountFlowWire from "./images/Recover_Account_Flow_Wireframe.png";
 import websiteLogin from "./images/Website_Login.png";
@@ -31,14 +29,12 @@ import websiteCreateAgreement from "./images/Website_Create_Account_Agreement.pn
 import competitorSidebar from "./images/Competitor_Sidebar.png";
 import sidebarIdea from "./images/Sidebar_Idea.png";
 import sidebarSketch from "./images/Sidebar_Sketch.png";
-import sidebarSketch2 from "./images/Sidebar_Sketch_Second.png";
-import sidebarSketch3 from "./images/Sidebar_Sketch_Third.png";
-import sidebarSketch4 from "./images/Sidebar_Sketch_Fourth.png";
+import sidebarSketchDirection from "./images/Sidebar_Sketch_Third.png";
 import sidebarSketchFinal from "./images/Sidebar_Sketch_Final.png";
-import homeNewSketch from "./images/Home_New_Sketch.png";
-import consoleSketch from "./images/Console_Sketch.png";
-import worldSketch from "./images/World_Sketch.png";
-import playersSketch from "./images/Players_Sketch.png";
+import homeNewSketch from "./images/Home_New_Account_Sketch.png";
+import consoleSketch from "./images/Console_Sketch_Initial.png";
+import worldSketch from "./images/World_Sketch_Initial.png";
+import playersSketch from "./images/Players_Sketch_Initial.png";
 import backupSketch from "./images/Backup_Sketch.png";
 import adminSketch from "./images/Admin_Sketch.png";
 import softwareSketch from "./images/Software_Sketch.png";
@@ -211,8 +207,7 @@ export default function FeenixCaseStudy() {
             }
             shots={[
               { key: "create-account-sketch", img: createAccountSketch, label: "First pass", alt: "First hand sketch of the create account screen." },
-              { key: "create-account-sketch-second", img: createAccountSketch2, label: "Second pass", alt: "Second create account sketch." },
-              { key: "create-account-sketch-third", img: createAccountSketch3, label: "Third pass", alt: "Third create account sketch." },
+              { key: "create-account-sketch-Direction", img: createAccountSketch, label: "Third pass", alt: "Third create account sketch." },
               { key: "create-account-sketch-final", img: createAccountSketchFinal, label: "Final pass", alt: "Final create account sketch." },
             ]}
           />
@@ -241,8 +236,8 @@ export default function FeenixCaseStudy() {
               </>
             }
             shots={[
-              { key: "login-initial-mockup-1", img: loginMock1, label: "Mockup one", alt: "First log in mockup." },
-              { key: "login-initial-mockup-2", img: loginMock2, label: "Mockup two", alt: "Second log in mockup." },
+              { key: "guidelines", img: guidelines, label: "Design guidelines", alt: "Design Guidelines provided by design team." },
+              { key: "login-initial-mockup-2", img: loginMock, label: "Mockup two", alt: "Second log in mockup." },
             ]}
           />
 
@@ -292,11 +287,9 @@ export default function FeenixCaseStudy() {
               </>
             }
             shots={[
-              { key: "sidebar-idea", img: sidebarIdea, label: "Early idea", alt: "Early navigation idea." },
               { key: "sidebar-sketch", img: sidebarSketch, label: "First pass", alt: "First side navigation sketch." },
-              { key: "sidebar-sketch-second", img: sidebarSketch2, label: "Second pass", alt: "Second side navigation sketch." },
-              { key: "sidebar-sketch-third", img: sidebarSketch3, label: "Third pass", alt: "Third side navigation sketch." },
-              { key: "sidebar-sketch-fourth", img: sidebarSketch4, label: "Fourth pass", alt: "Fourth side navigation sketch." },
+              { key: "sidebar-idea", img: sidebarIdea, label: "Sidebar direction idea", alt: "Early navigation idea." },
+              { key: "sidebar-sketch-direction", img: sidebarSketchDirection, label: "Third pass", alt: "Third side navigation sketch." },
               { key: "sidebar-sketch-final", img: sidebarSketchFinal, label: "Final pass", alt: "Final side navigation sketch." },
             ]}
           />
