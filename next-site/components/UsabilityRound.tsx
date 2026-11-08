@@ -50,6 +50,13 @@ export default function UsabilityRound({
       ? ((child.props as { label?: string }).label ?? `Insight ${i + 1}`)
       : `Insight ${i + 1}`
   );
+  // Each card already takes an imageSrc — reuse it as the tab's
+  // thumbnail so the strip matches the rest of the site's carousels.
+  const thumbs = childArray.map((child) =>
+    React.isValidElement(child)
+      ? (child.props as { imageSrc?: string }).imageSrc
+      : undefined
+  );
   const carouselRef = useRef<HTMLDivElement | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -114,36 +121,43 @@ export default function UsabilityRound({
       {focus && <p className="ur-round-focus">{focus}</p>}
       {total > 0 ? (
         <div className="ur-carousel-wrapper">
-          {total > 1 && (
-            <nav className="ur-nav" aria-label={`${title} insight progress`}>
-              {activeIndex > 0 && (
-                <button
-                  type="button"
-                  className="ur-nav-link ur-nav-link--prev"
-                  onClick={() => scrollToCard(activeIndex - 1)}
-                  aria-label={`Show previous: ${labels[activeIndex - 1]}`}
-                >
-                  <span aria-hidden="true">‹</span> {labels[activeIndex - 1]}
-                </button>
-              )}
-              {activeIndex > 0 && activeIndex < total - 1 && (
-                <span className="ur-nav-sep" aria-hidden="true">|</span>
-              )}
-              {activeIndex < total - 1 && (
-                <button
-                  type="button"
-                  className="ur-nav-link ur-nav-link--next"
-                  onClick={() => scrollToCard(activeIndex + 1)}
-                  aria-label={`Show next: ${labels[activeIndex + 1]}`}
-                >
-                  {labels[activeIndex + 1]} <span aria-hidden="true">›</span>
-                </button>
-              )}
-            </nav>
-          )}
+
           <div className="ur-insight-cards" ref={carouselRef}>
             {children}
           </div>
+          {total > 1 && (
+            <div
+              className={`case-strip${
+                thumbs.some(Boolean) ? "" : " case-strip--text"
+              }`}
+              role="tablist"
+              aria-label={`${title} insights`}
+            >
+              {labels.map((l, i) => (
+                <button
+                  key={l + i}
+                  type="button"
+                  role="tab"
+                  className="case-strip__tab"
+                  data-on={i === activeIndex || undefined}
+                  aria-selected={i === activeIndex}
+                  onClick={() => scrollToCard(i)}
+                >
+                  {/* Decorative: the label below is the accessible name. */}
+                  {thumbs[i] && <img src={thumbs[i]} alt="" loading="lazy" />}
+                  <span className="case-strip__label">{l}</span>
+                </button>
+              ))}
+            </div>
+          )}
+          {total > 1 && (
+            <p className="case-strip__cap" aria-live="polite">
+              <strong>
+                {activeIndex + 1} / {total}
+              </strong>{" "}
+              · {labels[activeIndex]}
+            </p>
+          )}
         </div>
       ) : findings ? (
         <div className="ur-round-findings">{findings}</div>

@@ -47,7 +47,9 @@ import worldSketchFinal from "./images/World_Sketch_Final.png";
 import playersSketchFinal from "./images/Players_Sketch_Final.png";
 import backupSketchFinal from "./images/Backup_Sketch_Final.png";
 import consoleWire1 from "./images/Server_Console_Wireframe_Initial.png";
-import consoleWire2 from "./images/Server_Console_Wireframe_Second.png";
+import consoleErr1 from "./images/Server_Console_Wireframe_Error_Initial.png";
+import consoleErr2 from "./images/Server_Console_Wireframe_Error_Second.png";
+
 import worldWire1 from "./images/Server_World_Wireframe_Initial.png";
 import worldWire2 from "./images/Server_World_Wireframe_Second.png";
 import playersWire from "./images/Server_Players_Wireframe_Initial.png";
@@ -169,10 +171,14 @@ export default function FeenixCaseStudy() {
           />
 
           <h3>Where their structures fell short</h3>
-          {/* DOC → Phase 3 → "Findings — Aternos" */}
-          {/* DOC → Phase 6 → Console paragraph */}
           <CaseFilmstrip
             label="Where their structures fell short"
+            side={
+              <>
+                {/* DOC → Phase 3 → "Findings — Aternos" */}
+                {/* DOC → Phase 6 → Console paragraph */}
+              </>
+            }
             shots={[
               { key: "aternos-maintenace", img: aternosMaintenance, label: "Aternos maintenance", alt: "Aternos server maintenance screens." },
               { key: "competitor-server-maintenance", img: competitorMaintenance, label: "Maintenance, both platforms", alt: "Server maintenance screens captured across both competitors." },
@@ -196,9 +202,13 @@ export default function FeenixCaseStudy() {
           />
 
           <h3>Create account, four passes</h3>
-          {/* DOC → Phase 4 → "Goal" */}
           <CaseFilmstrip
             label="Create account, four passes"
+            side={
+              <>
+                {/* DOC → Phase 4 → "Goal" */}
+              </>
+            }
             shots={[
               { key: "create-account-sketch", img: createAccountSketch, label: "First pass", alt: "First hand sketch of the create account screen." },
               { key: "create-account-sketch-second", img: createAccountSketch2, label: "Second pass", alt: "Second create account sketch." },
@@ -208,9 +218,13 @@ export default function FeenixCaseStudy() {
           />
 
           <h3>Log in, recovery and the auth flow</h3>
-          {/* DOC → Phase 4 → "Goal" */}
           <CaseFilmstrip
             label="Log in, recovery and the auth flow"
+            side={
+              <>
+                {/* DOC → Phase 4 → "Goal" */}
+              </>
+            }
             shots={[
               { key: "login-sketch", img: loginSketch, label: "Log in sketch", alt: "Hand sketch of the log in screen." },
               { key: "account-recovery-sketch", img: accountRecoverySketch, label: "Recovery sketch", alt: "Hand sketch of the account recovery screens." },
@@ -219,9 +233,13 @@ export default function FeenixCaseStudy() {
           />
 
           <h3>Log in mockups</h3>
-          {/* DOC → Phase 4 → "Method — colour variants (9/17)" */}
           <CaseFilmstrip
             label="Log in mockups"
+            side={
+              <>
+                {/* DOC → Phase 4 → "Method — colour variants (9/17)" */}
+              </>
+            }
             shots={[
               { key: "login-initial-mockup-1", img: loginMock1, label: "Mockup one", alt: "First log in mockup." },
               { key: "login-initial-mockup-2", img: loginMock2, label: "Mockup two", alt: "Second log in mockup." },
@@ -246,8 +264,17 @@ export default function FeenixCaseStudy() {
             shots={[
               { key: "website-login", img: websiteLogin, label: "Log in", alt: "The log in screen as built." },
               { key: "website-create-account-username", img: websiteCreateUsername, label: "Username step", alt: "Create account, username step, as built." },
-              { key: "website-create-account-password-empty", img: websiteCreatePasswordEmpty, label: "Password, empty", alt: "Create account, password step, empty." },
-              { key: "website-create-account-password-filled", img: websiteCreatePasswordFilled, label: "Password, filled", alt: "Create account, password step, filled, with the requirement tracker met." },
+              {
+                key: "website-create-account-password",
+                // The requirement tracker only means anything as a
+                // before and after, so the two states share a slide.
+                img: [websiteCreatePasswordEmpty, websiteCreatePasswordFilled],
+                alt: [
+                  "Create account, password step, empty.",
+                  "Create account, password step, filled, with the requirement tracker met.",
+                ],
+                label: "Password, empty and filled",
+              },
               { key: "website-create-account-agreement", img: websiteCreateAgreement, label: "Agreement step", alt: "Create account, agreement step, as built." },
             ]}
           />
@@ -257,9 +284,13 @@ export default function FeenixCaseStudy() {
           <Z img={competitorSidebar} alt="Aternos' side navigation next to a command palette from another tool." />
 
           <h3>Sidebar, six passes</h3>
-          {/* DOC → Phase 8 → "First sketches" / "Navigation structure" */}
           <CaseFilmstrip
             label="Sidebar, six passes"
+            side={
+              <>
+                {/* DOC → Phase 8 → "First sketches" / "Navigation structure" */}
+              </>
+            }
             shots={[
               { key: "sidebar-idea", img: sidebarIdea, label: "Early idea", alt: "Early navigation idea." },
               { key: "sidebar-sketch", img: sidebarSketch, label: "First pass", alt: "First side navigation sketch." },
@@ -289,9 +320,13 @@ export default function FeenixCaseStudy() {
           />
 
           <h3>Six sections, resolved</h3>
-          {/* DOC → Phase 9 → "Sponsor feedback (10/6)" */}
           <CaseFilmstrip
             label="Six sections, resolved"
+            side={
+              <>
+                {/* DOC → Phase 9 → "Sponsor feedback (10/6)" */}
+              </>
+            }
             shots={[
               { key: "console-sketch-final", img: consoleSketchFinal, label: "Console", alt: "Final console section sketch." },
               { key: "world-sketch-final", img: worldSketchFinal, label: "World", alt: "Final world section sketch." },
@@ -301,14 +336,17 @@ export default function FeenixCaseStudy() {
           />
 
           <h3>Section wireframes</h3>
-          {/* DOC → Phase 9 → "Console" … "Software" */}
           <CaseFilmstrip
             label="Section wireframes"
+            side={
+              <>
+                {/* DOC → Phase 9 → "Console" … "Software" */}
+              </>
+            }
             shots={[
-              { key: "server-console-wireframe-initial", img: consoleWire1, label: "Console, first", alt: "Console wireframe, first pass." },
-              { key: "server-console-wireframe-second", img: consoleWire2, label: "Console, second", alt: "Console wireframe, second pass." },
-              { key: "server-world-wireframe-initial", img: worldWire1, label: "World, first", alt: "World wireframe, first pass." },
-              { key: "server-world-wireframe-second", img: worldWire2, label: "World, second", alt: "World wireframe, second pass." },
+              { key: "server-console-wireframe-initial", img: consoleWire1, label: "Console", alt: "Console wireframe, first pass." },
+              { key: "server-console-wireframe-error-initial", img: consoleErr1, label: "Console · error", alt: "Console wireframe, error state, first pass." },
+              { key: "server-world-wireframe-initial", img: worldWire1, label: "World", alt: "World wireframe, first pass." },
               { key: "server-players-wireframe-initial", img: playersWire, label: "Players", alt: "Players wireframe." },
               { key: "server-backup-wireframe-initial", img: backupWire, label: "Backup", alt: "Backup wireframe." },
               { key: "server-admin-wireframe-initial", img: adminWire, label: "Admin", alt: "Admin wireframe." },
@@ -331,39 +369,78 @@ export default function FeenixCaseStudy() {
           {/* DOC → Phase 12 → "Goal" */}
           <Z img={serverCreationNew} alt="The empty state before any server exists, with a single Create server action." />
 
-          <h3>Step one — general details</h3>
-          {/* DOC → Phase 12 → "Method" */}
+          <h3>The three steps</h3>
+          {/* DOC → Phase 12 — Server Creation Flow → "Goal", "Method" */}
+          {/* DOC → Phase 12 → "Backup settings", "Open" */}
+          {/* DOC → Phase 7 → "Feedback — World section (10/4)" — Hari asked */}
+          {/* DOC → the base plan be finished before the World section */}
           <CaseFilmstrip
-            label="Step one — general details"
+            label="The three steps of server creation"
             shots={[
-              { key: "server-creation-step-1-public", img: creationStep1Public, label: "Public", alt: "Server creation step one, set to public." },
-              { key: "server-creation-step-1-private", img: creationStep1Private, label: "Private", alt: "Server creation step one, set to private." },
-            ]}
-          />
-
-          <h3>Step two — world setup</h3>
-          {/* DOC → Phase 12 → "Method" */}
-          {/* DOC → Phase 7 → "Feedback — World section" */}
-          <CaseFilmstrip
-            label="Step two — world setup"
-            shots={[
-              { key: "server-creation-step-2-initial", img: creationStep2a, label: "First pass", alt: "Server creation step two, first pass." },
-              { key: "server-creation-step-2-second", img: creationStep2b, label: "Second pass", alt: "Server creation step two, second pass." },
-            ]}
-          />
-
-          <h3>Step three — backup settings</h3>
-          {/* DOC → Phase 12 → "Backup settings" */}
-          <CaseFilmstrip
-            label="Step three — backup settings"
-            shots={[
-              { key: "server-creation-step-3-initial", img: creationStep3a, label: "First pass", alt: "Server creation step three, first pass." },
-              { key: "server-creation-step-3-second", img: creationStep3b, label: "Second pass", alt: "Server creation step three, second pass." },
+              {
+                key: "server-creation-step-1",
+                // Public and private are the same screen in two states —
+                // side by side is the only way to read the difference.
+                img: [creationStep1Public, creationStep1Private],
+                alt: [
+                  "Server creation step one, set to public.",
+                  "Server creation step one, set to private.",
+                ],
+                label: "1 · General, public and private",
+              },
+              { key: "server-creation-step-2-initial", img: creationStep2a, label: "2 · World setup", alt: "Server creation step two, first pass." },
+              { key: "server-creation-step-3-initial", img: creationStep3a, label: "3 · Backup settings", alt: "Server creation step three, first pass." },
             ]}
           />
 
           <h3>What Testers Liked</h3>
           {/* DOC → Phase 10 → "Confirmed — prototype" and "Monetisation" */}
+
+          <h3>Iterations</h3>
+          {/* DOC → Phase 9 → "Sponsor feedback (10/6)" and "Outcome" */}
+          {/* DOC → Phase 10 → "Findings — prototype" */}
+          {/* DOC → Phase 12 → "Backup settings", "Open" */}
+          <CaseFilmstrip
+            label="What changed after testing — first pass beside second"
+            shots={[
+              {
+                key: "iteration-console-error",
+                img: [consoleErr1, consoleErr2],
+                label: "Console · error",
+                alt: [
+                  "Console wireframe, error state, first pass.",
+                  "Console wireframe, error state, second pass.",
+                ],
+              },
+              {
+                key: "iteration-world",
+                img: [worldWire1, worldWire2],
+                label: "World",
+                alt: [
+                  "World wireframe, first pass.",
+                  "World wireframe, second pass.",
+                ],
+              },
+              {
+                key: "iteration-step-2",
+                img: [creationStep2a, creationStep2b],
+                label: "Step 2 · World",
+                alt: [
+                  "Server creation step two, first pass.",
+                  "Server creation step two, second pass.",
+                ],
+              },
+              {
+                key: "iteration-step-3",
+                img: [creationStep3a, creationStep3b],
+                label: "Step 3 · Backup",
+                alt: [
+                  "Server creation step three, first pass.",
+                  "Server creation step three, second pass.",
+                ],
+              },
+            ]}
+          />
         </section>
 
         {/* ───── Takeaways ───── */}

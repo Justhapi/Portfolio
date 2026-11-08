@@ -331,6 +331,7 @@ export default function ResearchHubCaseStudy() {
             slides={[
               {
                 key: "student-tasks",
+                thumb: homePage.src,
                 label: "General Dashboard",
                 content: (
                   <div className="rq-block rq-block--stacked-findings">
@@ -362,6 +363,7 @@ export default function ResearchHubCaseStudy() {
               },
               {
                 key: "communication",
+                thumb: messagesPage.src,
                 label: "Communication",
                 content: (
                   <div className="rq-block rq-block--stacked-findings">
@@ -394,6 +396,7 @@ export default function ResearchHubCaseStudy() {
               },
               {
                 key: "project-pages",
+                thumb: projectPage1.src,
                 label: "Project Content Maintenance",
                 content: (
                   <div className="rq-block rq-block--stacked-findings">

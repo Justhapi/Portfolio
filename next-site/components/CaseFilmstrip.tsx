@@ -22,14 +22,32 @@ import ZoomableImage from "@/components/ZoomableImage";
  *     prev/next links to find
  */
 
+type Img = { src: string; width: number; height: number };
+
 export type Shot = {
   key: string;
-  /** next/image static import — carries width and height. */
-  img: { src: string; width: number; height: number };
-  alt: string;
+  /**
+   * next/image static import(s) — they carry width and height. Pass an
+   * array for frames that only make sense next to each other (a public
+   * and a private state, an empty and a filled field): they share one
+   * slide, side by side, instead of making the reader hold the first in
+   * their head while they page to the second.
+   */
+  img: Img | Img[];
+  /** One per image, in the same order. */
+  alt: string | string[];
   /** Short name for the caption and the thumbnail. */
   label: string;
 };
+
+const imagesOf = (s: Shot): Img[] => (Array.isArray(s.img) ? s.img : [s.img]);
+const altsOf = (s: Shot): string[] => (Array.isArray(s.alt) ? s.alt : [s.alt]);
+/** Combined proportions of a slide: the images' ratios, added up. */
+const ratioOf = (s: Shot) =>
+  imagesOf(s).reduce((t, i) => t + i.width / i.height, 0);
+
+/** Gap between images sharing a slide, in px. */
+const PAIR_GAP = 14;
 
 /**
  * Share of the viewport one frame may occupy. Deliberately modest: a
@@ -41,10 +59,18 @@ const VH_SHARE = 0.4;
 export default function CaseFilmstrip({
   shots,
   label,
+  side,
 }: {
   shots: Shot[];
   /** Names the group for assistive tech — usually the h3 above it. */
   label: string;
+  /**
+   * Prose to sit to the LEFT of the carousel. The component is only as
+   * wide as its pictures, so a group of narrow frames leaves a column of
+   * dead space beside it — this fills it with the writing that belongs
+   * to that group instead. Omit it and the carousel centres as before.
+   */
+  side?: React.ReactNode;
 }) {
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const [colW, setColW] = useState(0);
@@ -77,15 +103,61 @@ export default function CaseFilmstrip({
    * 360px, and the leftover splits evenly above and below instead of
    * pooling under the image.
    */
-  const tallest = Math.max(...shots.map((s) => s.img.height / s.img.width));
-  const frameH = colW ? Math.round(Math.min(colW * tallest, vh * VH_SHARE)) : 0;
+  /*
+   * One box shape for the whole group. Sizing each frame to its own
+   * image is what made a group look ragged — "Create account flow" is
+   * 6.6:1 and "Recover account flow" is 2.3:1, so side by side in one
+   * carousel they were two unrelated shapes. Every frame now gets the
+   * same box and the image is contained inside it, free to be zoomed
+   * and panned (ZoomableImage already does both).
+   *
+   * The shape is the group's median ratio, clamped: a single site-wide
+   * ratio can't serve this case study, whose images run from 0.51 to
+   * 6.6: a panorama in a square box is a sliver, a portrait board in a
+   * wide one is a stamp. Per group it stays honest — a group of
+   * panoramas gets a wide box, a group of portraits a tall one — and
+   * within a group, which is where the raggedness showed, every frame
+   * matches.
+   */
+  const RATIO_MIN = 0.85, RATIO_MAX = 2.8;
+  const allRatios = shots
+    .flatMap((sh) => imagesOf(sh).map((i) => i.width / i.height))
+    .sort((a, b) => a - b);
+  const boxAR = Math.min(
+    RATIO_MAX,
+    Math.max(RATIO_MIN, allRatios[(allRatios.length - 1) >> 1]),
+  );
 
-  /** The size this image actually renders at inside that box. */
+  const frameH = colW ? Math.round(Math.min(colW / boxAR, vh * VH_SHARE)) : 0;
+
+  /**
+   * What a slide actually renders at inside that box. A slide holding
+   * two images is laid out as one unit — the pair's combined width is
+   * what gets clamped to the column, so both shrink together and the
+   * row stays level.
+   */
   const fit = (s: Shot) => {
-    const ar = s.img.width / s.img.height;
-    const w = Math.round(Math.min(frameH * ar, colW));
-    return { w, h: Math.round(w / ar), ar };
+    const n = imagesOf(s).length;
+    const gaps = PAIR_GAP * (n - 1);
+    const total = Math.min(frameH * boxAR * n + gaps, colW);
+    const h = Math.round((total - gaps) / (boxAR * n));
+    return { h, widths: Array.from({ length: n }, () => Math.round(h * boxAR)) };
   };
+
+  /*
+   * The component is only as wide as its pictures. Before this the
+   * viewport, the strip and the caption all spanned the whole text
+   * column while a portrait frame sat centred in the middle of it, so
+   * the tabs began a long way left of the image they index and the two
+   * read as unrelated. Width comes from the widest slide — the widest,
+   * not the current one, so paging doesn't shuffle the strip sideways.
+   */
+  const boxW = frameH
+    ? Math.max(...shots.map((sh) => {
+        const f = fit(sh);
+        return f.widths.reduce((a, b) => a + b, 0) + PAIR_GAP * (f.widths.length - 1);
+      }))
+    : 0;
 
   const step = useCallback(
     (dir: 1 | -1) =>
@@ -100,6 +172,8 @@ export default function CaseFilmstrip({
   };
 
   const cell = (s: Shot) => {
+    const list = imagesOf(s);
+    const captions = altsOf(s);
     const f = frameH ? fit(s) : null;
     return (
       <div
@@ -107,8 +181,20 @@ export default function CaseFilmstrip({
         className="cf-cell"
         style={frameH ? { height: frameH } : undefined}
       >
-        <div className="cf-fit" style={f ? { width: f.w, height: f.h } : undefined}>
-          <ZoomableImage src={s.img.src} alt={s.alt} aspectRatio={s.img.width / s.img.height} />
+        <div className="cf-pair">
+          {list.map((img, i) => (
+            <div
+              key={img.src}
+              className="cf-fit"
+              style={f ? { width: f.widths[i], height: f.h } : undefined}
+            >
+              <ZoomableImage
+                src={img.src}
+                alt={captions[i] ?? captions[0] ?? s.label}
+                aspectRatio={boxAR}
+              />
+            </div>
+          ))}
         </div>
       </div>
     );
@@ -117,17 +203,22 @@ export default function CaseFilmstrip({
   // A lone image needs no strip and no counter.
   if (shots.length === 1) {
     return (
-      <div className="cf" ref={wrapRef}>
-        {cell(shots[0])}
-        <p className="cf-cap">{shots[0].label}</p>
+      <div className={`cf-measure${side ? " cf-measure--row" : ""}`} ref={wrapRef}>
+        {side && <div className="cf-side">{side}</div>}
+        <div className="cf" style={boxW ? { width: boxW } : undefined}>
+          {cell(shots[0])}
+          <p className="case-strip__cap">{shots[0].label}</p>
+        </div>
       </div>
     );
   }
 
   return (
+    <div className={`cf-measure${side ? " cf-measure--row" : ""}`} ref={wrapRef}>
+    {side && <div className="cf-side">{side}</div>}
     <div
       className="cf"
-      ref={wrapRef}
+      style={boxW ? { width: boxW } : undefined}
       tabIndex={0}
       onKeyDown={onKeyDown}
       role="group"
@@ -156,30 +247,31 @@ export default function CaseFilmstrip({
         </div>
       </div>
 
-      <div className="cf-strip" role="tablist" aria-label={`${label} frames`}>
+      <div className="case-strip" role="tablist" aria-label={`${label} frames`}>
         {shots.map((s, i) => (
           <button
             key={s.key}
             type="button"
             role="tab"
-            className="cf-thumb"
+            className="case-strip__tab"
             data-on={i === active || undefined}
             aria-selected={i === active}
             onClick={() => setActive(i)}
           >
             {/* Decorative: the label below is the accessible name. */}
-            <img src={s.img.src} alt="" loading="lazy" />
-            <span className="cf-thumb-label">{s.label}</span>
+            <img src={imagesOf(s)[0].src} alt="" loading="lazy" />
+            <span className="case-strip__label">{s.label}</span>
           </button>
         ))}
       </div>
 
-      <p className="cf-cap" aria-live="polite">
+      <p className="case-strip__cap" aria-live="polite">
         <strong>
           {active + 1} / {shots.length}
         </strong>{" "}
         · {shots[active].label}
       </p>
+    </div>
     </div>
   );
 }

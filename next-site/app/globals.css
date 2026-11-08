@@ -4059,13 +4059,13 @@ em.it { font-style: italic; }
     opacity   160ms ease-out,
     transform 200ms cubic-bezier(0.23, 1, 0.32, 1),
     rotate    220ms cubic-bezier(0.23, 1, 0.32, 1);
-  /* Origin at bottom-left so the pill scales from the cursor position
-     (cursor sits at pill's lower-left corner via PILL_OFFSET_X:14,
-     PILL_OFFSET_Y:-182 in HoverBag.tsx). Origin-aware popover = feels
-     like it grows FROM the cursor, not from an arbitrary center. Also
+  /* Fallback pivot only. placePill() overwrites transform-origin inline
+     on every open with the hovered item's own hit-zone, so the scale
+     0.94 → 1 carries the pop-up out of the item you are pointing at
+     rather than out of the cursor or an arbitrary corner. It is also
      the pivot for the sideways "lean" set via the individual `rotate`
-     property in HoverBag.tsx's placePill — composes with the scale
-     `transform` above instead of fighting it. */
+     property, which composes with the scale `transform` above instead
+     of fighting it. */
   transform-origin: 0 100%;
   z-index: 100;
 }
@@ -6955,8 +6955,10 @@ em.it { font-style: italic; }
      (overflow: hidden) which added ~40px of dead space INSIDE the
      card. Dropped to 8px so the carousel's viewport height hugs the
      card content, and let the surrounding .research-carousel +
-     next-h3 top-margin handle the gap to the next section. */
-  margin: 32px 0 8px;
+     next-h3 top-margin handle the gap to the next section.
+     Bottom went 8px → 2px when the strip moved below the viewport: the
+     two margins stack, and ~18px of air read as a disconnect. */
+  margin: 32px 0 2px;
   padding: 24px 28px;
   /* Was a 3px accent stripe down the left edge. That treatment is the
      single most recognisable admin-dashboard tell, and it read as
@@ -7278,6 +7280,14 @@ em.it { font-style: italic; }
 }
 .rc-slide {
   flex: 0 0 100%;
+  min-width: 0;
+  /* Slides are stretched to the tallest one so advancing never resizes
+     the page — but the card inside has to stretch with it, or a short
+     slide leaves a band of empty track between its card and the strip. */
+  display: flex;
+}
+.rc-slide > * {
+  flex: 1 1 auto;
   min-width: 0;
 }
 .rc-slide[aria-hidden="true"] {
@@ -10149,9 +10159,27 @@ html:root .hover-bag__pill--ipad .hover-bag__pill-inner { width: auto; }
    Frames are transparent — the sketches and screenshots carry their own
    white, and a second white card around them read as a box inside a box
    on the cream page. */
+/* Stays full-column so the width measurement has something stable to
+   read; .cf inside it is sized to the pictures. */
+.cf-measure { width: 100%; }
+/* With a `side`, the writing takes the space the pictures don't. The
+   carousel keeps its measured width; the prose gets the rest. */
+.cf-measure--row {
+  display: flex;
+  align-items: flex-start;
+  gap: 28px;
+}
+.cf-measure--row > .cf { flex: 0 0 auto; margin-top: 0; }
+.cf-side { flex: 1 1 0; min-width: 0; }
+.cf-side > :first-child { margin-top: 0; }
+@media (max-width: 860px) {
+  .cf-measure--row { display: block; }
+  .cf-measure--row > .cf { margin-top: 20px; }
+}
 .cf {
-  margin: 20px 0 8px;
+  margin: 20px auto 8px;
   outline: none;
+  max-width: 100%;
 }
 .cf-viewport {
   overflow: hidden;
@@ -10175,6 +10203,15 @@ html:root .hover-bag__pill--ipad .hover-bag__pill-inner { width: auto; }
   justify-content: center;
   width: 100%;
 }
+/* Images sharing one slide sit in a level row; the component sizes the
+   pair as a unit so they shrink together. */
+.cf-pair {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  max-width: 100%;
+}
 /* Sized in the component to the image's own proportions, clamped to the
    column — the frame then fills it rather than re-deriving its own cap. */
 .cf-fit {
@@ -10186,19 +10223,28 @@ html:root .hover-bag__pill--ipad .hover-bag__pill-inner { width: auto; }
   width: 100%;
 }
 
-/* Strip — the position indicator and the jump target in one. Thumbnails
-   crop rather than letterbox so the row reads as an even rhythm. */
-.cf-strip {
+/* ── Shared carousel strip ────────────────────────────────────────────
+   The position indicator and the jump target in one, used by every
+   carousel on the site: CaseFilmstrip (tabs carry a thumbnail),
+   ResearchCarousel and UsabilityRound (tabs are text only). It replaced
+   a centred prev/next pair that named only the adjacent slide and never
+   said how many there were. */
+.case-strip {
   display: flex;
   gap: 8px;
-  margin-top: 12px;
+  /* Tight to the card above: the strip indexes that card, and a wide gap
+     made it read as a separate row of buttons rather than its control. */
+  margin-top: 2px;
   overflow-x: auto;
   padding-bottom: 4px;
   scrollbar-width: thin;
 }
-.cf-thumb {
+.case-strip__tab {
   flex: 0 0 auto;
-  width: 96px;
+  /* 110px: eight tabs plus their gaps come to 936px, so the longest
+     strip on the site (Feenix's section wireframes) still fits the
+     968px column without scrolling. */
+  width: 110px;
   padding: 0;
   border: 1px solid var(--line);
   border-radius: 4px;
@@ -10208,41 +10254,43 @@ html:root .hover-bag__pill--ipad .hover-bag__pill-inner { width: auto; }
   opacity: 0.5;
   transition: opacity 140ms ease, border-color 140ms ease;
 }
-.cf-thumb img {
+.case-strip__tab img {
   display: block;
   width: 100%;
   height: 58px;
   object-fit: cover;
   background: #fff;
 }
-.cf-thumb-label {
-  display: block;
+.case-strip__label {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   padding: 4px 6px 5px;
   font-size: 11px;
   line-height: 1.25;
   color: var(--muted);
   text-align: left;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  /* Two lines, not an ellipsis: these labels are the only name a tab
+     has, and "Project Content Mainten…" names nothing. */
 }
-.cf-thumb:hover { opacity: 0.8; }
-.cf-thumb[data-on] {
+.case-strip__tab:hover { opacity: 0.8; }
+.case-strip__tab[data-on] {
   opacity: 1;
   border-color: var(--accent-on-cream);
 }
-.cf-thumb[data-on] .cf-thumb-label { color: var(--fg); }
-.cf-thumb:focus-visible {
+.case-strip__tab[data-on] .case-strip__label { color: var(--fg); }
+.case-strip__tab:focus-visible {
   outline: 2px solid var(--accent-on-cream);
   outline-offset: 2px;
 }
 
-.cf-cap {
+.case-strip__cap {
   margin: 10px 0 0;
   font-size: 14px;
   color: var(--muted);
 }
-.cf-cap strong {
+.case-strip__cap strong {
   font-family: var(--f-mono);
   font-size: 12px;
   letter-spacing: 0.06em;
@@ -10250,9 +10298,22 @@ html:root .hover-bag__pill--ipad .hover-bag__pill-inner { width: auto; }
   font-variant-numeric: tabular-nums;
 }
 
+/* Text-only tabs (ResearchCarousel, UsabilityRound): no thumbnail, so
+   the label is the target and gets room to be one. */
+.case-strip--text .case-strip__tab {
+  width: auto;
+  max-width: 200px;
+  padding: 7px 12px;
+}
+.case-strip--text .case-strip__label {
+  padding: 0;
+  font-size: 12.5px;
+}
+
 @media (max-width: 720px) {
-  .cf-thumb { width: 76px; }
-  .cf-thumb img { height: 46px; }
+  .case-strip__tab { width: 84px; }
+  .case-strip--text .case-strip__tab { width: auto; }
+  .case-strip__tab img { height: 46px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

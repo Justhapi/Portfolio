@@ -311,7 +311,17 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
     pill.style.translate = `${(cur.current.x - base.current.x).toFixed(2)}px ${(cur.current.y - base.current.y).toFixed(2)}px`;
     if (!snapNow) followRaf.current = requestAnimationFrame(follow);
   };
-  const placePill = (clientX: number, clientY: number, key: string | null, snap = false) => {
+  const placePill = (
+    clientX: number,
+    clientY: number,
+    key: string | null,
+    snap = false,
+    /* Where the pop-up grows FROM. The pointer by default; on a fresh
+       open it is the item's own hit-zone, so the pop-up reads as coming
+       out of the thing you are pointing at rather than out of the
+       cursor. */
+    origin?: { x: number; y: number } | null,
+  ) => {
     const pill = pillRef.current;
     if (!pill || !key) return;
     lastPos.current = { x: clientX, y: clientY };
@@ -343,8 +353,19 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
       pill.style.left = `${x}px`;
       pill.style.top = `${y}px`;
       pill.style.translate = "0px 0px";
-      // grow out of the pointer
-      pill.style.transformOrigin = `${clientX - x}px ${clientY - y}px`;
+      /* The pivot, in the pill's own coordinates. Scaling 0.94 → 1 about
+         a pivot moves the box toward that pivot, so an origin on the
+         item is what makes the pop-up appear to come out of it. The
+         further the pivot, the longer that slide: clamped so it stays a
+         short move (≤ MAX_TRAVEL) rather than a glide across the page. */
+      const o = origin ?? { x: clientX, y: clientY };
+      const MAX_TRAVEL = 44, D_SCALE = 1 - 0.94;
+      const maxDist = MAX_TRAVEL / D_SCALE;
+      const cx = fw / 2, cy = fh / 2;
+      let ox = o.x - x, oy = o.y - y;
+      const vx = ox - cx, vy = oy - cy, d = Math.hypot(vx, vy);
+      if (d > maxDist) { ox = cx + (vx * maxDist) / d; oy = cy + (vy * maxDist) / d; }
+      pill.style.transformOrigin = `${ox.toFixed(1)}px ${oy.toFixed(1)}px`;
       return;
     }
     if (!followRaf.current) followRaf.current = requestAnimationFrame(follow);
@@ -395,6 +416,16 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
     if (!hoverCapable) return;
     let raf = 0, px = -1, py = -1;
     let pending: string | null = null;
+    /* Smoothed pointer speed, px/ms. Below this the pointer is reading
+       rather than travelling. */
+    const SLOW_PX_PER_MS = 0.35;
+    let speed = 0, lastT = 0, lastX = 0, lastY = 0;
+    /* Where the last hit-test ran. elementsFromPoint walks the whole
+       stacking tree, and running it on every pointermove frame is what
+       makes the open stutter on a heavy page — sub-pixel jitter gets
+       skipped instead. It also stops a trembling hand from cancelling
+       the dwell timers below. */
+    let evalX = -1, evalY = -1;
     /* The way to the pop-up: while the pointer is travelling from its item
        toward the open pop-up, other items it crosses don't take over —
        they only do once it stops on them. `anchor` is the last spot on the
@@ -418,17 +449,44 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
       }
       return false;
     };
+    /** Centre of an item's hit-zone, in viewport coordinates. */
+    const zoneCenter = (key: string) => {
+      const el = document.querySelector(
+        `.hover-bag__zone[data-key="${CSS.escape(key)}"]`,
+      ) as HTMLElement | null;
+      if (!el) return null;
+      const r = el.getBoundingClientRect();
+      return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+    };
     const open = (key: string) => {
       painted.current = null;
       anchor = { x: px, y: py };
       engaged = false;
-      placePill(px, py, key, true);
+      placePill(px, py, key, true, zoneCenter(key));
+      /* Replay the entrance. @starting-style only fires the first time
+         .is-on lands, and the pill keeps that class while you move from
+         one item to the next — so without this, only the very first
+         pop-up grew out of its item and every switch just appeared in
+         place. Set the start frame by hand, then hand it back to the
+         stylesheet on the next frame and let the transition run. */
+      const pill = pillRef.current;
+      if (pill && !prefersReducedMotionRef.current) {
+        pill.style.transition = "none";
+        pill.style.opacity = "0";
+        pill.style.transform = "scale(0.94)";
+        requestAnimationFrame(() => {
+          pill.style.transition = "";
+          pill.style.opacity = "";
+          pill.style.transform = "";
+        });
+      }
       setActive(key);
       activeRef.current = key;
     };
     const evaluate = () => {
       raf = 0;
       if (px < 0) return;
+      evalX = px; evalY = py;
       const els = document.elementsFromPoint(px, py);
       const zone = els.find((el) => el.classList.contains("hover-bag__zone")) as HTMLElement | undefined;
       const key = zone?.dataset.key ?? null;
@@ -455,11 +513,17 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
           stillT = window.setTimeout(() => { if (activeRef.current === now) open(key); }, 420);
           return;
         }
-        // resting on a different item switches to it
+        /* Moving to a different item. The flat 260ms wait that used to
+           sit here was the lag: the first pop-up opened instantly and
+           every one after it stalled, which reads as random. The wait
+           only ever existed to stop items flickering past during a fast
+           sweep across the bag, so ask the pointer instead — once it has
+           slowed to a deliberate hover, switch immediately. */
         if (pending !== key) {
-          pending = key;
           window.clearTimeout(switchT.current);
-          switchT.current = window.setTimeout(() => { pending = null; open(key); }, 260);
+          if (speed < SLOW_PX_PER_MS) { pending = null; open(key); return; }
+          pending = key;
+          switchT.current = window.setTimeout(() => { pending = null; open(key); }, 150);
         }
         return;
       }
@@ -468,7 +532,19 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
       if (now) closeSoon();
     };
     const queue = () => { if (!raf) raf = requestAnimationFrame(evaluate); };
-    const onMove = (e: PointerEvent) => { if (e.pointerType === "touch") return; px = e.clientX; py = e.clientY; window.clearTimeout(stillT); queue(); };
+    const onMove = (e: PointerEvent) => {
+      if (e.pointerType === "touch") return;
+      const dt = lastT ? Math.max(1, e.timeStamp - lastT) : 0;
+      if (dt) {
+        const d = Math.hypot(e.clientX - lastX, e.clientY - lastY);
+        speed = speed * 0.6 + (d / dt) * 0.4;
+      }
+      lastT = e.timeStamp; lastX = e.clientX; lastY = e.clientY;
+      px = e.clientX; py = e.clientY;
+      if (evalX >= 0 && Math.hypot(px - evalX, py - evalY) < 2) return;
+      window.clearTimeout(stillT);
+      queue();
+    };
     const onDown = (e: PointerEvent) => { if (pillRef.current?.contains(e.target as Node)) { engaged = true; window.clearTimeout(stillT); } };
     const onOut = (e: MouseEvent) => { if (!e.relatedTarget && activeRef.current) { px = -1; closeSoon(); } };
     window.addEventListener("pointermove", onMove, { passive: true });

@@ -39,10 +39,15 @@ import { useCallback, useEffect, useRef, useState } from "react";
 type Slide = {
   key: string;
   content: React.ReactNode;
-  /** Short plain-text name shown in the prev/next nav link (e.g.
+  /** Short plain-text name shown under the strip's tab (e.g.
    *  "Secondary Research"). Kept separate from `content` since content
-   *  is often rich JSX and the nav needs plain text. */
+   *  is often rich JSX and the tab needs plain text. */
   label: string;
+  /** Image src for the tab's thumbnail — the same visual the slide
+   *  shows. `content` is an opaque ReactNode, so the component can't
+   *  find it on its own; the page passes it. Without one the tab falls
+   *  back to its label alone. */
+  thumb?: string;
 };
 
 type Props = {
@@ -51,8 +56,6 @@ type Props = {
 };
 
 const SWIPE_THRESHOLD = 60;   // px — min horizontal drag to trigger slide change
-const WHEEL_THRESHOLD = 60;   // px — accumulated horizontal wheel delta to advance
-const WHEEL_LOCK_MS = 400;    // brief cooldown after a wheel-triggered advance
 const TRANSITION_MS = 380;    // must match the CSS transition duration on .rc-track
 
 export default function ResearchCarousel({ slides, title }: Props) {
@@ -89,8 +92,6 @@ export default function ResearchCarousel({ slides, title }: Props) {
   const dragStartXRef = useRef<number | null>(null);
   const viewportRef = useRef<HTMLDivElement | null>(null);
   const activePointerIdRef = useRef<number | null>(null);
-  const wheelAccumRef = useRef(0);
-  const wheelLockRef = useRef(false);
   // Timer for the phantom → real silent-reset; cleared on unmount so
   // React doesn't warn about setState on an unmounted component.
   const resetTimerRef = useRef<number | null>(null);
@@ -169,6 +170,12 @@ export default function ResearchCarousel({ slides, title }: Props) {
     goToTrack(trackIdx - 1);
   }, [trackIdx, goToTrack, hasPhantoms, total]);
 
+  /** Jump to a real slide index — what the strip's tabs call. */
+  const goToReal = useCallback(
+    (realIdx: number) => goToTrack(hasPhantoms ? realIdx + 1 : realIdx),
+    [goToTrack, hasPhantoms],
+  );
+
   const handleKey = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === "ArrowLeft") {
       e.preventDefault();
@@ -223,30 +230,13 @@ export default function ResearchCarousel({ slides, title }: Props) {
     finishDrag(0);
   };
 
-  // Trackpad two-finger horizontal wheel → advance/retreat.
-  // Attached natively so preventDefault works (React's onWheel is passive).
-  // Only intercepts horizontal-dominant events; vertical scrolls through
-  // to Lenis for normal page scroll.
-  useEffect(() => {
-    const el = viewportRef.current;
-    if (!el) return;
-    const onWheel = (e: WheelEvent) => {
-      if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
-      e.preventDefault();
-      if (wheelLockRef.current) return;
-      wheelAccumRef.current += e.deltaX;
-      if (Math.abs(wheelAccumRef.current) < WHEEL_THRESHOLD) return;
-      if (wheelAccumRef.current > 0) advance();
-      else retreat();
-      wheelAccumRef.current = 0;
-      wheelLockRef.current = true;
-      window.setTimeout(() => {
-        wheelLockRef.current = false;
-      }, WHEEL_LOCK_MS);
-    };
-    el.addEventListener("wheel", onWheel, { passive: false });
-    return () => el.removeEventListener("wheel", onWheel);
-  }, [advance, retreat]);
+  /*
+   * No wheel handler. The previous one preventDefault()ed any
+   * horizontal-dominant wheel event, and a Mac trackpad emits those
+   * constantly on a diagonal flick — so scrolling past a carousel could
+   * advance it instead of scrolling the page. Drag, the strip and the
+   * arrow keys are enough to move it.
+   */
 
   // Compute the live track transform. During drag, the track follows
   // the pointer for immediate visual feedback. On release, dragOffset
@@ -265,39 +255,6 @@ export default function ResearchCarousel({ slides, title }: Props) {
     >
       <header className="rc-header">
         {title && <h4 className="rc-title">{title}</h4>}
-        {total > 1 && (() => {
-          const showPrev = hasPhantoms || realIndex > 0;
-          const showNext = hasPhantoms || realIndex < total - 1;
-          const prevLabel = slides[(realIndex - 1 + total) % total].label;
-          const nextLabel = slides[(realIndex + 1) % total].label;
-          return (
-            <nav className="rc-nav" aria-label="Select research activity">
-              {showPrev && (
-                <button
-                  type="button"
-                  className="rc-nav-link rc-nav-link--prev"
-                  onClick={retreat}
-                  aria-label={`Show previous: ${prevLabel}`}
-                >
-                  <span aria-hidden="true">‹</span> {prevLabel}
-                </button>
-              )}
-              {showPrev && showNext && (
-                <span className="rc-nav-sep" aria-hidden="true">|</span>
-              )}
-              {showNext && (
-                <button
-                  type="button"
-                  className="rc-nav-link rc-nav-link--next"
-                  onClick={advance}
-                  aria-label={`Show next: ${nextLabel}`}
-                >
-                  {nextLabel} <span aria-hidden="true">›</span>
-                </button>
-              )}
-            </nav>
-          );
-        })()}
       </header>
 
       <div
@@ -317,7 +274,12 @@ export default function ResearchCarousel({ slides, title }: Props) {
               key={s.key}
               className={`rc-slide${i === trackIdx ? " is-active" : ""}`}
               aria-roledescription="slide"
-              aria-label={`Slide ${i + 1} of ${trackSlides.length}`}
+              /* Count real slides only — the extended track carries two
+                 phantoms, and announcing "3 of 7" for a 5-slide carousel
+                 is just wrong. */
+              aria-label={`Slide ${
+                (hasPhantoms ? (i - 1 + total) % total : i) + 1
+              } of ${total}`}
               // Phantom slides shouldn't be announced to screen readers
               // (they'd read as duplicates of real slides).
               aria-hidden={
@@ -329,6 +291,40 @@ export default function ResearchCarousel({ slides, title }: Props) {
           ))}
         </div>
       </div>
+
+      {total > 1 && (
+        <>
+          <div
+            className={`case-strip${
+              slides.some((s) => s.thumb) ? "" : " case-strip--text"
+            }`}
+            role="tablist"
+            aria-label={`${title ?? "Slides"} list`}
+          >
+            {slides.map((s, i) => (
+              <button
+                key={s.key}
+                type="button"
+                role="tab"
+                className="case-strip__tab"
+                data-on={i === realIndex || undefined}
+                aria-selected={i === realIndex}
+                onClick={() => goToReal(i)}
+              >
+                {/* Decorative: the label below is the accessible name. */}
+                {s.thumb && <img src={s.thumb} alt="" loading="lazy" />}
+                <span className="case-strip__label">{s.label}</span>
+              </button>
+            ))}
+          </div>
+          <p className="case-strip__cap" aria-live="polite">
+            <strong>
+              {realIndex + 1} / {total}
+            </strong>{" "}
+            · {slides[realIndex].label}
+          </p>
+        </>
+      )}
     </div>
   );
 }
