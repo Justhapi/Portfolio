@@ -24,7 +24,6 @@ import websiteCreateAgreement from "./images/Website_Create_Account_Agreement.pn
 import competitorSidebar from "./images/Competitor_Sidebars.png";
 import sidebarIdea from "./images/Sidebar_Idea.png";
 import sidebarSketch from "./images/Sidebar_Sketch.png";
-import sidebarSketchDirection from "./images/Sidebar_Idea.png";
 import sidebarSketchFinal from "./images/Sidebar_Sketch_Final.png";
 import homeNewSketch from "./images/Home_New_Account_Sketch.png";
 import consoleSketch from "./images/Console_Sketch_Initial.png";
@@ -47,7 +46,7 @@ import backupWire from "./images/Server_Backup_Wireframe_Initial.png";
 import adminWire from "./images/Server_Admin_Wireframe_Initial.png";
 import softwareWire from "./images/Server_Software_Wireframe_Initial.png";
 import serverCreationNew from "./images/Server_Creation_New.png";
-import creationStep1 from "./images/Server_Creation_Step_1_.png";
+import creationStep1 from "./images/Server_Creation_Step_1.png";
 import creationStep2a from "./images/Server_Creation_Step_2_Initial.png";
 import creationStep2b from "./images/Server_Creation_Step_2_Final.png";
 import creationStep3a from "./images/Server_Creation_Step_3_Initial.png";
@@ -129,14 +128,14 @@ export default function FeenixCaseStudy() {
             For this exploratory project, the sponsor directed us to build the foundations of
             a scalable Minecraft hosting service that supports both free and premium hosting within two
             phases over the academic year.
-            <h4>Phase 1 - Minimum Viable Product (MVP) Features</h4>
+            <h3>Phase 1 - Minimum Viable Product (MVP) Features</h3>
             <ul>
               <li>Account Registration</li>
               <li>Server Creation</li>
               <li>Server Management</li>
               <li>Server Backup</li>
             </ul>
-            <h4>Phase 2 - Feature Enhancements</h4>
+            <h3>Phase 2 - Feature Enhancements</h3>
             <ul>
               //may need to add more features here in the future
               <li>Server Plugins & Modpacks</li>
@@ -273,18 +272,6 @@ export default function FeenixCaseStudy() {
             label="Authentication as built"
             shots={[
               { key: "website-login", img: websiteLogin, label: "Log in", alt: "The log in screen as built." },
-              { key: "website-create-account-username", img: websiteCreateUsername, label: "Username step", alt: "Create account, username step, as built." },
-              {
-                key: "website-create-account-password",
-                // The requirement tracker only means anything as a
-                // before and after, so the two states share a slide.
-                img: [websiteCreatePasswordEmpty, websiteCreatePasswordFilled],
-                alt: [
-                  "Create account, password step, empty.",
-                  "Create account, password step, filled, with the requirement tracker met.",
-                ],
-                label: "Password, empty and filled",
-              },
               { key: "website-create-account-agreement", img: websiteCreateAgreement, label: "Agreement step", alt: "Create account, agreement step, as built." },
             ]}
           />
@@ -293,9 +280,9 @@ export default function FeenixCaseStudy() {
           {/* DOC → Phase 8 → "Direction" */}
           <Z img={competitorSidebar} alt="Aternos' side navigation next to a command palette from another tool." />
 
-          <h3>Sidebar, six passes</h3>
+          <h3>Sidebar, three passes</h3>
           <CaseFilmstrip
-            label="Sidebar, six passes"
+            label="Sidebar, three passes"
             side={
               <>
                 {/* DOC → Phase 8 → "First sketches" / "Navigation structure" */}
@@ -304,7 +291,6 @@ export default function FeenixCaseStudy() {
             shots={[
               { key: "sidebar-sketch", img: sidebarSketch, label: "First pass", alt: "First side navigation sketch." },
               { key: "sidebar-idea", img: sidebarIdea, label: "Sidebar direction idea", alt: "Early navigation idea." },
-              { key: "sidebar-sketch-direction", img: sidebarSketchDirection, label: "Third pass", alt: "Third side navigation sketch." },
               { key: "sidebar-sketch-final", img: sidebarSketchFinal, label: "Final pass", alt: "Final side navigation sketch." },
             ]}
           />
@@ -385,17 +371,7 @@ export default function FeenixCaseStudy() {
           <CaseFilmstrip
             label="The three steps of server creation"
             shots={[
-              {
-                key: "server-creation-step-1",
-                // Public and private are the same screen in two states —
-                // side by side is the only way to read the difference.
-                img: [creationStep1Public, creationStep1Private],
-                alt: [
-                  "Server creation step one, set to public.",
-                  "Server creation step one, set to private.",
-                ],
-                label: "1 · General, public and private",
-              },
+              { key: "server-creation-step-1", img: creationStep1, label: "1 · General", alt: "Server creation step one, general settings." },
               { key: "server-creation-step-2-initial", img: creationStep2a, label: "2 · World setup", alt: "Server creation step two, first pass." },
               { key: "server-creation-step-3-initial", img: creationStep3a, label: "3 · Backup settings", alt: "Server creation step three, first pass." },
             ]}
