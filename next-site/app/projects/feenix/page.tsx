@@ -128,14 +128,15 @@ export default function FeenixCaseStudy() {
             For this exploratory project, the sponsor directed us to build the foundations of
             a scalable Minecraft hosting service that supports both free and premium hosting within two
             phases over the academic year.
-            <h3>Phase 1 - Minimum Viable Product (MVP) Features</h3>
+            <br></br>
+            <strong>Phase 1 - Minimum Viable Product (MVP) Features</strong>
             <ul>
               <li>Account Registration</li>
               <li>Server Creation</li>
               <li>Server Management</li>
               <li>Server Backup</li>
             </ul>
-            <h3>Phase 2 - Feature Enhancements</h3>
+            <strong>Phase 2 - Feature Enhancements</strong>
             <ul>
               //may need to add more features here in the future
               <li>Server Plugins & Modpacks</li>
