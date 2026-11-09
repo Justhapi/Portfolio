@@ -128,7 +128,8 @@ export default function FeenixCaseStudy() {
             For this exploratory project, the sponsor directed us to build the foundations of
             a scalable Minecraft hosting service that supports both free and premium hosting within two
             phases over the academic year.
-            <br></br>
+          </p>
+          <div className="case-phases">
             <strong>Phase 1 - Minimum Viable Product (MVP) Features</strong>
             <ul>
               <li>Account Registration</li>
@@ -138,13 +139,13 @@ export default function FeenixCaseStudy() {
             </ul>
             <strong>Phase 2 - Feature Enhancements</strong>
             <ul>
-              //may need to add more features here in the future
+              {/* may need to add more features here in the future */}
               <li>Server Plugins & Modpacks</li>
               <li>Automatic Backup</li>
               <li>Monetary Profit (Premium & Subscriptions)</li>
               <li>Discord / Community Integration</li>
             </ul>
-          </p>
+          </div>
           <Z img={briefImg} alt="Project brief board with the platform description and user assumptions on sticky notes."
              caption={<>The project brief, split into what the platform needs to let users do and who we assumed the users were.</>} />
           <h3>My Role</h3>
@@ -278,8 +279,18 @@ export default function FeenixCaseStudy() {
           />
 
           <h3>Navigation reference</h3>
-          {/* DOC → Phase 8 → "Direction" */}
-          <Z img={competitorSidebar} alt="Aternos' side navigation next to a command palette from another tool." />
+          {/* One image: it sits on the right, with this section's text on the left (like "Log in mockups"). */}
+          <CaseFilmstrip
+            label="Navigation reference"
+            side={
+              <>
+                {/* DOC → Phase 8 → "Direction" */}
+              </>
+            }
+            shots={[
+              { key: "competitor-sidebars", img: competitorSidebar, label: "Side navigation references", alt: "Aternos' side navigation next to a command palette from another tool." },
+            ]}
+          />
 
           <h3>Sidebar, three passes</h3>
           <CaseFilmstrip
@@ -297,8 +308,18 @@ export default function FeenixCaseStudy() {
           />
 
           <h3>Post-login home states</h3>
-          {/* DOC → Phase 8 → "First sketches" */}
-          <Z img={homeNewSketch} alt="Four post-login home states: first-time welcome, returning user with a server list, and two empty states reading \u201cNo servers made\u201d." />
+          {/* One image: it sits on the right, with this section's text on the left (like "Log in mockups"). */}
+          <CaseFilmstrip
+            label="Post-login home states"
+            side={
+              <>
+                {/* DOC → Phase 8 → "First sketches" */}
+              </>
+            }
+            shots={[
+              { key: "home-new-account-sketch", img: homeNewSketch, label: "Home states", alt: "Four post-login home states: first-time welcome, returning user with a server list, and two empty states reading \u201cNo servers made\u201d." },
+            ]}
+          />
 
           <h3>Six sections, sketched</h3>
           {/* DOC → Phase 9 → "Section purposes" */}
@@ -361,8 +382,18 @@ export default function FeenixCaseStudy() {
           {/* DOC → "Findings — prototype", "Confirmed — prototype" */}
 
           <h3>Before any server exists</h3>
-          {/* DOC → Phase 12 → "Goal" */}
-          <Z img={serverCreationNew} alt="The empty state before any server exists, with a single Create server action." />
+          {/* One image: it sits on the right, with this section's text on the left (like "Log in mockups"). */}
+          <CaseFilmstrip
+            label="Before any server exists"
+            side={
+              <>
+                {/* DOC → Phase 12 → "Goal" */}
+              </>
+            }
+            shots={[
+              { key: "server-creation-new", img: serverCreationNew, label: "Create your first server", alt: "The empty state before any server exists, with a single Create server action." },
+            ]}
+          />
 
           <h3>The three steps</h3>
           {/* DOC → Phase 12 — Server Creation Flow → "Goal", "Method" */}

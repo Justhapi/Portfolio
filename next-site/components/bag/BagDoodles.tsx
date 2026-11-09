@@ -11,14 +11,16 @@ const DOODLES = ["Lost", "Rice", "Locked"].map((n) => `${POP_UP}/doodles/${n}.we
 
 /* Where the two loose notes sit, and where the pad is (for the peel-off flight). */
 const PAD = { x: 0, y: 128 };
-const LOOSE = [{ x: 184, y: 0, r: 9 }, { x: 196, y: 152, r: -6 }];
+// moved down beside the pad, so the whole pop-up reads as a square (pad + caption on the left, two notes on the right)
+const LOOSE = [{ x: 184, y: 64, r: 9 }, { x: 196, y: 216, r: -6 }];
 
 /** Like the Available sticker: the note pops forward toward the middle of
  *  the pop-up, squared up and lifted, holds so you can look, then slams
  *  back into place. */
 function popForward(el: HTMLElement, baseRotate: number) {
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  if (el.getAnimations().some((a) => !(a instanceof CSSAnimation) && a.playState === "running")) return;
+  if (el.dataset.popping) return;
+  el.dataset.popping = "1";
   const box = el.parentElement!.getBoundingClientRect();
   const r = el.getBoundingClientRect();
   const dx = (box.left + box.width / 2 - (r.left + r.width / 2)) * 0.45;
@@ -27,19 +29,39 @@ function popForward(el: HTMLElement, baseRotate: number) {
   const lifted = "drop-shadow(0 18px 14px rgba(26,23,20,0.35))";
   const flat = "drop-shadow(0 0 0 rgba(0,0,0,0))";
   const INOUT = "cubic-bezier(0.45, 0, 0.55, 1)";
+  const rest = { translate: "0 0", rotate: `${baseRotate}deg`, scale: "1", filter: flat };
+  const held = { translate: at(1, 8), rotate: "0deg", scale: "1.55", filter: lifted };
   el.style.zIndex = "30";
+  /* Sharpness: a browser draws an element mid-animation at the size it
+     started at, so a note held enlarged inside one long animation stayed
+     blurry. Instead it grows, then STOPS animating for the hold — a still,
+     enlarged note gets redrawn at its full size — then animates back. Its
+     idle float is paused for the same reason, and resumes after. */
+  el.style.animation = "none";
+  const set = (k: typeof held) => { el.style.translate = k.translate; el.style.rotate = k.rotate; el.style.scale = k.scale; el.style.filter = k.filter; };
+  const clear = () => { el.style.translate = el.style.rotate = el.style.scale = el.style.filter = el.style.zIndex = el.style.animation = ""; delete el.dataset.popping; };
   el.animate(
     [
-      { translate: "0 0", rotate: `${baseRotate}deg`, scale: "1", filter: flat, easing: "cubic-bezier(0.1, 0.9, 0.2, 1)" },
-      { translate: at(1.05, 10), rotate: `${-baseRotate * 0.2}deg`, scale: "1.62", filter: lifted, offset: 0.08, easing: INOUT },
-      { translate: at(1, 8), rotate: "0deg", scale: "1.55", filter: lifted, offset: 0.16 },
-      { translate: at(1, 8), rotate: "0deg", scale: "1.55", filter: lifted, offset: 0.76, easing: "cubic-bezier(0.7, 0, 0.9, 0.3)" },
-      { translate: "0 0", rotate: `${baseRotate}deg`, scale: "1.08 0.88", filter: "drop-shadow(0 1px 1px rgba(26,23,20,0.3))", offset: 0.82, easing: "cubic-bezier(0.25, 1, 0.5, 1)" },
-      { translate: "0 0", rotate: `${baseRotate}deg`, scale: "0.96 1.04", filter: flat, offset: 0.89, easing: INOUT },
-      { translate: "0 0", rotate: `${baseRotate}deg`, scale: "1", filter: flat },
+      { ...rest, easing: "cubic-bezier(0.1, 0.9, 0.2, 1)" },
+      { translate: at(1.05, 10), rotate: `${-baseRotate * 0.2}deg`, scale: "1.62", filter: lifted, offset: 0.5, easing: INOUT },
+      held,
     ],
-    { duration: 2200, easing: "linear" },
-  ).finished.finally(() => { el.style.zIndex = ""; });
+    { duration: 352, easing: "linear" },
+  ).finished.then(() => {
+    set(held); // the hold: still, so it's drawn crisp at full size
+    window.setTimeout(() => {
+      el.animate(
+        [
+          { ...held, easing: "cubic-bezier(0.7, 0, 0.9, 0.3)" },
+          { translate: "0 0", rotate: `${baseRotate}deg`, scale: "1.08 0.88", filter: "drop-shadow(0 1px 1px rgba(26,23,20,0.3))", offset: 0.25, easing: "cubic-bezier(0.25, 1, 0.5, 1)" },
+          { translate: "0 0", rotate: `${baseRotate}deg`, scale: "0.96 1.04", filter: flat, offset: 0.54, easing: INOUT },
+          rest,
+        ],
+        { duration: 528, easing: "linear" },
+      ).finished.then(clear, clear);
+      set(rest);
+    }, 1320);
+  }, clear);
 }
 
 

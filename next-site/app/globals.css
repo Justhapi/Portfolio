@@ -10319,3 +10319,28 @@ html:root .hover-bag__pill--ipad .hover-bag__pill-inner { width: auto; }
 @media (prefers-reduced-motion: reduce) {
   .cf-track { transition: none; }
 }
+
+/* A single picture (one-image filmstrip) sits to the RIGHT of the column,
+   so the text box beside it can sit on the left. Stacks back to centre on
+   narrow screens. */
+.cf--single { margin-left: auto; margin-right: 0; }
+@media (max-width: 860px) { .cf--single { margin-left: auto; margin-right: auto; } }
+
+/* ══ Bag pop-ups · crisp text ══════════════════════════════════════════
+   Anything with words on it (captions, the receipt) used to float on a
+   transform animation with a slight rotation. An element animated that
+   way is turned into a picture and resampled every frame, which is what
+   blurred the text. These float on margin instead — no rotation — so the
+   browser redraws the text itself, sharp, at whole-pixel steps. The
+   images keep their transform float. */
+@keyframes bobText { 0%, 100% { margin-top: 0; } 50% { margin-top: calc(-1 * var(--b-amp, 4px)); } }
+@keyframes bobCaption { 0%, 100% { margin-top: 0; } 50% { margin-top: calc(-1 * var(--icon-float-amp, 3px)); } }
+.tw2-line,
+.pd-line,
+.rp-line,
+.pt-receipt { animation: bobText var(--b-dur, 4.4s) ease-in-out var(--b-delay, 0s) infinite; will-change: auto; }
+.pill-orbit__caption,
+.pill-scatter__caption { animation-name: bobCaption; will-change: auto; }
+@media (prefers-reduced-motion: reduce) {
+  .tw2-line, .pd-line, .rp-line, .pt-receipt, .pill-orbit__caption, .pill-scatter__caption { animation: none !important; }
+}

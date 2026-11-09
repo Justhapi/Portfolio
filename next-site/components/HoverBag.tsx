@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { COPY, slap } from "./bag/motion";
 import { BagTrips } from "./bag/BagTrips";
@@ -102,6 +102,22 @@ const EFFECT_CLASS: Record<HoverEffect, string> = {
  *  automatically, so if that ever changes again, this is the one
  *  place to update (same pattern as elsewhere in the repo). */
 const BASE_PATH = "";
+/** An item's hit area on screen — what a pop-up beside it keeps clear of. */
+function zoneRect(key: string) {
+  const el = document.querySelector(`.hover-bag__zone[data-key="${key}"]`);
+  return el ? el.getBoundingClientRect() : null;
+}
+/** Where each item's pop-up sits around the pointer (see placePill). */
+const PLACEMENT: Record<string, "top-right" | "left" | "right" | "above"> = {
+  ipad: "left",     // doodles
+  earbuds: "left",  // music
+  ticket: "above",  // trips
+  usagi: "right",   // food
+  phone: "top-right",
+  laptop: "top-right",
+};
+/** Below this window width a pop-up centres on the bag instead of sitting by the pointer. */
+const NARROW_PX = 900;
 /** Caption labels in the pop-ups — left out when deciding what sits against the cursor. */
 const CAPTIONS = ".tw2-line, .pd-line, .rp-line, .pill-orbit__caption, .pill-scatter__caption, .pill-polaroid__line";
 
@@ -196,7 +212,17 @@ function warmBagImages() {
   }
 }
 
+type Entry = "grow" | "pull" | "spill";
+
 export default function HoverBag({ debug = false }: { debug?: boolean }) {
+  /* How a pop-up enters: "spill" — each of its pieces pops out of the
+     hovered item in turn (picked from the bag-entry prototype). */
+  const entryRef = useRef<Entry>("spill");
+  /** Each item's pop-up always paints the same shape, so measure it once and reuse it. */
+  const paintedCache = useRef<Record<string, { l: number; t: number; r: number; b: number; al: number; ab: number; ar: number; at: number }>>({});
+  /** The open waiting to be placed + played once the new pop-up has rendered (before it paints). */
+  const openReq = useRef<{ key: string; x: number; y: number; origin: { x: number; y: number } | null } | null>(null);
+  const [openSeq, setOpenSeq] = useState(0);
   const [active, setActive] = useState<string | null>(null);
   /* Clicks on the item or its pop-up: each one advances the pop-up's
      photos early and slaps it (like the hero stickers). */
@@ -299,7 +325,7 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
   const cur = useRef({ x: 0, y: 0 });
   const target = useRef({ x: 0, y: 0 });
   /** What the pop-up paints, relative to its own origin (measured after it shows). */
-  const painted = useRef<{ l: number; t: number; r: number; b: number; al: number; ab: number } | null>(null);
+  const painted = useRef<{ l: number; t: number; r: number; b: number; al: number; ab: number; ar: number; at: number } | null>(null);
   const followRaf = useRef(0);
   const follow = () => {
     const pill = pillRef.current;
@@ -308,7 +334,8 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
     const dx = target.current.x - cur.current.x, dy = target.current.y - cur.current.y;
     const snapNow = prefersReducedMotionRef.current || Math.abs(dx) + Math.abs(dy) < 0.3;
     cur.current = snapNow ? { ...target.current } : { x: cur.current.x + dx * 0.24, y: cur.current.y + dy * 0.24 };
-    pill.style.translate = `${(cur.current.x - base.current.x).toFixed(2)}px ${(cur.current.y - base.current.y).toFixed(2)}px`;
+    // whole pixels: text sitting between pixels is drawn soft
+    pill.style.translate = `${Math.round(cur.current.x - base.current.x)}px ${Math.round(cur.current.y - base.current.y)}px`;
     if (!snapNow) followRaf.current = requestAnimationFrame(follow);
   };
   const placePill = (
@@ -327,31 +354,71 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
     lastPos.current = { x: clientX, y: clientY };
     const card = pill.firstElementChild as HTMLElement | null;
     const fw = card?.offsetWidth || 190, fh = card?.offsetHeight || 250;
-    const pr = painted.current ?? { l: 0, t: 0, r: fw, b: fh, al: 0, ab: fh };
+    const pr = painted.current ?? { l: 0, t: 0, r: fw, b: fh, al: 0, ab: fh, ar: fw, at: 0 };
     const margin = 12, gap = 10;
     const vw = window.innerWidth, vh = window.innerHeight;
-    /* Top-right of the pointer, snug against it: the pop-up's main picture
-       (everything but its captions) starts just right of the cursor and
-       ends just above it. A caption may hang lower, off to the right.
-       Clamped (never flipped) so all of it stays on screen. */
-    let x = clientX + gap - pr.al;
-    const yIdeal = clientY - gap - pr.ab;
+    /* Where each pop-up sits around the pointer (its main picture — not
+       counting captions — is what's lined up against the cursor):
+         top-right  friends, games: starts just right of it, ends just above it
+         left       doodles, music: ends just left of it, centred on it
+                    (doodles a little higher, so the pad sits beside the item)
+         above      trips: centred over it, the cursor between the two windows
+         right      food: starts just right of it, centred on it
+       On a narrow window it centres on the bag instead, out of the way of
+       nothing in particular. Always clamped (never flipped) on screen. */
+    const mainCx = (pr.al + pr.ar) / 2, mainCy = (pr.at + pr.ab) / 2;
+    const placement = PLACEMENT[key] ?? "top-right";
+    let x: number, yIdeal: number;
+    const narrow = vw < NARROW_PX;
+    if (narrow) {
+      const bag = stackRef.current?.getBoundingClientRect();
+      const cx = bag ? bag.left + bag.width / 2 : vw / 2, cy = bag ? bag.top + bag.height / 2 : vh / 2;
+      x = cx - (pr.l + pr.r) / 2;
+      yIdeal = cy - (pr.t + pr.b) / 2;
+    } else if (placement === "left") {
+      // clear of the whole item, not just the pointer, so the item stays fully in view
+      const item = zoneRect(key);
+      // everything it paints (the turning covers reach further than they measure) stays left of the item, with room
+      const clearGap = gap + 24;
+      x = Math.min(clientX, item ? item.left : clientX) - clearGap - pr.r;
+      yIdeal = clientY - mainCy - (key === "ipad" ? 70 : 0);
+      // no room on the left (the screen edge would push it back over the item): sit above the item instead
+      if (item && x + pr.l < margin) {
+        x = item.left + item.width / 2 - mainCx;
+        yIdeal = item.top - clearGap - pr.b;
+      }
+    } else if (placement === "right") {
+      const item = zoneRect(key);
+      x = Math.max(clientX, item ? item.right : clientX) + gap + 24 - pr.l;
+      yIdeal = clientY - mainCy - 20;
+    } else if (placement === "above") {
+      // over the upper middle of the bag, just above the pointer
+      const bag = stackRef.current?.getBoundingClientRect();
+      x = (bag ? bag.left + bag.width / 2 : clientX) - mainCx;
+      yIdeal = clientY - 24 - pr.ab;
+    } else {
+      x = clientX + gap - pr.al;
+      yIdeal = clientY - gap - pr.ab;
+    }
     x = Math.min(Math.max(x, margin - pr.l), vw - margin - pr.r);
     const y = Math.min(Math.max(yIdeal, margin - pr.t), vh - margin - pr.b);
-    /* Near the top of the window the clamp pushes it down over the
-       pointer — then slide it sideways to clear the cursor ring. */
-    if (y > yIdeal) {
+    /* Top-right only: near the top of the window the clamp pushes it down
+       over the pointer — then slide it sideways to clear the cursor ring. */
+    if (!narrow && placement === "top-right" && y > yIdeal) {
       const clear = 34 * 1.6 * 0.5 + 6;
       const right = clientX + clear - pr.l;
       if (right + pr.r <= vw - margin) x = Math.max(x, right);
       else x = Math.max(margin - pr.l, clientX - clear - pr.r);
     }
-    target.current = { x, y };
+    // whole pixels, so the pop-up's text lands on the pixel grid and stays sharp
+    x = Math.round(x);
+    const yr = Math.round(y);
+    target.current = { x, y: yr };
     if (snap) {
-      base.current = { x, y };
-      cur.current = { x, y };
+      base.current = { x, y: yr };
+      cur.current = { x, y: yr };
       pill.style.left = `${x}px`;
-      pill.style.top = `${y}px`;
+      pill.style.top = `${yr}px`;
       pill.style.translate = "0px 0px";
       /* The pivot, in the pill's own coordinates. Scaling 0.94 → 1 about
          a pivot moves the box toward that pivot, so an origin on the
@@ -379,22 +446,86 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
     // the main picture, without its captions: this is what sits against the cursor
     const main = getPaintedBounds(pill, CAPTIONS) ?? bounds;
     const ox = cur.current.x, oy = cur.current.y;
-    painted.current = { l: bounds.left - ox, t: bounds.top - oy, r: bounds.right - ox, b: bounds.bottom - oy, al: main.left - ox, ab: main.bottom - oy };
+    painted.current = { l: bounds.left - ox, t: bounds.top - oy, r: bounds.right - ox, b: bounds.bottom - oy, al: main.left - ox, ab: main.bottom - oy, ar: main.right - ox, at: main.top - oy };
     if (lastPos.current) placePill(lastPos.current.x, lastPos.current.y, activeRef.current);
   };
   const activeRef = useRef<string | null>(null);
   activeRef.current = active;
   useEffect(() => () => cancelAnimationFrame(followRaf.current), []);
 
-  // Once a newly opened pop-up has painted (and again once its grow-in has
-  // finished, so the scale doesn't skew the numbers), measure and re-centre.
-  useEffect(() => {
-    if (!active) return;
-    let id = requestAnimationFrame(() => { id = requestAnimationFrame(measure); });
-    const t = window.setTimeout(measure, 260);
-    return () => { cancelAnimationFrame(id); window.clearTimeout(t); };
+  /* Open: the new pop-up has rendered but not painted yet. Measure it
+     (once per item, then cached), put it in its final spot, and play the
+     entrance out of the item — all before the first frame shows, so there
+     is nothing to correct afterwards. */
+  useLayoutEffect(() => {
+    const req = openReq.current, pill = pillRef.current;
+    if (!req || !pill || req.key !== active) return;
+    openReq.current = null;
+    pill.getAnimations({ subtree: true }).forEach((a) => { if (!(a instanceof CSSAnimation) && !(a instanceof CSSTransition)) a.cancel(); });
+    pill.style.transition = "none";
+    pill.style.transform = "none";
+    pill.style.opacity = "1";
+    pill.style.translate = "0px 0px";
+    let pr = paintedCache.current[req.key];
+    if (!pr) {
+      const box = pill.getBoundingClientRect();
+      const bounds = getPaintedBounds(pill);
+      if (bounds) {
+        const main = getPaintedBounds(pill, CAPTIONS) ?? bounds;
+        pr = { l: bounds.left - box.left, t: bounds.top - box.top, r: bounds.right - box.left, b: bounds.bottom - box.top, al: main.left - box.left, ab: main.bottom - box.top, ar: main.right - box.left, at: main.top - box.top };
+        paintedCache.current[req.key] = pr;
+      }
+    }
+    painted.current = pr ?? null;
+    placePill(req.x, req.y, req.key, true);
+    const done = () => { pill.style.transition = ""; pill.style.transform = ""; pill.style.opacity = ""; };
+    const o = req.origin;
+    if (!o || prefersReducedMotionRef.current || !pr) { done(); return; }
+    const x = base.current.x, y = base.current.y;
+    const ox = o.x - x, oy = o.y - y;                 // the item, in the pop-up's own coordinates
+    const pcx = (pr.l + pr.r) / 2, pcy = (pr.t + pr.b) / 2;
+    const EXPO = "cubic-bezier(0.16, 1, 0.3, 1)";
+    const mode = entryRef.current;
+    if (mode === "grow") {
+      // scales up out of the item: the item is the pivot
+      pill.style.transformOrigin = `${ox.toFixed(1)}px ${oy.toFixed(1)}px`;
+      pill.animate([{ transform: "scale(0.18)", opacity: 0 }, { opacity: 1, offset: 0.35 }, { transform: "scale(1)", opacity: 1 }], { duration: 300, easing: EXPO }).finished.then(done, done);
+    } else if (mode === "pull") {
+      // travels out of the item to its spot, tipping upright as it comes
+      pill.style.transformOrigin = `${pcx.toFixed(1)}px ${pcy.toFixed(1)}px`;
+      const dx = ox - pcx, dy = oy - pcy;
+      pill.animate([
+        { transform: `translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px) scale(0.12) rotate(-8deg)`, opacity: 0 },
+        { opacity: 1, offset: 0.25 },
+        { transform: "translate(0px, 0px) scale(1) rotate(0deg)", opacity: 1 },
+      ], { duration: 360, easing: "cubic-bezier(0.22, 1, 0.36, 1)" }).finished.then(done, done);
+    } else {
+      // each piece pops out of the item in turn
+      const root = (pill.firstElementChild?.firstElementChild ?? null) as HTMLElement | null;
+      const pieces = root ? (Array.from(root.children) as HTMLElement[]).filter((el) => el.getBoundingClientRect().width > 0) : [];
+      if (pieces.length < 2) {
+        pill.style.transformOrigin = `${ox.toFixed(1)}px ${oy.toFixed(1)}px`;
+        pill.animate([{ transform: "scale(0.18)", opacity: 0 }, { transform: "scale(1)", opacity: 1 }], { duration: 300, easing: EXPO }).finished.then(done, done);
+        return;
+      }
+      done();
+      // nearest the item first, so it reads as pouring out of it
+      const withC = pieces.map((el) => { const r = el.getBoundingClientRect(); return { el, cx: r.left + r.width / 2, cy: r.top + r.height / 2 }; })
+        .sort((a, b) => Math.hypot(a.cx - o.x, a.cy - o.y) - Math.hypot(b.cx - o.x, b.cy - o.y));
+      withC.forEach(({ el, cx, cy }, i) => {
+        /* Added ON TOP of the piece's own transform (its tilt, its float),
+           not instead of it — so when the entrance ends there's nothing to
+           snap back to: it's already exactly where the piece lives. */
+        const endOpacity = getComputedStyle(el).opacity;
+        el.animate([
+          { transform: `translate(${(o.x - cx).toFixed(1)}px, ${(o.y - cy).toFixed(1)}px) scale(0.2)` },
+          { transform: "translate(0px, 0px) scale(1)" },
+        ], { duration: 320, delay: i * 45, easing: EXPO, fill: "backwards", composite: "add" });
+        el.animate([{ opacity: 0 }, { opacity: endOpacity, offset: 0.3 }, { opacity: endOpacity }], { duration: 320, delay: i * 45, easing: EXPO, fill: "backwards" });
+      });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [active]);
+  }, [openSeq]);
 
   useEffect(() => {
     if (!active) return;
@@ -459,28 +590,13 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
       return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
     };
     const open = (key: string) => {
-      painted.current = null;
       anchor = { x: px, y: py };
       engaged = false;
-      placePill(px, py, key, true, zoneCenter(key));
-      /* Replay the entrance. @starting-style only fires the first time
-         .is-on lands, and the pill keeps that class while you move from
-         one item to the next — so without this, only the very first
-         pop-up grew out of its item and every switch just appeared in
-         place. Set the start frame by hand, then hand it back to the
-         stylesheet on the next frame and let the transition run. */
-      const pill = pillRef.current;
-      if (pill && !prefersReducedMotionRef.current) {
-        pill.style.transition = "none";
-        pill.style.opacity = "0";
-        pill.style.transform = "scale(0.94)";
-        requestAnimationFrame(() => {
-          pill.style.transition = "";
-          pill.style.opacity = "";
-          pill.style.transform = "";
-        });
-      }
+      // placed and played in the layout effect below, once the new pop-up exists — so it's measured
+      // for real BEFORE the first paint, and never shows up in a wrong spot and slides over
+      openReq.current = { key, x: px, y: py, origin: zoneCenter(key) };
       setActive(key);
+      setOpenSeq((n) => n + 1);
       activeRef.current = key;
     };
     const evaluate = () => {
@@ -622,9 +738,9 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
             onFocus={hoverCapable ? (e) => {
               keepOpen();
               const r = e.currentTarget.getBoundingClientRect();
-              painted.current = null;
-              placePill(r.left + r.width / 2, r.top + r.height / 2, item.key, true);
+              openReq.current = { key: item.key, x: r.left + r.width / 2, y: r.top + r.height / 2, origin: { x: r.left + r.width / 2, y: r.top + r.height / 2 } };
               setActive(item.key);
+              setOpenSeq((n) => n + 1);
             } : undefined}
             onBlur={hoverCapable ? closeSoon : undefined}
             /* Touch path: tap toggles the centered popup — tap the same

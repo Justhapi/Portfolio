@@ -205,7 +205,8 @@ export default function CaseFilmstrip({
     return (
       <div className={`cf-measure${side ? " cf-measure--row" : ""}`} ref={wrapRef}>
         {side && <div className="cf-side">{side}</div>}
-        <div className="cf" style={boxW ? { width: boxW } : undefined}>
+        {/* a single picture sits on the right, leaving the left for the writing beside it */}
+        <div className="cf cf--single" style={boxW ? { width: boxW } : undefined}>
           {cell(shots[0])}
           <p className="case-strip__cap">{shots[0].label}</p>
         </div>
