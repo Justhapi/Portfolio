@@ -60,6 +60,9 @@ export default function CaseFilmstrip({
   shots,
   label,
   side,
+  align,
+  minWidth,
+  maxWidth,
 }: {
   shots: Shot[];
   /** Names the group for assistive tech — usually the h3 above it. */
@@ -71,6 +74,18 @@ export default function CaseFilmstrip({
    * to that group instead. Omit it and the carousel centres as before.
    */
   side?: React.ReactNode;
+  /**
+   * "right" pushes the carousel to the right of the column — for a strip
+   * whose text box will sit on its left. (A one-picture strip already does.)
+   */
+  align?: "right";
+  /**
+   * Width limits for the carousel, in px — set these to size it by hand.
+   * The height follows the width, so the pictures keep their shape.
+   * It still never grows wider than the column. e.g. minWidth={420} maxWidth={560}
+   */
+  minWidth?: number;
+  maxWidth?: number;
 }) {
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const [colW, setColW] = useState(0);
@@ -128,7 +143,7 @@ export default function CaseFilmstrip({
     Math.max(RATIO_MIN, allRatios[(allRatios.length - 1) >> 1]),
   );
 
-  const frameH = colW ? Math.round(Math.min(colW / boxAR, vh * VH_SHARE)) : 0;
+  const baseH = colW ? Math.round(Math.min(colW / boxAR, vh * VH_SHARE)) : 0;
 
   /**
    * What a slide actually renders at inside that box. A slide holding
@@ -136,7 +151,7 @@ export default function CaseFilmstrip({
    * what gets clamped to the column, so both shrink together and the
    * row stays level.
    */
-  const fit = (s: Shot) => {
+  const fitAt = (frameH: number, s: Shot) => {
     const n = imagesOf(s).length;
     const gaps = PAIR_GAP * (n - 1);
     const total = Math.min(frameH * boxAR * n + gaps, colW);
@@ -152,12 +167,20 @@ export default function CaseFilmstrip({
    * read as unrelated. Width comes from the widest slide — the widest,
    * not the current one, so paging doesn't shuffle the strip sideways.
    */
-  const boxW = frameH
-    ? Math.max(...shots.map((sh) => {
-        const f = fit(sh);
-        return f.widths.reduce((a, b) => a + b, 0) + PAIR_GAP * (f.widths.length - 1);
-      }))
-    : 0;
+  const widestAt = (h: number) => Math.max(...shots.map((sh) => {
+    const f = fitAt(h, sh);
+    return f.widths.reduce((a, b) => a + b, 0) + PAIR_GAP * (f.widths.length - 1);
+  }));
+  /* minWidth / maxWidth: scale the whole carousel (height with it) until its
+     width lands inside the limits — and never past the column. */
+  let frameH = baseH;
+  if (baseH && (minWidth || maxWidth)) {
+    const natural = widestAt(baseH);
+    const want = Math.min(colW, Math.max(minWidth ?? 0, Math.min(maxWidth ?? Infinity, natural)));
+    if (natural && want !== natural) frameH = Math.round(baseH * (want / natural));
+  }
+  const fit = (s: Shot) => fitAt(frameH, s);
+  const boxW = frameH ? widestAt(frameH) : 0;
 
   const step = useCallback(
     (dir: 1 | -1) =>
@@ -218,7 +241,7 @@ export default function CaseFilmstrip({
     <div className={`cf-measure${side ? " cf-measure--row" : ""}`} ref={wrapRef}>
     {side && <div className="cf-side">{side}</div>}
     <div
-      className="cf"
+      className={`cf${align === "right" ? " cf--single" : ""}`}
       style={boxW ? { width: boxW } : undefined}
       tabIndex={0}
       onKeyDown={onKeyDown}

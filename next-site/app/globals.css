@@ -10344,3 +10344,14 @@ html:root .hover-bag__pill--ipad .hover-bag__pill-inner { width: auto; }
 @media (prefers-reduced-motion: reduce) {
   .tw2-line, .pd-line, .rp-line, .pt-receipt, .pill-orbit__caption, .pill-scatter__caption { animation: none !important; }
 }
+
+/* Feature lists beside a carousel (Feenix · competitor maintenance):
+   the competitors' lists sit side by side, and every list is set a step
+   smaller than the body text so they fit the side column. */
+.feature-lists { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 22px; margin: 14px 0 18px; }
+.feature-lists__head { margin: 0 0 6px; line-height: 1.4; }
+.feature-lists ul,
+.feature-list { margin: 6px 0 0; padding-left: 1.1em; font-size: 14px; line-height: 1.4; }
+.feature-lists li + li,
+.feature-list li + li { margin-top: 4px; }
+@media (max-width: 600px) { .feature-lists { grid-template-columns: 1fr; } }
