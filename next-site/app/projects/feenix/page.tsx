@@ -4,61 +4,54 @@ import ZoomableImage from "@/components/ZoomableImage";
 import CaseFilmstrip from "@/components/CaseFilmstrip";
 
 import briefImg from "./images/Feenix_Project_Introduction.png";
-
 import competitorSignIn from "./images/Competitor_Sign_In.png";
 import aternosServer from "./images/Aternos_Server.png";
 import playHostingServer from "./images/Play.Hosting_Server.png";
 import aternosMaintenance from "./images/Aternos_Maintenace.png";
 import competitorMaintenance from "./images/Competitor_Server_Maintenance.png";
-import serverCreationIdeation from "./images/Server_Creation_Ideation.png";
+import serverCreationIdeation from "./images/Server_Creation_Flow_Ideation.png";
 import serverCreationFlowSketch from "./images/Server_Creation_Flow_Sketch.png";
 import loginSketch from "./images/Login_Sketch.png";
 import createAccountSketch from "./images/Create_Account_Sketch.png";
 import authFlow from "./images/Landing_Page_Flow.png";
 import createAccountSketchFinal from "./images/Create_Account_Sketch_Final.png";
 import accountRecoverySketch from "./images/Account_Recovery_Sketch.png";
-import guidelines from "./images/Design_Guidelines.png";
 import loginMock from "./images/Login_Initial_Wireframe.png";
 import createAccountFlowWire from "./images/Create_Account_Flow_Wireframe.png";
 import recoverAccountFlowWire from "./images/Recover_Account_Flow_Wireframe.png";
 import websiteLogin from "./images/Website_Login.png";
-import websiteCreateUsername from "./images/Website_Create_Account_Username.png";
-import websiteCreatePasswordEmpty from "./images/Website_Create_Account_Password_Empty.png";
-import websiteCreatePasswordFilled from "./images/Website_Create_Account_Password_Filled.png";
 import websiteCreateAgreement from "./images/Website_Create_Account_Agreement.png";
-import competitorSidebar from "./images/Competitor_Sidebar.png";
+import competitorSidebar from "./images/Competitor_Sidebars.png";
 import sidebarIdea from "./images/Sidebar_Idea.png";
 import sidebarSketch from "./images/Sidebar_Sketch.png";
-import sidebarSketchDirection from "./images/Sidebar_Sketch_Third.png";
+import sidebarSketchDirection from "./images/Sidebar_Idea.png";
 import sidebarSketchFinal from "./images/Sidebar_Sketch_Final.png";
 import homeNewSketch from "./images/Home_New_Account_Sketch.png";
 import consoleSketch from "./images/Console_Sketch_Initial.png";
 import worldSketch from "./images/World_Sketch_Initial.png";
 import playersSketch from "./images/Players_Sketch_Initial.png";
-import backupSketch from "./images/Backup_Sketch.png";
-import adminSketch from "./images/Admin_Sketch.png";
-import softwareSketch from "./images/Software_Sketch.png";
+import backupSketch from "./images/Backup_Sketch_Initial.png";
+import adminSketch from "./images/Admin_Sketch_Initial.png";
+import softwareSketch from "./images/Server_Software_Sketch_Initial.png";
 import consoleSketchFinal from "./images/Console_Sketch_Final.png";
 import worldSketchFinal from "./images/World_Sketch_Final.png";
 import playersSketchFinal from "./images/Players_Sketch_Final.png";
 import backupSketchFinal from "./images/Backup_Sketch_Final.png";
 import consoleWire1 from "./images/Server_Console_Wireframe_Initial.png";
 import consoleErr1 from "./images/Server_Console_Wireframe_Error_Initial.png";
-import consoleErr2 from "./images/Server_Console_Wireframe_Error_Second.png";
-
+import consoleErr2 from "./images/Server_Console_Wireframe_Error_Final.png";
 import worldWire1 from "./images/Server_World_Wireframe_Initial.png";
-import worldWire2 from "./images/Server_World_Wireframe_Second.png";
+import worldWire2 from "./images/Server_World_Wireframe_Final.png";
 import playersWire from "./images/Server_Players_Wireframe_Initial.png";
 import backupWire from "./images/Server_Backup_Wireframe_Initial.png";
 import adminWire from "./images/Server_Admin_Wireframe_Initial.png";
 import softwareWire from "./images/Server_Software_Wireframe_Initial.png";
 import serverCreationNew from "./images/Server_Creation_New.png";
-import creationStep1Public from "./images/Server_Creation_Step_1_Public.png";
-import creationStep1Private from "./images/Server_Creation_Step_1_Private.png";
+import creationStep1 from "./images/Server_Creation_Step_1_.png";
 import creationStep2a from "./images/Server_Creation_Step_2_Initial.png";
-import creationStep2b from "./images/Server_Creation_Step_2_Second.png";
+import creationStep2b from "./images/Server_Creation_Step_2_Final.png";
 import creationStep3a from "./images/Server_Creation_Step_3_Initial.png";
-import creationStep3b from "./images/Server_Creation_Step_3_Second.png";
+import creationStep3b from "./images/Server_Creation_Step_3_Final.png";
 
 
 export const metadata = {
@@ -118,13 +111,7 @@ export default function FeenixCaseStudy() {
             <p className="outcome-callout__meta">Phase 1 MVP · 2026–27 · in progress</p>
           </aside>
           <p>
-            Before wireframing, I defined the purpose of each of the platform&rsquo;s six sections,
-            so deciding where a feature belonged came down to what each section was for.
-            <br /><br />
-            The sections sit inside a{" "}
-            dual-tier navigation similar to Discord&rsquo;s, with a server list
-            down the side and each server&rsquo;s sections across the top. The account and
-            server-creation flows were then built around it.
+
           </p>
         </section>
 
@@ -136,25 +123,54 @@ export default function FeenixCaseStudy() {
             with the younger audience through video games and partnerships. They are well known through 
             their projects in Roblox development.
             <br></br><br></br>
-            Currently, Feenix Group is branching out to Minecraft, collaborating with the team I was a part of in Purdue&rsquo;s Data 
+            However, Feenix Group is branching out to Minecraft through collaborating with Purdue&rsquo;s Data 
             Mine Corporate Partners to build a Minecraft server hosting platform.
+            <br></br><br></br>
+            For this exploratory project, the sponsor directed us to build the foundations of
+            a scalable Minecraft hosting service that supports both free and premium hosting within two
+            phases over the academic year.
+            <h4>Phase 1 - Minimum Viable Product (MVP) Features</h4>
+            <ul>
+              <li>Account Registration</li>
+              <li>Server Creation</li>
+              <li>Server Management</li>
+              <li>Server Backup</li>
+            </ul>
+            <h4>Phase 2 - Feature Enhancements</h4>
+            <ul>
+              //may need to add more features here in the future
+              <li>Server Plugins & Modpacks</li>
+              <li>Automatic Backup</li>
+              <li>Monetary Profit (Premium & Subscriptions)</li>
+              <li>Discord / Community Integration</li>
+            </ul>
           </p>
           <Z img={briefImg} alt="Project brief board with the platform description and user assumptions on sticky notes."
              caption={<>The project brief, split into what the platform needs to let users do and who we assumed the users were.</>} />
           <h3>My Role</h3>
           <p>
-             During the project I worked as the UX lead on the Frontend team,{" "}
+             During the project I worked as the UX designer on the Frontend team,{" "}
             owning the information architecture, user flows, and interface's design and frontend implementation.
             <br/><br/>
-            While designing, I actively collaborated with the other teams (Data, backend, infrastructure) to address 
-            feasbility and limitations of functions within the designs.
+            While designing, I actively collaborated with the other teams (Data, backend, infrastructure) to identify and address 
+            the technical feasbility and limitations within the designs.
           </p>
         </section>
 
         {/* ───── Researching ───── */}
         <section id="researching" className="case-section">
           <h2>Researching</h2>
-
+            To familiarize myself with Minecraft Server Hosting platforms, I assessed two competitors to 
+            better understand how to design the server fatures requested by Feenix: 
+            <br></br><br></br>
+            <ul>
+              <li>Aternos</li>
+              <li>Play.Hosting</li>
+            </ul>
+            <br></br><br></br>
+            In addition to understanding the basic functionality requirements through each 
+            individual platform's interpretations, I was also able to identify pain points and 
+            oppurtunities of improvmement for the platform, particularly in server seed modification.
           <h3>Auditing two competitors</h3>
           {/* DOC → Phase 3 → "Goal" / "Method" */}
           <CaseFilmstrip
@@ -236,7 +252,6 @@ export default function FeenixCaseStudy() {
               </>
             }
             shots={[
-              { key: "guidelines", img: guidelines, label: "Design guidelines", alt: "Design Guidelines provided by design team." },
               { key: "login-initial-mockup-2", img: loginMock, label: "Mockup two", alt: "Second log in mockup." },
             ]}
           />
