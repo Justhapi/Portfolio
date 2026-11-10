@@ -194,11 +194,10 @@ export default function AboutV2() {
           <h3 className="lead">
             A designer who <em className="de">designs</em> within a <em className="de">room of engineers</em>
           </h3>
+          {/* Body first, bag second — the stacking is DOM order now, not a
+              grid the breakpoint reshuffles, so reading order and visual
+              order are the same thing at every width. */}
           <div className="about-body-split">
-            <div className="about-bag-wrap">
-              <HoverBag />
-              <BagSplash />
-            </div>
             <div className="about-body">
               <p>
                 Once I realized I can keep{" "} designing
@@ -216,6 +215,10 @@ export default function AboutV2() {
                 <li><Sparkle /><span>mentoring at <HoverWord view="mentor" href="https://linktr.ee/sasepurdue">Purdue SASE</HoverWord></span></li>
                 <li><Sparkle /><span>advising Purdue&rsquo;s Lion Dance Team</span></li>
               </ul>
+            </div>
+            <div className="about-bag-wrap">
+              <HoverBag />
+              <BagSplash />
             </div>
           </div>
         </div>

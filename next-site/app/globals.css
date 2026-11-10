@@ -3667,23 +3667,22 @@ em.it { font-style: italic; }
   text-align: center;
 }
 
-/* About layout — heading centered at the top, then bag + body in a
-   two-column split below. The heading (.lead) stays centered and
-   spans the full width so it visually anchors the section; the split
-   below (.about-body-split) places the HoverBag on the LEFT and the
-   body paragraphs on the RIGHT. Both the heading and the split live
-   inside .about-prose so the existing reveal / stagger animations
-   still drive both entrances. Widens .about-prose from 680px to
-   1080px to accommodate the split. */
+/* About layout — heading, then body, then the bag, stacked in that
+   order at every width. It was a two-column split that collapsed to
+   one below 820px, which meant the bag led on a phone and followed on
+   a desktop: the same section read in two different orders depending
+   on the window. One order, always, so the bag is the payoff after the
+   text rather than a thing competing with it for the first look.
+   .about-body-split keeps its name because the reveal / stagger
+   animations are keyed to it. */
 .about-prose:has(.about-body-split) {
   max-width: 1080px;
   padding-inline: 24px;
 }
 .about-body-split {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
-  gap: 56px;
-  align-items: center;
+  grid-template-columns: 1fr;
+  gap: 40px;
   margin-top: 40px;
   text-align: left;
 }
@@ -3700,11 +3699,7 @@ em.it { font-style: italic; }
   z-index: 2;
 }
 @media (max-width: 820px) {
-  .about-body-split {
-    grid-template-columns: 1fr;
-    gap: 32px;
-    text-align: center;
-  }
+  .about-body-split { gap: 32px; }
 }
 
 /* ── Bag hint note ───────────────────────────────────────────────
@@ -3713,10 +3708,13 @@ em.it { font-style: italic; }
    a one-time affordance pulse — it reads as part of the bag's own
    hand-drawn personality (a Post-it a friend left) rather than as
    UI chrome, so it never needs to teach-then-disappear. */
+/* 70% of the column, centred, so the bag reads as sitting under the
+   text rather than squaring up to it. No max-width in px: it should
+   track the measure, not a fixed size. The layer art is 1400px wide,
+   so it has pixels to spare at any width this reaches. */
 .about-bag-wrap {
   position: relative;
-  width: 100%;
-  max-width: 460px;
+  width: 70%;
   margin-inline: auto;
 }
 .about-bag-note {
@@ -3808,15 +3806,12 @@ em.it { font-style: italic; }
 @media (prefers-reduced-motion: reduce) {
   .about-bag-note { opacity: 1; animation: none; }
 }
-/* Matches .about-body-split's own stacking breakpoint (820px) — any time
-   the layout is stacked, the note must use the "anchored below the
-   wrap's top edge" position, never the desktop's negative offset, or it
-   climbs back into the heading above. Shifted left into the open space
-   above the bag per feedback. */
-@media (max-width: 820px) {
-  .about-bag-note { left: 20%; top: -6px; }
-  .about-bag-note__arrow-glyph { transform: rotate(-45deg); }
-}
+/* The layout is stacked at every width now, so the note always uses the
+   anchored-inside placement. The old desktop value (top: -64px) assumed
+   open space above the bag; with the body text there, it climbed into
+   the last line of the list. */
+.about-bag-note { left: 20%; top: -6px; }
+.about-bag-note__arrow-glyph { transform: rotate(-45deg); }
 @media (max-width: 480px) {
   .about-bag-note { font-size: 17px; padding: 6px 10px 7px; }
 }
@@ -3833,8 +3828,6 @@ em.it { font-style: italic; }
 .hover-bag {
   position: relative;
   width: 100%;
-  max-width: 460px;
-  margin-inline: auto;
   /* Pre-entrance state: off to the left, invisible. The keyframe
      animation below drives the entrance once .in is added. */
   opacity: 0;
@@ -9767,6 +9760,16 @@ html.hero-vt::view-transition-image-pair(hero-back) {
    printing · Music: a turning ring of covers · Doodles: a sticky pad whose
    top note is tugged off by its corner and tossed onto the wall. */
 .hover-bag__pill--usagi .hover-bag__pill-inner, .hover-bag__pill--ticket .hover-bag__pill-inner { width: auto; animation: none; }
+/* Pop-up scale. The pop-ups were drawn at a 14.5px handwriting line
+   while the About body runs at 19px, so they read as a footnote to the
+   text beside them. 19 / 14.5 = 1.31, applied to the whole shell so the
+   art grows with the words instead of the text outgrowing its card.
+   placePill() measures what the pop-up actually paints (getBoundingClient-
+   Rect, which includes this scale), so the clamping still holds; the
+   entrance pivot reads POP_SCALE in HoverBag.tsx, which must match. */
+:root { --pop-scale: 1.31; }
+.hover-bag__pill-inner { scale: var(--pop-scale); }
+
 /* ══ Shared behaviour: still pop-ups you can reach and click ══════════
    No cursor-follow, no lean, no idle bob on any piece. The pop-up takes
    the pointer so it can be clicked; hidden ones don't. */

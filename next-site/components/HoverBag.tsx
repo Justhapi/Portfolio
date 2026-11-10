@@ -107,6 +107,11 @@ function zoneRect(key: string) {
   const el = document.querySelector(`.hover-bag__zone[data-key="${key}"]`);
   return el ? el.getBoundingClientRect() : null;
 }
+/* Must match --pop-scale in globals.css: the pop-ups are drawn at a
+   14.5px line and the About body runs at 19px, so the whole shell is
+   scaled rather than each card restyled. */
+const POP_SCALE = 1.31;
+
 /** Where each item's pop-up sits around the pointer (see placePill). */
 const PLACEMENT: Record<string, "top-right" | "left" | "right" | "above"> = {
   ipad: "left",     // doodles
@@ -245,6 +250,8 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
   useEffect(() => () => { window.clearTimeout(closeT.current); window.clearTimeout(switchT.current); }, []);
   const pillRef = useRef<HTMLDivElement | null>(null);
   const stackRef = useRef<HTMLDivElement | null>(null);
+  /** Is the bag itself on screen? Gates every open — see the observer below. */
+  const inView = useRef(true);
   const lastPos = useRef<{ x: number; y: number } | null>(null);
   const [hoverCapable, setHoverCapable] = useState<boolean>(true);
   useEffect(() => {
@@ -353,7 +360,11 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
     if (!pill || !key) return;
     lastPos.current = { x: clientX, y: clientY };
     const card = pill.firstElementChild as HTMLElement | null;
-    const fw = card?.offsetWidth || 190, fh = card?.offsetHeight || 250;
+    /* offsetWidth is the layout size, which a CSS scale does not change,
+       so the painted size is the layout size times POP_SCALE. Only the
+       entrance pivot and the no-measurement fallback use these. */
+    const fw = (card?.offsetWidth || 190) * POP_SCALE,
+          fh = (card?.offsetHeight || 250) * POP_SCALE;
     const pr = painted.current ?? { l: 0, t: 0, r: fw, b: fh, al: 0, ab: fh, ar: fw, at: 0 };
     const margin = 12, gap = 10;
     const vw = window.innerWidth, vh = window.innerHeight;
@@ -590,6 +601,10 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
       return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
     };
     const open = (key: string) => {
+      /* Covers the gap between the bag leaving the viewport and the
+         observer below reacting: a pointermove mid-scroll could otherwise
+         open a pop-up for an item that is already gone. */
+      if (!inView.current) return;
       anchor = { x: px, y: py };
       engaged = false;
       // placed and played in the layout effect below, once the new pop-up exists — so it's measured
@@ -696,6 +711,33 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
     document.addEventListener("click", onDocClick);
     return () => document.removeEventListener("click", onDocClick);
   }, [hoverCapable, active]);
+
+  /* The pop-up is position: fixed, so once open it keeps sitting on the
+     screen after the bag has scrolled out from under the pointer —
+     nothing fires mouseleave when the thing you were pointing at moves
+     away rather than the pointer moving off it. Watching the bag closes
+     the pop-up the moment its subject leaves, so a pop-up is never on
+     screen without the item it came out of. threshold 0 fires on the
+     first and last pixel, which is the boundary that matters here. */
+  useEffect(() => {
+    const el = stackRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        inView.current = entry.isIntersecting;
+        if (entry.isIntersecting) return;
+        window.clearTimeout(closeT.current);
+        window.clearTimeout(switchT.current);
+        openReq.current = null;
+        lastPos.current = null;
+        activeRef.current = null;
+        setActive(null);
+      },
+      { threshold: 0 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   const activeItem = ITEMS.find((i) => i.key === active);
   const liftedLayers = new Set(activeItem?.layers ?? []);
