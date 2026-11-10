@@ -2215,7 +2215,6 @@ em.it { font-style: italic; }
    last wrote, so the sticker keeps its current scroll drift while
    nudging away. */
 
-
 @keyframes stickerGreenIn {
   /* Pure opacity fade — no translation, no rotation change. Sticker
      appears in place at its rest -4° tilt (matches the reverted
@@ -4315,8 +4314,7 @@ em.it { font-style: italic; }
 /* Small caption card — nested in the orbit cluster's negative space
    for music/games, tucked at the bottom right of the friends photo
    pile. Same paper recipe either way; only the anchoring differs. */
-.pill-orbit__caption,
-.pill-deck__caption {
+.pill-orbit__caption {
   position: absolute;
   width: 60%;
   padding: 5px 6px;
@@ -4339,10 +4337,8 @@ em.it { font-style: italic; }
   animation-timing-function: ease-in-out;
   animation-iteration-count: infinite;
 }
-.pill-orbit__caption .pill-polaroid__line,
-.pill-deck__caption .pill-polaroid__line { font-size: 9.5px; line-height: 1.15; }
-.pill-orbit__caption .pill-polaroid__meta,
-.pill-deck__caption .pill-polaroid__meta { font-size: 6.5px; }
+.pill-orbit__caption .pill-polaroid__line { font-size: 9.5px; line-height: 1.15; }
+.pill-orbit__caption .pill-polaroid__meta { font-size: 6.5px; }
 
 /* ---- Deck (friends / travel) — all 3 cards stay visible at all times
    and physically SHUFFLE through 3 stack positions (front / back /
@@ -4415,7 +4411,7 @@ em.it { font-style: italic; }
   .pill-deck__front:nth-child(2) { transform: translate(9px, 10px) rotate(calc(var(--rot, 0deg) + 6deg)) scale(0.96); z-index: 3; }
   .pill-deck__front:nth-child(3) { transform: translate(16px, 18px) rotate(calc(var(--rot, 0deg) + 11deg)) scale(0.92); z-index: 1; }
   .hover-bag__pill-inner { animation: none !important; }
-  .pill-orbit__item, .pill-orbit__caption, .pill-deck__caption { animation: none !important; }
+  .pill-orbit__item, .pill-orbit__caption { animation: none !important; }
   /* The scatter stops shuffling in JS too (see PillScatter), so the
      prints keep whatever places they were dealt. */
   .pill-scatter__print { transition: none !important; }
@@ -4884,7 +4880,6 @@ em.it { font-style: italic; }
   color: var(--accent-on-cream);
   font-weight: 700;
 }
-
 
 /* ── HoverWord — inline keyword → floating image pill ──
    .hw wraps a bold accent keyword (.hw-label) and an absolutely
@@ -6098,25 +6093,11 @@ em.it { font-style: italic; }
   flex: 0 1 auto;
   text-align: left;
 }
-/* Hanging bullet: the sparkle is lifted out of the flex row and placed in
-   the gutter to the LEFT of the list, so the list text starts on exactly
-   the same line as the paragraphs above rather than being pushed in by the
-   sparkle's own width. -26px is the sparkle (14px) plus its gap (12px).
-   Taking it out of flow rather than pulling the whole <ul> left is what
-   keeps the centring above intact.
-   Only above the stacking breakpoint: below it the list is full-width and
-   the overhang would eat into the page's 24px side padding, so there the
-   sparkle stays inline. */
-@media (min-width: 821px) {
-  .about-body ul.focus-list--spark li {
-    position: relative;
-  }
-  .about-body ul.focus-list--spark li > svg {
-    position: absolute;
-    left: -26px;
-    top: 0;
-  }
-}
+/* The sparkles sit on the column's left edge, in line with the first
+   character of every paragraph above — the marker is what lines up, and
+   the list text indents past it. The hanging version that lived here put
+   the sparkles out in the gutter and the list text flush instead, which
+   aligned the wrong one of the two. */
 
 /* ── JT User Interviews split layout ────────────────────────────────────
    Text on the left, interview-notes figure on the right (side-by-side)
@@ -7200,12 +7181,12 @@ em.it { font-style: italic; }
 /* ── Research carousel (Frogslayer secondary-research fold) ───────
    Styled to match the UsabilityRound pattern:
      - Header at top with a centered prev/next text nav naming the
-       adjacent slide (see .rc-nav below)
+       adjacent slide (see .case-strip below)
      - Swipeable card viewport below (no arrow buttons)
      - Infinite wrap on swipe at 3+ slides only (past last → first,
        before first → last); exactly 2 slides clamp instead — see the
        comment in ResearchCarousel.tsx for why
-   Nav styling intentionally mirrors .ur-nav (UsabilityRound.tsx) so
+   Paging is the shared .case-strip thumbnail row, same as UsabilityRound, so
    both carousels feel like part of the same interaction system across
    the case study. */
 .research-carousel {
@@ -7235,45 +7216,7 @@ em.it { font-style: italic; }
    link naming the actual adjacent slide (feedback: dots read as too
    small and easy to miss). Since the carousel wraps infinitely, both
    links always resolve to a real slide. */
-.rc-nav {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 14px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid rgb(var(--fg-rgb) / 0.12);
-}
-.rc-nav-link {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  border: 0;
-  padding: 6px 2px;
-  background: transparent;
-  font-family: var(--f-mono);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgb(var(--fg-rgb) / 0.55);
-  cursor: pointer;
-  transition: color 160ms ease, transform 160ms cubic-bezier(0.34, 1.4, 0.64, 1);
-}
-.rc-nav-link:hover { color: var(--accent-on-cream); }
-.rc-nav-link--prev:hover { transform: translateX(-2px); }
-.rc-nav-link--next:hover { transform: translateX(2px); }
-.rc-nav-link:focus-visible {
-  outline: 2px solid var(--accent-on-cream);
-  outline-offset: 3px;
-}
-.rc-nav-sep {
-  font-family: var(--f-mono);
-  font-size: 13px;
-  line-height: 1;
-  color: rgb(var(--fg-rgb) / 0.2);
-}
 @media (max-width: 720px) {
-  .rc-nav-link { font-size: 10px; }
 }
 .rc-viewport {
   position: relative;
@@ -7570,46 +7513,10 @@ em.it { font-style: italic; }
   flex-direction: column;
   gap: 12px;
 }
-/* Prev/next nav — matches ResearchCarousel's .rc-nav (centered text
+/* Paging — the shared .case-strip thumbnail row (centered text
    links naming the adjacent card, "|" divider). No wrap: prev is
    omitted on the first card, next on the last. */
-.usability-rounds .ur-nav {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 14px;
-}
-.usability-rounds .ur-nav-link {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  border: 0;
-  padding: 6px 2px;
-  background: transparent;
-  font-family: var(--f-mono);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgb(var(--fg-rgb) / 0.55);
-  cursor: pointer;
-  transition: color 160ms ease, transform 160ms cubic-bezier(0.34, 1.4, 0.64, 1);
-}
-.usability-rounds .ur-nav-link:hover { color: var(--accent-on-cream); }
-.usability-rounds .ur-nav-link--prev:hover { transform: translateX(-2px); }
-.usability-rounds .ur-nav-link--next:hover { transform: translateX(2px); }
-.usability-rounds .ur-nav-link:focus-visible {
-  outline: 2px solid var(--accent-on-cream);
-  outline-offset: 3px;
-}
-.usability-rounds .ur-nav-sep {
-  font-family: var(--f-mono);
-  font-size: 13px;
-  line-height: 1;
-  color: rgb(var(--fg-rgb) / 0.2);
-}
 @media (max-width: 720px) {
-  .usability-rounds .ur-nav-link { font-size: 10px; }
 }
 .usability-rounds .ur-round-header h4 {
   font-family: var(--f-display);
@@ -9431,22 +9338,21 @@ html.hero-vt::view-transition-image-pair(hero-back) {
    tracking, 13px+. Tag-style chips (the NDA badge, research-method chips)
    keep mono caps, like the skill tags on the home page. */
 .skip-link, .case-back-label, .case-nav-link, .case-meta, .outcome-callout__meta,
-.zoomable-hint, .rc-nav-link, .ur-nav-link, .case-map__label, .track-label, .case-fullflow summary,
+.zoomable-hint, .case-map__label, .track-label, .case-fullflow summary,
 .ur-round-header p {
   font-family: var(--f-sans); text-transform: none; letter-spacing: 0;
 }
-.case-back-label, .case-nav-link, .rc-nav-link, .ur-nav-link { font-size: 13.5px; font-weight: 500; }
+.case-back-label, .case-nav-link { font-size: 13.5px; font-weight: 500; }
 .zoomable-hint, .case-map__label, .track-label, .case-fullflow summary, .ur-round-header p { font-size: 13.5px; }
 .case-meta { font-size: 15px; }
 .outcome-callout__meta { font-weight: 700; }
 /* the same, for labels whose original rules are more specific */
 .outcome-callout .outcome-callout__meta, .case-section .parallel-tracks .track-label,
-.usability-rounds .ur-nav-link, .usability-rounds .ur-round-header p, .case-flow .case-flow__in span {
+.usability-rounds .ur-round-header p, .case-flow .case-flow__in span {
   font-family: var(--f-sans); text-transform: none; letter-spacing: 0;
 }
-.case-section .parallel-tracks .track-label, .usability-rounds .ur-nav-link, .usability-rounds .ur-round-header p,
+.case-section .parallel-tracks .track-label, .usability-rounds .ur-round-header p,
 .case-flow .case-flow__in span { font-size: 13.5px; }
-@media (max-width: 820px) { .usability-rounds .ur-nav-link { font-size: 13px; } }
 
 /* ══ Type hierarchy (outcome-led) ══════════════════════════════════════
    display  K2D 800       section h2, case title
@@ -9703,7 +9609,6 @@ html.hero-vt::view-transition-image-pair(hero-back) {
 .cs-handle { font: 500 13px/1 var(--f-sans); letter-spacing: 0; }
 .cs-links a { font: 600 15px/1 var(--f-sans); letter-spacing: 0; text-transform: none; }
 
-
 /* ══ Side-project card, refined ══════════════════════════════════════
    One title (the project), the role beside it; a one-line description;
    the event and award as a label/value row like the case-page details.
@@ -9787,7 +9692,6 @@ html.hero-vt::view-transition-image-pair(hero-back) {
 .cs-notes__slip:nth-child(odd) { rotate: -1.5deg !important; }
 .cs-notes__slip:nth-child(even) { rotate: 1.2deg !important; }
 .cs-past { background: #FBF7EE; border: 0; border-radius: 12px; rotate: -1.5deg; box-shadow: 0 12px 28px -12px rgba(0,0,0,0.6); padding-bottom: 20px; }
-
 
 /* long notes scroll inside the message box instead of growing the card */
 .cs-note textarea { max-height: 220px; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: rgb(26 23 20 / 0.25) transparent; }
@@ -9895,7 +9799,6 @@ html:root .hover-bag__pill--ipad .hover-bag__pill-inner { width: auto; }
 .pt-receipt img { display: block; width: 100%; height: 100%; -webkit-user-drag: none; }
 .pt-line,
 .pt-receipt__head { margin: 0; font-family: var(--f-hand); font-size: 17px; line-height: 1.15; color: var(--ink); text-wrap: balance; }
-@keyframes ptIn { from { opacity: 0; } }
 /* 1 · Scrapbook: a cream page, prints held by four photo corners */
 .pt-line { grid-column: 1 / -1; }
 /* Receipt: zigzag ends, a new dish feeds in at the bottom */
@@ -9906,17 +9809,11 @@ html:root .hover-bag__pill--ipad .hover-bag__pill-inner { width: auto; }
 .pt-receipt__head { text-align: center; padding-bottom: 10px; border-bottom: 1.5px dashed rgb(58 46 40 / 0.35); }
 .pt-receipt__rows { display: grid; gap: 8px; margin-top: 10px; }
 .pt-receipt__row { display: block; height: 104px; overflow: hidden; border-radius: 2px; cursor: pointer; }
-.pt-receipt__row img { object-fit: cover; animation: ptIn 300ms ease-out both; }
-.pt-receipt__row.is-new { animation: ptFeed 520ms cubic-bezier(0.25, 1, 0.5, 1) both; }
-@keyframes ptFeed { from { clip-path: inset(0 0 100% 0); } }
-/* 3 · Clothesline: prints pegged to a sagging string, evenly spaced */
-.pt-line-wrap { position: relative; padding-top: 6px; }
-/* each spot rides the sag of the string */
+.pt-receipt__row img { object-fit: cover; }
 html:root .hover-bag__pill--ipad .hover-bag__pill-inner,
 html:root .hover-bag__pill--usagi .hover-bag__pill-inner { width: auto; }
 @media (prefers-reduced-motion: reduce) {
-.pt-receipt__row img,
-.pt-receipt__row.is-new { animation: none; }
+.pt-receipt__row img { animation: none; }
 }
 /* Playlist: covers on their own (no frame), buttons + line in one small card */
 html:root .hover-bag__pill--earbuds .hover-bag__pill-inner { width: auto; }
@@ -9960,9 +9857,6 @@ html:root .hover-bag__pill--ipad .hover-bag__pill-inner { width: auto; }
 .pd-loose { position: absolute; width: 140px; height: 130px; padding: 7px; box-sizing: border-box; background: #fff; cursor: pointer;
   box-shadow: 0 0 0 0.5px rgb(26 23 20 / 0.10), 0 2px 4px rgb(26 23 20 / 0.12), 0 8px 10px -8px rgb(26 23 20 / 0.30); }
 .pd-loose[data-k="1"] { width: 130px; height: 122px; }
-/* a freshly peeled note flies from the pad to its spot */
-.pd-loose.is-new { animation: pdFly 560ms cubic-bezier(0.25, 1, 0.5, 1) both, bob var(--b-dur) ease-in-out var(--b-delay) infinite; }
-@keyframes pdFly { from { translate: var(--fx) var(--fy); rotate: -4deg; scale: 0.96; } }
 .pd-pad { position: absolute; width: 176px; height: 158px; cursor: pointer; }
 /* the block: the sheets underneath, showing as a thick edge on the bottom and left */
 .pd-block { position: absolute; inset: 0; background: #fff;
@@ -10001,12 +9895,13 @@ html:root .hover-bag__pill--ipad .hover-bag__pill-inner { width: auto; }
 .rp-line,
 .tw2-window,
 .tw2-line,
-.pt-receipt,
-.pd-loose.is-new { animation: none; }
+.pt-receipt { animation: none; }
 }
 /* --lift is the corner's angle in degrees, kept as a plain number so it can drive opacity and offsets too */
 @property --lift { syntax: "<number>"; inherits: true; initial-value: 0; }
-.pd--curls { height: 360px; }
+/* Tall enough to hold the caption (top 300 + ~81px) so the box matches
+   what the pop-up actually paints, and note 1's bottom lines up with it. */
+.pd--curls { height: 381px; }
 .pd--curls .pd-pad { --c: 54px; rotate: -3deg; }
 .pd--curls .pd-top { clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--c)), calc(100% - var(--c)) 100%, 0 100%); animation: pdNext 320ms ease-out both; transform: none; }
 .pd-corner { position: absolute; right: 0; bottom: 0; z-index: 3; width: var(--c); height: var(--c); pointer-events: none; }
@@ -10188,8 +10083,6 @@ html:root .hover-bag__pill--ipad .hover-bag__pill-inner { width: auto; }
 .pd--js .pd-pad.is-warp .pd-top,
 .pd--js .pd-pad.is-warp .pd-corner { visibility: hidden; }
 .pd-mark { position: absolute; width: 0; height: 0; pointer-events: none; }
-
-
 
 /* ── CaseFilmstrip ────────────────────────────────────────────────────
    A progression of images under one heading. Frames in a group share a
@@ -10418,3 +10311,190 @@ html:root .hover-bag__pill--ipad .hover-bag__pill-inner { width: auto; }
   .case-feedback li { grid-template-columns: 1fr; row-gap: 4px; }
   .case-feedback__arrow { display: none; }
 }
+
+/* ══ Pop-up captions: one voice, one size, centred ════════════════════
+   Every pop-up ends in a line of handwriting on a cream card, but they
+   had drifted into four type sizes — 18px (pad, playlist), 17px (food),
+   14.5px (trips) and 13.5px (friends, games) — so six pop-ups read as
+   six different components.
+
+   The food receipt is the reference: Caveat at 17px / 1.15. Everything
+   else is brought to it, trips included. */
+html:root .tw2-line,
+html:root .pd-line,
+html:root .rp-line,
+html:root .pt-line,
+html:root .pt-receipt__head,
+html:root .pill-orbit__caption .pill-polaroid__line,
+html:root .pill-scatter__caption .pill-polaroid__line {
+  font-family: var(--f-hand);
+  font-size: 17px;
+  line-height: 1.15;
+  text-align: center;
+}
+/* One card for the single-caption pop-ups. Trips keeps its own widths
+   (168 / 160px): it pins TWO captions around a 330px frame, one at the
+   top-left and one below the bottom-right, and a shared 220px would
+   push both past the frame's edges. Padding and corner match. */
+html:root .pd-line,
+html:root .rp-line,
+html:root .pill-orbit__caption,
+html:root .pill-scatter__caption {
+  box-sizing: border-box;
+  width: 220px;
+}
+html:root .tw2-line,
+html:root .pd-line,
+html:root .rp-line,
+html:root .pill-orbit__caption,
+html:root .pill-scatter__caption {
+  padding: 8px 14px;
+  border-radius: 6px;
+  text-align: center;
+}
+/* It was given a wider max-width than its own card, so long lines pushed
+   out past the paper instead of wrapping inside it. */
+html:root .pill-orbit__caption .pill-polaroid__line { max-width: none; }
+
+/* ══ Friends: bigger prints ════════════════════════════════════════════
+   The photos are the point of this pop-up and they were the smallest
+   picture in any of them. Scaling each print about its own centre grows
+   the pictures without moving the scatter's slots — the layout maths in
+   HoverBag.tsx (SCATTER_SPOTS, MAX_OVERLAP, the corner-exit travel) is
+   all in unscaled px and keeps working, and the caption below keeps the
+   shared size set above. `scale` is the individual property, so it
+   composes with each print's `transform` tilt and `translate` idle bob
+   instead of overwriting either. */
+/* The scale that used to live here moved into PRINT_W/PRINT_H in
+   HoverBag.tsx. A CSS scale grew the picture but not the slot, so the
+   layout maths thought the prints were clear while they overlapped by
+   ~17px a side. Same size on screen, now known to the layout. */
+
+/* ══ Receipt rows: the trips filmstrip, without the window ═════════════
+   Each row was a feed animation that swapped the <img> underneath. Now
+   it is the same sliding strip the trip windows use — a column of frames
+   that moves one photo at a time and snaps back at the loop — so the two
+   pop-ups share one idea of what "next photo" looks like. The row keeps
+   .pt-receipt__row for its height, clipping and corner; this only adds
+   the strip inside it. */
+html:root .pt-strip { display: block; position: relative; }
+html:root .pt-strip__view {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  transition: translate 620ms cubic-bezier(0.65, 0, 0.35, 1);
+}
+html:root .pt-strip__frame { flex: none; width: 100%; height: 100%; }
+/* .pt-receipt__row img carries the old per-swap entrance; every frame of a
+   strip is already on screen, so there is nothing to fade in. */
+html:root .pt-strip__frame img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  html:root .pt-strip__view { transition: none; }
+}
+
+/* ══ Text off the pictures ════════════════════════════════════════════
+   Friends put its caption dead centre, over the faces — the prints were
+   built to tuck under its edges. It reads as a label stuck on the photos
+   rather than a line about them, so it moves below the cluster where it
+   covers nothing. The centring lived on `transform` (the bob runs on
+   `translate`), so only the X half of it is kept. */
+/* Back in the middle, which is what the scatter was built for — the
+   prints tuck under its edges and the cluster reads as photos with a note
+   dropped on them. It left the centre to stop it covering faces; with the
+   prints spread to the corners, the middle is the one place it can sit
+   without landing on one. */
+html:root .pill-scatter__caption {
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%);
+}
+/* The pad's second loose note starts at x196 and the caption ran to x220,
+   so the note clipped the caption's top-right corner. Pulling the caption
+   left ends it exactly where the note begins. */
+html:root .pd-line { left: -24px !important; }
+
+/* ══ Room between the pieces ══════════════════════════════════════════
+   Every pop-up is a small composition, and three of them were built on
+   pieces lapping over each other — the cover ring, the game tiles, the
+   photo scatter. Spread so nothing covers anything else. */
+
+/* The ring swings its covers 150px now instead of 94, so it needs the
+   width to swing them in. */
+html:root .rp { width: 390px; }
+html:root .rp-ring { width: 390px; height: 180px; }
+
+/* Four prints at 153x135 in a 2x2 with real gaps between the corners. */
+html:root .pill-scatter { width: 357px; height: 329px; }
+
+/* Two tiles across the top and one under them, instead of three in a
+   pile. The box grows so the lower tile has somewhere to be. */
+html:root .pill-orbit { width: 250px; }
+
+/* Trips: the two notes now sit the same distance from their own window.
+   The lower one is at y310 and its window ends at y300, so that gap is
+   10px. The upper note is about 75px tall (three lines at 17/1.15 plus
+   8px padding either side) and its window starts at y74, so 74 - 10 - 75
+   lands it at -11. It was at -46, which left a 45px gap on one side of
+   the pop-up and 10px on the other. */
+html:root .tw2-line[data-w="0"] {
+  top: -11px !important;
+  left: -20px !important;
+  rotate: -4deg;
+}
+
+/* ══ Scrapbook ════════════════════════════════════════════════════════
+   Promoted from /prototypes/pop-elements. The captions are narrower than
+   the art they sit under, and every one is set down off-square, so a
+   pop-up reads as paper someone put there rather than a card with a
+   label. Two departures from the prototype, both from later notes: the
+   music line is centred under its covers rather than pushed right, and
+   the games line sits below its tiles rather than beside them. */
+
+/* Narrower than the pictures, so a caption is never the widest thing in
+   its own pop-up. */
+html:root .pd-line,
+html:root .rp-line,
+html:root .pill-orbit__caption,
+html:root .pill-scatter__caption { width: 186px !important; }
+
+/* Doodles — left edge stays where it is (it ends exactly where the
+   second loose note begins); only the angle is new. */
+html:root .pd-line { rotate: -9deg; }
+
+/* Music — centred on the covers. The .rp grid already centres its
+   children, so this only has to not fight it. */
+html:root .rp-line { justify-self: center; margin-right: 0; rotate: 2.5deg; }
+
+/* Trips — the upper note keeps its lift clear of the first window. */
+html:root .tw2-line[data-w="1"] { rotate: 3deg; }
+
+/* Games — under the tiles, not beside them. The third tile bottoms out
+   at 94% of the box; `top` is the caption's centre (it is translated by
+   -50%), so this clears it by about 20px. The tilt rides on the inline
+   transform in HoverBag.tsx, which also carries that centring. */
+html:root .pill-orbit__caption {
+  top: calc(100% + 26px) !important;
+  left: 50% !important;
+}
+
+/* Friends — already below the cluster; the angle is what Scrapbook adds.
+   translateX carries the centring, so the rotate joins it rather than
+   replacing it. */
+html:root .pill-scatter__caption { transform: translate(-50%, -50%) rotate(-4deg); }
+
+/* Food — the whole receipt, set down at an angle. */
+html:root .pt-receipt { rotate: 8deg; }
+
+/* ══ Chrome over the pop-ups ══════════════════════════════════════════
+   The bag's pop-ups sit at z-index 100 and the site nav at 50, so a
+   pop-up opened near the top of the window covered the name chip and the
+   Work / About / Connect pill. The nav is the way out of the page; it
+   outranks anything the page itself draws. */
+html:root .nav { z-index: 300; }

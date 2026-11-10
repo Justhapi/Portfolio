@@ -121,6 +121,25 @@ const PLACEMENT: Record<string, "top-right" | "left" | "right" | "above"> = {
   phone: "top-right",
   laptop: "top-right",
 };
+/* Per-item nudge, applied after the placement rules below and before the
+   on-screen clamp. These are the tuning knobs for pop-ups that land
+   somewhere they shouldn't — on the About text, or under the cursor that
+   opened them. Positive x is right, positive y is down. Skipped on narrow
+   windows, where every pop-up centres on the bag instead.
+     ipad    doodles — further left again, off the paragraph column
+     earbuds music   — a little left, and down the bag
+     ticket  trips   — straight up. The "above" rule already centres it on
+                       the bag, so x stays 0; lifting it clear of the
+                       pointer is what keeps the cursor off the windows,
+                       and it does that without pushing it off-centre.
+     phone   friends — right, out of the text column */
+const NUDGE: Record<string, { x: number; y: number }> = {
+  ipad:    { x: -230, y:  150 },
+  earbuds: { x:  -40, y:  150 },
+  ticket:  { x:    0, y: -120 },
+  phone:   { x:  120, y:    0 },
+};
+
 /** Below this window width a pop-up centres on the bag instead of sitting by the pointer. */
 const NARROW_PX = 900;
 /** Caption labels in the pop-ups — left out when deciding what sits against the cursor. */
@@ -366,7 +385,10 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
     const fw = (card?.offsetWidth || 190) * POP_SCALE,
           fh = (card?.offsetHeight || 250) * POP_SCALE;
     const pr = painted.current ?? { l: 0, t: 0, r: fw, b: fh, al: 0, ab: fh, ar: fw, at: 0 };
-    const margin = 12, gap = 10;
+    /* The inset every pop-up is held inside. 12px read as "touching the
+       edge"; at 48 a pop-up always has visible page around it, and a
+       nudge that would push it past this loses to the clamp below. */
+    const margin = 48, gap = 10;
     const vw = window.innerWidth, vh = window.innerHeight;
     /* Where each pop-up sits around the pointer (its main picture — not
        counting captions — is what's lined up against the cursor):
@@ -392,7 +414,7 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
       // everything it paints (the turning covers reach further than they measure) stays left of the item, with room
       const clearGap = gap + 24;
       x = Math.min(clientX, item ? item.left : clientX) - clearGap - pr.r;
-      yIdeal = clientY - mainCy - (key === "ipad" ? 70 : 0);
+      yIdeal = clientY - mainCy;
       // no room on the left (the screen edge would push it back over the item): sit above the item instead
       if (item && x + pr.l < margin) {
         x = item.left + item.width / 2 - mainCx;
@@ -411,6 +433,10 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
       x = clientX + gap - pr.al;
       yIdeal = clientY - gap - pr.ab;
     }
+    /* Before the clamps, so a nudge can still be overruled by the screen
+       edge rather than pushing the pop-up off it. */
+    const nudge = narrow ? null : NUDGE[key];
+    if (nudge) { x += nudge.x; yIdeal += nudge.y; }
     x = Math.min(Math.max(x, margin - pr.l), vw - margin - pr.r);
     const y = Math.min(Math.max(yIdeal, margin - pr.t), vh - margin - pr.b);
     /* Top-right only: near the top of the window the clamp pushes it down
@@ -1074,20 +1100,21 @@ const FRIEND_PHOTOS: PhotoCard[] = [
 const SCATTER_MOVE_MS = 1600;
 /** Exit is deliberately quicker than entrance. */
 const SCATTER_FADE_MS = 190;
-const SCATTER_W = 300;
-const SCATTER_H = 288;
+const SCATTER_W = 357;
+const SCATTER_H = 329;
 const SCATTER_CARDS = 4;
 /** Every print is fitted into this box, so none is ever larger. */
-const PRINT_W = 116;
-const PRINT_H = 102;
-const MAX_OVERLAP = 26;
+const PRINT_W = 153;
+const PRINT_H = 135;
+/** Prints no longer clip each other at all. */
+const MAX_OVERLAP = 0;
 /** How far a print travels along its corner diagonal on the way out. */
-const CORNER_TRAVEL = 58;
+const CORNER_TRAVEL = 76;
 /** Worst-case padded bbox for a print at up to 7 degrees. */
-const BOX_W = 135.6;
-const BOX_H = 123.4;
+const BOX_W = 179;
+const BOX_H = 163;
 /** Anything above this line is in the band above the caption. */
-const TOP_BAND_MAX_Y = 100;
+const TOP_BAND_MAX_Y = 132;
 
 /* Idle drift, one entry per SLOT rather than per photo — the elements
    are keyed by slot index, so a print keeps its own rhythm as photos
@@ -1123,19 +1150,23 @@ type ScatterSpot = { x: number; y: number; rot: number };
    off it: the lower prints read as hugging the text and the upper ones
    as floating away from it. Both bands now range from 10px tucked
    under to 2px clear. */
+/* Four corners, three near-identical slots each — only one slot per
+   corner is ever filled, so the jitter is what stops the same photo
+   landing on the same pixel twice. Corners are spaced by the full padded
+   box (179 x 163) plus a gap, so no two prints can touch. */
 const SCATTER_SPOTS: ScatterSpot[] = [
-  { x: 0, y: 36, rot: -7 },
-  { x: 12, y: 31, rot: 5 },
-  { x: 24, y: 26, rot: -3 },
-  { x: 136, y: 34, rot: 6 },
-  { x: 146, y: 29, rot: -5 },
-  { x: 156, y: 24, rot: 3 },
-  { x: 6, y: 150, rot: 4 },
-  { x: 18, y: 155, rot: -6 },
-  { x: 30, y: 160, rot: 3 },
-  { x: 142, y: 152, rot: -4 },
-  { x: 152, y: 157, rot: 6 },
-  { x: 162, y: 162, rot: -5 },
+  { x: 0, y: 0, rot: -6 },
+  { x: 8, y: 6, rot: 4 },
+  { x: 4, y: 12, rot: -2 },
+  { x: 178, y: 4, rot: 5 },
+  { x: 170, y: 10, rot: -4 },
+  { x: 174, y: 0, rot: 3 },
+  { x: 4, y: 166, rot: 4 },
+  { x: 10, y: 172, rot: -5 },
+  { x: 0, y: 160, rot: 3 },
+  { x: 174, y: 168, rot: -4 },
+  { x: 168, y: 162, rot: 5 },
+  { x: 178, y: 174, rot: -3 },
 ];
 
 /** Two places can hold prints at the same time if their boxes miss
@@ -1344,17 +1375,17 @@ function PillGames({ bump }: { bump: number }) {
       icons={[
         {
           label: "League of Legends",
-          top: "-4%",
-          left: "8%",
-          rotate: -8,
+          top: "0%",
+          left: "0%",
+          rotate: -6,
           // Hextech navy, the dark blue already in League's own crest.
           art: [{ src: `${POP_UP}/games/League.webp`, bg: "#0C2438" }],
         },
         {
           label: "Teamfight Tactics",
-          top: "6%",
-          right: "-2%",
-          rotate: 11,
+          top: "0%",
+          right: "0%",
+          rotate: 8,
           // TFT's gold wordmark over its dark indigo board.
           art: [{ src: `${POP_UP}/games/TFT.webp`, bg: "#241C38" }],
         },
@@ -1362,9 +1393,11 @@ function PillGames({ bump }: { bump: number }) {
           // League and TFT hold still; the Pokémon tile rotates through
           // whichever titles are in play, and its colour follows along.
           label: "Pokémon",
-          top: "37%",
-          left: "23%",
-          rotate: 6,
+          /* Below the pair above rather than wedged between them: the
+             top row ends at 42% of the box, this starts at 52%. */
+          top: "52%",
+          left: "29%",
+          rotate: 5,
           inset: true,
           art: [
             { src: `${POP_UP}/games/Pokemon/Z-A.webp`, bg: "#25353A" },
@@ -1374,9 +1407,11 @@ function PillGames({ bump }: { bump: number }) {
           ],
         },
       ]}
+      /* Position is overridden in globals.css (below the tiles); this is
+         the fallback and the tilt. */
       captionTop="41%"
-      captionLeft="55%"
-      captionRotate={1.5}
+      captionLeft="50%"
+      captionRotate={-2.5}
     />
   );
 }

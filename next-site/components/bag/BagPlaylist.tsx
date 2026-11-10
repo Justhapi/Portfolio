@@ -32,7 +32,10 @@ export function BagPlaylist({ bump }: { bump: number }) {
       const th = ((k - p) * 2 * Math.PI) / 3;
       const depth = Math.cos(th); // 1 = front, -1 = straight behind
       const near = (depth + 1) / 2;
-      el.style.translate = `${(Math.sin(th) * 94).toFixed(2)}px ${((1 - near) * 8).toFixed(2)}px`;
+      /* 94 buried the side covers behind the front one; 150 pushed them
+         so far apart the ring read as three separate tiles. 130 leaves
+         about 6px of tuck — enough to read as depth, not as a pile. */
+      el.style.translate = `${(Math.sin(th) * 130).toFixed(2)}px ${((1 - near) * 8).toFixed(2)}px`;
       el.style.scale = (0.7 + 0.3 * near).toFixed(3);
       el.style.rotate = `${(Math.sin(th) * 5).toFixed(2)}deg`;
       el.style.zIndex = String(Math.round(near * 100));

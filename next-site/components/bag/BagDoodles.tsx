@@ -11,8 +11,15 @@ const DOODLES = ["Lost", "Rice", "Locked"].map((n) => `${POP_UP}/doodles/${n}.we
 
 /* Where the two loose notes sit, and where the pad is (for the peel-off flight). */
 const PAD = { x: 0, y: 128 };
-// moved down beside the pad, so the whole pop-up reads as a square (pad + caption on the left, two notes on the right)
-const LOOSE = [{ x: 184, y: 64, r: 9 }, { x: 196, y: 216, r: -6 }];
+/* The two loose notes are the right-hand column, and they now top-and-tail
+   the left one: note 0's top meets the pad's top (PAD.y), note 1's bottom
+   meets the bottom of the caption below the pad (.pd-line sits at y 300 and
+   runs ~81px, so 381 - its own 122px height = 259). Before this they
+   started 64px above the pad and stopped short of the caption, which left
+   the pop-up looking like two columns that had slipped past each other.
+   Both numbers are tuned to the current caption copy — a longer line wraps
+   to a fourth row and note 1 wants the same nudge down. */
+const LOOSE = [{ x: 184, y: 128, r: 9 }, { x: 196, y: 259, r: -6 }];
 
 /** Like the Available sticker: the note pops forward toward the middle of
  *  the pop-up, squared up and lifted, holds so you can look, then slams
@@ -276,7 +283,15 @@ function backTexture(front: HTMLCanvasElement) {
   const c = document.createElement("canvas");
   c.width = front.width; c.height = front.height;
   const ctx = c.getContext("2d")!;
-  ctx.fillStyle = "#F7F4EE"; // plain paper: the back is just a lighter shade of the page, no lines
+  /* Flat, this read as either the page (#F4EFE6, when it was too light)
+     or a slab of card. A gradient across the diagonal instead: it starts
+     at the pile's own shadow colour where the sheet is still attached and
+     deepens toward the free corner, so the back of the page is lit like
+     paper lifting rather than filled like a shape. */
+  const g = ctx.createLinearGradient(0, 0, c.width, c.height);
+  g.addColorStop(0, "#DDD6C8"); // the stacked edge of the pad
+  g.addColorStop(1, "#BCA886"); // the far corner, furthest from the light
+  ctx.fillStyle = g;
   ctx.fillRect(0, 0, c.width, c.height);
   return c;
 }
