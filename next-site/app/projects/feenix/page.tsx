@@ -7,7 +7,7 @@ import briefImg from "./images/Feenix_Project_Introduction.png";
 import competitorSignIn from "./images/Competitor_Sign_In.png";
 import aternosServer from "./images/Aternos_Server.png";
 import playHostingServer from "./images/Play.Hosting_Server.png";
-import aternosMaintenance from "./images/Aternos_Maintenace.png";
+import aternosMaintenance from "./images/Aternos_Maintenance.png";
 import competitorMaintenance from "./images/Competitor_Server_Maintenance.png";
 import serverCreationIdeation from "./images/Server_Creation_Flow_Ideation.png";
 import serverCreationFlowSketch from "./images/Server_Creation_Flow_Sketch.png";
@@ -52,6 +52,7 @@ import creationStep2b from "./images/Server_Creation_Step_2_Final.png";
 import creationStep3a from "./images/Server_Creation_Step_3_Initial.png";
 import creationStep3b from "./images/Server_Creation_Step_3_Final.png";
 import createAccountSeparated from "./images/Server_Creation_Flow_Sketch_Separated.png"
+import captchaIntegration from "./images/Captcha_Integration.png"
 
 
 export const metadata = {
@@ -185,15 +186,15 @@ export default function FeenixCaseStudy() {
 
           I was also able to identify pain points, needed UI modifications, inter-team collaborations, and oppurtunity gaps 
           for the platform, particularly in server seed modification.
+          <h3>Competitor Server Maintenance Features</h3>
           <CaseFilmstrip
             label="Competitor Server Maintenance Features"
             minWidth={500}
             align="right"
             side={
               <>
-              <h3>Competitor Server Maintenance Features</h3>
-                In addition to the flows, I also explored both competitor's server maintenance-related features,
-                identifying their relation to a feature directly requested by Feenix. Aternos had 10 features 
+                While exploring both competitor's server maintenance-related features, I
+                identified their relation to a feature directly requested by Feenix. Aternos had 10 features 
                 varying in overlap while Play.Hosting had 7 features that sometimes overlapped.
                 <br></br><br></br>
                 From this, I was condensed the competitor overlaps and Feenix requests down to 6 maintenace features:
@@ -227,9 +228,13 @@ export default function FeenixCaseStudy() {
               For the account creation flow, I assessed the competitors' and general account creation 
               flows before creating a quick sketch of the account creation page. 
               <br></br><br></br>
-              When reviewing the designs, I pitched the authenication options to consist of Google, 
-              Microsoft, and Discord to account for Google account's commonality, Microsoft's acuirement of Minecraft,
-              and Discord's being a software common used within the gaming setting.
+              When reviewing the designs, I pitched the authenication options: 
+              <br></br><br></br>
+              <ul>
+                <li>Google due to Google account commonality</li>
+                <li>Microsoft due to Microsoft's acquirement of Minecraft</li>
+                <li>Discord due to being commonly used within the gaming setting</li>
+              </ul>
               <br></br><br></br>
               After pitching the design to the rest of the team and the sponsors, the overall designs 
               were approved with feedback of specifics in regards:
@@ -251,10 +256,6 @@ export default function FeenixCaseStudy() {
             label="Log in, recovery and the auth flow"
             side={
               <>
-                In addition to assessing the competitors and general platforms with accounts 
-                for account creation, I also reviewed and sketched out pages for the account login
-                and recovery.
-                <br></br><br></br>
                 Due to inquiring if the Minecraft server hosting platform would be integrated with
                 Feenix's main website, I was told that it would not be as it was planned to be a 
                 standalone platform. 
@@ -271,42 +272,18 @@ export default function FeenixCaseStudy() {
             ]}
           />
 
-          <h3>Log in mockups</h3>
-          <CaseFilmstrip
-            label="Log in mockups"
-            side={
-              <>
-                {/* DOC → Phase 4 → "Method — colour variants (9/17)" */}
-              </>
-            }
-            shots={[
-              { key: "login-initial-mockup-2", img: loginMock, label: "Mockup two", alt: "Second log in mockup." },
-            ]}
-          />
-
-          <h3>Account Creation and Recovery Wireframes</h3>
-          {/* DOC → Phase 4 → "Interaction decisions (10/2)" */}
+          <h3>Account Login, Creation, and Recovery Wireframes</h3>
+          From the sketches, I constructed the base wireframes while applying the design system provided by Feenix.
           <CaseFilmstrip
             label="Auth flow wireframes"
-            align = "right"
             shots={[
               { key: "create-account-flow-wireframe", img: createAccountFlowWire, label: "Create account flow", alt: "Wireframe of the full create account flow." },
               { key: "recover-account-flow-wireframe", img: recoverAccountFlowWire, label: "Recover account flow", alt: "Wireframe of the full account recovery flow." },
+              { key: "captcha-integration", img: captchaIntegration, label: "Integration of Captcha", alt: "Integration of Captcha visiblew on local host" },
             ]}
           />
-
-          <h3>Captcha Integration</h3>
-          {/* DOC → Phase 4 → "Outcome" */}
-          {/* DOC → Phase 11 → "Outcome" */}
-          <CaseFilmstrip
-            label="Updated Design Including Captcha"
-            align = "right"
-            shots={[
-              { key: "website-login", img: websiteLogin, label: "Log in", alt: "The log in screen as built." },
-              { key: "website-create-account-agreement", img: websiteCreateAgreement, label: "Agreement step", alt: "Create account, agreement step, as built." },
-            ]}
-          />
-
+          Some time after implementation of the frontend, my teammates were able to successfully implement the 
+          captcha and there was an additional request to add an minimum age confirmation, prompting minor reformatting.
           <h3>Platform Server Creation Flow</h3>
 
           <CaseFilmstrip
@@ -333,13 +310,21 @@ export default function FeenixCaseStudy() {
               { key: "server-creation-flow-sketch", img: serverCreationFlowSketch, label: "Flow sketch", alt: "Hand sketch of the server creation flow across its pages." },
             ]}
           />
-          <h3>Sidebar, three passes</h3>
+          <h3>Sidebar Navigation</h3>
           <CaseFilmstrip
-            label="Sidebar, three passes"
+            label="Sidebar Process"
             align = "right"
             side={
               <>
-                {/* DOC → Phase 8 → "First sketches" / "Navigation structure" */}
+                Due to the platform needing access to maintenance features and both 
+                competitors' navigation bar being side bars that lead to maintenance features, 
+                I opted to design Feenix's platform's navigation to also be a sidebar with the 
+                order of features being determined by inference of consistent usage.
+                <br></br><br></br>
+                While the base format was simple to determine, the feature design was more
+                difficult to decide on. Ultimately, I decided to reference Discord's dual 
+                tier side bar as it provided formatting for individual server maintenance features 
+                and inter-server navigation.
               </>
             }
             shots={[
@@ -350,22 +335,9 @@ export default function FeenixCaseStudy() {
             ]}
           />
 
-          <h3>Post-login home states</h3>
-          {/* One image: it sits on the right, with this section's text on the left (like "Log in mockups"). */}
-          <CaseFilmstrip
-            label="Post-login home states"
-            side={
-              <>
-                {/* DOC → Phase 8 → "First sketches" */}
-              </>
-            }
-            shots={[
-              { key: "home-new-account-sketch", img: homeNewSketch, label: "Home states", alt: "Four post-login home states: first-time welcome, returning user with a server list, and two empty states reading \u201cNo servers made\u201d." },
-            ]}
-          />
-
-          <h3>Six sections, sketched</h3>
-          {/* DOC → Phase 9 → "Section purposes" */}
+          <h3>Initial Maintenance Feature Sketches</h3>
+          With the side bar navigation determined, I the moved on to integrate the 6 maintenance features, implementing
+          the base functionality while designing based off of competitors like Aternos's console.
           <CaseFilmstrip
             label="Six sections, sketched"
             shots={[
@@ -378,12 +350,19 @@ export default function FeenixCaseStudy() {
             ]}
           />
 
-          <h3>Six sections, resolved</h3>
+          <h3>Refinement to Sketches</h3>
           <CaseFilmstrip
             label="Six sections, resolved"
             side={
               <>
-                {/* DOC → Phase 9 → "Sponsor feedback (10/6)" */}
+                After the base sketches were made and pitched to the rest of the team, feedback in regards to
+                information hierachy and additional features were given, prompting small iterations to specific feature pages.
+                <br></br><br></br>
+                <ul>
+                  <li>Accounting for specific usage cases such as server failure to run</li>
+                  <li>Boxing elements to better organize relation</li>
+                  <li>Icons as buttons for specific features like individual player permissions</li>
+                </ul>
               </>
             }
             shots={[
@@ -394,9 +373,25 @@ export default function FeenixCaseStudy() {
             ]}
           />
 
-          <h3>Section wireframes</h3>
+          <h3>Server Maintenance Prototyping</h3>
           <CaseFilmstrip
             label="Section wireframes"
+            align ="right"
+            side={
+              <>
+                {/* DOC → Phase 9 → "Console" … "Software" */}
+              </>
+            }
+            shots={[
+              { key: "server-creation-new", img: serverCreationNew, label: "Create your first server", alt: "The empty state before any server exists, with a single Create server action." },
+              { key: "server-creation-step-1", img: creationStep1, label: "1 · General", alt: "Server creation step one, general settings." },
+              { key: "server-creation-step-2-initial", img: creationStep2a, label: "2 · World setup", alt: "Server creation step two, first pass." },
+              { key: "server-creation-step-3-initial", img: creationStep3a, label: "3 · Backup settings", alt: "Server creation step three, first pass." },
+            ]}
+          />
+          <CaseFilmstrip
+            label="Section wireframes"
+            align ="right"
             side={
               <>
                 {/* DOC → Phase 9 → "Console" … "Software" */}
@@ -413,46 +408,8 @@ export default function FeenixCaseStudy() {
             ]}
           />
 
-        </section>
 
-        {/* ───── Testing ───── */}
-        <section id="testing" className="case-section">
-          <h2>Testing</h2>
-
-          <h3>Testing the Structure</h3>
-          {/* DOC → Phase 10 — Comparative Usability Testing → "Goal", "Method", */}
-          {/* DOC → "Findings — Aternos", "Findings — play.hosting", */}
-          {/* DOC → "Findings — prototype", "Confirmed — prototype" */}
-
-          <h3>Before any server exists</h3>
-          {/* One image: it sits on the right, with this section's text on the left (like "Log in mockups"). */}
-          <CaseFilmstrip
-            label="Before any server exists"
-            side={
-              <>
-                {/* DOC → Phase 12 → "Goal" */}
-              </>
-            }
-            shots={[
-              { key: "server-creation-new", img: serverCreationNew, label: "Create your first server", alt: "The empty state before any server exists, with a single Create server action." },
-            ]}
-          />
-
-          <h3>The three steps</h3>
-          {/* DOC → Phase 12 — Server Creation Flow → "Goal", "Method" */}
-          {/* DOC → Phase 12 → "Backup settings", "Open" */}
-          {/* DOC → Phase 7 → "Feedback — World section (10/4)" — Hari asked */}
-          {/* DOC → the base plan be finished before the World section */}
-          <CaseFilmstrip
-            label="The three steps of server creation"
-            shots={[
-              { key: "server-creation-step-1", img: creationStep1, label: "1 · General", alt: "Server creation step one, general settings." },
-              { key: "server-creation-step-2-initial", img: creationStep2a, label: "2 · World setup", alt: "Server creation step two, first pass." },
-              { key: "server-creation-step-3-initial", img: creationStep3a, label: "3 · Backup settings", alt: "Server creation step three, first pass." },
-            ]}
-          />
-
-          <h3>What Testers Liked</h3>
+          <h3>Tester Feedback</h3>
           {/* DOC → Phase 10 → "Confirmed — prototype" and "Monetisation" */}
 
           <h3>Iterations</h3>
