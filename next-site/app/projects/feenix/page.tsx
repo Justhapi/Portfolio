@@ -241,8 +241,8 @@ export default function FeenixCaseStudy() {
               address the following feedback of specifics in regards:
               <br></br><br></br>
               <ul>
-                <li>"The standard username and password requirement is 4 and 8 characters" -> Username and Password Requirements </li>
-                <li>"We need to ensure bots are not able to make accounts" -> Captcha Implementation for security against bots</li>
+                <li>"The standard username and password requirement is 4 and 8 characters" → Username and Password Requirements </li>
+                <li>"We need to ensure bots are not able to make accounts" → Captcha Implementation for security against bots</li>
               </ul>
               </>
             }
@@ -442,18 +442,18 @@ export default function FeenixCaseStudy() {
           Most of the changes requested by testers were regarding formatting 
           and placements of elements, prompting the following iterations:
           <ul>
-            <li>"Creation buttons were too far apart" -> Combining the creation of server with and without server into one button</li>
-            <li>"What if I were to want to add a specific biome AND building?" -> Add ability to select either types of blueprint options (Biomes and Custom Buildings)</li>
-            <li>"I fear for moments where I don't understand the server issue" -> Simplify technical terms of server running errors</li>
-            <li>"I almost didn't notice the create server button" -> Improve visibility of general server creation and server running</li>
+            <li>"Creation buttons were too far apart" → Combining the creation of server with and without server into one button</li>
+            <li>"What if I were to want to add a specific biome AND building?" → Add ability to select either types of blueprint options (Biomes and Custom Buildings)</li>
+            <li>"I fear for moments where I don't understand the server issue" → Simplify technical terms of server running errors</li>
+            <li>"I almost didn't notice the create server button" → Improve visibility of general server creation and server running</li>
           </ul>
           <br></br><br></br>
           During the general user testing, Calvin, Hari, and my teammates within other teams also reviewed 
           the prototype and raised their technical concerns that also resulted in the following iterations:
           <ul>
-            <li>"Since the console is planned to track logs of events and actions, including the ability to enact commands and messages are possible too" -> Add platform-server communication</li>
-            <li>"What if the user were to use different google accounts for account and backup connections?" -> Include manual Google Drive connecting </li>
-            <li>"Considering how backup is saved, we could also allow for importing of existing server files" -> Implement import files option in World Setup stage</li>
+            <li>"Since the console is planned to track logs of events and actions, including the ability to enact commands and messages are possible too" → Add platform-server communication</li>
+            <li>"What if the user were to use different google accounts for account and backup connections?" → Include manual Google Drive connecting </li>
+            <li>"Considering how backup is saved, we could also allow for importing of existing server files" → Implement import files option in World Setup stage</li>
           </ul>
           <CaseFilmstrip
             label="What changed after testing — first pass beside second"
