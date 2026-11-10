@@ -124,8 +124,8 @@ export default function FeenixCaseStudy() {
             with the younger audience through video games and partnerships. They are well known through 
             their projects in Roblox development.
             <br></br><br></br>
-            However, Feenix Group is branching out to Minecraft through collaborating with Purdue&rsquo;s Data 
-            Mine Corporate Partners to build a Minecraft server hosting platform.
+            To branch out to Minecraft, Feenix Group partnered with Purdue&rsquo;s Data 
+            Mine Corporate Partners to build a Minecraft server hosting and management platform.
             <br></br><br></br>
             For this exploratory project, the sponsor directed us to build the foundations of
             a scalable Minecraft hosting service that supports both free and premium hosting within two
@@ -152,19 +152,20 @@ export default function FeenixCaseStudy() {
              caption={<>The project brief, split into what the platform needs to let users do and who we assumed the users were.</>} />
           <h3>My Role</h3>
           <p>
-             During the project I worked as the UX designer on the Frontend team,{" "}
-            owning the information architecture, user flows, and interface's design and frontend implementation.
+             During the project I worked as the UX designer and Frontend Developer,{" "}
+            designing the end-to-end information architecture, user flows, and interface design
+            while implementing the frontend components.
             <br/><br/>
-            While designing, I actively collaborated with the other teams (Data, backend, infrastructure) to identify and address 
-            the technical feasbility and limitations within the designs.
+            While designing, I actively collaborated with cross-functional teams (Data, backend, infrastructure) to 
+            balance design and technical (sometimes leagal) constraints.
           </p>
         </section>
 
         {/* ───── Researching ───── */}
         <section id="researching" className="case-section">
-          <h2>Competitor Aduting</h2>
+          <h2>Competitor Auditing</h2>
             To familiarize myself with Minecraft Server Hosting platforms, I assessed two competitors to 
-            better understand how to design the server fatures requested by Feenix: 
+            better understand how to design the server features requested by Feenix: 
             <br></br><br></br>
             <ul>
               <li>Aternos</li>
@@ -197,14 +198,14 @@ export default function FeenixCaseStudy() {
                 identified their relation to a feature directly requested by Feenix. Aternos had 10 features 
                 varying in overlap while Play.Hosting had 7 features that sometimes overlapped.
                 <br></br><br></br>
-                From this, I was condensed the competitor overlaps and Feenix requests down to 6 maintenace features:
+                From this, I was condensed the competitor overlaps and Feenix requests down to 6 maintenance features:
                 <ul className="feature-list">
-                  <li>Console (Turn on / off server, Internal server updates and information, CPU and RAM usage)</li>
-                  <li>World (Minor world settings)</li>
-                  <li>Players (Player white list, ban list, operators, and banned IPs)</li>
-                  <li>Admin (Platform admin access)</li>
-                  <li>Backup (World file save, upload, and revision)</li> 
-                  <li>Software (Blueprints and significant world settings)</li>
+                  <li>Console : Server runtime controls (Start/Stop/Restart), Live server logs, CPU and RAM metrics</li>
+                  <li>World: World properties, seed, and minor server settings</li>
+                  <li>Players: White list, ban list, operators, and banned IPs controls and management</li>
+                  <li>Admin: Platform admin permission and access</li>
+                  <li>Backup: World file backup, cloud sync, and revision history</li> 
+                  <li>Software: Server engines (Vanilla, Paper, Forge, Fabric), plugins, and modpacks</li>
                 </ul>
               </>
             }
@@ -231,17 +232,17 @@ export default function FeenixCaseStudy() {
               When reviewing the designs, I pitched the authenication options: 
               <br></br><br></br>
               <ul>
-                <li>Google due to Google account commonality</li>
-                <li>Microsoft due to Microsoft's acquirement of Minecraft</li>
+                <li>Google due to being standard accoutn ubiquity</li>
+                <li>Microsoft due to Minecraft account's integration within Microsoft</li>
                 <li>Discord due to being commonly used within the gaming setting</li>
               </ul>
               <br></br><br></br>
-              After pitching the design to the rest of the team and the sponsors, the overall designs 
-              were approved with feedback of specifics in regards:
+              Following cross-team pitching and feedbacks, I refined the flows to 
+              address the following feedback of specifics in regards:
               <br></br><br></br>
               <ul>
-                <li>Username and Password Requirements </li>
-                <li>Captcha Implementation for security against bots</li>
+                <li>"The standard username and password requirement is 4 and 8 characters" -> Username and Password Requirements </li>
+                <li>"We need to ensure bots are not able to make accounts" -> Captcha Implementation for security against bots</li>
               </ul>
               </>
             }
@@ -256,14 +257,10 @@ export default function FeenixCaseStudy() {
             label="Log in, recovery and the auth flow"
             side={
               <>
-                Due to inquiring if the Minecraft server hosting platform would be integrated with
-                Feenix's main website, I was told that it would not be as it was planned to be a 
-                standalone platform. 
-                <br></br><br></br>
-                To account for potential users visting the site, I added an information section 
-                into the login page. The information section would include a short introduction 
-                of Feenix and what the platform offers along with a log of updates for future 
-                implementations.
+                After confirming that the hosting dashboard would launch as a standalone platform, 
+                I designed the login page to serve a dual purpose: enabling returning users 
+                to sign in quickly while introducing new visitors to Feenix’s platform capabilities 
+                and recent updates.
               </>
             }
             shots={[
@@ -316,8 +313,8 @@ export default function FeenixCaseStudy() {
             align = "right"
             side={
               <>
-                Due to the platform needing access to maintenance features and both 
-                competitors' navigation bar being side bars that lead to maintenance features, 
+                Due to the platform needing quick maintenance features access and 
+                competitors' navigation bar leading to maintenance features, 
                 I opted to design Feenix's platform's navigation to also be a sidebar with the 
                 order of features being determined by inference of consistent usage.
                 <br></br><br></br>
@@ -325,6 +322,10 @@ export default function FeenixCaseStudy() {
                 difficult to decide on. Ultimately, I decided to reference Discord's dual 
                 tier side bar as it provided formatting for individual server maintenance features 
                 and inter-server navigation.
+                <ul>
+                  <li>Primary strip navigates between servers where the user is the owner or an admin</li>
+                  <li>Secondary strip navigates between server maintenace features for the currently selected server</li>
+                </ul>
               </>
             }
             shots={[
