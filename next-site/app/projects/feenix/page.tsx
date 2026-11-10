@@ -379,7 +379,22 @@ export default function FeenixCaseStudy() {
             align ="right"
             side={
               <>
-                {/* DOC → Phase 9 → "Console" … "Software" */}
+                To verify if the ideated platform is user friendly, I utilized Figma Make 
+                to quickly construct an interactive prototype that is reflective in the 
+                feature implementation and formatting. During testing, I asked users 
+                varying in familiarity with server hosting to navigate competitor
+                platforms and then the prototype through tasks I assigned them.
+                <br></br><br></br>
+                The tasks were assigned with scenarios that included the following:
+                <br></br><br></br>
+                <ul>
+                  <li>You just successfully created your account, create your own server with the following settings</li>
+                  <li>After creating the server, you want to explore the server before inviting others</li>
+                  <li>Due to realizing your server's version was not the correct version, you opted to get it changed</li>
+                  <li>Since this server is planned to be used for a while, you prepare the server files to be automatically backed up</li>
+                  <li>Now that your server is ready, you started adding your friends' usernames in</li>
+                  <li>Due to a player griefing your server, ban them for a week</li>
+                </ul>
               </>
             }
             shots={[
@@ -389,12 +404,26 @@ export default function FeenixCaseStudy() {
               { key: "server-creation-step-3-initial", img: creationStep3a, label: "3 · Backup settings", alt: "Server creation step three, first pass." },
             ]}
           />
+          <br></br>
           <CaseFilmstrip
             label="Section wireframes"
             align ="right"
             side={
               <>
-                {/* DOC → Phase 9 → "Console" … "Software" */}
+                After a user finishes the following tasks in all three platforms, I then 
+                probed for feedback on either the competitors or prototype, specifically 
+                any moments of struggles and what they would have wanted to better overcome the
+                obstacle.
+                <br></br>
+                <h3>Tester Feedback</h3>
+                Overall, testers identified the prototype as the strongest in user guidance and 
+                navigation as it avoided competitor pain points like Aternos's overabundance of
+                information assistance, Play.hosting'sinstances of bottlenecking feature access,
+                and overall feature naming confusion.
+                <br></br><br></br>
+                Testers also appreciated the world modification stage as it would allow them to
+                ensure the world is tailored to their preference and quickly identify if they wanted
+                to modify the world seed.
               </>
             }
             shots={[
@@ -408,14 +437,23 @@ export default function FeenixCaseStudy() {
             ]}
           />
 
-
-          <h3>Tester Feedback</h3>
-          {/* DOC → Phase 10 → "Confirmed — prototype" and "Monetisation" */}
-
           <h3>Iterations</h3>
-          {/* DOC → Phase 9 → "Sponsor feedback (10/6)" and "Outcome" */}
-          {/* DOC → Phase 10 → "Findings — prototype" */}
-          {/* DOC → Phase 12 → "Backup settings", "Open" */}
+          Most of the changes requested by testers were regarding formatting 
+          and placements of elements, prompting the following iterations:
+          <ul>
+            <li>"Creation buttons were too far apart" -> Combining the creation of server with and without server into one button</li>
+            <li>"What if I were to want to add a specific biome AND building?" -> Add ability to select either types of blueprint options (Biomes and Custom Buildings)</li>
+            <li>"I fear for moments where I don't understand the server issue" -> Simplify technical terms of server running errors</li>
+            <li>"I almost didn't notice the create server button" -> Improve visibility of general server creation and server running</li>
+          </ul>
+          <br></br><br></br>
+          During the general user testing, Calvin, Hari, and my teammates within other teams also reviewed 
+          the prototype and raised their technical concerns that also resulted in the following iterations:
+          <ul>
+            <li>"Since the console is planned to track logs of events and actions, including the ability to enact commands and messages are possible too" -> Add platform-server communication</li>
+            <li>"What if the user were to use different google accounts for account and backup connections?" -> Include manual Google Drive connecting </li>
+            <li>"Considering how backup is saved, we could also allow for importing of existing server files" -> Implement import files option in World Setup stage</li>
+          </ul>
           <CaseFilmstrip
             label="What changed after testing — first pass beside second"
             shots={[
@@ -428,6 +466,28 @@ export default function FeenixCaseStudy() {
                   "Console wireframe, error state, second pass.",
                 ],
               },
+              {
+                key: "iteration-step-3",
+                img: [creationStep3a, creationStep3b],
+                label: "Step 3 · Backup",
+                alt: [
+                  "Server creation step three, first pass.",
+                  "Server creation step three, second pass.",
+                ],
+              }]}
+          />
+          <h3>Third-Party Seed Previewing Iteration</h3>
+          In addition to minor reformatting, the core technical feedback from the 
+          team were concerns of the spawnpoint mapping as questions were raised 
+          on commercial use limitations.
+          <br></br><br></br>
+          As a result, a brief research on third-party Minecraft seed preview 
+          platforms was conducted, leading to identification of Chunkbase. Building 
+          off of this, I revised the world maintenace feature and world settings 
+          feature to account for the seed preview alterations in addition to minor feedback.
+          <CaseFilmstrip
+            label=""
+            shots={[
               {
                 key: "iteration-world",
                 img: [worldWire1, worldWire2],
@@ -444,15 +504,6 @@ export default function FeenixCaseStudy() {
                 alt: [
                   "Server creation step two, first pass.",
                   "Server creation step two, second pass.",
-                ],
-              },
-              {
-                key: "iteration-step-3",
-                img: [creationStep3a, creationStep3b],
-                label: "Step 3 · Backup",
-                alt: [
-                  "Server creation step three, first pass.",
-                  "Server creation step three, second pass.",
                 ],
               },
             ]}
