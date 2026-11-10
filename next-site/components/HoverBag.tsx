@@ -428,8 +428,15 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
     if (snap) {
       base.current = { x, y: yr };
       cur.current = { x, y: yr };
-      pill.style.left = `${x}px`;
-      pill.style.top = `${yr}px`;
+      /* x/yr are viewport coordinates — everything above clamps against
+         the viewport, which is what decides where the pop-up can fit.
+         The pill is position: absolute though, so what gets written is
+         the document coordinate; the pop-up then stays where the page
+         put it rather than riding the viewport as you scroll. cur/base/
+         target stay in viewport space so measure() and the entrance
+         pivot keep working off getBoundingClientRect. */
+      pill.style.left = `${x + window.scrollX}px`;
+      pill.style.top = `${yr + window.scrollY}px`;
       pill.style.translate = "0px 0px";
       /* The pivot, in the pill's own coordinates. Scaling 0.94 → 1 about
          a pivot moves the box toward that pivot, so an origin on the

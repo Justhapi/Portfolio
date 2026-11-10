@@ -3693,6 +3693,16 @@ em.it { font-style: italic; }
 .about-body-split .about-body {
   position: relative;
   z-index: 1;
+  /* The column owns the measure. 56ch is stated here in the paragraphs'
+     own font and size, so it resolves to exactly the width they used to
+     carry themselves — but now the list inherits that same width instead
+     of computing its own 56ch in a different font. Children are
+     full-width inside it, so everything shares one left edge no matter
+     what typeface it uses. */
+  font-family: var(--f-cookie);
+  font-size: 19px;
+  max-width: 56ch;
+  margin-inline: auto;
 }
 .about-body-split .hover-bag {
   position: relative;
@@ -4039,8 +4049,14 @@ em.it { font-style: italic; }
 /* Fixed-position pill following the pointer. Direct DOM writes drive
    left/top on mousemove, so no re-render churn. Uses opacity + scale
    spring-in for the appear/disappear. */
+/* Absolute, in document coordinates (placePill adds the scroll offset
+   when it writes left/top), so a pop-up stays with the part of the page
+   it belongs to instead of riding the viewport down as you scroll. It
+   is portaled to <body>, which is static, so the containing block is
+   the document itself. The touch variant below overrides this back to
+   absolute-inside-.hover-bag, which it already was. */
 .hover-bag__pill {
-  position: fixed;
+  position: absolute;
   pointer-events: none;
   opacity: 0;
   transform: scale(0.94);
@@ -4855,8 +4871,8 @@ em.it { font-style: italic; }
   font-size: 19px;
   line-height: 1.6;
   color: var(--fg-soft);
-  margin: 0 auto 20px;
-  max-width: 56ch;
+  /* Measure and centring live on .about-body-split .about-body now. */
+  margin: 0 0 20px;
 }
 /* Strong emphasis in About body — currently the CTA "summer 2026
    internship". Previously rendered with --fg + weight 700, which
@@ -6023,20 +6039,22 @@ em.it { font-style: italic; }
    and the "Currently designing…" sticker. Bullet rotates 45° on hover
    for parity with the nav-link:hover interaction.
 
-   Typography explicitly matched to .about-prose p (CookieRun 19px 1.6)
-   because <ul> doesn't inherit the p-scoped rule and would otherwise
-   fall back to browser default K2D at a smaller size. */
+   Type is deliberately NOT the paragraphs' face: the prose runs in
+   CookieRun and the list in K2D (--f-sans), so the four roles read as a
+   list of facts rather than more of the same sentence. The <ul> has to
+   state it either way, since it doesn't inherit the p-scoped rule. */
 .about-body ul.focus-list--spark {
   list-style: none;
+  /* Flush with the column, like the paragraphs — .about-body-split
+     .about-body carries the measure and the centring for both. */
   margin: 12px 0 20px;
   padding: 0;
   display: grid;
   gap: 8px;
-  font-family: var(--f-cookie);
+  font-family: var(--f-sans);
   font-size: 18px;
   line-height: 1.55;
   color: var(--fg-soft);
-  max-width: 56ch;
 }
 .about-body ul.focus-list--spark li {
   display: flex;
@@ -6079,6 +6097,25 @@ em.it { font-style: italic; }
      .about-body-split rule. */
   flex: 0 1 auto;
   text-align: left;
+}
+/* Hanging bullet: the sparkle is lifted out of the flex row and placed in
+   the gutter to the LEFT of the list, so the list text starts on exactly
+   the same line as the paragraphs above rather than being pushed in by the
+   sparkle's own width. -26px is the sparkle (14px) plus its gap (12px).
+   Taking it out of flow rather than pulling the whole <ul> left is what
+   keeps the centring above intact.
+   Only above the stacking breakpoint: below it the list is full-width and
+   the overhang would eat into the page's 24px side padding, so there the
+   sparkle stays inline. */
+@media (min-width: 821px) {
+  .about-body ul.focus-list--spark li {
+    position: relative;
+  }
+  .about-body ul.focus-list--spark li > svg {
+    position: absolute;
+    left: -26px;
+    top: 0;
+  }
 }
 
 /* ── JT User Interviews split layout ────────────────────────────────────
@@ -9427,7 +9464,7 @@ html.hero-vt::view-transition-image-pair(hero-back) {
   font-family: var(--f-sans); font-size: 16px; line-height: 1.6; color: var(--fg-soft); max-width: 46ch;
 }
 .folder .blurb strong { font-weight: 600; color: var(--fg); }
-.about-body > p { font-family: var(--f-sans); line-height: 1.65; }
+.about-body > p { font-family: var(--f-cookie); line-height: 1.65; }
 .case-subtitle { font-family: var(--f-cookie); font-weight: 400; }
 
 /* Hero: the focus line wraps to the width of the greeting above it
