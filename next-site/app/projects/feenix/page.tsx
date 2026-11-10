@@ -79,6 +79,28 @@ function Z({ img, alt, caption, ratio }: { img: Img; alt: string; caption?: Reac
   return <ZoomableImage src={img.src} alt={alt} aspectRatio={ratio ?? ar(img)} caption={caption} />;
 }
 
+/** Feedback → what changed, one pair per row: the quote on the left, the change it led to on the right. */
+function FeedbackList({ items, label }: { items: [string, string][]; label: string }) {
+  return (
+    <div className="case-feedback" role="group" aria-label={label}>
+      <div className="case-feedback__head" aria-hidden="true">
+        <span className="case-map__label">Feedback</span>
+        <span />
+        <span className="case-map__label case-feedback__out-label">What changed</span>
+      </div>
+      <ul>
+        {items.map(([quote, change]) => (
+          <li key={change}>
+            <span className="case-feedback__in">&ldquo;{quote}&rdquo;</span>
+            <span className="case-feedback__arrow" aria-hidden="true">&rarr;</span>
+            <span className="case-feedback__out">{change}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 export default function FeenixCaseStudy() {
   return (
     <div className="case">
@@ -237,13 +259,15 @@ export default function FeenixCaseStudy() {
                 <li>Discord due to being commonly used within the gaming setting</li>
               </ul>
               <br></br><br></br>
-              Following cross-team pitching and feedbacks, I refined the flows to 
+              Following cross-team pitching and feedbacks, I refined the flows to
               address the following feedback of specifics in regards:
-              <br></br><br></br>
-              <ul>
-                <li>"The standard username and password requirement is 4 and 8 characters" → Username and Password Requirements </li>
-                <li>"We need to ensure bots are not able to make accounts" → Captcha Implementation for security against bots</li>
-              </ul>
+              <FeedbackList
+                label="Cross-team feedback on the auth flows"
+                items={[
+                ["The standard username and password requirement is 4 and 8 characters", "Username and Password Requirements"],
+                ["We need to ensure bots are not able to make accounts", "Captcha Implementation for security against bots"],
+                ]}
+              />
               </>
             }
             shots={[
@@ -439,22 +463,31 @@ export default function FeenixCaseStudy() {
           />
 
           <h3>Iterations</h3>
-          Most of the changes requested by testers were regarding formatting 
-          and placements of elements, prompting the following iterations:
-          <ul>
-            <li>"Creation buttons were too far apart" → Combining the creation of server with and without server into one button</li>
-            <li>"What if I were to want to add a specific biome AND building?" → Add ability to select either types of blueprint options (Biomes and Custom Buildings)</li>
-            <li>"I fear for moments where I don't understand the server issue" → Simplify technical terms of server running errors</li>
-            <li>"I almost didn't notice the create server button" → Improve visibility of general server creation and server running</li>
-          </ul>
-          <br></br><br></br>
-          During the general user testing, Calvin, Hari, and my teammates within other teams also reviewed 
-          the prototype and raised their technical concerns that also resulted in the following iterations:
-          <ul>
-            <li>"Since the console is planned to track logs of events and actions, including the ability to enact commands and messages are possible too" → Add platform-server communication</li>
-            <li>"What if the user were to use different google accounts for account and backup connections?" → Include manual Google Drive connecting </li>
-            <li>"Considering how backup is saved, we could also allow for importing of existing server files" → Implement import files option in World Setup stage</li>
-          </ul>
+          <p>
+            Most of the changes requested by testers were regarding formatting
+            and placements of elements, prompting the following iterations:
+          </p>
+          <FeedbackList
+            label="Tester feedback and the iterations it prompted"
+            items={[
+            ["Creation buttons were too far apart", "Combining the creation of server with and without server into one button"],
+            ["What if I were to want to add a specific biome AND building?", "Add ability to select either types of blueprint options (Biomes and Custom Buildings)"],
+            ["I fear for moments where I don't understand the server issue", "Simplify technical terms of server running errors"],
+            ["I almost didn't notice the create server button", "Improve visibility of general server creation and server running"],
+            ]}
+          />
+          <p>
+            During the general user testing, Calvin, Hari, and my teammates within other teams also reviewed
+            the prototype and raised their technical concerns that also resulted in the following iterations:
+          </p>
+          <FeedbackList
+            label="Technical feedback from the team and the iterations it prompted"
+            items={[
+            ["Since the console is planned to track logs of events and actions, including the ability to enact commands and messages are possible too", "Add platform-server communication"],
+            ["What if the user were to use different google accounts for account and backup connections?", "Include manual Google Drive connecting"],
+            ["Considering how backup is saved, we could also allow for importing of existing server files", "Implement import files option in World Setup stage"],
+            ]}
+          />
           <CaseFilmstrip
             label="What changed after testing — first pass beside second"
             shots={[
@@ -478,14 +511,17 @@ export default function FeenixCaseStudy() {
               }]}
           />
           <h3>Third-Party Seed Previewing Iteration</h3>
-          In addition to minor reformatting, the core technical feedback from the 
-          team were concerns of the spawnpoint mapping as questions were raised 
-          on commercial use limitations.
-          <br></br><br></br>
-          As a result, a brief research on third-party Minecraft seed preview 
-          platforms was conducted, leading to identification of Chunkbase. Building 
-          off of this, I revised the world maintenace feature and world settings 
-          feature to account for the seed preview alterations in addition to minor feedback.
+          <p>
+            In addition to minor reformatting, the core technical feedback from the
+            team were concerns of the spawnpoint mapping as questions were raised
+            on commercial use limitations.
+          </p>
+          <p>
+            As a result, a brief research on third-party Minecraft seed preview
+            platforms was conducted, leading to identification of Chunkbase. Building
+            off of this, I revised the world maintenace feature and world settings
+            feature to account for the seed preview alterations in addition to minor feedback.
+          </p>
           <CaseFilmstrip
             label=""
             shots={[
@@ -516,20 +552,23 @@ export default function FeenixCaseStudy() {
           <h2>Takeaways</h2>
 
           <h3>Sprint Scope Limiting</h3>
-            Due to the nature of the project requiring me to design while contributing to the 
+          <p>
+            Due to the nature of the project requiring me to design while contributing to the
             implementations, I often needed to tweak the scope and focus of my design sprints.
-            <br></br><br></br>
-            For example, the starting sprint focus for the entire team was the account creation 
-            and login. Due to this, my design sprint focused solely on assessing competitor 
-            instances of the aforementioned features before designing the Feenix platform's version
-            and implementing the front end into the codebase. 
-            <br></br><br></br>
-            Despite the sprint limiting scope and allow focus on sprint goals to slowly achieve the 
-            overarching goal of constructing Feenix's Minecraft server hosting platform, I found 
-            that I was able to more effectively design by briefly assessing other aspects of the 
-            project to actively account for future sprints goals without needing to
-            go back and review previous works.
-
+          </p>
+          <p>
+            For example, the starting sprint focus for the entire team was the account creation and
+            login. Due to this, my design sprint focused solely on assessing competitor instances of the
+            aforementioned features before designing the Feenix platform's version and implementing the
+            front end into the codebase.
+          </p>
+          <p>
+            Despite the sprint limiting scope and allow focus on sprint goals to slowly achieve the
+            overarching goal of constructing Feenix's Minecraft server hosting platform, I found that I
+            was able to <mark className="hl">more effectively design by briefly assessing other aspects
+            of the project</mark> to actively account for future sprints goals without needing to go
+            back and review previous works.
+          </p>
         </section>
       </main>
       {/* No NextProject: this case is not in that component's CASES list

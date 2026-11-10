@@ -10355,3 +10355,26 @@ html:root .hover-bag__pill--ipad .hover-bag__pill-inner { width: auto; }
 .feature-lists li + li,
 .feature-list li + li { margin-top: 4px; }
 @media (max-width: 600px) { .feature-lists { grid-template-columns: 1fr; } }
+
+/* Feedback → what changed (case studies). Same language as .case-map:
+   small mono labels over each column, the feedback in the body colour,
+   an accent arrow, and the change it led to in bold accent — but one
+   pair per row, so each quote sits level with what it caused. */
+.case-feedback { margin: 14px 0 32px; }
+.case-feedback__head,
+.case-feedback li { display: grid; grid-template-columns: minmax(0, 1fr) 28px minmax(0, 1fr); column-gap: 18px; }
+.case-feedback__head { align-items: end; }
+.case-feedback__head .case-map__label { margin: 0; }
+.case-feedback__out-label { color: var(--accent-on-cream); border-bottom-color: var(--accent) !important; }
+.case-feedback ul { list-style: none; margin: 0; padding: 0; }
+.case-feedback li { margin: 0; padding: 14px 0; align-items: baseline; border-bottom: 1px solid rgb(var(--fg-rgb) / 0.1); }
+.case-feedback li:last-child { border-bottom: 0; padding-bottom: 0; }
+.case-feedback li::before { content: none; }
+.case-feedback__in { font-size: 16px; line-height: 1.5; color: var(--fg-soft); font-style: italic; }
+.case-feedback__arrow { font-family: var(--f-display); font-size: 22px; line-height: 1; color: var(--accent); text-align: center; }
+.case-feedback__out { font-size: 16px; line-height: 1.5; font-weight: 700; color: var(--accent-on-cream); }
+@media (max-width: 640px) {
+  .case-feedback__head { display: none; }
+  .case-feedback li { grid-template-columns: 1fr; row-gap: 4px; }
+  .case-feedback__arrow { display: none; }
+}
