@@ -102,6 +102,48 @@ const EFFECT_CLASS: Record<HoverEffect, string> = {
  *  automatically, so if that ever changes again, this is the one
  *  place to update (same pattern as elsewhere in the repo). */
 const BASE_PATH = "";
+/** Where each layer's artwork actually is, as fractions of the image —
+ *  found once from its alpha channel, then cached. */
+const artBoxCache: Record<string, { x0: number; y0: number; x1: number; y1: number } | null> = {};
+function artBox(img: HTMLImageElement) {
+  const k = img.dataset.layer ?? img.src;
+  if (k in artBoxCache) return artBoxCache[k];
+  if (!img.complete || !img.naturalWidth) return null;
+  try {
+    const W = 160, H = Math.max(1, Math.round((160 * img.naturalHeight) / img.naturalWidth));
+    const c = document.createElement("canvas");
+    c.width = W; c.height = H;
+    const ctx = c.getContext("2d", { willReadFrequently: true })!;
+    ctx.drawImage(img, 0, 0, W, H);
+    const a = ctx.getImageData(0, 0, W, H).data;
+    let x0 = W, y0 = H, x1 = -1, y1 = -1;
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      if (a[(y * W + x) * 4 + 3] > 40) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+    }
+    artBoxCache[k] = x1 < 0 ? null : { x0: x0 / W, y0: y0 / H, x1: (x1 + 1) / W, y1: (y1 + 1) / H };
+  } catch { artBoxCache[k] = null; }
+  return artBoxCache[k];
+}
+/** The centre of an item's drawing on screen (all its layers together),
+ *  so a pop-up comes out of the item itself rather than its hit-zone. */
+function itemCenter(key: string) {
+  const item = ITEMS.find((i) => i.key === key);
+  if (!item) return null;
+  let l = Infinity, t = Infinity, r = -Infinity, b = -Infinity;
+  for (const layer of item.layers) {
+    const img = document.querySelector<HTMLImageElement>(`.hover-bag__layer[data-layer="${CSS.escape(layer)}"]`);
+    const box = img && artBox(img);
+    if (!img || !box) continue;
+    // the layer is object-fit: contain inside its box
+    const rect = img.getBoundingClientRect();
+    const sc = Math.min(rect.width / img.naturalWidth, rect.height / img.naturalHeight);
+    const w = img.naturalWidth * sc, h = img.naturalHeight * sc;
+    const ox = rect.left + (rect.width - w) / 2, oy = rect.top + (rect.height - h) / 2;
+    l = Math.min(l, ox + box.x0 * w); r = Math.max(r, ox + box.x1 * w);
+    t = Math.min(t, oy + box.y0 * h); b = Math.max(b, oy + box.y1 * h);
+  }
+  return r > l ? { x: (l + r) / 2, y: (t + b) / 2 } : null;
+}
 /** An item's hit area on screen — what a pop-up beside it keeps clear of. */
 function zoneRect(key: string) {
   const el = document.querySelector(`.hover-bag__zone[data-key="${key}"]`);
@@ -463,6 +505,8 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
          pivot keep working off getBoundingClientRect. */
       pill.style.left = `${x + window.scrollX}px`;
       pill.style.top = `${yr + window.scrollY}px`;
+      // where the page put it: scrolling back here returns it to exactly this spot
+      pill.dataset.homeTop = String(yr + window.scrollY);
       pill.style.translate = "0px 0px";
       /* The pivot, in the pill's own coordinates. Scaling 0.94 → 1 about
          a pivot moves the box toward that pivot, so an origin on the
@@ -546,10 +590,18 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
     } else {
       // each piece pops out of the item in turn
       const root = (pill.firstElementChild?.firstElementChild ?? null) as HTMLElement | null;
-      const pieces = root ? (Array.from(root.children) as HTMLElement[]).filter((el) => el.getBoundingClientRect().width > 0) : [];
-      if (pieces.length < 2) {
+      /* A pop-up that is one object (the food receipt) moves as one: the
+         receipt itself travels and rebounds, not the photos inside it. */
+      const whole = root?.matches(".pt-receipt") ?? false;
+      const pieces = root ? (whole ? [root] : (Array.from(root.children) as HTMLElement[])).filter((el) => el.getBoundingClientRect().width > 0) : [];
+      if (pieces.length < 2 && !whole) {
         pill.style.transformOrigin = `${ox.toFixed(1)}px ${oy.toFixed(1)}px`;
-        pill.animate([{ transform: "scale(0.18)", opacity: 0 }, { transform: "scale(1)", opacity: 1 }], { duration: 300, easing: EXPO }).finished.then(done, done);
+        pill.animate([
+          { transform: "scale(0.18)", opacity: 0, easing: "cubic-bezier(0.25, 1, 0.5, 1)" },
+          { opacity: 1, offset: 0.45 },
+          { transform: "scale(1.035)", opacity: 1, offset: 0.7, easing: "cubic-bezier(0.45, 0, 0.55, 1)" },
+          { transform: "scale(1)", opacity: 1 },
+        ], { duration: 520 }).finished.then(done, done);
         return;
       }
       done();
@@ -561,11 +613,19 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
            not instead of it — so when the entrance ends there's nothing to
            snap back to: it's already exactly where the piece lives. */
         const endOpacity = getComputedStyle(el).opacity;
+        /* Travels out on the site's quart ease-out, carries a hair past
+           its spot (≈4% of the trip, scale 1.035), then settles back —
+           the small rebound. */
+        const dx = o.x - cx, dy = o.y - cy;
         el.animate([
-          { transform: `translate(${(o.x - cx).toFixed(1)}px, ${(o.y - cy).toFixed(1)}px) scale(0.2)` },
+          { transform: `translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px) scale(0.2)`, easing: "cubic-bezier(0.25, 1, 0.5, 1)" },
+          { transform: `translate(${(-dx * 0.04).toFixed(1)}px, ${(-dy * 0.04).toFixed(1)}px) scale(1.035)`, offset: 0.7, easing: "cubic-bezier(0.45, 0, 0.55, 1)" },
           { transform: "translate(0px, 0px) scale(1)" },
-        ], { duration: 320, delay: i * 45, easing: EXPO, fill: "backwards", composite: "add" });
-        el.animate([{ opacity: 0 }, { opacity: endOpacity, offset: 0.3 }, { opacity: endOpacity }], { duration: 320, delay: i * 45, easing: EXPO, fill: "backwards" });
+        ], { duration: 520, delay: i * 50, fill: "backwards", composite: "add" });
+        /* Fades in over the first ~45% of the trip, so the very start of
+           the path — where the exact source point matters most — is
+           still mostly transparent. */
+        el.animate([{ opacity: 0 }, { opacity: endOpacity, offset: 0.45 }, { opacity: endOpacity }], { duration: 520, delay: i * 50, easing: "cubic-bezier(0.45, 0, 0.55, 1)", fill: "backwards" });
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -642,7 +702,7 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
       engaged = false;
       // placed and played in the layout effect below, once the new pop-up exists — so it's measured
       // for real BEFORE the first paint, and never shows up in a wrong spot and slides over
-      openReq.current = { key, x: px, y: py, origin: zoneCenter(key) };
+      openReq.current = { key, x: px, y: py, origin: itemCenter(key) ?? zoneCenter(key) };
       setActive(key);
       setOpenSeq((n) => n + 1);
       activeRef.current = key;
@@ -771,6 +831,52 @@ export default function HoverBag({ debug = false }: { debug?: boolean }) {
     io.observe(el);
     return () => io.disconnect();
   }, []);
+
+  /* Scrolling: the pop-up is pinned to the page, so a scroll can carry it
+     past the edge of the screen. While its item is still on screen, slide
+     the pop-up back inside the same 48px inset placePill uses (it rides
+     the edge as you keep scrolling); once the item itself has left the
+     screen, close the pop-up. */
+  useEffect(() => {
+    let raf = 0;
+    const check = () => {
+      raf = 0;
+      const key = activeRef.current, pill = pillRef.current, pr = painted.current;
+      if (!key || !pill || !pr || !hoverCapable) return;
+      const vh = window.innerHeight, margin = 48;
+      const item = zoneRect(key);
+      if (item && (item.bottom <= 0 || item.top >= vh)) {
+        window.clearTimeout(closeT.current);
+        window.clearTimeout(switchT.current);
+        openReq.current = null;
+        lastPos.current = null;
+        activeRef.current = null;
+        setActive(null);
+        return;
+      }
+      /* Always worked out from where it was first placed (homeTop), not
+         from where the last scroll left it — so the slide is undone as you
+         scroll back, and at the original scroll position it's exactly
+         where it opened. */
+      const home = parseFloat(pill.dataset.homeTop ?? pill.style.top);
+      if (Number.isNaN(home)) return;
+      const drift = cur.current.y - base.current.y;      // the follow offset already on screen
+      const y = home - window.scrollY + drift;            // where it would sit unclamped, viewport space
+      const lo = margin - pr.t, hi = vh - margin - pr.b;
+      const yc = hi < lo ? lo : Math.min(Math.max(y, lo), hi);
+      const top = home + Math.round(yc - y);
+      if (pill.style.top !== `${top}px`) pill.style.top = `${top}px`;
+      // refresh the viewport-space anchors so pointer routing and re-measures match what's on screen
+      const nb = top - window.scrollY;
+      target.current = { x: target.current.x, y: nb + (target.current.y - base.current.y) };
+      cur.current = { x: cur.current.x, y: nb + drift };
+      base.current = { x: base.current.x, y: nb };
+    };
+    const onScroll = () => { if (!raf) raf = requestAnimationFrame(check); };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => { cancelAnimationFrame(raf); window.removeEventListener("scroll", onScroll); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hoverCapable]);
 
   const activeItem = ITEMS.find((i) => i.key === active);
   const liftedLayers = new Set(activeItem?.layers ?? []);
@@ -1204,6 +1310,9 @@ function PillScatter({
 }) {
   const [cards, setCards] = useState<ScatterCard[]>(SCATTER_OPENING);
   const dealBeat = useRef(0);
+  /** The next photo to deal: walks the whole set in order, so every photo
+   *  gets its turn before any comes back. */
+  const dealNext = useRef(SCATTER_CARDS);
   /* Clicking a print swaps just that photo for one not on the table. */
   const swapPrint = (i: number, e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation();
@@ -1251,10 +1360,15 @@ function PillScatter({
           const spot = options.length
             ? options[Math.floor(Math.random() * options.length)]
             : prev[moving].spot;
+          /* Never a photo that's already on the table (or the one just
+             taken off): the four spotlights always show four different
+             photos, even after a click has swapped one out of turn. */
+          const showing = prev.map((c) => c.photo);
+          let photo = dealNext.current % photos.length;
+          for (let n = 0; n < photos.length && showing.includes(photo); n++) photo = (photo + 1) % photos.length;
+          dealNext.current = (photo + 1) % photos.length;
           return prev.map((c, i) =>
-            i === moving
-              ? { photo: (c.photo + SCATTER_CARDS) % photos.length, spot, out: false }
-              : c
+            i === moving ? { photo, spot, out: false } : c
           );
         });
       }, SCATTER_FADE_MS);

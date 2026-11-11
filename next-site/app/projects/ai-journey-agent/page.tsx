@@ -179,10 +179,12 @@ export default function AIJourneyAgentCaseStudy() {
             split into two sub-teams across two sprints,
             reconvening to share findings.
           </p>
-          <div className="parallel-tracks">
-            <div className="research-track">
-              <span className="track-label">Track 1 · My team</span>
-              <h3>Current State of Platform</h3>
+          <div className="case-split">
+            <div className="case-split__col case-split__col--mine">
+              <div className="case-split__head">
+                <h3>Current State of Platform</h3>
+                <span className="case-split__who">Me</span>
+              </div>
               <p>
                 I audited the platform as a user, exploring{" "}
                 its features regarding functionality and placement to
@@ -198,9 +200,11 @@ export default function AIJourneyAgentCaseStudy() {
                 />
               </figure>
             </div>
-            <div className="research-track">
-              <span className="track-label">Track 2 · Partner team</span>
-              <h3>Current State of Agent Components</h3>
+            <div className="case-split__col">
+              <div className="case-split__head">
+                <h3>Current State of Agent Components</h3>
+                <span className="case-split__who">Partner team</span>
+              </div>
               <p>
                 The partner team surveyed the AI components a maintenance agent would require:
                 types of AI, categories of monitoring, and user trust.
@@ -222,10 +226,12 @@ export default function AIJourneyAgentCaseStudy() {
             direct competitors and analogous AI-driven SaaS platforms{" "}
             to understand the state of the AI agent industry.
           </p>
-          <div className="parallel-tracks">
-            <div className="research-track">
-              <span className="track-label">Direct · My team</span>
-              <h3>4 Direct Journey-management Competitors</h3>
+          <div className="case-split">
+            <div className="case-split__col case-split__col--mine">
+              <div className="case-split__head">
+                <h3>4 Direct Journey-management Competitors</h3>
+                <span className="case-split__who">Me</span>
+              </div>
               <p>
                 I audited one of the four direct competitors, focusing on three aspects of its AI agent: user
                 interactions, reach within the platform, and user flow pain points.
@@ -239,9 +245,11 @@ export default function AIJourneyAgentCaseStudy() {
                 />
               </figure>
             </div>
-            <div className="research-track">
-              <span className="track-label">Analogous · Partner team</span>
-              <h3>3 Analogous AI-driven SaaS Platforms</h3>
+            <div className="case-split__col">
+              <div className="case-split__head">
+                <h3>3 Analogous AI-driven SaaS Platforms</h3>
+                <span className="case-split__who">Partner team</span>
+              </div>
               <p>
                 The partner team audited platforms that utilize AI to analyze data for
                 feedback and insights.
@@ -346,31 +354,42 @@ export default function AIJourneyAgentCaseStudy() {
             With two concepts approved, we split the team evenly to develop both concurrently.
           </p>
 
-          <h3>Concept A · My team</h3>
-          <p>
-            I led the team sketching variations of Concept A,
-            following the sponsor platform&rsquo;s UI patterns as I provided sketches 
-            to refine organization of the concept's features through partner-team
-            and sponsor feedback.
-          </p>
-          <figure>
-            <ZoomableImage
-              src={conceptRefinement.src}
-              alt="Timeline of the Concept A's refinement"
-              aspectRatio={3975 / 2922}
-              caption={<>Timeline of Concept A&rsquo;s refinement into its finalized version (not shown due to NDA).</>}
-            />
-          </figure>
-
-          <h3>Concept B · Partner team</h3>
-          <p>
-            The partner team constructed Concept B&rsquo;s wireframes. As I didn&rsquo;t
-            contribute to its ideation or construction, images aren&rsquo;t shown.
-          </p>
+          <div className="case-split">
+            <div className="case-split__col case-split__col--mine">
+              <div className="case-split__head">
+                <h3>Concept A</h3>
+                <span className="case-split__who">Me</span>
+              </div>
+              <p>
+                I led the team sketching variations of Concept A,
+                following the sponsor platform&rsquo;s UI patterns as I provided sketches 
+                to refine organization of the concept's features through partner-team
+                and sponsor feedback.
+              </p>
+              <figure>
+                <ZoomableImage
+                  src={conceptRefinement.src}
+                  alt="Timeline of the Concept A's refinement"
+                  aspectRatio={3975 / 2922}
+                  caption={<>Timeline of Concept A&rsquo;s refinement into its finalized version (not shown due to NDA).</>}
+                />
+              </figure>
+            </div>
+            <div className="case-split__col">
+              <div className="case-split__head">
+                <h3>Concept B</h3>
+                <span className="case-split__who">Partner team</span>
+              </div>
+              <p>
+                The partner team constructed Concept B&rsquo;s wireframes. As I didn&rsquo;t
+                contribute to its ideation or construction, images aren&rsquo;t shown.
+              </p>
+            </div>
+          </div>
 
           <h3>Eventual Merging of Wireframes into One System</h3>
           <p>
-            Due to wireframing revelaing heavy overlap, we{" "} decided to
+            Due to wireframing revelaing heavy overlap, we{" "} decided to{" "}
             <mark className="hl">merged them into a single agentic system</mark>.
           </p>
         </section>

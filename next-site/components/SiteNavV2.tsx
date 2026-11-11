@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { GMAIL, RESUME_URL, LINKEDIN_URL } from "@/components/connectLinks";
 
 const SECTIONS = ["hero", "work", "about", "connect"] as const;
 type SectionId = (typeof SECTIONS)[number];
@@ -12,7 +13,7 @@ const LABELS: Record<SectionId, string> = {
   connect: "Connect",
 };
 
-type NavDropdownItem = { name: string; slug: string; icon?: React.ReactNode };
+type NavDropdownItem = { name: string; slug: string; icon?: React.ReactNode; href?: string };
 
 /** Work submenu — project names. Selecting one scrolls to that
     project's own folder card inside the Work section (matched via
@@ -27,13 +28,14 @@ const WORK_ITEMS: NavDropdownItem[] = [
   { name: "Frogslayer", slug: "frogslayer" },
 ];
 
-/** Connect submenu — Resume / Email / LinkedIn. Selecting one scrolls
-    to that row inside the Connect section (matched via ConnectV2's
-    data-slug) instead of opening the resource directly. */
+/** Connect submenu — Resume / Email / LinkedIn. Selecting one opens the
+    resource itself (the resume, a new email, the LinkedIn profile) in a
+    new tab, rather than scrolling down to the Connect section. */
 const CONNECT_ITEMS: NavDropdownItem[] = [
   {
     name: "Resume",
     slug: "resume",
+    href: RESUME_URL,
     icon: (
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
         <path d="M4 2h5l3 3v9H4z" />
@@ -44,6 +46,7 @@ const CONNECT_ITEMS: NavDropdownItem[] = [
   {
     name: "Email",
     slug: "email",
+    href: GMAIL,
     icon: (
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
         <rect x="2" y="3.5" width="12" height="9" rx="1.2" />
@@ -54,6 +57,7 @@ const CONNECT_ITEMS: NavDropdownItem[] = [
   {
     name: "LinkedIn",
     slug: "linkedin",
+    href: LINKEDIN_URL,
     icon: (
       <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
         <path d="M3.6 5.9H1.3V13h2.3V5.9ZM2.45 4.9a1.35 1.35 0 1 0 0-2.7 1.35 1.35 0 0 0 0 2.7ZM5.3 5.9h2.2v1h.03c.31-.58 1.06-1.2 2.18-1.2 2.33 0 2.76 1.5 2.76 3.45V13H10.2V9.6c0-.83-.02-1.9-1.18-1.9-1.18 0-1.36.9-1.36 1.83V13H5.3V5.9Z" />
@@ -459,7 +463,8 @@ export default function SiteNavV2() {
                     {items.map((item, i) => (
                       <a
                         key={item.slug}
-                        href={`#${id}`}
+                        href={item.href ?? `#${id}`}
+                        {...(item.href ? { target: "_blank", rel: "noopener noreferrer" } : {})}
                         className="nav-dropdown-tile"
                         style={{ transitionDelay: sub.isOpen ? `${i * 40}ms` : "0ms" }}
                         tabIndex={sub.isOpen ? 0 : -1}
@@ -468,8 +473,10 @@ export default function SiteNavV2() {
                           // section (a project's folder card, or a
                           // Connect row) instead of navigating away or
                           // opening the resource directly.
-                          e.preventDefault();
                           setSubOpenId(null);
+                          // a direct link (Resume / Email / LinkedIn): let it open
+                          if (item.href) { setMenuOpen(false); return; }
+                          e.preventDefault();
                           if (id === "work") {
                             const el = document.querySelector<HTMLElement>(`[data-slug="${item.slug}"]`);
                             if (el) scrollElementIntoView(el);

@@ -31,8 +31,7 @@ import SideCard from "@/components/SideCard";
 import { SIDE_PROJECTS } from "@/components/sideProjects";
 import { DOODLE_MAX_POINTS, DOODLE_W, encodeDoodle, strokePath, type Pt } from "@/components/doodle";
 
-const EMAIL = "likathleen094@gmail.com";
-const GMAIL = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(EMAIL)}`;
+import { EMAIL, GMAIL, RESUME_URL, LINKEDIN_URL } from "@/components/connectLinks";
 
 /* Side projects: one still star each (data + images in sideProjects.ts). */
 const PROJECTS = SIDE_PROJECTS;
@@ -1155,12 +1154,12 @@ export default function ConnectSky() {
       <footer className="cs-foot">
         <span className="cs-handle">@KathleenLi · <span className="name-zh-inline"><ZhName /><span className="visually-hidden" lang="zh-Hant">妤𣎮</span></span></span>
         <nav className="cs-links" aria-label="Connect">
-          <a data-slug="resume" href="/resume.pdf" target="_blank" rel="noopener noreferrer"><Spark />Resume</a>
+          <a data-slug="resume" href={RESUME_URL} target="_blank" rel="noopener noreferrer"><Spark />Resume</a>
           <span className="cs-email">
             <a data-slug="email" href={GMAIL} target="_blank" rel="noopener noreferrer"><Spark />Email</a>
             <CopyEmail />
           </span>
-          <a data-slug="linkedin" href="https://www.linkedin.com/in/kathleen-li-564a13328" target="_blank" rel="noopener noreferrer"><Spark />LinkedIn</a>
+          <a data-slug="linkedin" href={LINKEDIN_URL} target="_blank" rel="noopener noreferrer"><Spark />LinkedIn</a>
         </nav>
       </footer>
     </section>

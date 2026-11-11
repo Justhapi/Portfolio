@@ -194,13 +194,14 @@ export default function FeenixCaseStudy() {
             while implementing the frontend components.
             <br/><br/>
             While designing, I actively collaborated with cross-functional teams (Data, backend, infrastructure) to 
-            balance design and technical (sometimes leagal) constraints.
+            balance design and technical (sometimes legal) constraints.
           </p>
         </section>
 
         {/* ───── Researching ───── */}
         <section id="researching" className="case-section">
-          <h2>Competitor Auditing</h2>
+          <h2>Researching</h2>
+          <h3>Auditing Two Competing Hosting Platforms</h3>
           <p>
             To familiarize myself with Minecraft Server Hosting platforms, I assessed two competitors to
             better understand how to design the server features requested by Feenix:
@@ -211,7 +212,7 @@ export default function FeenixCaseStudy() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <li><img src={playHostingLogo.src} width={42} height={42} alt="" />Play.Hosting</li>
           </ul>
-          <h3>Competitor Accounts and Server Creation Flows</h3>
+          <h3>Mapping Competitor Sign-in and Server Creation Flows</h3>
             While exploring the competitors, I <strong>went through the sign-in, server creation, 
             and server management flows,</strong> understanding the basic structure of what a Minecraft
             server hosting platform needs for a user regarding personal account and server creation.
@@ -225,20 +226,20 @@ export default function FeenixCaseStudy() {
             ]}
           />
 
-          I was also able to identify pain points, needed UI modifications, inter-team collaborations, and oppurtunity gaps 
+          I was also able to identify pain points, needed UI modifications, inter-team collaborations, and opportunity gaps 
           for the platform, particularly in server seed modification.
-          <h3>Competitor Server Maintenance Features</h3>
+          <h3>Condensing 17 Competitor Features into 6 Maintenance Sections</h3>
           <CaseFilmstrip
             label="Competitor Server Maintenance Features"
             minWidth={500}
             align="right"
             side={
               <>
-                While exploring both competitor's server maintenance-related features, I
+                While exploring both competitors' server maintenance-related features, I
                 identified their relation to a feature directly requested by Feenix. Aternos had 10 features 
                 varying in overlap while Play.Hosting had 7 features that sometimes overlapped.
                 <br></br><br></br>
-                From this, I was condensed the competitor overlaps and Feenix requests down to 6 maintenance features:
+                From this, I condensed the competitor overlaps and Feenix requests down to 6 maintenance features:
                 <ul className="feature-list">
                   <li>Console : Server runtime controls (Start/Stop/Restart), Live server logs, CPU and RAM metrics</li>
                   <li>World: World properties, seed, and minor server settings</li>
@@ -250,7 +251,7 @@ export default function FeenixCaseStudy() {
               </>
             }
             shots={[
-              { key: "aternos-maintenace", img: aternosMaintenance, label: "Aternos maintenance", alt: "Aternos server maintenance screens." },
+              { key: "aternos-maintenance", img: aternosMaintenance, label: "Aternos maintenance", alt: "Aternos server maintenance screens." },
               { key: "competitor-server-maintenance", img: competitorMaintenance, label: "Maintenance, both platforms", alt: "Server maintenance screens captured across both competitors." },
             ]}
           />
@@ -259,28 +260,29 @@ export default function FeenixCaseStudy() {
         {/* ───── Designing ───── */}
         <section id="designing" className="case-section">
           <h2>Designing</h2>
+          <h3>From Account Flows to a Six-Section Server Dashboard</h3>
           <CaseFilmstrip
             label="Account Creation"
             minWidth={450}
             align = "right"
             side={
               <>
-              <h3>Account Creation Flow</h3>
+              <h3>Choosing Sign-in Options for a Gaming Audience</h3>
               For the account creation flow, I assessed the competitors' and general account creation 
               flows before creating a quick sketch of the account creation page. 
               <br></br><br></br>
-              When reviewing the designs, I pitched the authenication options: 
+              When reviewing the designs, I pitched the authentication options: 
               <br></br><br></br>
               <ul className="case-logo-list case-logo-list--stack">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <li><img src={googleIcon.src} width={42} height={42} alt="" />Google due to being standard accoutn ubiquity</li>
+                <li><img src={googleIcon.src} width={42} height={42} alt="" />Google due to being standard account ubiquity</li>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <li><img src={microsoftIcon.src} width={42} height={42} alt="" />Microsoft due to Minecraft account's integration within Microsoft</li>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <li><img src={discordIcon.src} width={42} height={42} alt="" />Discord due to being commonly used within the gaming setting</li>
               </ul>
               <br></br><br></br>
-              Following cross-team pitching and feedbacks, I refined the flows to
+              Following cross-team pitching and feedback, I refined the flows to
               address the following feedback of specifics in regards:
               <FeedbackList
                 label="Cross-team feedback on the auth flows"
@@ -297,7 +299,7 @@ export default function FeenixCaseStudy() {
             ]}
           />
 
-          <h3>Account Log in and Recovery Flow</h3>
+          <h3>Designing a Login Page That Also Introduces the Platform</h3>
           <CaseFilmstrip
             label="Log in, recovery and the auth flow"
             side={
@@ -314,26 +316,26 @@ export default function FeenixCaseStudy() {
             ]}
           />
 
-          <h3>Account Login, Creation, and Recovery Wireframes</h3>
+          <h3>Wireframing the Auth Flows on Feenix&rsquo;s Design System</h3>
           From the sketches, I constructed the base wireframes while applying the design system provided by Feenix.
           <CaseFilmstrip
             label="Auth flow wireframes"
             shots={[
               { key: "create-account-flow-wireframe", img: createAccountFlowWire, label: "Create account flow", alt: "Wireframe of the full create account flow." },
               { key: "recover-account-flow-wireframe", img: recoverAccountFlowWire, label: "Recover account flow", alt: "Wireframe of the full account recovery flow." },
-              { key: "captcha-integration", img: captchaIntegration, label: "Integration of Captcha", alt: "Integration of Captcha visiblew on local host" },
+              { key: "captcha-integration", img: captchaIntegration, label: "Integration of Captcha", alt: "Integration of Captcha visible on localhost" },
             ]}
           />
           Some time after implementation of the frontend, my teammates were able to successfully implement the 
           captcha and there was an additional request to add an minimum age confirmation, prompting minor reformatting.
-          <h3>Platform Server Creation Flow</h3>
+          <h3>Simplifying Server Creation into Staged Pages</h3>
 
           <CaseFilmstrip
             label="Working out what a server needs"
             align="right"
             side={
               <>
-                For the server creation flow, I simplfiied the competitor server creation flow 
+                For the server creation flow, I simplified the competitor server creation flow 
                 stages to ideate the Feenix platform flow.
                 <br></br><br></br>
                 Specifically, the world modification stage would allow modifications to the world 
@@ -352,7 +354,7 @@ export default function FeenixCaseStudy() {
               { key: "server-creation-flow-sketch", img: serverCreationFlowSketch, label: "Flow sketch", alt: "Hand sketch of the server creation flow across its pages." },
             ]}
           />
-          <h3>Sidebar Navigation</h3>
+          <h3>Adapting Discord&rsquo;s Two-Tier Sidebar for Server Navigation</h3>
           <CaseFilmstrip
             label="Sidebar Process"
             align = "right"
@@ -365,11 +367,11 @@ export default function FeenixCaseStudy() {
                 <br></br><br></br>
                 While the base format was simple to determine, the feature design was more
                 difficult to decide on. Ultimately, I decided to reference Discord's dual 
-                tier side bar as it provided formatting for individual server maintenance features 
+                tier sidebar as it provided formatting for individual server maintenance features 
                 and inter-server navigation.
                 <ul>
                   <li>Primary strip navigates between servers where the user is the owner or an admin</li>
-                  <li>Secondary strip navigates between server maintenace features for the currently selected server</li>
+                  <li>Secondary strip navigates between server maintenance features for the currently selected server</li>
                 </ul>
               </>
             }
@@ -381,8 +383,8 @@ export default function FeenixCaseStudy() {
             ]}
           />
 
-          <h3>Initial Maintenance Feature Sketches</h3>
-          With the side bar navigation determined, I the moved on to integrate the 6 maintenance features, implementing
+          <h3>Sketching the Six Maintenance Sections</h3>
+          With the sidebar navigation determined, I then moved on to integrate the 6 maintenance features, implementing
           the base functionality while designing based off of competitors like Aternos's console.
           <CaseFilmstrip
             label="Six sections, sketched"
@@ -396,13 +398,13 @@ export default function FeenixCaseStudy() {
             ]}
           />
 
-          <h3>Refinement to Sketches</h3>
+          <h3>Refining Hierarchy and Edge Cases from Team Feedback</h3>
           <CaseFilmstrip
             label="Six sections, resolved"
             side={
               <>
                 After the base sketches were made and pitched to the rest of the team, feedback in regards to
-                information hierachy and additional features were given, prompting small iterations to specific feature pages.
+                information hierarchy and additional features were given, prompting small iterations to specific feature pages.
                 <br></br><br></br>
                 <ul>
                   <li>Accounting for specific usage cases such as server failure to run</li>
@@ -419,7 +421,12 @@ export default function FeenixCaseStudy() {
             ]}
           />
 
-          <h3>Server Maintenance Prototyping</h3>
+        </section>
+
+        {/* ───── Testing ───── */}
+        <section id="testing" className="case-section">
+          <h2>Testing</h2>
+          <h3>Testing the Prototype Against Both Competitors</h3>
           <CaseFilmstrip
             label="Section wireframes"
             align ="right"
@@ -461,10 +468,10 @@ export default function FeenixCaseStudy() {
                 any moments of struggles and what they would have wanted to better overcome the
                 obstacle.
                 <br></br>
-                <h3>Tester Feedback</h3>
+                <h3>Testers Found the Clearest Guidance and Navigation</h3>
                 Overall, testers identified the prototype as the strongest in user guidance and 
                 navigation as it avoided competitor pain points like Aternos's overabundance of
-                information assistance, Play.hosting'sinstances of bottlenecking feature access,
+                information assistance, Play.Hosting's instances of bottlenecking feature access,
                 and overall feature naming confusion.
                 <br></br><br></br>
                 Testers also appreciated the world modification stage as it would allow them to
@@ -483,7 +490,7 @@ export default function FeenixCaseStudy() {
             ]}
           />
 
-          <h3>Iterations</h3>
+          <h3>Iterating on User and Technical Feedback</h3>
           <p>
             Most of the changes requested by testers were regarding formatting
             and placements of elements, prompting the following iterations:
@@ -531,7 +538,7 @@ export default function FeenixCaseStudy() {
                 ],
               }]}
           />
-          <h3>Third-Party Seed Previewing Iteration</h3>
+          <h3>Replacing Spawn Mapping with Third-Party Seed Previews</h3>
           <p>
             In addition to minor reformatting, the core technical feedback from the
             team were concerns of the spawnpoint mapping as questions were raised
@@ -540,7 +547,7 @@ export default function FeenixCaseStudy() {
           <p>
             As a result, a brief research on third-party Minecraft seed preview
             platforms was conducted, leading to identification of Chunkbase. Building
-            off of this, I revised the world maintenace feature and world settings
+            off of this, I revised the world maintenance feature and world settings
             feature to account for the seed preview alterations in addition to minor feedback.
           </p>
           <CaseFilmstrip
@@ -572,7 +579,7 @@ export default function FeenixCaseStudy() {
         <section id="takeaways" className="case-section">
           <h2>Takeaways</h2>
 
-          <h3>Sprint Scope Limiting</h3>
+          <h3>Designing Beyond the Current Sprint&rsquo;s Scope</h3>
           <p>
             Due to the nature of the project requiring me to design while contributing to the
             implementations, I often needed to tweak the scope and focus of my design sprints.

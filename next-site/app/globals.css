@@ -10557,3 +10557,28 @@ html:root .nav { z-index: 300; }
 .case-logo-list > li::before { content: none; }
 .case-logo-list img { display: block; flex: none; width: 42px; height: 42px; border-radius: 22%; object-fit: contain; }
 .case-stars .case-section ul.case-logo-list--stack { flex-direction: column; gap: 10px; margin: 6px 0; }
+
+/* Food receipt: the photo under the pointer opens to 2/3 of the photo
+   column and the other two share the rest; the column keeps its height. */
+html:root .pt-receipt__rows { height: 328px; grid-template-rows: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr); transition: grid-template-rows 320ms cubic-bezier(0.25, 1, 0.5, 1); }
+html:root .pt-receipt__row { height: auto; min-height: 0; }
+html:root .pt-receipt__rows:has(> .pt-receipt__row:nth-child(1):hover) { grid-template-rows: minmax(0, 4fr) minmax(0, 1fr) minmax(0, 1fr); }
+html:root .pt-receipt__rows:has(> .pt-receipt__row:nth-child(2):hover) { grid-template-rows: minmax(0, 1fr) minmax(0, 4fr) minmax(0, 1fr); }
+html:root .pt-receipt__rows:has(> .pt-receipt__row:nth-child(3):hover) { grid-template-rows: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 4fr); }
+@media (prefers-reduced-motion: reduce) { html:root .pt-receipt__rows { transition: none; } }
+
+/* Split work (two sub-teams side by side) — the Feenix phase-map
+   vocabulary: each column headed by its title over a 1px rule, who did
+   it in one quiet word on the same line, and the author's own column in
+   accent. Replaces the old .parallel-tracks pills. */
+.case-section .case-split { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin: 8px 0 32px; }
+.case-split__col { min-width: 0; }
+.case-section .case-split__head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding-bottom: 10px; margin-bottom: 14px; border-bottom: 1px solid rgb(var(--fg-rgb) / 0.18); }
+.case-section .case-split__head h3 { margin: 0; font: 600 15px/1.35 var(--f-sans); letter-spacing: 0; color: var(--fg); }
+.case-split__who { flex: none; font: 600 12px/1.4 var(--f-mono); letter-spacing: 0.12em; text-transform: uppercase; color: rgb(var(--fg-rgb) / 0.55); }
+.case-split__col--mine .case-split__head { border-bottom-color: var(--accent); }
+.case-split__col--mine .case-split__who { color: var(--accent-on-cream); }
+.case-split__col p { margin-top: 0; }
+.case-split__col figure { margin-bottom: 0; }
+.case-section .case-split .zoomable-frame { aspect-ratio: 4 / 3 !important; max-height: 40vh; max-width: 100% !important; }
+@media (max-width: 760px) { .case-section .case-split { grid-template-columns: 1fr; gap: 28px; } }

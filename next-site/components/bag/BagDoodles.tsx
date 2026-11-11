@@ -82,6 +82,11 @@ const TEAR_TOTAL = 1200; // the whole tear, from first tug to landing on the wal
 const PULL_X = 0.62; // at full pull, the corner travels this much of the sheet's width to the right…
 const PULL_Y = -0.6; // …and this much of its height up
 const GRID_X = 12, GRID_Y = 10;
+/* The back of a torn sheet — ONE place for its colour. It runs from
+   BACK_START at the sheet's top-left to BACK_END at its bottom-right,
+   both while it peels (warpSheet) and in backTexture. */
+const BACK_START = "#F3E2D1";
+const BACK_END = "#F3E2D1";
 /** How much of the corner's pull a point (u, v) of the sheet follows. Sideways,
  *  the whole bottom edge is dragged right (the left corner too, less so); up,
  *  only the right side lifts. Nothing on the glued top edge moves. */
@@ -212,7 +217,14 @@ function drawWarp(cv: HTMLCanvasElement, tex: { c: HTMLCanvasElement; back: HTML
   if (f > 0.002) tris.sort((m, q) => m.z - q.z);
   // the back is one even colour, so back-facing pieces are filled together as a single shape: no seams between them
   const k = clamp01(backShade);
-  const backFill = `rgb(${Math.round(247 * (1 - k) + 26 * k)}, ${Math.round(244 * (1 - k) + 23 * k)}, ${Math.round(238 * (1 - k) + 20 * k)})`;
+  // the back colours, darkened as the sheet turns away from the light
+  const shade = (hex: string) => {
+    const n = parseInt(hex.slice(1), 16), r = n >> 16, g2 = (n >> 8) & 255, b = n & 255;
+    return `rgb(${Math.round(r * (1 - k) + 26 * k)}, ${Math.round(g2 * (1 - k) + 23 * k)}, ${Math.round(b * (1 - k) + 20 * k)})`;
+  };
+  const backFill = ctx.createLinearGradient(PX[0][0], PY[0][0], PX[GRID_Y][GRID_X], PY[GRID_Y][GRID_X]);
+  backFill.addColorStop(0, shade(BACK_START));
+  backFill.addColorStop(1, shade(BACK_END));
   let backOpen = false;
   const flushBack = () => { if (backOpen) { ctx.fillStyle = backFill; ctx.fill(); backOpen = false; } };
   for (const t of tris) {
@@ -289,8 +301,8 @@ function backTexture(front: HTMLCanvasElement) {
      deepens toward the free corner, so the back of the page is lit like
      paper lifting rather than filled like a shape. */
   const g = ctx.createLinearGradient(0, 0, c.width, c.height);
-  g.addColorStop(0, "#DDD6C8"); // the stacked edge of the pad
-  g.addColorStop(1, "#BCA886"); // the far corner, furthest from the light
+  g.addColorStop(0, BACK_START);
+  g.addColorStop(1, BACK_END);
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, c.width, c.height);
   return c;
