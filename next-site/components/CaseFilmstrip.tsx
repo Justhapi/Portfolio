@@ -56,6 +56,9 @@ const PAIR_GAP = 14;
  */
 const VH_SHARE = 0.4;
 
+/** Share of the row a carousel gets when it has text beside it. */
+const SIDE_VISUAL_SHARE = 0.6;
+
 export default function CaseFilmstrip({
   shots,
   label,
@@ -89,6 +92,8 @@ export default function CaseFilmstrip({
 }) {
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const [colW, setColW] = useState(0);
+  const sideRef = useRef(false);
+  sideRef.current = !!side;
   const [vh, setVh] = useState(0);
   const [active, setActive] = useState(0);
 
@@ -98,7 +103,10 @@ export default function CaseFilmstrip({
     const el = wrapRef.current;
     if (!el) return;
     const measure = () => {
-      setColW(el.clientWidth);
+      /* With text beside it, the carousel gets 60% of the row (less the
+         28px gap) and the text the rest. Sized from the whole row, it used
+         to take nearly all of it and squeeze the text to a word per line. */
+      setColW(sideRef.current ? Math.round((el.clientWidth - 28) * SIDE_VISUAL_SHARE) : el.clientWidth);
       setVh(window.innerHeight);
     };
     measure();

@@ -9145,6 +9145,9 @@ html.hero-vt::view-transition-image-pair(hero-back) {
 .cs-note__min .c-spark { width: 24px; height: 24px; fill: var(--accent-soft); filter: drop-shadow(0 0 5px rgba(212,144,117,0.45));
   transition: rotate 320ms cubic-bezier(0.34, 1.4, 0.64, 1), fill 200ms ease; }
 .cs-note__min:hover .c-spark { rotate: 90deg; fill: var(--hero-fg); }
+/* Tilted 45° so the sparkle reads as an × (close). */
+.cs-note__min .c-spark { rotate: 45deg; }
+.cs-note__min:hover .c-spark { rotate: 135deg; }
 .cs-note__min:active, .cs-mini:active { transform: scale(0.97); }
 .cs-note__min:focus-visible, .cs-mini:focus-visible { outline: 2px solid var(--accent-soft); outline-offset: 3px; border-radius: 6px; }
 
@@ -10498,3 +10501,59 @@ html:root .pt-receipt { rotate: 8deg; }
    Work / About / Connect pill. The nav is the way out of the page; it
    outranks anything the page itself draws. */
 html:root .nav { z-index: 300; }
+
+/* Insight → takeaway (case-study Takeaways): the same look as .case-map —
+   small mono labels, an accent arrow, the takeaway's label in accent. */
+.case-insight { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 28px; align-items: start; margin: 16px 0 32px; }
+.case-insight .case-map__label { margin-bottom: 12px; }
+.case-insight > .case-map__arrow { align-self: center; }
+.case-insight__out .case-map__label { color: var(--accent-on-cream); border-bottom-color: var(--accent); }
+.case-insight p { margin-top: 0; }
+@media (max-width: 700px) {
+  .case-insight { grid-template-columns: 1fr; gap: 12px; }
+  .case-insight > .case-map__arrow { display: none; }
+}
+
+/* Star lists (case studies with .case-stars): a page's plain lists get the
+   site's sparkle in accent with a hanging indent — the same marker as the
+   .case-map lists — instead of browser bullets. Maps, feedback rows and
+   carousels keep their own styles. */
+.case-stars .case-section ul:not([class]):not(.case-map__col > ul, .case-feedback > ul, .cf ul, nav ul),
+.case-stars .case-section ul.feature-list { list-style: none; margin: 10px 0 20px; padding: 0; display: grid; gap: 8px; }
+.case-stars .case-section ul:not([class]):not(.case-map__col > ul, .case-feedback > ul, .cf ul, nav ul) > li,
+.case-stars .case-section ul.feature-list > li { position: relative; margin: 0; padding-left: 24px; }
+.case-stars .case-section ul:not([class]):not(.case-map__col > ul, .case-feedback > ul, .cf ul, nav ul) > li::before,
+.case-stars .case-section ul.feature-list > li::before {
+  content: ""; position: absolute; left: 2px; top: 0.36em; width: 12px; height: 12px; background: var(--accent);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20100%20100%22%3E%3Cpath%20d%3D%22M48%206%20C48%2026%2026%2048%206%2048%20Q2%2050%206%2052%20C26%2052%2048%2074%2048%2094%20Q50%2098%2052%2094%20C52%2074%2074%2052%2094%2052%20Q98%2050%2094%2048%20C74%2048%2052%2026%2052%206%20Q50%202%2048%206%20Z%22/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20100%20100%22%3E%3Cpath%20d%3D%22M48%206%20C48%2026%2026%2048%206%2048%20Q2%2050%206%2052%20C26%2052%2048%2074%2048%2094%20Q50%2098%2052%2094%20C52%2074%2074%2052%2094%2052%20Q98%2050%2094%2048%20C74%2048%2052%2026%2052%206%20Q50%202%2048%206%20Z%22/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+/* Intro with logos: text beside the logo(s) of who it introduces. */
+.case-intro { display: flex; align-items: flex-start; gap: 28px; }
+.case-intro > p, .case-intro > div:not(.case-intro__logos) { flex: 1 1 auto; min-width: 0; }
+.case-intro > p { margin-top: 0; }
+.case-intro__logos { display: flex; gap: 12px; flex: none; }
+.case-intro__logo { display: block; flex: none; width: 96px; height: 96px; border-radius: 22%; }
+.case-intro__logos .case-intro__logo { width: 80px; height: 80px; }
+.case-intro--logos-left .case-intro__logos { order: -1; }
+.case-intro--logos-left p { margin-top: 0; }
+@media (max-width: 640px) {
+  .case-intro { flex-direction: column; gap: 14px; }
+  .case-intro__logo { order: -1; width: 64px; height: 64px; }
+  .case-intro__logos .case-intro__logo { width: 56px; height: 56px; }
+}
+
+/* Lists inside a logo intro (e.g. the competitors) run side by side. */
+.case-stars .case-section .case-intro > div > ul:not([class]) { display: flex; flex-wrap: wrap; gap: 8px 32px; }
+
+/* Logo sized to the full height of the intro text beside it. */
+.case-intro--fill { align-items: stretch; }
+.case-intro--fill > .case-intro__logo { width: min(248px, 26%); height: auto; aspect-ratio: 1; align-self: center; }
+@media (max-width: 640px) { .case-intro--fill > .case-intro__logo { width: 64px; height: 64px; align-self: flex-start; } }
+
+/* List whose markers are the logos of what it names (e.g. competitors). */
+.case-stars .case-section ul.case-logo-list { list-style: none; margin: 14px 0 20px; padding: 0; display: flex; flex-wrap: wrap; gap: 10px 32px; }
+.case-logo-list > li { display: flex; align-items: center; gap: 10px; margin: 0; padding: 0; font-family: var(--f-sans); font-size: 16px; color: var(--fg-soft); }
+.case-logo-list > li::before { content: none; }
+.case-logo-list img { display: block; flex: none; width: 42px; height: 42px; border-radius: 22%; object-fit: contain; }
+.case-stars .case-section ul.case-logo-list--stack { flex-direction: column; gap: 10px; margin: 6px 0; }

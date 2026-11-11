@@ -563,7 +563,7 @@ function NoteCard({ onSent, onSend, onMin, hidden, cardRef }: {
         setFrom(""); setMsg(""); setErr(false); setStrokes([]); setPencil(false);
       }}
     >
-      <button type="button" className="cs-note__min" aria-label="Minimize note" onClick={onMin}>
+      <button type="button" className="cs-note__min" aria-label="Close note" onClick={onMin}>
         <Spark />
       </button>
       <label className="cs-note__row">
@@ -780,21 +780,6 @@ function Compose({ onSent, onSend, onRead }: { onSent: (from: string, cardEl: HT
           onSend={onSend}
           onSent={(from, el) => { onSent(from, el); window.setTimeout(() => close(false), 750); }}
         />
-      </div>
-      <div className="cs-compose__slot">
-        <button
-          ref={readTrig}
-          type="button"
-          className={`cs-mini cs-mini--read${mode === "write" ? " is-gone" : ""}`}
-          hidden={mode === "read"}
-          aria-expanded={mode === "read"}
-          tabIndex={mode === "write" ? -1 : undefined}
-          onClick={() => open("read")}
-        >
-          <span className="cs-mini__star"><Spark /></span>
-          <span className="cs-mini__label">Read through notes</span>
-        </button>
-        <NotesPanel panelRef={readRef} hidden={mode !== "read"} onMin={() => close()} />
       </div>
     </div>
   );

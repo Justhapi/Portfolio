@@ -4,6 +4,9 @@ import ZoomableImage from "@/components/ZoomableImage";
 import CaseFilmstrip from "@/components/CaseFilmstrip";
 
 import briefImg from "./images/Feenix_Project_Introduction.png";
+import googleIcon from "./images/Google_Icon.png";
+import microsoftIcon from "./images/Microsoft_Icon.png";
+import discordIcon from "./images/Discord_Icon.png";
 import competitorSignIn from "./images/Competitor_Sign_In.png";
 import aternosServer from "./images/Aternos_Server.png";
 import playHostingServer from "./images/Play.Hosting_Server.png";
@@ -53,6 +56,9 @@ import creationStep3a from "./images/Server_Creation_Step_3_Initial.png";
 import creationStep3b from "./images/Server_Creation_Step_3_Final.png";
 import createAccountSeparated from "./images/Server_Creation_Flow_Sketch_Separated.png"
 import captchaIntegration from "./images/Captcha_Integration.png"
+import feenixLogo from "./images/Feenix_Logo.png";
+import aternosLogo from "./images/Aternos_Logo.png";
+import playHostingLogo from "./images/Play.Hosting_Logo.png";
 
 
 export const metadata = {
@@ -103,7 +109,7 @@ function FeedbackList({ items, label }: { items: [string, string][]; label: stri
 
 export default function FeenixCaseStudy() {
   return (
-    <div className="case">
+    <div className="case case-stars">
       <CaseSectionNav sections={SECTIONS_NAV} />
       <CaseCover
         title="Constructing a Minecraft Server Hosting Platform Applicable To Any Level of Experience"
@@ -141,34 +147,43 @@ export default function FeenixCaseStudy() {
         {/* ───── Overview ───── */}
         <section id="overview" className="case-section">
           <h2>Overview</h2>
-          <p>
-            Feenix Group is an international gaming, esports, and youth-culture agency connecting brands 
-            with the younger audience through video games and partnerships. They are well known through 
-            their projects in Roblox development.
-            <br></br><br></br>
-            To branch out to Minecraft, Feenix Group partnered with Purdue&rsquo;s Data 
-            Mine Corporate Partners to build a Minecraft server hosting and management platform.
-            <br></br><br></br>
-            For this exploratory project, the sponsor directed us to build the foundations of
-            a scalable Minecraft hosting service that supports both free and premium hosting within two
-            phases over the academic year.
-          </p>
-          <div className="case-phases">
-            <strong>Phase 1 - Minimum Viable Product (MVP) Features</strong>
-            <ul>
-              <li>Account Registration</li>
-              <li>Server Creation</li>
-              <li>Server Management</li>
-              <li>Server Backup</li>
-            </ul>
-            <strong>Phase 2 - Feature Enhancements</strong>
-            <ul>
-              {/* may need to add more features here in the future */}
-              <li>Server Plugins & Modpacks</li>
-              <li>Automatic Backup</li>
-              <li>Monetary Profit (Premium & Subscriptions)</li>
-              <li>Discord / Community Integration</li>
-            </ul>
+          <div className="case-intro case-intro--fill">
+            <p>
+              Feenix Group is an international gaming, esports, and youth-culture agency connecting brands 
+              with the younger audience through video games and partnerships. They are well known through 
+              their projects in Roblox development.
+              <br></br><br></br>
+              To branch out to Minecraft, Feenix Group partnered with Purdue&rsquo;s Data 
+              Mine Corporate Partners to build a Minecraft server hosting and management platform.
+              <br></br><br></br>
+              For this exploratory project, the sponsor directed us to build the foundations of
+              a scalable Minecraft hosting service that supports both free and premium hosting within two
+              phases over the academic year.
+            </p>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img className="case-intro__logo" src={feenixLogo.src} width={96} height={96} alt="Feenix Group logo" />
+          </div>
+          <div className="case-map">
+            <div className="case-map__col">
+              <span className="case-map__label">Phase 1 · Minimum Viable Product (MVP) Features</span>
+              <ul>
+                <li>Account Registration</li>
+                <li>Server Creation</li>
+                <li>Server Management</li>
+                <li>Server Backup</li>
+              </ul>
+            </div>
+            <span className="case-map__arrow" aria-hidden="true">&rarr;</span>
+            <div className="case-map__col case-map__col--out">
+              <span className="case-map__label">Phase 2 · Feature Enhancements</span>
+              <ul>
+                {/* may need to add more features here in the future */}
+                <li>Server Plugins & Modpacks</li>
+                <li>Automatic Backup</li>
+                <li>Monetary Profit (Premium & Subscriptions)</li>
+                <li>Discord / Community Integration</li>
+              </ul>
+            </div>
           </div>
           <Z img={briefImg} alt="Project brief board with the platform description and user assumptions on sticky notes."
              caption={<>The project brief, split into what the platform needs to let users do and who we assumed the users were.</>} />
@@ -186,13 +201,16 @@ export default function FeenixCaseStudy() {
         {/* ───── Researching ───── */}
         <section id="researching" className="case-section">
           <h2>Competitor Auditing</h2>
-            To familiarize myself with Minecraft Server Hosting platforms, I assessed two competitors to 
-            better understand how to design the server features requested by Feenix: 
-            <br></br><br></br>
-            <ul>
-              <li>Aternos</li>
-              <li>Play.Hosting</li>
-            </ul>
+          <p>
+            To familiarize myself with Minecraft Server Hosting platforms, I assessed two competitors to
+            better understand how to design the server features requested by Feenix:
+          </p>
+          <ul className="case-logo-list">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <li><img src={aternosLogo.src} width={42} height={42} alt="" />Aternos</li>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <li><img src={playHostingLogo.src} width={42} height={42} alt="" />Play.Hosting</li>
+          </ul>
           <h3>Competitor Accounts and Server Creation Flows</h3>
             While exploring the competitors, I <strong>went through the sign-in, server creation, 
             and server management flows,</strong> understanding the basic structure of what a Minecraft
@@ -253,10 +271,13 @@ export default function FeenixCaseStudy() {
               <br></br><br></br>
               When reviewing the designs, I pitched the authenication options: 
               <br></br><br></br>
-              <ul>
-                <li>Google due to being standard accoutn ubiquity</li>
-                <li>Microsoft due to Minecraft account's integration within Microsoft</li>
-                <li>Discord due to being commonly used within the gaming setting</li>
+              <ul className="case-logo-list case-logo-list--stack">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <li><img src={googleIcon.src} width={42} height={42} alt="" />Google due to being standard accoutn ubiquity</li>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <li><img src={microsoftIcon.src} width={42} height={42} alt="" />Microsoft due to Minecraft account's integration within Microsoft</li>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <li><img src={discordIcon.src} width={42} height={42} alt="" />Discord due to being commonly used within the gaming setting</li>
               </ul>
               <br></br><br></br>
               Following cross-team pitching and feedbacks, I refined the flows to
