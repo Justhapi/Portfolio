@@ -149,16 +149,10 @@ export default function FeenixCaseStudy() {
           <h2>Overview</h2>
           <div className="case-intro case-intro--fill">
             <p>
-              Feenix Group is an international gaming, esports, and youth-culture agency connecting brands 
-              with the younger audience through video games and partnerships. They are well known through 
-              their projects in Roblox development.
-              <br></br><br></br>
-              To branch out to Minecraft, Feenix Group partnered with Purdue&rsquo;s Data 
-              Mine Corporate Partners to build a Minecraft server hosting and management platform.
-              <br></br><br></br>
-              For this exploratory project, the sponsor directed us to build the foundations of
-              a scalable Minecraft hosting service that supports both free and premium hosting within two
-              phases over the academic year.
+              Feenix Group is an international gaming, esports, and youth-culture agency known for its
+              Roblox projects. To branch out to Minecraft, Feenix partnered with Purdue&rsquo;s Data Mine
+              Corporate Partners to build the foundations of a scalable server hosting platform, with free
+              and premium hosting, over two phases across the academic year.
             </p>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img className="case-intro__logo" src={feenixLogo.src} width={96} height={96} alt="Feenix Group logo" />
@@ -189,12 +183,9 @@ export default function FeenixCaseStudy() {
              caption={<>The project brief, split into what the platform needs to let users do and who we assumed the users were.</>} />
           <h3>My Role</h3>
           <p>
-             During the project I worked as the UX designer and Frontend Developer,{" "}
-            designing the end-to-end information architecture, user flows, and interface design
-            while implementing the frontend components.
-            <br/><br/>
-            While designing, I actively collaborated with cross-functional teams (Data, backend, infrastructure) to 
-            balance design and technical (sometimes legal) constraints.
+            As UX designer and frontend developer, I designed the information architecture, user flows,
+            and interface while building the frontend, working with the data, backend, and infrastructure
+            teams to balance design against technical (and sometimes legal) constraints.
           </p>
         </section>
 
@@ -203,8 +194,8 @@ export default function FeenixCaseStudy() {
           <h2>Researching</h2>
           <h3>Auditing Two Competing Hosting Platforms</h3>
           <p>
-            To familiarize myself with Minecraft Server Hosting platforms, I assessed two competitors to
-            better understand how to design the server features requested by Feenix:
+            To learn how Minecraft hosting platforms work, I audited two competitors against the features
+            Feenix requested:
           </p>
           <ul className="case-logo-list">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -213,9 +204,10 @@ export default function FeenixCaseStudy() {
             <li><img src={playHostingLogo.src} width={42} height={42} alt="" />Play.Hosting</li>
           </ul>
           <h3>Mapping Competitor Sign-in and Server Creation Flows</h3>
-            While exploring the competitors, I <strong>went through the sign-in, server creation, 
-            and server management flows,</strong> understanding the basic structure of what a Minecraft
-            server hosting platform needs for a user regarding personal account and server creation.
+          <p>
+            I went through each competitor&rsquo;s <strong>sign-in, server creation, and server management
+            flows</strong> to learn what a hosting platform needs from a user&rsquo;s account and server setup.
+          </p>
 
           <CaseFilmstrip
             label="Competitor Sign-in and Server Creation Flows"
@@ -226,8 +218,9 @@ export default function FeenixCaseStudy() {
             ]}
           />
 
-          I was also able to identify pain points, needed UI modifications, inter-team collaborations, and opportunity gaps 
-          for the platform, particularly in server seed modification.
+          <p>
+            This surfaced pain points and opportunity gaps, especially around modifying a server&rsquo;s seed.
+          </p>
           <h3>Condensing 17 Competitor Features into 6 Maintenance Sections</h3>
           <CaseFilmstrip
             label="Competitor Server Maintenance Features"
@@ -235,18 +228,16 @@ export default function FeenixCaseStudy() {
             align="right"
             side={
               <>
-                While exploring both competitors' server maintenance-related features, I
-                identified their relation to a feature directly requested by Feenix. Aternos had 10 features 
-                varying in overlap while Play.Hosting had 7 features that sometimes overlapped.
-                <br></br><br></br>
-                From this, I condensed the competitor overlaps and Feenix requests down to 6 maintenance features:
+                <strong>Between Aternos, Play.Hosting, and Feenix&rsquo;s requests, the maintenance features had to fit into one clear set.</strong>{" "}
+                Aternos offered 10 maintenance features and Play.Hosting 7, with partial overlap. I mapped
+                both against Feenix&rsquo;s requests and condensed them into 6 sections:
                 <ul className="feature-list">
-                  <li>Console : Server runtime controls (Start/Stop/Restart), Live server logs, CPU and RAM metrics</li>
-                  <li>World: World properties, seed, and minor server settings</li>
-                  <li>Players: White list, ban list, operators, and banned IPs controls and management</li>
-                  <li>Admin: Platform admin permission and access</li>
-                  <li>Backup: World file backup, cloud sync, and revision history</li> 
-                  <li>Software: Server engines (Vanilla, Paper, Forge, Fabric), plugins, and modpacks</li>
+                  <li>Console: start/stop/restart, live logs, CPU and RAM</li>
+                  <li>World: properties, seed, and minor settings</li>
+                  <li>Players: whitelist, bans, operators, and IP bans</li>
+                  <li>Admin: platform permissions and access</li>
+                  <li>Backup: world backups, cloud sync, and revision history</li>
+                  <li>Software: engines (Vanilla, Paper, Forge, Fabric), plugins, and modpacks</li>
                 </ul>
               </>
             }
@@ -267,23 +258,19 @@ export default function FeenixCaseStudy() {
             align = "right"
             side={
               <>
-              <h3>Choosing Sign-in Options for a Gaming Audience</h3>
-              For the account creation flow, I assessed the competitors' and general account creation 
-              flows before creating a quick sketch of the account creation page. 
-              <br></br><br></br>
-              When reviewing the designs, I pitched the authentication options: 
-              <br></br><br></br>
+              <h3>Designing the Account Flows</h3>
+              <strong>I pitched sign-in options around the accounts gamers already have.</strong>{" "}
+              I sketched the account creation page after reviewing competitor and common sign-up flows,
+              landing on three options:
               <ul className="case-logo-list case-logo-list--stack">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <li><img src={googleIcon.src} width={42} height={42} alt="" />Google due to being standard account ubiquity</li>
+                <li><img src={googleIcon.src} width={42} height={42} alt="" />Google: the account most people already have</li>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <li><img src={microsoftIcon.src} width={42} height={42} alt="" />Microsoft due to Minecraft account's integration within Microsoft</li>
+                <li><img src={microsoftIcon.src} width={42} height={42} alt="" />Microsoft: where Minecraft accounts already live</li>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <li><img src={discordIcon.src} width={42} height={42} alt="" />Discord due to being commonly used within the gaming setting</li>
+                <li><img src={discordIcon.src} width={42} height={42} alt="" />Discord: where gaming communities already are</li>
               </ul>
-              <br></br><br></br>
-              Following cross-team pitching and feedback, I refined the flows to
-              address the following feedback of specifics in regards:
+              Cross-team feedback then added two requirements:
               <FeedbackList
                 label="Cross-team feedback on the auth flows"
                 items={[
@@ -299,15 +286,13 @@ export default function FeenixCaseStudy() {
             ]}
           />
 
-          <h3>Designing a Login Page That Also Introduces the Platform</h3>
           <CaseFilmstrip
             label="Log in, recovery and the auth flow"
             side={
               <>
-                After confirming that the hosting dashboard would launch as a standalone platform, 
-                I designed the login page to serve a dual purpose: enabling returning users 
-                to sign in quickly while introducing new visitors to Feenix’s platform capabilities 
-                and recent updates.
+                Since the dashboard would launch as a standalone platform, I made the login page do double
+                duty: a quick sign-in for returning users and an introduction to Feenix&rsquo;s features for
+                new visitors.
               </>
             }
             shots={[
@@ -316,8 +301,7 @@ export default function FeenixCaseStudy() {
             ]}
           />
 
-          <h3>Wireframing the Auth Flows on Feenix&rsquo;s Design System</h3>
-          From the sketches, I constructed the base wireframes while applying the design system provided by Feenix.
+          <p>I turned the sketches into wireframes using Feenix&rsquo;s design system.</p>
           <CaseFilmstrip
             label="Auth flow wireframes"
             shots={[
@@ -326,8 +310,10 @@ export default function FeenixCaseStudy() {
               { key: "captcha-integration", img: captchaIntegration, label: "Integration of Captcha", alt: "Integration of Captcha visible on localhost" },
             ]}
           />
-          Some time after implementation of the frontend, my teammates were able to successfully implement the 
-          captcha and there was an additional request to add an minimum age confirmation, prompting minor reformatting.
+          <p>
+            After I built the frontend, teammates added the Captcha, and a new minimum-age check
+            prompted minor reformatting.
+          </p>
           <h3>Simplifying Server Creation into Staged Pages</h3>
 
           <CaseFilmstrip
@@ -335,18 +321,12 @@ export default function FeenixCaseStudy() {
             align="right"
             side={
               <>
-                For the server creation flow, I simplified the competitor server creation flow 
-                stages to ideate the Feenix platform flow.
+                I simplified the competitors&rsquo; creation stages into Feenix&rsquo;s flow and added a world
+                modification stage: users could shape the world with a seed or biome and building
+                blueprints, then preview their spawn area on a small map.
                 <br></br><br></br>
-                Specifically, the world modification stage would allow modifications to the world 
-                through the server seed or blueprints of biomes and custom buildings. 
-                The user would also be able to preview the world through a small map view of the 
-                world's spawnpoint's surroundings.
-                <br></br><br></br>
-                When the idea was pitched, both Hari and Calvin approved of the feature, though they 
-                noted that the focus of this feature is more aligned with phase 2. Thankfully, due to
-                the server creation flow stages being on separate pages, we were able to continue with
-                the ideated flow minus the world modification section.
+                Hari and Calvin approved it but placed it in Phase 2. Because each stage lived on its own
+                page, we kept the flow and simply set the world stage aside.
               </>
             }
             shots={[
@@ -354,24 +334,18 @@ export default function FeenixCaseStudy() {
               { key: "server-creation-flow-sketch", img: serverCreationFlowSketch, label: "Flow sketch", alt: "Hand sketch of the server creation flow across its pages." },
             ]}
           />
-          <h3>Adapting Discord&rsquo;s Two-Tier Sidebar for Server Navigation</h3>
+          <h3>A Dashboard for Managing Many Servers</h3>
           <CaseFilmstrip
             label="Sidebar Process"
             align = "right"
             side={
               <>
-                Due to the platform needing quick maintenance features access and 
-                competitors' navigation bar leading to maintenance features, 
-                I opted to design Feenix's platform's navigation to also be a sidebar with the 
-                order of features being determined by inference of consistent usage.
-                <br></br><br></br>
-                While the base format was simple to determine, the feature design was more
-                difficult to decide on. Ultimately, I decided to reference Discord's dual 
-                tier sidebar as it provided formatting for individual server maintenance features 
-                and inter-server navigation.
+                <strong>Users needed quick access to maintenance features across multiple servers, so I referenced Discord&rsquo;s dual tier sidebar.</strong>{" "}
+                Maintenance features need to be one click away, and competitors already used side
+                navigation, so I chose a sidebar ordered by expected frequency of use. Its two strips:
                 <ul>
-                  <li>Primary strip navigates between servers where the user is the owner or an admin</li>
-                  <li>Secondary strip navigates between server maintenance features for the currently selected server</li>
+                  <li>Primary strip: switch between servers you own or admin</li>
+                  <li>Secondary strip: switch between the selected server&rsquo;s maintenance features</li>
                 </ul>
               </>
             }
@@ -383,9 +357,7 @@ export default function FeenixCaseStudy() {
             ]}
           />
 
-          <h3>Sketching the Six Maintenance Sections</h3>
-          With the sidebar navigation determined, I then moved on to integrate the 6 maintenance features, implementing
-          the base functionality while designing based off of competitors like Aternos's console.
+          <p>I then sketched the 6 maintenance sections, building on competitor patterns like Aternos&rsquo;s console.</p>
           <CaseFilmstrip
             label="Six sections, sketched"
             shots={[
@@ -398,18 +370,15 @@ export default function FeenixCaseStudy() {
             ]}
           />
 
-          <h3>Refining Hierarchy and Edge Cases from Team Feedback</h3>
           <CaseFilmstrip
             label="Six sections, resolved"
             side={
               <>
-                After the base sketches were made and pitched to the rest of the team, feedback in regards to
-                information hierarchy and additional features were given, prompting small iterations to specific feature pages.
-                <br></br><br></br>
+                Team feedback on hierarchy and missing features led to small iterations:
                 <ul>
-                  <li>Accounting for specific usage cases such as server failure to run</li>
-                  <li>Boxing elements to better organize relation</li>
-                  <li>Icons as buttons for specific features like individual player permissions</li>
+                  <li>Handling cases like a server failing to start</li>
+                  <li>Boxing related elements together</li>
+                  <li>Icon buttons for actions like per-player permissions</li>
                 </ul>
               </>
             }
@@ -432,21 +401,15 @@ export default function FeenixCaseStudy() {
             align ="right"
             side={
               <>
-                To verify if the ideated platform is user friendly, I utilized Figma Make 
-                to quickly construct an interactive prototype that is reflective in the 
-                feature implementation and formatting. During testing, I asked users 
-                varying in familiarity with server hosting to navigate competitor
-                platforms and then the prototype through tasks I assigned them.
-                <br></br><br></br>
-                The tasks were assigned with scenarios that included the following:
-                <br></br><br></br>
+                I built an interactive prototype in Figma Make and had users with varying hosting
+                experience complete the same tasks on both competitors and the prototype:
                 <ul>
-                  <li>You just successfully created your account, create your own server with the following settings</li>
-                  <li>After creating the server, you want to explore the server before inviting others</li>
-                  <li>Due to realizing your server's version was not the correct version, you opted to get it changed</li>
-                  <li>Since this server is planned to be used for a while, you prepare the server files to be automatically backed up</li>
-                  <li>Now that your server is ready, you started adding your friends' usernames in</li>
-                  <li>Due to a player griefing your server, ban them for a week</li>
+                  <li>Create a server with given settings</li>
+                  <li>Explore it before inviting others</li>
+                  <li>Change the server&rsquo;s version</li>
+                  <li>Set up automatic backups</li>
+                  <li>Add friends to the whitelist</li>
+                  <li>Ban a griefer for a week</li>
                 </ul>
               </>
             }
@@ -463,20 +426,12 @@ export default function FeenixCaseStudy() {
             align ="right"
             side={
               <>
-                After a user finishes the following tasks in all three platforms, I then 
-                probed for feedback on either the competitors or prototype, specifically 
-                any moments of struggles and what they would have wanted to better overcome the
-                obstacle.
-                <br></br>
+                After each session, I asked where they struggled and what would have helped.
                 <h3>Testers Found the Clearest Guidance and Navigation</h3>
-                Overall, testers identified the prototype as the strongest in user guidance and 
-                navigation as it avoided competitor pain points like Aternos's overabundance of
-                information assistance, Play.Hosting's instances of bottlenecking feature access,
-                and overall feature naming confusion.
-                <br></br><br></br>
-                Testers also appreciated the world modification stage as it would allow them to
-                ensure the world is tailored to their preference and quickly identify if they wanted
-                to modify the world seed.
+                Testers rated the prototype strongest in guidance and navigation. It avoided Aternos&rsquo;s
+                information overload, Play.Hosting&rsquo;s bottlenecked feature access, and both
+                platforms&rsquo; confusing feature names. They also valued the world modification stage for
+                tailoring their world and checking the seed up front.
               </>
             }
             shots={[
@@ -491,10 +446,7 @@ export default function FeenixCaseStudy() {
           />
 
           <h3>Iterating on User and Technical Feedback</h3>
-          <p>
-            Most of the changes requested by testers were regarding formatting
-            and placements of elements, prompting the following iterations:
-          </p>
+          <p>Tester feedback was mostly about layout and placement:</p>
           <FeedbackList
             label="Tester feedback and the iterations it prompted"
             items={[
@@ -504,14 +456,11 @@ export default function FeenixCaseStudy() {
             ["I almost didn't notice the create server button", "Improve visibility of general server creation and server running"],
             ]}
           />
-          <p>
-            During the general user testing, Calvin, Hari, and my teammates within other teams also reviewed
-            the prototype and raised their technical concerns that also resulted in the following iterations:
-          </p>
+          <p>Calvin, Hari, and teammates on other teams also reviewed the prototype for technical concerns:</p>
           <FeedbackList
             label="Technical feedback from the team and the iterations it prompted"
             items={[
-            ["Since the console is planned to track logs of events and actions, including the ability to enact commands and messages are possible too", "Add platform-server communication"],
+            ["The console already logs events, so it could send commands and messages too", "Add platform-server communication"],
             ["What if the user were to use different google accounts for account and backup connections?", "Include manual Google Drive connecting"],
             ["Considering how backup is saved, we could also allow for importing of existing server files", "Implement import files option in World Setup stage"],
             ]}
@@ -538,17 +487,10 @@ export default function FeenixCaseStudy() {
                 ],
               }]}
           />
-          <h3>Replacing Spawn Mapping with Third-Party Seed Previews</h3>
           <p>
-            In addition to minor reformatting, the core technical feedback from the
-            team were concerns of the spawnpoint mapping as questions were raised
-            on commercial use limitations.
-          </p>
-          <p>
-            As a result, a brief research on third-party Minecraft seed preview
-            platforms was conducted, leading to identification of Chunkbase. Building
-            off of this, I revised the world maintenance feature and world settings
-            feature to account for the seed preview alterations in addition to minor feedback.
+            The biggest technical concern was the spawn map, since its commercial-use limits were unclear.
+            I researched third-party seed preview tools, found Chunkbase, and revised the world feature
+            and world setup stage around it.
           </p>
           <CaseFilmstrip
             label=""
@@ -581,21 +523,10 @@ export default function FeenixCaseStudy() {
 
           <h3>Designing Beyond the Current Sprint&rsquo;s Scope</h3>
           <p>
-            Due to the nature of the project requiring me to design while contributing to the
-            implementations, I often needed to tweak the scope and focus of my design sprints.
-          </p>
-          <p>
-            For example, the starting sprint focus for the entire team was the account creation and
-            login. Due to this, my design sprint focused solely on assessing competitor instances of the
-            aforementioned features before designing the Feenix platform's version and implementing the
-            front end into the codebase.
-          </p>
-          <p>
-            Despite the sprint limiting scope and allow focus on sprint goals to slowly achieve the
-            overarching goal of constructing Feenix's Minecraft server hosting platform, I found that I
-            was able to <mark className="hl">more effectively design by briefly assessing other aspects
-            of the project</mark> to actively account for future sprints goals without needing to go
-            back and review previous works.
+            Designing while also building the frontend meant constantly re-scoping my sprints. When the
+            team&rsquo;s first sprint was accounts and login, I designed only those flows, but I found I
+            could <mark className="hl">design more effectively by briefly looking at other parts of the
+            project</mark>, accounting for future sprints without circling back to rework earlier ones.
           </p>
         </section>
       </main>
